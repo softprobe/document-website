@@ -48,8 +48,8 @@ done
 echo "GitHub Actions workflow completed successfully."
 
 # Update YAML file in GitHub repository
-file_path="pro/saas/website/deployment.yaml"
-yaml_url="https://github.com/softprobe/deployment-k8s/blob/main/pro/saas/website/deployment.yaml"
+file_path="pro/saas/doc/deployment.yaml"
+yaml_url="https://github.com/softprobe/deployment-k8s/blob/main/pro/saas/doc/deployment.yaml"
 
 echo "Updating YAML file: $yaml_url"
 
@@ -62,7 +62,7 @@ sha=$(echo "$yaml_content_info" | jq -r ".sha")
 echo "Current SHA: $sha"
 
 # Replace the version number in the image tag
-updated_yaml_content=$(echo "$current_yaml_content" | sed "s|image: sjc.ocir.io/axqjl8ow85vi/saas-website:v[0-9]\+\.[0-9]\+\.[0-9]\+|image: sjc.ocir.io/axqjl8ow85vi/saas-website:${new_version}|")
+updated_yaml_content=$(echo "$current_yaml_content" | sed "s|image: sjc.ocir.io/axqjl8ow85vi/saas-doc:v[0-9]\+\.[0-9]\+\.[0-9]\+|image: sjc.ocir.io/axqjl8ow85vi/saas-doc:${new_version}|")
 
 # Encode the updated content to base64
 updated_yaml_content_base64=$(echo "$updated_yaml_content" | base64 | tr -d '\n')
@@ -79,4 +79,10 @@ gh api -X PUT "/repos/$repo_owner/$deployment_repo_name/contents/$file_path" \
 
 echo "YAML file updated to version ${new_version}."
 echo "Release process completed."
+
+
+
+
+
+
 
