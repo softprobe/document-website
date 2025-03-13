@@ -5,7 +5,7 @@ import { Callout } from 'fumadocs-ui/components/callout';
 
 ### 使用场景
 
-AREX 可以将线上的真实流量录制下来从而生成丰富的测试用例，你可以根据需要从中筛选出某些重要用例，并进行保存，扩充测试用例数量，后续还可以使用这些可复用的用例进行常态化的定时回归验证。
+Softprobe 可以将线上的真实流量录制下来从而生成丰富的测试用例，你可以根据需要从中筛选出某些重要用例，并进行保存，扩充测试用例数量，后续还可以使用这些可复用的用例进行常态化的定时回归验证。
 
 <Callout title="提示">
 可以在**录制用例列表**和**回放用例列表**中保存用例，两种用例仅接口地址存在差异：
@@ -29,7 +29,7 @@ AREX 可以将线上的真实流量录制下来从而生成丰富的测试用例
 
 ![录制列表](../resource/recordsave.png)
 
-点击右上角 Save 进行保存。保存路径可以选择 AREX 默认生成的路径，也可以自定义保存路径。
+点击右上角 Save 进行保存。保存路径可以选择 Softprobe 默认生成的路径，也可以自定义保存路径。
 
 ## 固化回放用例
 
@@ -81,25 +81,25 @@ AREX 可以将线上的真实流量录制下来从而生成丰富的测试用例
 
 请求地址处为接口路径，如需回放调试可直接在路径前添加本地测试端口地址。
 
-Header 中新增的 arex-record-id 为本次录制 ID，如需回放可在新建请求的请求头中添加该 arex-record-id，发送请求即可完成回放。
+Header 中新增的 Softprobe-record-id 为本次录制 ID，如需回放可在新建请求的请求头中添加该 Softprobe-record-id，发送请求即可完成回放。
 
 ![查看用例](../resource/c3.case1.png)
 
 固化用例，不仅可以保存主接口的请求入参、响应，还可以保存从生产环境 Mock 到的数据及第三方依赖，如图中 Mock 一栏所示。左侧是 Mock 到的主接口及外部调用的请求报文，右侧是对应的响应报文。Mock 数据支持编辑功能，如果对 Mock 的数据不满意，可以手动修改，点击 **Save** 保存。之后在本地回放时就可以通过修改后的 Mock 数据进行请求。
 
 <Callout title="提示">
-需要注意的是，无法对主接口的返回值进行修改，因为主接口的返回值是不 Mock 的，AREX 只会对中间过程中调用的第三方依赖进行 Mock，修改才有效。
+需要注意的是，无法对主接口的返回值进行修改，因为主接口的返回值是不 Mock 的，Softprobe 只会对中间过程中调用的第三方依赖进行 Mock，修改才有效。
 </Callout>
 
 ![查看用例](../resource/c3.case2.png)
 
-点击 Send 后，会在 Response 的 Headers 中生成一个 `arex-replay-id`，这意味着本次请求的发送并不是真实的请求，而是一次回放。
+点击 Send 后，会在 Response 的 Headers 中生成一个 `Softprobe-replay-id`，这意味着本次请求的发送并不是真实的请求，而是一次回放。
 
 ![](../resource/replay-id.png)
 
 ## 固化用例的回放测试
 
-对于固化后的用例集合，AREX 提供了一个 Node.js [脚本](https://github.com/arextest/deployments/blob/feat/script_for_pinned_replay/extra-nodejs/main.cjs)来实现固化用例的回归测试：
+对于固化后的用例集合，Softprobe 提供了一个 Node.js [脚本](https://github.com/arextest/deployments/blob/feat/script_for_pinned_replay/extra-nodejs/main.cjs)来实现固化用例的回归测试：
 
 ```javascript
 const MongoClient = require('mongodb').MongoClient;
@@ -132,7 +132,7 @@ async function main() {
     "appId": "community-test-0905",
     "replayPlanType": 2,
     "targetEnv": targetHost,
-    "operator": "AREX",
+    "operator": "Softprobe",
     "operationCaseInfoList": operations.map(op => ({
         "operationId": op._id.toString(),
         "replayIdList": caseGroupByOp.get(op.operationName)

@@ -2,17 +2,17 @@
 title: Mock Config
 ---
 
-The AREX has a very powerful mock mechanism, supporting automatic data collection and mocking for various mainstream technology frameworks. It also supports capturing and mocking local time, cache data, and various in-memory data.
+The Softprobe has a very powerful mock mechanism, supporting automatic data collection and mocking for various mainstream technology frameworks. It also supports capturing and mocking local time, cache data, and various in-memory data.
 
 In real applications, various types of local cache data are often utilized to improve runtime performance. However, during the recording and replay process, this type of data can be influenced by external factors, potentially leading to inconsistencies and failures of replay, thereby increasing the difficulty of troubleshooting.
 
-In such scenarios, you can proactively configure the dynamic class mechanism in AREX to achieve data collection and mocking for this type of data. Specifically, you can configure this setting in the **Setting → Record → Advanced** configuration page.
+In such scenarios, you can proactively configure the dynamic class mechanism in Softprobe to achieve data collection and mocking for this type of data. Specifically, you can configure this setting in the **Setting → Record → Advanced** configuration page.
 
 ![mock配置](../resource/mock.png)
 
-In the highlighted area of the diagram, you can configure the **Full Class Name**, **Method Name** (optional, if not configured, it will be applied to all public methods with parameters and return values), and **Parameter Types** (optional) in sequence. Once the configuration is complete, the `arex-agent` will automatically inject code similar to the Record&Replay code into the corresponding methods, enabling data collection and mocking during the replay process.
+In the highlighted area of the diagram, you can configure the **Full Class Name**, **Method Name** (optional, if not configured, it will be applied to all public methods with parameters and return values), and **Parameter Types** (optional) in sequence. Once the configuration is complete, the `Softprobe-agent` will automatically inject code similar to the Record&Replay code into the corresponding methods, enabling data collection and mocking during the replay process.
 
-The following provides a brief explanation from a code implementation perspective on how AREX achieves automatic mocking of data during traffic replay, to facilitate understanding of how to configure dynamic classes in the recording configuration.
+The following provides a brief explanation from a code implementation perspective on how Softprobe achieves automatic mocking of data during traffic replay, to facilitate understanding of how to configure dynamic classes in the recording configuration.
 
 ## The principle of traffic recording and replay
 
@@ -81,9 +81,9 @@ public Integer parseIp(String ip) {
 }
 ```
 
-## Implementation in AREX
+## Implementation in Softprobe
 
-The principle behind AREX is similar, but it is more complex and doesn't require developers to manually add recording and replay code to their business logic. The `arex-agent` automatically adds the necessary code in the relevant code blocks during application startup to implement this functionality. Let's take MyBatis3's Query as an example to explore the specific implementation in AREX.
+The principle behind Softprobe is similar, but it is more complex and doesn't require developers to manually add recording and replay code to their business logic. The `Softprobe-agent` automatically adds the necessary code in the relevant code blocks during application startup to implement this functionality. Let's take MyBatis3's Query as an example to explore the specific implementation in Softprobe.
 
 Those who have read the MyBatis source code should be familiar with the fact that Query operations are mainly performed in the `query` method of the `org.apache.ibatis.executor.BaseExecutor` class (excluding Batch operations). The method signature is as follows:
 
@@ -91,7 +91,7 @@ Those who have read the MyBatis source code should be familiar with the fact tha
 public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql) throws SQLException
 ```
 
-This method includes the executed SQL statement and its parameters, and the result of the function includes the data retrieved from the database. It is evident that performing data collection here is appropriate, and during replay, we can use the collected data as the returned result, thus avoiding actual database operations. Let's take a look at the code in AREX. For the sake of simplicity and better understanding, some simplifications have been made, as shown below:
+This method includes the executed SQL statement and its parameters, and the result of the function includes the data retrieved from the database. It is evident that performing data collection here is appropriate, and during replay, we can use the collected data as the returned result, thus avoiding actual database operations. Let's take a look at the code in Softprobe. For the sake of simplicity and better understanding, some simplifications have been made, as shown below:
 
 ```java
 public class ExecutorInstrumentation extends TypeInstrumentation {
@@ -218,14 +218,14 @@ We can see that the code inside `onMethodEnter` and `onMethodExit` is inserted a
 
 - Recording Scenario
 
-AREX determines whether the data access needs to be recorded (when the service receives a request, AREX decides whether to record this request based on the configured recording frequency). If recording is required, all external dependencies during the execution of this request will be recorded by AREX. The implementation details are not discussed here. During the recording process, AREX calls the `InternalExecutor.record(ms, parameter, boundSql, result, throwable, "query")` method to store the result, core parameters, and other information of this database access in AREX's database, completing the recording of the database access.
+Softprobe determines whether the data access needs to be recorded (when the service receives a request, Softprobe decides whether to record this request based on the configured recording frequency). If recording is required, all external dependencies during the execution of this request will be recorded by Softprobe. The implementation details are not discussed here. During the recording process, Softprobe calls the `InternalExecutor.record(ms, parameter, boundSql, result, throwable, "query")` method to store the result, core parameters, and other information of this database access in Softprobe's database, completing the recording of the database access.
 
 - Replay Scenario
 
-From the above code, we can see that when the previously recorded request is sent again to the corresponding service, AREX treats it as a replay scenario. At this point, the original function code is not executed. Instead, the previously recorded result (including the restoration of exceptions) is directly returned. By calling `InternalExecutor.replay(ms, parameter, boundSql, "query")`, you can retrieve the recorded data saved earlier.
+From the above code, we can see that when the previously recorded request is sent again to the corresponding service, Softprobe treats it as a replay scenario. At this point, the original function code is not executed. Instead, the previously recorded result (including the restoration of exceptions) is directly returned. By calling `InternalExecutor.replay(ms, parameter, boundSql, "query")`, you can retrieve the recorded data saved earlier.
 
 ## Recording and Replay of In-Memory Data (Dynamic Class)
 
 Of course, the example function above is idempotent. For idempotent functions, since the return result is always the same for each invocation and is not affected by external factors, data collection and mocking are not required during the recording and replay processes.
 
-On the other hand, for non-idempotent functions, each invocation can be influenced by the external environment, and the execution result can affect the service output. In this case, you can configure the methods that access local caches as dynamic classes in **Setting → Record → Advanced**. By configuring a method as a dynamic class, you can customize the mocking behavior of the method. In the production environment, AREX will record the data for the configured dynamic class method and play back the corresponding matched data when requested.
+On the other hand, for non-idempotent functions, each invocation can be influenced by the external environment, and the execution result can affect the service output. In this case, you can configure the methods that access local caches as dynamic classes in **Setting → Record → Advanced**. By configuring a method as a dynamic class, you can customize the mocking behavior of the method. In the production environment, Softprobe will record the data for the configured dynamic class method and play back the corresponding matched data when requested.

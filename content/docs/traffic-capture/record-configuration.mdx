@@ -11,15 +11,15 @@ Go to **Report**, click on the **AppSetting** button to the right of the applica
 
 ### Recording setting
 
-AREX supports periodic recording of traffic for specific time periods, and you can customize the settings according to your needs. Click on **Record** to enter the recording settings page.
+Softprobe supports periodic recording of traffic for specific time periods, and you can customize the settings according to your needs. Click on **Record** to enter the recording settings page.
 
 ### Agent Running Status
 
-The running status section displays the status of the AREX Agent for the tested application. It allows testers to check if the Agent is running properly, enabling them to promptly identify and resolve any issues, ensuring the reliability and stability of the testing process.
+The running status section displays the status of the Softprobe Agent for the tested application. It allows testers to check if the Agent is running properly, enabling them to promptly identify and resolve any issues, ensuring the reliability and stability of the testing process.
 
 - **Record Machine Count**: If there are two or more machines that need to be used for recording, you can modify the machine count here.
 
-- **Host**: The IP address of the configured AREX Agent host.
+- **Host**: The IP address of the configured Softprobe Agent host.
 
 - **Version**: The current version of the Agent.
 
@@ -40,9 +40,9 @@ The running status section displays the status of the AREX Agent for the tested 
 
 #### Dynamic Classes
 
-In practical applications, various types of caching are used to improve runtime performance. To avoid inconsistent results due to differences in cached data, AREX also supports the collection and mocking of local cache data.
+In practical applications, various types of caching are used to improve runtime performance. To avoid inconsistent results due to differences in cached data, Softprobe also supports the collection and mocking of local cache data.
 
-The implementation method is to configure the method that accesses the local cache as a dynamic class, allowing you to customize this method for mocking. In the production environment, AREX will record the data of the dynamic class method you configured and return the matching data during playback. The matching order is as follows:
+The implementation method is to configure the method that accesses the local cache as a dynamic class, allowing you to customize this method for mocking. In the production environment, Softprobe will record the data of the dynamic class method you configured and return the matching data during playback. The matching order is as follows:
 
 1. Perform an exact match based on the request parameters. If a matching recording data is found, it will be returned directly.
 2. If an exact match cannot be found, perform a fuzzy match.
@@ -55,13 +55,13 @@ The fuzzy matching rules for dynamic classes are as follows:
 In addition to caching data, various types of memory data can also be mocked. To configure dynamic class data that needs to be mocked, click "**+ Add**". Here are the specific configuration instructions:
 
 - **Full Class Name**: The full class name of the local cache, such as java.lang.String.
-    - Infix: Matches any class in the package path that contains “namic”, for example, io.arex.inst.dynamic.namicTest.
-    - Suffix: Matches any class in the package path that ends with “namicTestClass”, for example, io.arex.inst.dynamic.*namicTestClass.
-    - Prefix: Matches any class in the package path that starts with “DynamicTest”, for example, io.arex.inst.dynamic.DynamicTest*.
-    - Equals: Matches the class “DynamicTestClass” in the package path, for example, io.arex.inst.dynamic.DynamicTestClass.
-    - Abstract class or interface: Matches abstract classes or interfaces, where “ac” stands for “abstract class”, for example, ac:io.arex.inst.dynamic.AbstractDynamicTestClass matches the abstract class “AbstractDynamicTestClass”.
+    - Infix: Matches any class in the package path that contains “namic”, for example, io.Softprobe.inst.dynamic.namicTest.
+    - Suffix: Matches any class in the package path that ends with “namicTestClass”, for example, io.Softprobe.inst.dynamic.*namicTestClass.
+    - Prefix: Matches any class in the package path that starts with “DynamicTest”, for example, io.Softprobe.inst.dynamic.DynamicTest*.
+    - Equals: Matches the class “DynamicTestClass” in the package path, for example, io.Softprobe.inst.dynamic.DynamicTestClass.
+    - Abstract class or interface: Matches abstract classes or interfaces, where “ac” stands for “abstract class”, for example, ac:io.Softprobe.inst.dynamic.AbstractDynamicTestClass matches the abstract class “AbstractDynamicTestClass”.
 
-    These configurations are used to specify the package path and class name information of the dynamic classes that need to be mocked. After the configuration is completed, AREX will automatically mock these classes for use during testing.
+    These configurations are used to specify the package path and class name information of the dynamic classes that need to be mocked. After the configuration is completed, Softprobe will automatically mock these classes for use during testing.
 - **Base**: The term "Base" refers to a base class. If checked as a base class, it indicates that all subclasses or implementations under this base class are subject to Mock effectiveness.    
 - **Method Name**: The method name to be mocked.
 - **Parameter Types**: The full class names of all parameters, separated by "@". Primitive types can be abbreviated, such as int.
@@ -75,7 +75,7 @@ In addition to caching data, various types of memory data can also be mocked. To
 
   The Key Formula can be utilized to address scenarios where certain parameters do not support serialization, yet it is necessary to record the dynamic class method. By employing a parameter expression, you can specify the serialization of only one property, effectively mitigating serialization issues.
 
-If you are using an open-source caching framework such as Spring Cache, Guava Cache, or Caffeine Cache, there is no need to configure dynamic classes. Simply add `-Darex.coverage.packages=com.your.package` to your startup parameters, replacing `com.your.package` with the actual package name used for caching in your project.
+If you are using an open-source caching framework such as Spring Cache, Guava Cache, or Caffeine Cache, there is no need to configure dynamic classes. Simply add `-DSoftprobe.coverage.packages=com.your.package` to your startup parameters, replacing `com.your.package` with the actual package name used for caching in your project.
 
 Please note that the package name you enter here is not the package where the caching framework is located, but rather the package in your business code that utilizes the cache.
 

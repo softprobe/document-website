@@ -2,17 +2,17 @@
 title: 动态类 Mock 配置
 ---
 
-AREX Mock 功能十分强大，支持各种主流技术框架的自动数据采集和 Mock，还支持本地时间、缓存数据以及各种内存数据的采集和 Mock。
+Softprobe Mock 功能十分强大，支持各种主流技术框架的自动数据采集和 Mock，还支持本地时间、缓存数据以及各种内存数据的采集和 Mock。
 
 在实际应用中，为了提高运行时性能，通常会用到各种本地缓存类的数据。这类数据在录制和回放过程中受到外部环境的影响，可能导致数据不一致，进而导致回放失败，增加问题排查的难度。
 
-在这种情况下，可以提前在 AREX 中通过配置动态类的机制来实现这部分数据的采集和 Mock 功能，具体可以在 **Setting → Record → Advanced** 配置页面中配置：
+在这种情况下，可以提前在 Softprobe 中通过配置动态类的机制来实现这部分数据的采集和 Mock 功能，具体可以在 **Setting → Record → Advanced** 配置页面中配置：
 
 ![mock配置](../resource/mock.png)
 
-在图中红框所示位置依次配置类名、方法名（非必需，不配置的话将会应用于所有有参数和返回值的公共方法）、参数类型（非必需）。配置完成后，`arex-agent` 将会自动在对应的方法中注入类似上面的 Record&Replay 代码，从而实现数据的采集和回放时的 Mock 功能。
+在图中红框所示位置依次配置类名、方法名（非必需，不配置的话将会应用于所有有参数和返回值的公共方法）、参数类型（非必需）。配置完成后，`Softprobe-agent` 将会自动在对应的方法中注入类似上面的 Record&Replay 代码，从而实现数据的采集和回放时的 Mock 功能。
 
-以下将从代码实现的角度简单介绍下 AREX 如何实现在流量回放时自动 Mock 数据，以方便理解如何在录制配置中进行动态类配置。
+以下将从代码实现的角度简单介绍下 Softprobe 如何实现在流量回放时自动 Mock 数据，以方便理解如何在录制配置中进行动态类配置。
 
 ## 流量录制回放实现原理
 
@@ -81,9 +81,9 @@ public Integer parseIp(String ip) {
 }
 ```
 
-## AREX 中的具体实现
+## Softprobe 中的具体实现
 
-AREX 实现的原理类似，不过会更复杂⼀些，不需要开发人员手动在业务代码中添加录制和回放的代码。`arex-agent` 会在应用启动时，在需要的代码块中自动添加相应的代码来实现这个功能。这里以 MyBatis3 的 Query 为例，看看 AREX 中的具体实现。
+Softprobe 实现的原理类似，不过会更复杂⼀些，不需要开发人员手动在业务代码中添加录制和回放的代码。`Softprobe-agent` 会在应用启动时，在需要的代码块中自动添加相应的代码来实现这个功能。这里以 MyBatis3 的 Query 为例，看看 Softprobe 中的具体实现。
 
 阅读过 MyBatis 源码的应该都了解，Query 的操作都会收束在 `org.apache.ibatis.executor.BaseExecutor` 类的 `query` 方法上（Batch 操作除外），这个方法的签名如下：
 
@@ -91,7 +91,7 @@ AREX 实现的原理类似，不过会更复杂⼀些，不需要开发人员手
 public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql) throws SQLException
 ```
 
-这里包含了执行的 SQL 和参数，函数的结果包含了从数据库中查到的数据，显然在这里执行数据采集是合适的，在回放的时候也可以用采集的数据作为结果返回，从而避免实际的数据库操作。看看 AREX 中的代码，为了便于理解，这里做了⼀定的简化，如下:
+这里包含了执行的 SQL 和参数，函数的结果包含了从数据库中查到的数据，显然在这里执行数据采集是合适的，在回放的时候也可以用采集的数据作为结果返回，从而避免实际的数据库操作。看看 Softprobe 中的代码，为了便于理解，这里做了⼀定的简化，如下:
 
 ```java
 public class ExecutorInstrumentation extends TypeInstrumentation {
@@ -218,11 +218,11 @@ public <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBoun
 
 - 录制的场景
 
-AREX 会判断这次访问数据是否需要录制（服务收到请求时，AREX 会根据配置的录制频率决定是否对这个请求进行录制，如果判断为需要录制，则这个请求执行过程中所有的外部依赖都会被录制，具体实现细节这里不做介绍了）。录制过程中，AREX 会调用 `InternalExecutor.record(ms, parameter, boundSql, result, throwable, "query")` 方法，将本次数据库访问的结果、核心参数等信息存入AREX的数据库中，完成对该数据库访问的录制。
+Softprobe 会判断这次访问数据是否需要录制（服务收到请求时，Softprobe 会根据配置的录制频率决定是否对这个请求进行录制，如果判断为需要录制，则这个请求执行过程中所有的外部依赖都会被录制，具体实现细节这里不做介绍了）。录制过程中，Softprobe 会调用 `InternalExecutor.record(ms, parameter, boundSql, result, throwable, "query")` 方法，将本次数据库访问的结果、核心参数等信息存入Softprobe的数据库中，完成对该数据库访问的录制。
 
 - 回放的场景
 
-从上面的代码可以看到，当把前面录制的请求再次发送给对应服务时，AREX 会将其视为回放，此时不会再执行原函数的代码了，而是直接返回之前录制下来的结果（包括当时异常的还原），通过调用 `InternalExecutor.replay(ms, parameter, boundSql, "query”)`  可以获取之前保存的录制数据。
+从上面的代码可以看到，当把前面录制的请求再次发送给对应服务时，Softprobe 会将其视为回放，此时不会再执行原函数的代码了，而是直接返回之前录制下来的结果（包括当时异常的还原），通过调用 `InternalExecutor.replay(ms, parameter, boundSql, "query”)`  可以获取之前保存的录制数据。
 
 ## 内存数据的录制与回放（动态类）
 

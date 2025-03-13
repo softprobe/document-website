@@ -22,8 +22,8 @@
         "managing-test-cases/generate-test-suite",
         "managing-test-cases/run-collection",
         "---Reference---",
-        "reference/arex-agent-protection-mechanism",
-        "reference/arex-datasheet",
+        "reference/Softprobe-agent-protection-mechanism",
+        "reference/Softprobe-datasheet",
         "reference/standalone-mode",
         "reference/framework-supported"
     ]

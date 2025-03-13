@@ -1,7 +1,7 @@
 import { type HomeLayoutProps } from 'fumadocs-ui/home-layout'
 import { GlobeIcon, SlackIcon } from 'lucide-react'
 
-function ArexIcon() {
+function SoftprobeIcon() {
   return (
     <div className="mx-2 inline-block h-3.5 scale-125 grayscale group-hover:brightness-100 group-hover:grayscale-0 dark:brightness-125">
       <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="20" height="16" viewBox="380 280 500 480">
@@ -64,25 +64,25 @@ export const baseOptions: HomeLayoutProps = {
   nav: {
     title: (
       <div className="group">
-        <ArexIcon />
-        <span>AREX</span>
+        <SoftprobeIcon />
+        <span>Softprobe</span>
       </div>
     ),
   },
   i18n: true,
-  githubUrl: 'https://github.com/1pone/document',
+  // githubUrl: 'https://github.com/1pone/document',
   links: [
     {
       text: 'Website',
-      url: 'https://www.arextest.com',
+      url: 'https://www.softprobe.ai?utm_source=docs',
       active: 'nested-url',
       icon: <GlobeIcon />,
     },
-    {
-      text: 'Slack',
-      url: 'https://arexcommunity.slack.com',
-      active: 'nested-url',
-      icon: <SlackIcon />,
-    },
+    // {
+    //   text: 'Slack',
+    //   url: 'https://arexcommunity.slack.com',
+    //   active: 'nested-url',
+    //   icon: <SlackIcon />,
+    // },
   ],
 }

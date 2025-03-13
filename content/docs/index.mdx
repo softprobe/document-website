@@ -3,13 +3,13 @@ title: Introduction
 ---
 
 
-AREX is an open-source traffic replay testing platform based on real requests and data. It automates testing by recording online real traffic and replaying it in the testing environment.
+Softprobe is an open-source traffic replay testing platform based on real requests and data. It automates testing by recording online real traffic and replaying it in the testing environment.
 
-AREX Cloud is a SaaS solution based on AREX, providing services through the cloud. It's designed for out-of-the-box use and provides professional technical support.
+Softprobe Cloud is a SaaS solution based on Softprobe, providing services through the cloud. It's designed for out-of-the-box use and provides professional technical support.
 
 ## Core Features
 
-AREX Cloud inherits the core advantages of AREX:
+Softprobe Cloud inherits the core advantages of Softprobe:
 
 **✔ High Coverage Without Writing Tests**
 - No code intrusion, minimal integration cost
@@ -52,14 +52,14 @@ Technical assurance is provided by a professional operations and maintenance tea
 
 **1. Traffic Capture:**
 
-  - The AREX Java Agent, attached to Java applications in the production environment, records both inbound traffic to your API and outbound traffic to its dependencies, including the resulting responses.
-  - Recorded data is forwarded to AREX Storage Service for storage in a MongoDB database.
+  - The Softprobe Java Agent, attached to Java applications in the production environment, records both inbound traffic to your API and outbound traffic to its dependencies, including the resulting responses.
+  - Recorded data is forwarded to Softprobe Storage Service for storage in a MongoDB database.
 
 **2. Traffic Replay:**
 
   - The Schedule Service replays the recorded application traffic back to the same application in the test environment, simulating production environment behavior.
-  - When the application try to call to any dependencies like DBs, other services, AREX Agent will intercept and provide the previously recorded dependency response.
+  - When the application try to call to any dependencies like DBs, other services, Softprobe Agent will intercept and provide the previously recorded dependency response.
 
 **3. Result Verification and Reporting:**
 
-  - AREX compares API responses and outbound traffic to dependencies, like databases or external services, with previously recorded traffic, and then generates a report.
+  - Softprobe compares API responses and outbound traffic to dependencies, like databases or external services, with previously recorded traffic, and then generates a report.

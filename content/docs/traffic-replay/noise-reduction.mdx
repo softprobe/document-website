@@ -5,7 +5,7 @@ import { Callout } from 'fumadocs-ui/components/callout';
 
 If there are timestamps, random numbers, ip and other data in the response message, even if there is no change in the system code, due to the inconsistency of the data across environments and the different return values of the same interface, there will be discrepancies in the playback comparison, which is too expensive for the user to troubleshoot. In order to eliminate the noise brought by these data inconsistencies in the regression comparison verification failure, improve the replay pass rate, and exclude meaningless comparison differences, noise reduction can be carried out manually or by means of the system's intelligent recommendations, including ignoring unnecessary comparison fields, array disorder comparison, etc., so as to reduce the rate of false positives and improve the efficiency of troubleshooting.
 
-> AREX has default configurations for comparison, such as excluding the comparison of `select` operations in the database. To facilitate configuration and management, AREX provides a global configuration approach.
+> Softprobe has default configurations for comparison, such as excluding the comparison of `select` operations in the database. To facilitate configuration and management, Softprobe provides a global configuration approach.
 
 In addition, some nodes in the response message (JSON) may be Base64 encoded, which may cause the comparison to fail. In this case, you can configure the system settings to perform [Base64 Decoding Configuration](Compare%20Config#base64-decoding-configuration), the decoded data will be used for subsequent content validation to ensure the accuracy of data comparison.
 
@@ -15,7 +15,7 @@ A replay test is required before noise reduction can be performed, including ign
 
 ## Intelligent noise reduction
 
-When the user start a replay test, AREX pre-selects two test cases on the same interface, pre-plays them in the same replay environment, and identifies the "noise" by comparing the traffic differences between them. After the real replay, AREX generates a list of recommended configurations for comparison.
+When the user start a replay test, Softprobe pre-selects two test cases on the same interface, pre-plays them in the same replay environment, and identifies the "noise" by comparing the traffic differences between them. After the real replay, Softprobe generates a list of recommended configurations for comparison.
 
 You need to generate a replay report first. After the playback is generated, click the **Comparative Config Recommendation** button to view the system's recommended ignored comparison fields, and configure the noise fields to be ignored as needed.
 
@@ -107,7 +107,7 @@ Disordered array comparison is only available for **Interface/third-party depend
 
     ![选择节点](../resource/c3.nodeignore8.png)
 
-    And then AREX will no longer compare elements one by one in the order of the array elements during replay, but will find the same element in the two sets of response through the previously set key group and compare them one by one to avoid differences due to inconsistent element order.
+    And then Softprobe will no longer compare elements one by one in the order of the array elements during replay, but will find the same element in the two sets of response through the previously set key group and compare them one by one to avoid differences due to inconsistent element order.
 
     **For example**：As shown below, the users array contains multiple elements, and after the request is sent, the order of the two elements with `id` of `1` and `id` of `2` in the return result is random. Without **Nodes Sort**, it will compare the first element in users array (the `id` is `1`) of recorede response with the first element in the same array (the `id` is `2`) of the replay response, resulting in a failue of replay.
 
@@ -145,12 +145,12 @@ In Method name, select the method you want to decode, e.g. Base64, ZSTD or Gzip.
 
 ![解码](../resource/base64-7.png)
 
-The conversion configuration supports **Streaming Conversion Processing**, which can be added by clicking the Insert Before/After icon next to the Delete button. Assuming a scenario where a node has Base64 encoding and then ZSTD compression, you can add ZSTD decompression and then Base 64 configuration here, and AREX will perform ZSTD decompression first and then Base64 processing when comparing.
+The conversion configuration supports **Streaming Conversion Processing**, which can be added by clicking the Insert Before/After icon next to the Delete button. Assuming a scenario where a node has Base64 encoding and then ZSTD compression, you can add ZSTD decompression and then Base 64 configuration here, and Softprobe will perform ZSTD decompression first and then Base64 processing when comparing.
 
 ![解码](../resource/base64-8.png)
 
-Conversion methods support **Method Passing** configurations, where AREX takes what is configured in the `Method args` and passes it into the conversion method.
+Conversion methods support **Method Passing** configurations, where Softprobe takes what is configured in the `Method args` and passes it into the conversion method.
 
 ![解码](../resource/base64-4.png)
 
-For example: A JSON message has two nodes A: `zstd_KLUv/SAFKQAAYWFhYWE=` and B: `KLUv/SAFKQAAYWFhYWE=`, which are ZSTD compressed, the difference is that node A has the prefix `zstd_`, while node B does not. In order to properly decompress the two different types of nodes A and B, a generic method for decompressing ZSTD compressed data is needed. In this scenario, you can configure the prefix `zstd_` in the Method args, and AREX will intercept the incoming method arguments (i.e., `zstd_` in this example), and then perform a generic ZSTD decompression process for both A and B nodes.
+For example: A JSON message has two nodes A: `zstd_KLUv/SAFKQAAYWFhYWE=` and B: `KLUv/SAFKQAAYWFhYWE=`, which are ZSTD compressed, the difference is that node A has the prefix `zstd_`, while node B does not. In order to properly decompress the two different types of nodes A and B, a generic method for decompressing ZSTD compressed data is needed. In this scenario, you can configure the prefix `zstd_` in the Method args, and Softprobe will intercept the incoming method arguments (i.e., `zstd_` in this example), and then perform a generic ZSTD decompression process for both A and B nodes.
