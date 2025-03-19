@@ -1,7 +1,7 @@
 import { createI18nSearchAPI } from 'fumadocs-core/search/server'
 
-import { source } from '@/app/source'
-import i18n from '@/i18n'
+import { source } from '@/lib/source'
+import i18n from '@/lib/i18n'
 
 export const { GET } = createI18nSearchAPI('advanced', {
   indexes: i18n.languages.map((lang) => {
