@@ -1,30 +1,7 @@
 {
     "title": "Cloud",
-    "root": true,
     "pages": [
-        "index",
-        "getting-started",
-        "---Routine Testing---",
-        "routine-testing/api-testing",
-        "routine-testing/managing-environments",
-        "routine-testing/writing-scripts,",
-        "---Traffic Capture---",
-        "traffic-capture/create-app",
-        "traffic-capture/record-configuration",
-        "traffic-capture/mock-config",
-        "traffic-capture/access-control",
-        "traffic-capture/forced-record",
-        "---Traffic Replay---",
-        "traffic-replay/traffic-replay-test",
-        "traffic-replay/configuration",
-        "traffic-replay/noise-reduction",
-        "---Managing Test Cases---",
-        "managing-test-cases/generate-test-suite",
-        "managing-test-cases/run-collection",
-        "---Reference---",
-        "reference/Softprobe-agent-protection-mechanism",
-        "reference/Softprobe-datasheet",
-        "reference/standalone-mode",
-        "reference/framework-supported"
+        "auto-testing",
+        "web-replay"
     ]
   }

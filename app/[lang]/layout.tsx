@@ -2,6 +2,7 @@ import { baseOptions } from '@/app/layout.config'
 import { source } from '@/app/source'
 import { I18nProvider } from 'fumadocs-ui/i18n'
 import { DocsLayout } from 'fumadocs-ui/layout'
+import { RootToggle } from 'fumadocs-ui/components/layout/root-toggle'
 import { RootProvider } from 'fumadocs-ui/provider'
 import { Inter } from 'next/font/google'
 import { ReactNode } from 'react'
@@ -42,7 +43,41 @@ export default function Layout({ params, children }: { params: { lang: string };
           }
         >
           <RootProvider>
-            <DocsLayout tree={source.pageTree[params.lang]} {...baseOptions}>
+            <DocsLayout
+              sidebar={{
+                banner: (
+                  
+                  <RootToggle
+                    options={[
+                      {
+                        title: {
+                          en: 'Auto Testing',
+                          cn: '自动测试',
+                        }[params.lang],
+                        description: {
+                          en: 'Documentation for auto testing',
+                          cn: '自动测试文档',
+                        }[params.lang],
+                        url: '/auto-testing',
+                      }, 
+                      {
+                        title: {
+                          en: 'Web Replay',
+                          cn: '页面回放',
+                        }[params.lang],
+                        description: {
+                          en: 'Documentation for web replay',
+                          cn: '页面回放文档',
+                        }[params.lang],
+                        url: '/web-replay',
+                      },
+                    ]}
+                  />
+                ),
+              }}
+              tree={source.pageTree[params.lang]}
+              {...baseOptions}
+            >
               {children}
             </DocsLayout>
           </RootProvider>

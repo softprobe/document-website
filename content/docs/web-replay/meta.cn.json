@@ -1,0 +1,8 @@
+{
+    "title": "Web Replay",
+    "root": true,
+    "pages": [
+        "index",
+        "getting-started"
+    ]
+  }
