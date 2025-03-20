@@ -5,9 +5,14 @@ import { baseOptions } from '@/app/layout.config';
 import { RootToggle } from '@/components/RootToggle';
 import { source } from '@/lib/source';
 
-export default async function Layout( props: { params: { lang: string }; children: ReactNode }) {
-
-    const params = await props.params;
+export default async function Layout({
+    params,
+    children,
+  }: {
+    params: Promise<{ lang: string }>;
+    children: ReactNode;
+  }) {
+    const { lang } = await params;
 
     return (
         <DocsLayout
@@ -56,10 +61,10 @@ export default async function Layout( props: { params: { lang: string }; childre
             //         />
             //     ),
             // }}
-            tree={source.pageTree[(await params).lang]}
+            tree={source.pageTree[lang]}
             {...baseOptions}
         >
-            {props.children}
+            {children}
         </DocsLayout>
     );
 }
