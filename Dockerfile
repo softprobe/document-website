@@ -1,11 +1,20 @@
-FROM public.ecr.aws/docker/library/node:20-alpine3.19 AS base
+FROM node:23-alpine3.20 AS base
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+COPY . /app
+WORKDIR /app
 
-WORKDIR /usr/app
-COPY ./ /usr/app
+FROM base AS prod-deps
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
 
+FROM base AS build
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN pnpm run build
 
-RUN npm i --legacy-peer-deps
-RUN npm run build
-
+FROM base
+COPY --from=prod-deps /app/node_modules /app/node_modules
+COPY --from=build /app/.next /app/.next
 EXPOSE 3000
-CMD [ "npm", "run", "start"]
+CMD [ "pnpm", "start" ]
+
