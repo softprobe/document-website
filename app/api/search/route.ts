@@ -4,6 +4,7 @@ import { source } from '@/lib/source'
 import i18n from '@/lib/i18n'
 
 export const { GET } = createI18nSearchAPI('advanced', {
+  // @ts-ignore
   indexes: i18n.languages.map((lang) => {
     return {
       language: lang,

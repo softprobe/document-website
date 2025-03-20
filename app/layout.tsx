@@ -1,12 +1,7 @@
 import { I18nProvider, Translations } from 'fumadocs-ui/i18n'
 import { RootProvider } from 'fumadocs-ui/provider';
-import { Inter } from 'next/font/google'
 import { ReactNode } from 'react'
 import './global.css'
-
-const inter = Inter({
-  subsets: ['latin'],
-})
 
 const cn: Partial<Translations> = {
   toc: '目录',
@@ -29,15 +24,16 @@ const locales=[
   },
 ];
 
-export default async function Layout({ params, children }: { params: { lang: string }; children: ReactNode }) {
+export default async function Layout({ params, children }: any) {
   const lang = (await params).lang;
   
   return (
-    <html lang={lang} className={inter.className} suppressHydrationWarning>
+    <html lang={lang} suppressHydrationWarning>
       <body>
         <I18nProvider
           locale={lang}
           locales={locales}
+          // @ts-ignore
           translations={{ cn }[lang]}
         >
           <RootProvider>

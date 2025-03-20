@@ -8,10 +8,7 @@ import { source } from '@/lib/source';
 export default async function Layout({
     params,
     children,
-  }: {
-    params: Promise<{ lang: string }>;
-    children: ReactNode;
-  }) {
+  }: any) {
     const { lang } = await params;
 
     return (

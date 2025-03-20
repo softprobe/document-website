@@ -24,7 +24,7 @@ export function RootToggle({ options, placeholder, ...props }: any) {
     const item = selected ? _jsx(Item, { ...selected }) : placeholder;
     return (_jsxs(Popover, {
         open: open, onOpenChange: setOpen, children: [item ? (_jsxs(PopoverTrigger, { ...props, className: twMerge('flex flex-row items-center gap-2.5 rounded-lg ps-2 pe-4 py-1.5 hover:bg-fd-accent/50 hover:text-fd-accent-foreground', props.className), children: [item, _jsx(ChevronsUpDown, { className: "size-4 text-fd-muted-foreground" })] })) : null, _jsx(PopoverContent, {
-            className: "w-(--radix-popover-trigger-width) overflow-hidden p-0", children: options.map((item) => (_jsx(Link, {
+            className: "w-(--radix-popover-trigger-width) overflow-hidden p-0", children: options.map((item: any) => (_jsx(Link, {
                 href: item.url, onClick: onClick, ...item.props, className: twMerge('flex w-full flex-row items-center gap-2 px-2 py-1.5', selected === item
                     ? 'bg-fd-accent text-fd-accent-foreground'
                     : 'hover:bg-fd-accent/50', item.props?.className), children: _jsx(Item, { ...item })
