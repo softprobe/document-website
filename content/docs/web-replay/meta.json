@@ -3,6 +3,12 @@
     "root": true,
     "pages": [
         "index",
-        "getting-started"
+        "getting-started",
+        "---Archetecture---",
+        "architecture/index",
+        "architecture/compatibility",
+        "architecture/privacy",
+        "---FAQ---",
+        "faq/index"
     ]
   }
