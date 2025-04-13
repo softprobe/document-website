@@ -19,11 +19,11 @@ With Softprobe, you can verify the correctness of your system by recording a rea
 
 1. Create a new request and specify its details with the case that needs to be recorded, including the request line (URL and method), request header, and request body.
 
-2. You can select the **action.record** icon ![record button](../resource/recordicon.png). And the **Key**: "Softprobe-force-record" and **Value**: "true" will be added in the request **Header**. Then select **Send** to record the request.
+2. You can select the **action.record** icon ![record button](../resource/recordicon.png). And the **Key**: "sp-force-record" and **Value**: "true" will be added in the request **Header**. Then select **Send** to record the request.
 
     ![强制录制](../resource/c3.force.record.png)
 
-3. After sending the request, a Record ID with **Key**: "Softprobe-record-id" and **Value**: "Record ID" will be generated in the response message.
+3. After sending the request, a Record ID with **Key**: "sp-record-id" and **Value**: "Record ID" will be generated in the response message.
 
     ![录制ID](../resource/c3.force.recordid.png)
 
@@ -41,6 +41,6 @@ If you are unsatisfied with the mocked data, you can manually modify it to meet 
 
 1. Create a new request and enter the URL that needs to be tested in your test environment.
 
-2. Enter **Key**: "Softprobe-record-id", **Value**: the Record ID obtained previously in the request header.
+2. Enter **Key**: "sp-record-id", **Value**: the Record ID obtained previously in the request header.
 
 3. Select **Send** to replay the request in your test environment for debugging purposes.

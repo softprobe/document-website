@@ -15,22 +15,22 @@ title: Create Application
 The parameters:
 
 ```
-java - javaagent:</path/to/Softprobe-agent.jar> -DSoftprobe.service.name=1a2caf7394756ca3  -DSoftprobe.storage.service.host=Softprobe-storage-alb-1475960894.us-west-2.elb.amazonaws.com -DSoftprobe.api.token=trip:712Vqq3/oa72aOrroBUsDYYrM+OQWQmqg4GAMHOWYhkCmswuWtIlP0CMhfKCPz6NypTloF4o9OTFlhTVRlLXmw== -jar <your-application.jar>
+java - javaagent:</path/to/sp-agent.jar> -Dsp.service.name=1a2caf7394756ca3  -Dsp.storage.service.host=Softprobe-storage-alb-1475960894.us-west-2.elb.amazonaws.com -Dsp.api.token=trip:712Vqq3/oa72aOrroBUsDYYrM+OQWQmqg4GAMHOWYhkCmswuWtIlP0CMhfKCPz6NypTloF4o9OTFlhTVRlLXmw== -jar <your-application.jar>
 ```
 
-- `</path/to/Softprobe-agent.jar>`: `Softprobe-agent.jar` is the name of the Softprobe Agent JAR package. Replace `</path/to/Softprobe-agent.jar>` with the actual directory path where the Softprobe Agent JAR file is stored.
+- `</path/to/sp-agent.jar>`: `sp-agent.jar` is the name of the Softprobe Agent JAR package. Replace `</path/to/sp-agent.jar>` with the actual directory path where the Softprobe Agent JAR file is stored.
 - `<your-application.jar>`: Please modify `your-application` to the name of the service you want to record.
 - If you encounter conflicts between the Softprobe Agent and other agents (such as the OpenTelemetry Agent), you can resolve this issue by adding specific parameters to the startup arguments:
   ```
-  -DSoftprobe.ignore.type.prefixes=io.opentelemetry
-  -DSoftprobe.ignore.classloader.prefixes=io.opentelemetry
+  -Dsp.ignore.type.prefixes=io.opentelemetry
+  -Dsp.ignore.classloader.prefixes=io.opentelemetry
     ```
 In the event of conflicts with other agents, you can add multiple prefixes to the corresponding parameters separated by a comma (,):
   ```
-  -DSoftprobe.ignore.type.prefixes=io.opentelemetry,other.agent.prefix
-  -DSoftprobe.ignore.classloader.prefixes=io.opentelemetry,other.agent.prefix
+  -Dsp.ignore.type.prefixes=io.opentelemetry,other.agent.prefix
+  -Dsp.ignore.classloader.prefixes=io.opentelemetry,other.agent.prefix
     ```
-- **To view the Agent's logs, add the debug parameter: `-DSoftprobe.enable.debug=true`**
+- **To view the Agent's logs, add the debug parameter: `-Dsp.enable.debug=true`**
 
 
 Please modify the parameters within the **"< >"** according to the situation, and then you need to paste the Agent parameters into the service where you want to start recording the application.
@@ -39,7 +39,7 @@ Please modify the parameters within the **"< >"** according to the situation, an
 
 In Softprobe, you can add different environment labels for the recorded traffic. This is to help users flexibly filter and replay  traffic according to the labels to meet the test scenarios of specific environments or requirements. For example, users can select the corresponding traffic for replay based on different environment labels to verify the performance and stability of the system in different environments.
 
-To do this, you need to add the parameter: `-DSoftprobe.tags.env=<xxx>` to the Agent startup parameters, after which the recorded traffic will be automatically tagged with `env:<xxx>`.
+To do this, you need to add the parameter: `-Dsp.tags.env=<xxx>` to the Agent startup parameters, after which the recorded traffic will be automatically tagged with `env:<xxx>`.
 
 ### Step 3: Deploy Softprobe Agent
 
@@ -50,22 +50,22 @@ The Softprobe Agent can be deployed using various methods, including:
 Paste the startup parameters of the Agent you just generated and run it to start the Agent to run the application:
 
 ```shell
-java -javaagent:</path/to/Softprobe-agent.jar> -DSoftprobe.service.name=1a2caf7394756ca3  -DSoftprobe.storage.service.host=Softprobe-storage-alb-1475960894.us-west-2.elb.amazonaws.com -DSoftprobe.api.token=trip:712Vqq3/oa72aOrroBUsDYYrM+OQWQmqg4GAMHOWYhkCmswuWtIlP0CMhfKCPz6NypTloF4o9OTFlhTVRlLXmw== -jar <your-application.jar>
+java -javaagent:</path/to/sp-agent.jar> -Dsp.service.name=1a2caf7394756ca3  -Dsp.storage.service.host=Softprobe-storage-alb-1475960894.us-west-2.elb.amazonaws.com -Dsp.api.token=trip:712Vqq3/oa72aOrroBUsDYYrM+OQWQmqg4GAMHOWYhkCmswuWtIlP0CMhfKCPz6NypTloF4o9OTFlhTVRlLXmw== -jar <your-application.jar>
 ```
 
 #### Deployment Configuration File
 
-You can create a new configuration file `Softprobe.agent.conf` as shown below:
+You can create a new configuration file `sp.agent.conf` as shown below:
 
-```conf title="Softprobe.agent.conf"
-Softprobe.service.name=your-service-name  
-Softprobe.storage.service.host=Softprobe-storage-alb-1475960894.us-west-2.elb.amazonaws.com
+```conf title="sp.agent.conf"
+sp.service.name=your-service-name  
+sp.storage.service.host=Softprobe-storage-alb-1475960894.us-west-2.elb.amazonaws.com
 ```
 
 Then configure Agent:
 
 ```shell
-java -javaagent:</path/to/Softprobe-agent.jar> -DSoftprobe.config.path=/path/to/Softprobe.agent.conf -jar your-application.jar
+java -javaagent:</path/to/sp-agent.jar> -Dsp.config.path=/path/to/sp.agent.conf -jar your-application.jar
 ```
 
 #### Set the Java options by using the JAVA_OPTS environment variable
@@ -75,7 +75,7 @@ You can deploy the Softprobe Agent on Tomcat by configuring the `catalina.sh` fi
 ```shell
 export Softprobe_STORAGE_SERVICE_HOST=Softprobe-storage-alb-1475960894.us-west-2.elb.amazonaws.com
 export Softprobe_API_TOKEN=trip:712Vqq3/oa72aOrroBUsDYYrM+OQWQmqg4GAMHOWYhkCmswuWtIlP0CMhfKCPz6NypTloF4o9OTFlhTVRlLXmw==
-export JAVA_TOOL_OPTIONS=&quot;-javaagent:&lt;Softprobe Agent JAR DIR&gt;/Softprobe/Softprobe-agent.jar -DSoftprobe.service.name=1a2caf7394756ca3 -DSoftprobe.storage.service.host=$Softprobe_STORAGE_SERVICE_HOST -DSoftprobe.api.token=$Softprobe_API_TOKEN&quot;
+export JAVA_TOOL_OPTIONS=&quot;-javaagent:&lt;Softprobe Agent JAR DIR&gt;/Softprobe/sp-agent.jar -Dsp.service.name=1a2caf7394756ca3 -Dsp.storage.service.host=$Softprobe_STORAGE_SERVICE_HOST -Dsp.api.token=$Softprobe_API_TOKEN&quot;
 ```
 
 You can then run Tomcat as usual. The Softprobe Agent will be automatically injected into the JVM and run when Tomcat starts.

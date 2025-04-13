@@ -21,7 +21,7 @@ Softprobe Standalone 模式需要依赖 `Softprobe-standalone` 项目来运行�
 
 - **Softprobe-cli** 
 
-  命令行控制界面，通过该界面可以回放带有 [Softprobe-agent-java](https://github.com/arextest/arex-agent-java) 的本地应用程序。
+  命令行控制界面，通过该界面可以回放带有 [sp-agent-java](https://github.com/arextest/arex-agent-java) 的本地应用程序。
 
 - **Softprobe-local** 
 
@@ -131,7 +131,7 @@ java -jar Softprobe-cli.jar
 
 ## 常见问题
 
-1. IntelliJ IDEA 在 Debug 模式下会影响 Softprobe-agent-java（**2021年及以下版本**），因此可以取消勾选：File -> Settings -> Build, Execution, Deployment -> Debugger -> Async Stack Traces -> instrumenting agent，或者升级 IDEA 版本。具体原因请参考 [https://github.com/JetBrains/intellij-community/pull/1528](https://github.com/JetBrains/intellij-community/pull/1528)。
+1. IntelliJ IDEA 在 Debug 模式下会影响 sp-agent-java（**2021年及以下版本**），因此可以取消勾选：File -> Settings -> Build, Execution, Deployment -> Debugger -> Async Stack Traces -> instrumenting agent，或者升级 IDEA 版本。具体原因请参考 [https://github.com/JetBrains/intellij-community/pull/1528](https://github.com/JetBrains/intellij-community/pull/1528)。
 
 2. 如果你的 JDK 版本是 1.8，请确保你的计算机的 `/jdk/lib/` 目录下存在 **tools.jar**，代理启动需要依赖此 jar 包。
 

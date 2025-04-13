@@ -30,10 +30,10 @@ Enter the name in **VARIABLE** and values in **VALUE** for a new variable on a n
 
 You can also update environment variable value via Pre-request and Tests scripts .
 
-Use Softprobe.environment to set an environment variable in the active (currently selected) environment:
+Use sp.environment to set an environment variable in the active (currently selected) environment:
 
 ```
-Softprobe.environment.set("variable_key", "variable_value");
+sp.environment.set("variable_key", "variable_value");
 ```
 
 Mind that if you write scripts to assign values to environment variables, all requests that refer to these variables will reflect the updates.

@@ -55,11 +55,11 @@ The fuzzy matching rules for dynamic classes are as follows:
 In addition to caching data, various types of memory data can also be mocked. To configure dynamic class data that needs to be mocked, click "**+ Add**". Here are the specific configuration instructions:
 
 - **Full Class Name**: The full class name of the local cache, such as java.lang.String.
-    - Infix: Matches any class in the package path that contains “namic”, for example, io.Softprobe.inst.dynamic.namicTest.
-    - Suffix: Matches any class in the package path that ends with “namicTestClass”, for example, io.Softprobe.inst.dynamic.*namicTestClass.
-    - Prefix: Matches any class in the package path that starts with “DynamicTest”, for example, io.Softprobe.inst.dynamic.DynamicTest*.
-    - Equals: Matches the class “DynamicTestClass” in the package path, for example, io.Softprobe.inst.dynamic.DynamicTestClass.
-    - Abstract class or interface: Matches abstract classes or interfaces, where “ac” stands for “abstract class”, for example, ac:io.Softprobe.inst.dynamic.AbstractDynamicTestClass matches the abstract class “AbstractDynamicTestClass”.
+    - Infix: Matches any class in the package path that contains “namic”, for example, io.sp.inst.dynamic.namicTest.
+    - Suffix: Matches any class in the package path that ends with “namicTestClass”, for example, io.sp.inst.dynamic.*namicTestClass.
+    - Prefix: Matches any class in the package path that starts with “DynamicTest”, for example, io.sp.inst.dynamic.DynamicTest*.
+    - Equals: Matches the class “DynamicTestClass” in the package path, for example, io.sp.inst.dynamic.DynamicTestClass.
+    - Abstract class or interface: Matches abstract classes or interfaces, where “ac” stands for “abstract class”, for example, ac:io.sp.inst.dynamic.AbstractDynamicTestClass matches the abstract class “AbstractDynamicTestClass”.
 
     These configurations are used to specify the package path and class name information of the dynamic classes that need to be mocked. After the configuration is completed, Softprobe will automatically mock these classes for use during testing.
 - **Base**: The term "Base" refers to a base class. If checked as a base class, it indicates that all subclasses or implementations under this base class are subject to Mock effectiveness.    
@@ -75,7 +75,7 @@ In addition to caching data, various types of memory data can also be mocked. To
 
   The Key Formula can be utilized to address scenarios where certain parameters do not support serialization, yet it is necessary to record the dynamic class method. By employing a parameter expression, you can specify the serialization of only one property, effectively mitigating serialization issues.
 
-If you are using an open-source caching framework such as Spring Cache, Guava Cache, or Caffeine Cache, there is no need to configure dynamic classes. Simply add `-DSoftprobe.coverage.packages=com.your.package` to your startup parameters, replacing `com.your.package` with the actual package name used for caching in your project.
+If you are using an open-source caching framework such as Spring Cache, Guava Cache, or Caffeine Cache, there is no need to configure dynamic classes. Simply add `-Dsp.coverage.packages=com.your.package` to your startup parameters, replacing `com.your.package` with the actual package name used for caching in your project.
 
 Please note that the package name you enter here is not the package where the caching framework is located, but rather the package in your business code that utilizes the cache.
 

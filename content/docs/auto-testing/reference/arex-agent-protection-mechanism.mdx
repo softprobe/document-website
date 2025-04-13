@@ -16,8 +16,8 @@ In high traffic situations or when recording frequency is high:
 
 ### Steps for health checking the state of the storage service
 
-If there is an exception detected by calling the `Softprobe-storage` service:
+If there is an exception detected by calling the `sp-storage` service:
 
-1. If the `Softprobe-storage` service call fails (including network anomaly) or the `Softprobe-storage` service is unavailable, stop recording immediately
+1. If the `sp-storage` service call fails (including network anomaly) or the `sp-storage` service is unavailable, stop recording immediately
 2. 10 seconds later, re-open the recording and collect the service health indicators (99% of the requests do not have a timeout and are rejected by the service).
 3. 3 minutes later check if the queue has recovered based on the service health metrics, if it has not recovered then continue to reduce the frequency (by 20% based on the current recording frequency) until it is reduced to the lowest frequency (roughly once an hour), and then test it again 10 minutes later. If it recovers, the detection stops.

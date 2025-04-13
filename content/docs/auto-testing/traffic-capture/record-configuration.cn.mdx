@@ -56,11 +56,11 @@ Softprobe 支持对特定时间段的流量进行周期性录制，你可以根�
 
   - **Full Class Name**： 本地缓存的类名，必须为全类名。以下是 Softprobe 中支持动态类配置的示例，用于模拟内存中的类数据。
 
-        - 中缀：在包路径中匹配任意包含 namic 的类，例如  io.Softprobe.inst.dynamic.*namicTest*
-        - 后缀：在包路径中匹配以 namicTestClass 结尾的类，例如  io.Softprobe.inst.dynamic.*namicTestClass
-        - 前缀：在包路径中匹配以 DynamicTest 开头的类，例如 io.Softprobe.inst.dynamic.DynamicTest*
-        - 等于：在包路径中匹配类名为 DynamicTestClass 的类，例如 io.Softprobe.inst.dynamic.DynamicTestClass
-        - 抽象类或接口：匹配抽象类或接口，其中 ac: 表示 abstract class 的缩写，例如 ac:io.Softprobe.inst.dynamic.AbstractDynamicTestClass表示匹配 AbstractDynamicTestClass 抽象类。
+        - 中缀：在包路径中匹配任意包含 namic 的类，例如  io.sp.inst.dynamic.*namicTest*
+        - 后缀：在包路径中匹配以 namicTestClass 结尾的类，例如  io.sp.inst.dynamic.*namicTestClass
+        - 前缀：在包路径中匹配以 DynamicTest 开头的类，例如 io.sp.inst.dynamic.DynamicTest*
+        - 等于：在包路径中匹配类名为 DynamicTestClass 的类，例如 io.sp.inst.dynamic.DynamicTestClass
+        - 抽象类或接口：匹配抽象类或接口，其中 ac: 表示 abstract class 的缩写，例如 ac:io.sp.inst.dynamic.AbstractDynamicTestClass表示匹配 AbstractDynamicTestClass 抽象类。
 
         这些配置用于指定需要 mock 的动态类的包路径和类名等信息。在配置完成后，Softprobe 将会自动 mock 这些类，在测试过程中使用。
   - **Base**：Base 表示基类，如果标注为基类，表示这个基类下面的子类或实现类都 Mock 生效。
@@ -76,7 +76,7 @@ Softprobe 支持对特定时间段的流量进行周期性录制，你可以根�
 
     参数表达式还可以解决一种问题场景，即某些参数不支持序列化，但你仍然需要录制这个动态类方法。通过参数表达式，你可以指定只序列化其中某个属性，从而避免序列化问题的发生。
 
-如果使用的是开源缓存框架，如 Spring Cache、Guava Cache 或 Caffeine Cache，就无需配置动态类。只需在启动参数中添加`-DSoftprobe.coverage.packages=com.your.package`，并替换 com.your.package 为项目中实际使用缓存的包名。请注意，这里填写的包名不是缓存框架所在的包，而是业务代码中使用缓存的包名。
+如果使用的是开源缓存框架，如 Spring Cache、Guava Cache 或 Caffeine Cache，就无需配置动态类。只需在启动参数中添加`-Dsp.coverage.packages=com.your.package`，并替换 com.your.package 为项目中实际使用缓存的包名。请注意，这里填写的包名不是缓存框架所在的包，而是业务代码中使用缓存的包名。
 
 :::tip
 
@@ -146,7 +146,7 @@ public class TestGenericService {
 
 :::
 
-<Callout title="注意">动态类配置不需要配置 `void` 的方法，因为没有返回结果，Mock 了也没意义。配置保存后，需要重启服务。或者在启动参数中加入：`-DSoftprobe.retransform.instrumentation.module=dynamic-class`，之后无需重启即可生效。</Callout>
+<Callout title="注意">动态类配置不需要配置 `void` 的方法，因为没有返回结果，Mock 了也没意义。配置保存后，需要重启服务。或者在启动参数中加入：`-Dsp.retransform.instrumentation.module=dynamic-class`，之后无需重启即可生效。</Callout>
 
 **Inclusion**：下拉菜单中列出的是所有在录制过程中访问到的接口路径，勾选后将仅录制选中的路径。
 

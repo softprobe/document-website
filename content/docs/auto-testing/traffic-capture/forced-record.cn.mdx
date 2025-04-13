@@ -18,11 +18,11 @@ Mock 的本质在于模拟三方业务接口的返回结果，来满足自身的
 
 1. 新建一个快捷请求，将需要录制的用例的请求报文依次填入，包含请求行（请求方式和请求地址）、请求头及请求体。
 
-2. 点击 `action.record` 图标，在请求 Header 中添加 Key: Softprobe-force-record，Value: true，点击 Send 发送录制请求。
+2. 点击 `action.record` 图标，在请求 Header 中添加 Key: sp-force-record，Value: true，点击 Send 发送录制请求。
 
     ![强制录制](../resource/c3.force.record.png)
 
-3. 点击 **Send** 后，在返回报文的 **Header** 中会生成 Record ID，Key:Softprobe-record-id，Value:录制 ID。 
+3. 点击 **Send** 后，在返回报文的 **Header** 中会生成 Record ID，Key:sp-record-id，Value:录制 ID。 
 
     ![录制ID](../resource/c3.force.recordid.png)
 
@@ -42,10 +42,10 @@ Softprobe 支持对 Mock 数据的编辑修改。比如你需要验证本地环�
 
 1. 新建一个请求，填写本地环境/测试环境中需要测试的接口地址。
 
-2. 在请求 Header 中添加 Key: Softprobe-record-id，Value: 先前得到的录制 ID。
+2. 在请求 Header 中添加 Key: sp-record-id，Value: 先前得到的录制 ID。
     
     ![回放](../resource/c3.replay.png)
 
-3. 点击 **Send** 发送请求，完成本地回放，返回报文的 Header 中会生成 Replay ID，Key:Softprobe-replay-id，Value:回放 ID。现在可以正常进行 Debug 操作。
+3. 点击 **Send** 发送请求，完成本地回放，返回报文的 Header 中会生成 Replay ID，Key:sp-replay-id，Value:回放 ID。现在可以正常进行 Debug 操作。
 
     ![回放ID](../resource/c3.force.replayid.png)

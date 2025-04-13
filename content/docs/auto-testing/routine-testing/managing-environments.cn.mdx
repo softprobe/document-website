@@ -31,7 +31,7 @@ title: 环境管理
 另外，你也可以通过编写前置脚本在当前环境设置新的环境变量，例：
 
 ```
-Softprobe.environment.set("variable_key", "variable_value");
+sp.environment.set("variable_key", "variable_value");
 ```
 
 设置成功后，使用环境变量时需要加上双大括号，如`{{VARIABLE}}`，实际运行时系统会自动将其替换为设置的变量值。

@@ -81,7 +81,7 @@ Softprobe 可以将线上的真实流量录制下来从而生成丰富的测试�
 
 请求地址处为接口路径，如需回放调试可直接在路径前添加本地测试端口地址。
 
-Header 中新增的 Softprobe-record-id 为本次录制 ID，如需回放可在新建请求的请求头中添加该 Softprobe-record-id，发送请求即可完成回放。
+Header 中新增的 sp-record-id 为本次录制 ID，如需回放可在新建请求的请求头中添加该 sp-record-id，发送请求即可完成回放。
 
 ![查看用例](../resource/c3.case1.png)
 
@@ -93,7 +93,7 @@ Header 中新增的 Softprobe-record-id 为本次录制 ID，如需回放可在�
 
 ![查看用例](../resource/c3.case2.png)
 
-点击 Send 后，会在 Response 的 Headers 中生成一个 `Softprobe-replay-id`，这意味着本次请求的发送并不是真实的请求，而是一次回放。
+点击 Send 后，会在 Response 的 Headers 中生成一个 `sp-replay-id`，这意味着本次请求的发送并不是真实的请求，而是一次回放。
 
 ![](../resource/replay-id.png)
 

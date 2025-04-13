@@ -17,21 +17,21 @@ title: 录制应用
 即：
 
 ```
-java -javaagent:</path/to/Softprobe-agent.jar> -DSoftprobe.service.name=1a2caf7394756ca3  -DSoftprobe.storage.service.host=Softprobe-storage-alb-1475960894.us-west-2.elb.amazonaws.com -DSoftprobe.api.token=trip:712Vqq3/oa72aOrroBUsDYYrM+OQWQmqg4GAMHOWYhkCmswuWtIlP0CMhfKCPz6NypTloF4o9OTFlhTVRlLXmw== -jar <your-application.jar>
+java -javaagent:</path/to/sp-agent.jar> -Dsp.service.name=1a2caf7394756ca3  -Dsp.storage.service.host=Softprobe-storage-alb-1475960894.us-west-2.elb.amazonaws.com -Dsp.api.token=trip:712Vqq3/oa72aOrroBUsDYYrM+OQWQmqg4GAMHOWYhkCmswuWtIlP0CMhfKCPz6NypTloF4o9OTFlhTVRlLXmw== -jar <your-application.jar>
 ```
 
-- `</path/to/Softprobe-agent.jar>`：Softprobe-agent.jar 是 Softprobe Agent JAR 包名称，`/path/to/Softprobe-agent.jar` 需要替换为实际存放 Softprobe Agent JAR 文件的目录路径。
+- `</path/to/sp-agent.jar>`：sp-agent.jar 是 Softprobe Agent JAR 包名称，`/path/to/sp-agent.jar` 需要替换为实际存放 Softprobe Agent JAR 文件的目录路径。
 - `<your-application.jar>`：请修改 `your-application` 为需要录制的服务名称。
-- **如需查看 Agent 的日志，请加上 debug 参数： -DSoftprobe.enable.debug=true**
+- **如需查看 Agent 的日志，请加上 debug 参数： -Dsp.enable.debug=true**
 - 如果遇到 Softprobe Agent与其他 Agent（例如OpenTelemetry Agent）发生冲突时，可以通过在启动参数中添加特定的参数来解决这一问题：
     ```
-    -DSoftprobe.ignore.type.prefixes=io.opentelemetry
-    -DSoftprobe.ignore.classloader.prefixes=io.opentelemetry
+    -Dsp.ignore.type.prefixes=io.opentelemetry
+    -Dsp.ignore.classloader.prefixes=io.opentelemetry
     ```
     如果存在其他 Agent 的冲突，可以使用逗号（,）将多个前缀添加到相应的参数中：
     ```
-    -DSoftprobe.ignore.type.prefixes=io.opentelemetry,other.agent.prefix
-    -DSoftprobe.ignore.classloader.prefixes=io.opentelemetry,other.agent.prefix
+    -Dsp.ignore.type.prefixes=io.opentelemetry,other.agent.prefix
+    -Dsp.ignore.classloader.prefixes=io.opentelemetry,other.agent.prefix
     ```
 
 请根据情况自行修改 **“< >”** 内的参数，之后需要将该 Agent 参数粘贴到你所需要录制的服务中启动应用。
@@ -40,7 +40,7 @@ java -javaagent:</path/to/Softprobe-agent.jar> -DSoftprobe.service.name=1a2caf73
 
 在 Softprobe 中，支持在录制流量时根据不同的环境为流量设置不同的环境标签，这是为了帮助用户根据标签对录制的流量进行灵活的筛选和回放，以满足特定环境或需求的测试场景。例如，用户可以根据不同的环境标签来选择相应的流量进行回放，以验证系统在不同环境下的性能和稳定性。
 
-使用时需要在 Agent 启动参数中添加参数：`-DSoftprobe.tags.env=<xxx>`，添加后，录制到的流量都会自动添加上 `env:<xxx>` 的标签。
+使用时需要在 Agent 启动参数中添加参数：`-Dsp.tags.env=<xxx>`，添加后，录制到的流量都会自动添加上 `env:<xxx>` 的标签。
 
 在随后进行回放测试时，可以根据不同的环境标签进行回放：
 
@@ -55,22 +55,22 @@ java -javaagent:</path/to/Softprobe-agent.jar> -DSoftprobe.service.name=1a2caf73
 粘贴刚才生成的 Agent 的启动参数并运行，启动 Agent 运行应用：
 
 ```shell
-java -javaagent:</path/to/Softprobe-agent.jar> -DSoftprobe.service.name=1a2caf7394756ca3  -DSoftprobe.storage.service.host=Softprobe-storage-alb-1475960894.us-west-2.elb.amazonaws.com -DSoftprobe.api.token=trip:712Vqq3/oa72aOrroBUsDYYrM+OQWQmqg4GAMHOWYhkCmswuWtIlP0CMhfKCPz6NypTloF4o9OTFlhTVRlLXmw== -jar <your-application.jar>
+java -javaagent:</path/to/sp-agent.jar> -Dsp.service.name=1a2caf7394756ca3  -Dsp.storage.service.host=Softprobe-storage-alb-1475960894.us-west-2.elb.amazonaws.com -Dsp.api.token=trip:712Vqq3/oa72aOrroBUsDYYrM+OQWQmqg4GAMHOWYhkCmswuWtIlP0CMhfKCPz6NypTloF4o9OTFlhTVRlLXmw== -jar <your-application.jar>
 ```
 
 #### 配置文件运行模式
 
-你也可以通过新建一个名为：Softprobe.agent 的 conf 配置文件来进行配置，其中内容为：
+你也可以通过新建一个名为：sp.agent 的 conf 配置文件来进行配置，其中内容为：
 
-```conf title="Softprobe.agent.conf"
-Softprobe.service.name=your-service-name  
-Softprobe.storage.service.host=Softprobe-storage-alb-1475960894.us-west-2.elb.amazonaws.com
+```conf title="sp.agent.conf"
+sp.service.name=your-service-name  
+sp.storage.service.host=Softprobe-storage-alb-1475960894.us-west-2.elb.amazonaws.com
 ```
 
 然后运行如下命令完成配置：
 
 ```shell
-java -javaagent:</path/to/Softprobe-agent.jar> -DSoftprobe.config.path=/path/to/Softprobe.agent.conf -jar your-application.jar
+java -javaagent:</path/to/sp-agent.jar> -Dsp.config.path=/path/to/sp.agent.conf -jar your-application.jar
 ```
 
 #### 修改 JAVA_OPTS 运行模式
@@ -80,7 +80,7 @@ java -javaagent:</path/to/Softprobe-agent.jar> -DSoftprobe.config.path=/path/to/
 ```shell
 export Softprobe_STORAGE_SERVICE_HOST=Softprobe-storage-alb-1475960894.us-west-2.elb.amazonaws.com
 export Softprobe_API_TOKEN=trip:712Vqq3/oa72aOrroBUsDYYrM+OQWQmqg4GAMHOWYhkCmswuWtIlP0CMhfKCPz6NypTloF4o9OTFlhTVRlLXmw==
-export JAVA_TOOL_OPTIONS=&quot;-javaagent:&lt;Softprobe Agent JAR DIR&gt;/Softprobe/Softprobe-agent.jar -DSoftprobe.service.name=1a2caf7394756ca3 -DSoftprobe.storage.service.host=$Softprobe_STORAGE_SERVICE_HOST -DSoftprobe.api.token=$Softprobe_API_TOKEN&quot;
+export JAVA_TOOL_OPTIONS=&quot;-javaagent:&lt;Softprobe Agent JAR DIR&gt;/Softprobe/sp-agent.jar -Dsp.service.name=1a2caf7394756ca3 -Dsp.storage.service.host=$Softprobe_STORAGE_SERVICE_HOST -Dsp.api.token=$Softprobe_API_TOKEN&quot;
 ```
 
 之后你可以正常运行 Tomcat。Softprobe Agent 将被自动注入 JVM 中，并在 Tomcat 启动时运行。

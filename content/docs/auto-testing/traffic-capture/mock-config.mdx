@@ -10,7 +10,7 @@ In such scenarios, you can proactively configure the dynamic class mechanism in 
 
 ![mock配置](../resource/mock.png)
 
-In the highlighted area of the diagram, you can configure the **Full Class Name**, **Method Name** (optional, if not configured, it will be applied to all public methods with parameters and return values), and **Parameter Types** (optional) in sequence. Once the configuration is complete, the `Softprobe-agent` will automatically inject code similar to the Record&Replay code into the corresponding methods, enabling data collection and mocking during the replay process.
+In the highlighted area of the diagram, you can configure the **Full Class Name**, **Method Name** (optional, if not configured, it will be applied to all public methods with parameters and return values), and **Parameter Types** (optional) in sequence. Once the configuration is complete, the `sp-agent` will automatically inject code similar to the Record&Replay code into the corresponding methods, enabling data collection and mocking during the replay process.
 
 The following provides a brief explanation from a code implementation perspective on how Softprobe achieves automatic mocking of data during traffic replay, to facilitate understanding of how to configure dynamic classes in the recording configuration.
 
@@ -83,7 +83,7 @@ public Integer parseIp(String ip) {
 
 ## Implementation in Softprobe
 
-The principle behind Softprobe is similar, but it is more complex and doesn't require developers to manually add recording and replay code to their business logic. The `Softprobe-agent` automatically adds the necessary code in the relevant code blocks during application startup to implement this functionality. Let's take MyBatis3's Query as an example to explore the specific implementation in Softprobe.
+The principle behind Softprobe is similar, but it is more complex and doesn't require developers to manually add recording and replay code to their business logic. The `sp-agent` automatically adds the necessary code in the relevant code blocks during application startup to implement this functionality. Let's take MyBatis3's Query as an example to explore the specific implementation in Softprobe.
 
 Those who have read the MyBatis source code should be familiar with the fact that Query operations are mainly performed in the `query` method of the `org.apache.ibatis.executor.BaseExecutor` class (excluding Batch operations). The method signature is as follows:
 
