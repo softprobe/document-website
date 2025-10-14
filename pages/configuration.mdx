@@ -1,0 +1,99 @@
+# Configuration
+
+Learn how to configure Data Collection for your specific needs.
+
+## Basic Configuration
+
+When initializing the DataCollector, you can pass various configuration options:
+
+```javascript
+const collector = new DataCollector({
+  endpoint: 'https://api.example.com/collect',
+  apiKey: 'your-api-key',
+  batchSize: 100,
+  flushInterval: 5000,
+  retryAttempts: 3,
+  debug: false
+});
+```
+
+## Configuration Options
+
+### endpoint
+
+The API endpoint where data will be sent.
+
+```javascript
+endpoint: 'https://api.example.com/collect'
+```
+
+### apiKey
+
+Your authentication key for the API.
+
+```javascript
+apiKey: 'your-api-key-here'
+```
+
+### batchSize
+
+Number of events to collect before sending a batch.
+
+```javascript
+batchSize: 100  // Send 100 events at once
+```
+
+### flushInterval
+
+Time in milliseconds to wait before sending a batch, even if it's not full.
+
+```javascript
+flushInterval: 5000  // Send batch every 5 seconds
+```
+
+### retryAttempts
+
+Number of times to retry failed requests.
+
+```javascript
+retryAttempts: 3  // Retry up to 3 times
+```
+
+### debug
+
+Enable debug logging.
+
+```javascript
+debug: true  // Enable console logging
+```
+
+## Environment-based Configuration
+
+You can use environment variables for configuration:
+
+```javascript
+const collector = new DataCollector({
+  endpoint: process.env.DATA_COLLECTION_ENDPOINT,
+  apiKey: process.env.DATA_COLLECTION_API_KEY,
+  batchSize: parseInt(process.env.BATCH_SIZE) || 100,
+  flushInterval: parseInt(process.env.FLUSH_INTERVAL) || 5000
+});
+```
+
+## Dynamic Configuration
+
+Update configuration at runtime:
+
+```javascript
+// Update batch size
+collector.configure({
+  batchSize: 50
+});
+
+// Update multiple settings
+collector.configure({
+  batchSize: 200,
+  flushInterval: 10000,
+  debug: true
+});
+```

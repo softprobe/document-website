@@ -1,0 +1,99 @@
+# 配置
+
+了解如何为您的特定需求配置数据收集。
+
+## 基本配置
+
+初始化 DataCollector 时，您可以传递各种配置选项：
+
+```javascript
+const collector = new DataCollector({
+  endpoint: 'https://api.example.com/collect',
+  apiKey: 'your-api-key',
+  batchSize: 100,
+  flushInterval: 5000,
+  retryAttempts: 3,
+  debug: false
+});
+```
+
+## 配置选项
+
+### endpoint
+
+数据将发送到的 API 端点。
+
+```javascript
+endpoint: 'https://api.example.com/collect'
+```
+
+### apiKey
+
+您的 API 身份验证密钥。
+
+```javascript
+apiKey: 'your-api-key-here'
+```
+
+### batchSize
+
+收集后发送批次的事件数量。
+
+```javascript
+batchSize: 100  // 一次发送 100 个事件
+```
+
+### flushInterval
+
+即使批次未满，在发送批次前等待的时间（毫秒）。
+
+```javascript
+flushInterval: 5000  // 每 5 秒发送一次批次
+```
+
+### retryAttempts
+
+重试失败请求的次数。
+
+```javascript
+retryAttempts: 3  // 最多重试 3 次
+```
+
+### debug
+
+启用调试日志记录。
+
+```javascript
+debug: true  // 启用控制台日志记录
+```
+
+## 基于环境的配置
+
+您可以使用环境变量进行配置：
+
+```javascript
+const collector = new DataCollector({
+  endpoint: process.env.DATA_COLLECTION_ENDPOINT,
+  apiKey: process.env.DATA_COLLECTION_API_KEY,
+  batchSize: parseInt(process.env.BATCH_SIZE) || 100,
+  flushInterval: parseInt(process.env.FLUSH_INTERVAL) || 5000
+});
+```
+
+## 动态配置
+
+在运行时更新配置：
+
+```javascript
+// 更新批次大小
+collector.configure({
+  batchSize: 50
+});
+
+// 更新多个设置
+collector.configure({
+  batchSize: 200,
+  flushInterval: 10000,
+  debug: true
+});
+```

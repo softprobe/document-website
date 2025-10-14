@@ -1,0 +1,85 @@
+# API 参考
+
+数据收集 API 的完整参考。
+
+## DataCollector
+
+用于收集和发送数据的主类。
+
+### 构造函数
+
+```javascript
+new DataCollector(options)
+```
+
+**参数：**
+
+- `options.endpoint` (string): 发送数据的 API 端点
+- `options.apiKey` (string): 用于身份验证的 API 密钥
+- `options.batchSize` (number, 可选): 批处理的事件数量（默认：100）
+- `options.flushInterval` (number, 可选): 刷新批次前的等待时间（毫秒）（默认：5000）
+
+### 方法
+
+#### start()
+
+开始数据收集过程。
+
+```javascript
+collector.start();
+```
+
+#### stop()
+
+停止数据收集过程。
+
+```javascript
+collector.stop();
+```
+
+#### track(event, data)
+
+跟踪带有相关数据的事件。
+
+```javascript
+collector.track('user_action', {
+  action: 'click',
+  element: 'button',
+  timestamp: Date.now()
+});
+```
+
+**参数：**
+
+- `event` (string): 事件名称
+- `data` (object): 事件数据
+
+#### configure(options)
+
+更新收集器配置。
+
+```javascript
+collector.configure({
+  batchSize: 50,
+  flushInterval: 3000
+});
+```
+
+## 事件
+
+### 内置事件
+
+- `page_view`: 查看页面时自动跟踪
+- `user_interaction`: 用户与 UI 元素的交互
+- `error`: 应用程序错误
+
+### 自定义事件
+
+您可以跟踪任何自定义事件：
+
+```javascript
+collector.track('custom_event', {
+  customProperty: 'value',
+  anotherProperty: 123
+});
+```

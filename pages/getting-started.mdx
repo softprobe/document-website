@@ -1,0 +1,67 @@
+# Getting Started
+
+This guide will help you get started with Data Collection quickly.
+
+## Prerequisites
+
+Before you begin, make sure you have:
+
+- Node.js 16+ installed
+- npm or yarn package manager
+- A valid API key from your Data Collection dashboard
+
+## Installation
+
+Install the Data Collection package:
+
+```bash
+npm install data-collection
+```
+
+## Basic Setup
+
+1. **Import the library**
+
+```javascript
+import { DataCollector } from 'data-collection';
+```
+
+2. **Initialize the collector**
+
+```javascript
+const collector = new DataCollector({
+  endpoint: 'https://api.example.com/collect',
+  apiKey: 'your-api-key-here'
+});
+```
+
+3. **Start collecting data**
+
+```javascript
+collector.start();
+```
+
+## Your First Data Collection
+
+Here's a simple example of collecting user interaction data:
+
+```javascript
+// Track page views
+collector.track('page_view', {
+  page: '/home',
+  timestamp: Date.now(),
+  userId: 'user123'
+});
+
+// Track custom events
+collector.track('button_click', {
+  buttonId: 'signup-button',
+  location: 'header'
+});
+```
+
+## Next Steps
+
+- Learn about [Configuration Options](./configuration)
+- Explore the [API Reference](./api-reference)
+- Check out [Best Practices](./best-practices)

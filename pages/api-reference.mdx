@@ -1,0 +1,85 @@
+# API Reference
+
+Complete reference for the Data Collection API.
+
+## DataCollector
+
+The main class for collecting and sending data.
+
+### Constructor
+
+```javascript
+new DataCollector(options)
+```
+
+**Parameters:**
+
+- `options.endpoint` (string): The API endpoint to send data to
+- `options.apiKey` (string): Your API key for authentication
+- `options.batchSize` (number, optional): Number of events to batch together (default: 100)
+- `options.flushInterval` (number, optional): Time in ms to wait before flushing batch (default: 5000)
+
+### Methods
+
+#### start()
+
+Starts the data collection process.
+
+```javascript
+collector.start();
+```
+
+#### stop()
+
+Stops the data collection process.
+
+```javascript
+collector.stop();
+```
+
+#### track(event, data)
+
+Tracks an event with associated data.
+
+```javascript
+collector.track('user_action', {
+  action: 'click',
+  element: 'button',
+  timestamp: Date.now()
+});
+```
+
+**Parameters:**
+
+- `event` (string): The event name
+- `data` (object): Event data
+
+#### configure(options)
+
+Updates the collector configuration.
+
+```javascript
+collector.configure({
+  batchSize: 50,
+  flushInterval: 3000
+});
+```
+
+## Events
+
+### Built-in Events
+
+- `page_view`: Automatically tracked when pages are viewed
+- `user_interaction`: User interactions with UI elements
+- `error`: Application errors
+
+### Custom Events
+
+You can track any custom events:
+
+```javascript
+collector.track('custom_event', {
+  customProperty: 'value',
+  anotherProperty: 123
+});
+```

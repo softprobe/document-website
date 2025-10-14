@@ -1,0 +1,55 @@
+# 数据收集
+
+欢迎来到数据收集文档。这是默认项目，将在首页显示。
+
+## 快速开始
+
+只需几个步骤即可开始使用数据收集：
+
+### 1. 安装
+
+```bash
+npm install data-collection
+```
+
+### 2. 基本使用
+
+```javascript
+import { DataCollector } from 'data-collection';
+
+const collector = new DataCollector({
+  endpoint: 'https://api.example.com/collect',
+  apiKey: 'your-api-key'
+});
+
+// 开始收集数据
+collector.start();
+```
+
+### 3. 配置
+
+配置您的数据收集设置：
+
+```javascript
+const config = {
+  batchSize: 100,
+  flushInterval: 5000,
+  retryAttempts: 3
+};
+
+collector.configure(config);
+```
+
+## 功能特性
+
+- **实时数据收集**：以最小延迟实时收集数据
+- **批处理**：高效的高容量数据批处理
+- **错误处理**：强大的错误处理和重试机制
+- **多种格式**：支持 JSON、CSV 和自定义格式
+
+## 下一步
+
+- [快速开始指南](./getting-started)
+- [API 参考](./api-reference)
+- [配置选项](./configuration)
+- [最佳实践](./best-practices)

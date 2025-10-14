@@ -1,0 +1,67 @@
+# 快速开始
+
+本指南将帮助您快速开始使用数据收集。
+
+## 先决条件
+
+在开始之前，请确保您有：
+
+- 已安装 Node.js 16+
+- npm 或 yarn 包管理器
+- 来自数据收集仪表板的有效 API 密钥
+
+## 安装
+
+安装数据收集包：
+
+```bash
+npm install data-collection
+```
+
+## 基本设置
+
+1. **导入库**
+
+```javascript
+import { DataCollector } from 'data-collection';
+```
+
+2. **初始化收集器**
+
+```javascript
+const collector = new DataCollector({
+  endpoint: 'https://api.example.com/collect',
+  apiKey: 'your-api-key-here'
+});
+```
+
+3. **开始收集数据**
+
+```javascript
+collector.start();
+```
+
+## 您的第一个数据收集
+
+这是一个收集用户交互数据的简单示例：
+
+```javascript
+// 跟踪页面浏览
+collector.track('page_view', {
+  page: '/home',
+  timestamp: Date.now(),
+  userId: 'user123'
+});
+
+// 跟踪自定义事件
+collector.track('button_click', {
+  buttonId: 'signup-button',
+  location: 'header'
+});
+```
+
+## 下一步
+
+- 了解[配置选项](./configuration)
+- 探索[API 参考](./api-reference)
+- 查看[最佳实践](./best-practices)

@@ -1,0 +1,130 @@
+# 最佳实践
+
+遵循这些最佳实践，充分利用数据收集。
+
+## 性能优化
+
+### 批处理
+
+对于高容量数据，始终使用批处理：
+
+```javascript
+// 好：事件自动批处理
+collector.track('user_action', data);
+collector.track('user_action', data2);
+collector.track('user_action', data3);
+
+// 避免：除非必要，否则不要手动批处理
+collector.trackBatch([data, data2, data3]);
+```
+
+### 高效的数据结构
+
+保持事件数据轻量级：
+
+```javascript
+// 好：最小、必要的数据
+collector.track('page_view', {
+  page: '/products',
+  userId: 'user123'
+});
+
+// 避免：过多的数据
+collector.track('page_view', {
+  page: '/products',
+  userId: 'user123',
+  fullUserProfile: {...}, // 数据过多
+  entirePageContent: {...} // 不必要
+});
+```
+
+## 错误处理
+
+### 优雅降级
+
+始终处理潜在的故障：
+
+```javascript
+try {
+  collector.track('important_event', data);
+} catch (error) {
+  console.warn('跟踪事件失败:', error);
+  // 继续应用程序逻辑
+}
+```
+
+### 重试逻辑
+
+配置适当的重试设置：
+
+```javascript
+const collector = new DataCollector({
+  retryAttempts: 3,
+  retryDelay: 1000 // 重试间隔 1 秒
+});
+```
+
+## 安全性
+
+### API 密钥管理
+
+永远不要在客户端代码中暴露 API 密钥：
+
+```javascript
+// 好：使用环境变量
+const collector = new DataCollector({
+  apiKey: process.env.DATA_COLLECTION_API_KEY
+});
+
+// 避免：硬编码密钥
+const collector = new DataCollector({
+  apiKey: 'sk-1234567890abcdef' // 永远不要这样做
+});
+```
+
+### 数据清理
+
+跟踪前清理敏感数据：
+
+```javascript
+// 好：清理后的数据
+collector.track('user_login', {
+  userId: 'user123',
+  timestamp: Date.now()
+  // 没有密码或敏感信息
+});
+
+// 避免：敏感数据
+collector.track('user_login', {
+  password: 'secret123', // 永远不要跟踪密码
+  creditCard: '1234-5678-9012-3456' // 永远不要跟踪 PII
+});
+```
+
+## 监控
+
+### 健康检查
+
+为您的数据收集实施健康检查：
+
+```javascript
+// 检查收集器是否正常工作
+if (collector.isHealthy()) {
+  console.log('数据收集正常工作');
+} else {
+  console.warn('数据收集可能有问题');
+}
+```
+
+### 指标
+
+跟踪您自己的指标：
+
+```javascript
+// 跟踪收集指标
+collector.track('collection_metric', {
+  eventsPerSecond: 10,
+  batchSize: 100,
+  errorRate: 0.01
+});
+```
