@@ -1,51 +1,88 @@
-# 安装指南
+---
+sidebar_position: 2
+---
 
-欢迎使用我们的平台！本指南将帮助您快速上手。
+# 生产安装
+
+将 SP-Istio Agent 部署到您的生产 Istio 服务网格中。
 
 ## 先决条件
 
-在开始之前，请确保您拥有：
+在生产环境中安装 SP-Istio Agent 之前，请确保您拥有：
 
-- 现代网络浏览器
-- 活跃的互联网连接
-- 基本的网络开发知识（有帮助但不是必需的）
+- 一个正在运行的 Kubernetes 集群
+- 已安装并配置好 Istio
+- 具有适当权限的 kubectl 访问权限
+- 到 Softprobe 端点的网络连接
 
-## 步骤1：创建账户
+## 安装
 
-1. 访问我们的[注册页面](https://app.example.com/signup)
-2. 输入您的电子邮件地址并创建密码
-3. 验证您的电子邮件地址
-4. 完成您的个人资料设置
-
-## 步骤2：创建您的第一个项目
-
-1. 登录您的仪表板
-2. 点击"创建新项目"
-3. 输入项目名称和描述
-4. 选择您首选的设置
-5. 点击"创建项目"
-
-## 步骤3：获取您的API密钥
-
-1. 导航到您的项目设置
-2. 转到"API密钥"部分
-3. 点击"生成新密钥"
-4. 复制并安全存储您的API密钥
-
-## 步骤4：进行您的第一次API调用
-
-以下是使用curl的简单示例：
+使用生产就绪的清单文件安装 SP-Istio Agent：
 
 ```bash
-curl -X POST https://api.example.com/v1/data \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"message": "Hello, World!"}'
+kubectl apply -f https://raw.githubusercontent.com/softprobe/sp-istio/main/deploy/minimal.yaml
 ```
 
-## 需要帮助？
+这将在您的 Istio 服务网格中全局部署 WasmPlugin。
 
-如果您遇到任何问题：
+## 验证安装
 
-- 加入我们的[社区论坛](https://forum.example.com)
-- [联系支持](mailto:support@example.com)
+检查 WasmPlugin 是否已成功创建：
+
+```bash
+kubectl get wasmplugin -A
+```
+
+您应该会看到列出的 SP-Istio Agent 插件。
+
+## 配置
+
+默认配置会捕获网格中所有服务的 HTTP 流量。您可以通过修改 WasmPlugin 资源来自定义行为。
+
+### 范围化部署
+
+要仅将代理部署到特定的命名空间或工作负载，您可以创建一个范围化的 WasmPlugin 配置。
+
+## 使用 Bookinfo 演示进行测试
+
+要使用 Istio 的 Bookinfo 演示应用程序验证安装：
+
+```bash
+# 为默认命名空间启用 Istio 注入
+kubectl label namespace default istio-injection=enabled --overwrite
+
+# 部署 Bookinfo 应用程序
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.22/samples/bookinfo/platform/kube/bookinfo.yaml
+
+# 部署 Bookinfo 网关
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.22/samples/bookinfo/networking/bookinfo-gateway.yaml
+
+# 应用范围化的测试配置
+kubectl apply -f https://raw.githubusercontent.com/softprobe/sp-istio-wasm/main/deploy/test-bookinfo.yaml
+```
+
+### 生成测试流量
+
+```bash
+# 获取入口网关 URL
+export GATEWAY_URL=$(kubectl -n istio-system get svc istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+
+# 生成一些流量
+curl -sf "http://${GATEWAY_URL}/productpage" >/dev/null
+
+# 验证插件是否正常工作
+kubectl get wasmplugin -A
+```
+
+## 卸载
+
+要从您的集群中移除 SP-Istio Agent：
+
+```bash
+kubectl delete wasmplugin -n istio-system sp-istio-agent
+```
+
+## 下一步
+
+- [故障排除](../deployment/troubleshooting) - 常见问题和解决方案
+- [架构](../architecture) - 了解代理的工作原理
