@@ -1,57 +1,57 @@
-import {themes as prismThemes} from 'prism-react-renderer';
-import type {Config} from '@docusaurus/types';
-import type * as Preset from '@docusaurus/preset-classic';
+import { themes as prismThemes } from "prism-react-renderer";
+import type { Config } from "@docusaurus/types";
+import type * as Preset from "@docusaurus/preset-classic";
 
 const config: Config = {
-  title: 'Documentation',
-  tagline: 'Comprehensive documentation for our SaaS platform',
-  favicon: 'img/favicon.ico',
+  title: "Documentation",
+  tagline: "Comprehensive documentation for our SaaS platform",
+  favicon: "img/favicon.ico",
 
   // Set the production url of your site here
-  url: 'https://document.softprobe.ai',
+  url: "https://document.softprobe.ai",
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/',
+  baseUrl: "/",
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'Softprobe.ai', // Usually your GitHub org/user name.
-  projectName: 'document-website', // Usually your repo name.
+  organizationName: "Softprobe.ai", // Usually your GitHub org/user name.
+  projectName: "document-website", // Usually your repo name.
 
-  onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
+  onBrokenLinks: "throw",
+  onBrokenMarkdownLinks: "warn",
 
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
   // may want to replace "en" with "zh-Hans".
   i18n: {
-    defaultLocale: 'en',
-    locales: ['en', 'zh'],
+    defaultLocale: "en",
+    locales: ["en", "zh"],
     localeConfigs: {
       en: {
-        label: 'English',
-        direction: 'ltr',
-        htmlLang: 'en-US',
-        calendar: 'gregory',
-        path: 'en',
+        label: "English",
+        direction: "ltr",
+        htmlLang: "en-US",
+        calendar: "gregory",
+        path: "en",
       },
       zh: {
-        label: '中文',
-        direction: 'ltr',
-        htmlLang: 'zh-CN',
-        calendar: 'gregory',
-        path: 'zh',
+        label: "中文",
+        direction: "ltr",
+        htmlLang: "zh-CN",
+        calendar: "gregory",
+        path: "zh",
       },
     },
   },
 
   presets: [
     [
-      '@docusaurus/preset-classic',
+      "@docusaurus/preset-classic",
       {
         docs: {
-          routeBasePath: '/', // Serve the docs at the site's root
-          sidebarPath: './sidebars.ts',
+          routeBasePath: "/", // Serve the docs at the site's root
+          sidebarPath: "./sidebars.ts",
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           // editUrl:
@@ -59,7 +59,7 @@ const config: Config = {
         },
         blog: false, // Optional: disable the blog plugin
         theme: {
-          customCss: './src/css/custom.css',
+          customCss: "./src/css/custom.css",
         },
       } satisfies Preset.Options,
     ],
@@ -67,63 +67,63 @@ const config: Config = {
 
   themeConfig: {
     // Replace with your project's social card
-    image: 'img/docusaurus-social-card.jpg',
+    image: "img/docusaurus-social-card.jpg",
     navbar: {
-      title: 'Softprobe Documentation',
+      title: "Softprobe Documentation",
       logo: {
-        alt: 'Documentation Logo',
-        src: 'img/sp-logo-trans.ico',
+        alt: "Documentation Logo",
+        src: "img/sp-logo-trans.ico",
       },
       items: [
         {
-          type: 'localeDropdown',
-          position: 'right',
+          type: "localeDropdown",
+          position: "right",
         },
       ],
     },
     footer: {
-      style: 'dark',
+      style: "dark",
       links: [
         {
-          title: 'Docs',
+          title: "Docs",
           items: [
             {
-              label: 'Installation',
-              to: '/getting-started/installation',
+              label: "Installation",
+              to: "/getting-started/installation",
             },
             {
-              label: 'Architecture',
-              to: '/architecture',
+              label: "Architecture",
+              to: "/architecture",
             },
             {
-              label: 'Development',
-              to: '/deployment/development',
+              label: "Development",
+              to: "/deployment/development",
             },
           ],
         },
         {
-          title: 'Community',
+          title: "Community",
           items: [
             {
-              label: 'Stack Overflow',
-              href: 'https://stackoverflow.com/questions/tagged/docusaurus',
+              label: "Stack Overflow",
+              href: "https://stackoverflow.com/questions/tagged/docusaurus",
             },
             {
-              label: 'Discord',
-              href: 'https://discordapp.com/invite/docusaurus',
+              label: "Discord",
+              href: "https://discordapp.com/invite/docusaurus",
             },
             {
-              label: 'Twitter',
-              href: 'https://twitter.com/docusaurus',
+              label: "Twitter",
+              href: "https://twitter.com/docusaurus",
             },
           ],
         },
         {
-          title: 'More',
+          title: "More",
           items: [
             {
-              label: 'GitHub',
-              href: 'https://github.com/your-org/document-website',
+              label: "GitHub",
+              href: "https://github.com/your-org/document-website",
             },
           ],
         },
@@ -135,7 +135,7 @@ const config: Config = {
       darkTheme: prismThemes.dracula,
     },
     colorMode: {
-      defaultMode: 'light',
+      defaultMode: "light",
       disableSwitch: false,
       respectPrefersColorScheme: true,
     },

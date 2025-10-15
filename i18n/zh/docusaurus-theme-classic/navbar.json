@@ -1,0 +1,10 @@
+{
+  "title": {
+    "message": "Softprobe 文档",
+    "description": "The title in the navbar"
+  },
+  "logo.alt": {
+    "message": "Documentation Logo",
+    "description": "The alt text of navbar logo"
+  }
+}
