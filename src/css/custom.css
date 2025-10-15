@@ -6,26 +6,26 @@
 
 /* You can override the default Infima variables here. */
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
+  --ifm-color-primary: #A14EFF;
+  --ifm-color-primary-dark: #8B3AFF;
+  --ifm-color-primary-darker: #7A2EFF;
+  --ifm-color-primary-darkest: #5A1FCC;
+  --ifm-color-primary-light: #B366FF;
+  --ifm-color-primary-lighter: #C280FF;
+  --ifm-color-primary-lightest: #D199FF;
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
+  --ifm-color-primary: #B366FF;
+  --ifm-color-primary-dark: #A14EFF;
+  --ifm-color-primary-darker: #8B3AFF;
+  --ifm-color-primary-darkest: #7A2EFF;
+  --ifm-color-primary-light: #C280FF;
+  --ifm-color-primary-lighter: #D199FF;
+  --ifm-color-primary-lightest: #E0B3FF;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
 
@@ -115,4 +115,44 @@ a:hover {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--ifm-color-emphasis-400);
+}
+
+/* Additional theme color customizations */
+.navbar__brand {
+  color: var(--ifm-color-primary);
+}
+
+.navbar__item--active {
+  color: var(--ifm-color-primary);
+}
+
+.footer__link-item {
+  color: var(--ifm-color-primary);
+}
+
+.footer__link-item:hover {
+  color: var(--ifm-color-primary-dark);
+}
+
+/* Button styling */
+.button--primary {
+  background-color: var(--ifm-color-primary);
+  border-color: var(--ifm-color-primary);
+}
+
+.button--primary:hover {
+  background-color: var(--ifm-color-primary-dark);
+  border-color: var(--ifm-color-primary-dark);
+}
+
+/* Badge styling */
+.badge--primary {
+  background-color: var(--ifm-color-primary);
+}
+
+/* Alert styling */
+.alert--primary {
+  --ifm-alert-background-color: var(--ifm-color-primary-lightest);
+  --ifm-alert-border-color: var(--ifm-color-primary);
+  --ifm-alert-color: var(--ifm-color-primary-darkest);
 }
