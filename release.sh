@@ -79,10 +79,3 @@ gh api -X PUT "/repos/$repo_owner/$deployment_repo_name/contents/$file_path" \
 
 echo "YAML file updated to version ${new_version}."
 echo "Release process completed."
-
-
-
-
-
-
-

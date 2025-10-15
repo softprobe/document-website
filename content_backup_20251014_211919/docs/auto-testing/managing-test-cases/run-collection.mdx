@@ -1,0 +1,51 @@
+---
+title: Run Collection
+---
+
+Softprobe allows you to automate API testing by running a collection of saved requests. This is a convenient way to perform automated API testing on a large number of test cases at once, rather than running each test case individually.
+
+## Scenarios
+
+**Batch run test cases**. When testing multiple scenarios for the same URL, you can save requests in different scenarios as test cases and run it directly the next time without having to re-add the request details. The **Batch Run** enables you to run multiple test cases in a collection at once, making regression testing more efficient and convenient.
+
+## Create colletions to store test cases
+
+1. Select **Collection** in the sidebar and select the **+** icon to create a new collection.
+
+    <img src="https://github.com/arextest/arex/assets/118187476/80798b78-72e9-4c88-a007-0b121ada2477" alt="New Collection" width="300" height="" />
+
+2. Select **Add Request** from the dropdown list of the collection to create a new request, and then select **Save**.
+
+    <img src="https://github.com/arextest/arex/assets/118187476/0a2e382e-8ed4-4243-a7a5-5dcfd0b5fb53" alt="New Collection" width="300" height="" />
+
+3. Select **Add Case** frome the dropdown list of the request to create a new test case. Test cases will automatically inherit the configuration of Request, reducing the cost of designing test cases.
+
+    <img src="https://github.com/arextest/arex/assets/118187476/02259a17-d5dd-463c-9f9f-e8aa0d113b93" alt="R09eC.png" width="400" height="" />
+
+4. You can categorize your test cases by adding tags. Hover over the **Add Tag** and select the ![](../resource/c1.rename.png) icon.
+
+    ![查看用例](../resource/c3.case.3.png)
+
+    Tags can be pre-configured by selecting the **Edit Workspace** icon >> **Labels** tab.
+
+    ![管理标签](../resource/c4.addlabel.png)
+
+5. **Description** of test cases makes it easier for others to understand the purpose and expected results of the test cases, improves readability, and provides a better understanding of the testing content. To add a description, move your cursor to **description** and select the ![](../resource/c1.rename.png) icon.
+
+## Batch Run
+
+1. Select **Batch Run** from the dropdown list of the collection which you want to run.
+
+    <img src="https://github.com/arextest/arex/assets/118187476/0851c2b5-ebba-493e-add7-572eead82a76" alt="新建集合" width="400" height="" />
+
+    Or you can hover over the ![](../resource/c4.run.png) icon in the sidebar and select **Batch Run**. All collections within the current **workspace** will be selected in this way.
+
+    <img src="https://github.com/arextest/arex/assets/118187476/b9712c7b-1e15-4338-969f-3601aaee5194" alt="新建集合" width="400" height="" />
+
+2. Select the test cases from the list and select **Run Case** to run.
+
+    ![run case](../resource/c4.runcase.png)
+
+You can view the test results after running.
+
+![run case](../resource/c4.runcase2.png)

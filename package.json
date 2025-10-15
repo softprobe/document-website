@@ -1,39 +1,46 @@
 {
-  "name": "document",
+  "name": "document-website",
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "next build",
-    "dev": "next dev",
-    "start": "next start",
-    "postinstall": "fumadocs-mdx"
+    "docusaurus": "docusaurus",
+    "start": "docusaurus start",
+    "build": "docusaurus build",
+    "swizzle": "docusaurus swizzle",
+    "deploy": "docusaurus deploy",
+    "clear": "docusaurus clear",
+    "serve": "docusaurus serve",
+    "write-translations": "docusaurus write-translations",
+    "write-heading-ids": "docusaurus write-heading-ids"
   },
   "dependencies": {
-    "@radix-ui/react-popover": "^1.1.6",
-    "fumadocs-core": "15.1.0",
-    "fumadocs-mdx": "11.5.6",
-    "fumadocs-ui": "15.1.0",
-    "lucide-react": "^0.453.0",
-    "next": "^15.2.2",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "tailwind-merge": "^3.0.2"
+    "@docusaurus/core": "^3.6.3",
+    "@docusaurus/plugin-client-redirects": "^3.9.1",
+    "@docusaurus/preset-classic": "^3.6.3",
+    "@mdx-js/react": "^3.0.1",
+    "clsx": "^2.1.1",
+    "prism-react-renderer": "^2.3.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.0.14",
-    "@types/mdx": "^2.0.13",
-    "@types/node": "22.13.10",
-    "@types/react": "^19.0.11",
-    "@types/react-dom": "^19.0.4",
-    "autoprefixer": "^10.4.20",
-    "eslint": "^9.12.0",
-    "eslint-config-next": "^14.2.15",
-    "postcss": "^8.5.3",
-    "prettier": "^3.3.3",
-    "prettier-plugin-organize-imports": "^4.1.0",
-    "prettier-plugin-tailwindcss": "^0.6.8",
-    "react-dom@^19.0.4": "link:@types/react-dom: ^19.0.4@types/react-dom@^19.0.4",
-    "tailwindcss": "^4.0.14",
-    "typescript": "^5.8.2"
+    "@docusaurus/module-type-aliases": "^3.6.3",
+    "@docusaurus/types": "^3.6.3",
+    "typescript": "^5.6.2"
+  },
+  "browserslist": {
+    "production": [
+      ">0.5%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "engines": {
+    "node": ">=18.0"
   }
 }

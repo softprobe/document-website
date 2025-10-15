@@ -1,0 +1,14 @@
+{
+    "title": "Web Replay",
+    "root": true,
+    "pages": [
+        "index",
+        "getting-started",
+        "---Archetecture---",
+        "architecture/index",
+        "architecture/compatibility",
+        "architecture/privacy",
+        "---FAQ---",
+        "faq/index"
+    ]
+  }

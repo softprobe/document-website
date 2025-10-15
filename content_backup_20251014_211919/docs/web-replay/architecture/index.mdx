@@ -1,0 +1,44 @@
+---
+title: Technical Architecture  
+---
+
+## Layered Architecture Design  
+
+**Softprobe** employs a three-tier modular architecture for end-to-end user behavior management:  
+
+### 1. Data Collection Layer  
+- **Multi-dimensional Capture**: Lightweight SDK collects in real-time:  
+  - **DOM mutations**: Element additions/removals, style updates  
+  - **User interactions**: Clicks, scrolls, inputs, route navigations  
+  - **Performance metrics**: FCP (First Contentful Paint), frame drop rate  
+- **Adaptive Throttling**: Context-aware sampling to filter low-value events  
+
+### 2. Data Processing Layer  
+- **Data Optimization**:  
+  - Log compression (GZIP + Protocol Buffers)  
+  - Dual encryption (AES-256 + TLS 1.3)  
+- **State Reconstruction Engine**:  
+  - Initial snapshot + incremental DOM diff tracking  
+  - Behavioral sequence reassembly algorithm  
+  - Generates timeline-synchronized pseudo-video streams  
+
+### 3. Analytics & Visualization Layer  
+- **Visual Capabilities**:  
+  - Heatmaps (click density/scroll depth)  
+  - User journey path mapping  
+  - Custom funnel/retention reports  
+- **DevOps Integration**: Alerting via Jira/Slack/webhooks  
+
+## Core Advantages of Non-Video Technology  
+
+### 1. Dynamic Rendering Optimization  
+- **80% Bandwidth Saving**: Transmit structured logs instead of video streams  
+- **Version Agnostic**: DOM snapshot-based recording eliminates replay distortion caused by frontend updates  
+
+### 2. Millisecond-Accurate Playback  
+- **Spatiotemporal Precision**:  
+  - Coordinate error < 1px  
+  - Timestamp accuracy ±10ms  
+- **Interaction Simulation**:  
+  - 0.5x-4x playback speed  
+  - Quick navigation to key events (e.g., checkout button clicks)  
