@@ -1,0 +1,171 @@
+---
+title: 快速生成用例
+---
+import { Callout } from 'fumadocs-ui/components/callout';
+
+### 使用场景
+
+Softprobe 可以将线上的真实流量录制下来从而生成丰富的测试用例，你可以根据需要从中筛选出某些重要用例，并进行保存，扩充测试用例数量，后续还可以使用这些可复用的用例进行常态化的定时回归验证。
+
+<Callout title="提示">
+可以在**录制用例列表**和**回放用例列表**中保存用例，两种用例仅接口地址存在差异：
+
+1. 从**录制用例列表**处保存的用例，尚未经过回放测试，因此这些用例请求的接口地址指向的是录制环境。
+2. 从**回放用例列表**处保存的用例，其请求的接口地址对应回放环境。
+3. 用例固化后的用例不会过期，长久有效。
+</Callout>
+
+## 固化录制用例
+
+应用录制到请求后，前往 **Traffic** 点击相应应用，查看录制列表。
+
+![录制列表](../resource/recorddetail.png)
+
+找到需要固化的用例，点击 Record ID 查看录制详情。
+
+![录制列表](../resource/recorddebug.png)
+
+点击右上角 Debug 按键，进入调试界面。
+
+![录制列表](../resource/recordsave.png)
+
+点击右上角 Save 进行保存。保存路径可以选择 Softprobe 默认生成的路径，也可以自定义保存路径。
+
+## 固化回放用例
+
+1. 在完成一次回放测试后，进入回放报告页面。
+
+  ![回放报告](../resource/c3.report2.png)
+
+2. 点击 **ReplayCase** 查看录制到的测试用例。
+
+  ![用例](../resource/c3.case.png)
+
+  点击相应的用例，**Failed** 用例（即回放与录制返回报文出现差异的用例）下方将展示具体的差异细节。
+
+  ![用例](../resource/c3.detail1.png)
+
+  **Point of difference**：展示回放测试中出现的所有差异节点。对于主接口的验证，主要验证录制与回放响应报文之间的差异，对于其他外部调用的第三方依赖的验证，则通过比对其请求内容（如数据库的 sql 语句）进行验证。
+
+  **Scene Count**：出现该差异点的场景数。
+
+  **Additional node**：录制或回放后的返回报文中多出的节点。如有，差异点会在报文中以橙色高亮显示。
+
+  **Difference node**：录制及回放后的返回报文中不同的节点。如有，差异点会在报文中以蓝色高亮显示。
+
+  点击 **Record Detail**，在新跳转的页面中展示该录制用例的详细信息：
+
+  ![用例细节](../resource/c3.detail.png)
+
+  ![用例细节](../resource/c3.detail2.png)
+
+3. 点击 **Debug** 进入调试页面，并点击 **Save** 进行保存。
+
+  ![保存用例](../resource/debug.png)
+
+## 查看固化用例
+
+用例固化后，可以在相应的集合请求下找到，界面与请求界面相似。
+
+点击 **newTag** 为该用例添加标签，进行分类，方便之后使用。
+
+![查看用例](../resource/c3.case.3.png)
+
+:::tip
+
+标签需要提前在工作区设置页面进行预设。
+
+![管理标签](../resource/c3.tag.png)
+
+:::
+
+请求地址处为接口路径，如需回放调试可直接在路径前添加本地测试端口地址。
+
+Header 中新增的 sp-record-id 为本次录制 ID，如需回放可在新建请求的请求头中添加该 sp-record-id，发送请求即可完成回放。
+
+![查看用例](../resource/c3.case1.png)
+
+固化用例，不仅可以保存主接口的请求入参、响应，还可以保存从生产环境 Mock 到的数据及第三方依赖，如图中 Mock 一栏所示。左侧是 Mock 到的主接口及外部调用的请求报文，右侧是对应的响应报文。Mock 数据支持编辑功能，如果对 Mock 的数据不满意，可以手动修改，点击 **Save** 保存。之后在本地回放时就可以通过修改后的 Mock 数据进行请求。
+
+<Callout title="提示">
+需要注意的是，无法对主接口的返回值进行修改，因为主接口的返回值是不 Mock 的，Softprobe 只会对中间过程中调用的第三方依赖进行 Mock，修改才有效。
+</Callout>
+
+![查看用例](../resource/c3.case2.png)
+
+点击 Send 后，会在 Response 的 Headers 中生成一个 `sp-replay-id`，这意味着本次请求的发送并不是真实的请求，而是一次回放。
+
+![](../resource/replay-id.png)
+
+## 固化用例的回放测试
+
+对于固化后的用例集合，Softprobe 提供了一个 Node.js [脚本](https://github.com/arextest/deployments/blob/feat/script_for_pinned_replay/extra-nodejs/main.cjs)来实现固化用例的回归测试：
+
+```javascript
+const MongoClient = require('mongodb').MongoClient;
+const mongoUrl = "mongodb://arex:iLoveArex@10.5.153.1:27017/arex_storage_db";
+const scheduleEndpoint = 'http://10.5.153.1:8092/api/createPlan'
+const appId = 'community-test-0905'
+const targetHost = 'http://10.5.153.1:18080'
+
+const client = new MongoClient(mongoUrl);
+
+
+async function main() {
+  await client.connect();
+  const db = client.db();
+  console.log('Connected successfully to server');
+
+  // query auto pin cases
+  const pinedCases = await db.collection('PinnedServletMocker').find({appId: appId}).project({_id: 1, operationName: 1}).toArray();
+  const caseGroupByOp = new Map();
+  pinedCases.forEach(item => {
+    if (!caseGroupByOp.has(item.operationName)) caseGroupByOp.set(item.operationName, [])
+    caseGroupByOp.get(item.operationName).push(item._id)
+  })
+
+  // query service operations
+  const operations = await db.collection('ServiceOperation').find({appId: appId, operationName: {$in: [...new Set(pinedCases.map((item) => item.operationName))]}}).toArray()
+  // console.log(operations);
+
+  const createPlanReq = {
+    "appId": "community-test-0905",
+    "replayPlanType": 2,
+    "targetEnv": targetHost,
+    "operator": "Softprobe",
+    "operationCaseInfoList": operations.map(op => ({
+        "operationId": op._id.toString(),
+        "replayIdList": caseGroupByOp.get(op.operationName)
+    }))
+  }
+
+  const reqStr = JSON.stringify(createPlanReq, null, 4)
+  console.log(reqStr)
+
+  const response = await fetch(scheduleEndpoint, {
+    method: "POST", // *GET, POST, PUT, DELETE, etc.
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: reqStr,
+  });
+
+  return response.status;
+}
+
+main()
+  .then(console.log)
+  .catch(console.error)
+  .finally(() => client.close());
+```
+
+以下几项注意根据真实情况修改：
+
+- const mongoUrl = "mongodb://arex:iLoveArex@10.5.153.1:27017/arex_storage_db";
+- const scheduleEndpoint = 'http://10.5.153.1:8092/api/createPlan'
+- const appId = 'community-test-0905'
+- const targetHost = 'http://10.5.153.1:18080'
+
+脚本执行完成后，可以在前端报告页面看到回放任务：
+
+![](../resource/js.png)
