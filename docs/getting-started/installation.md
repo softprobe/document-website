@@ -41,7 +41,7 @@ The default configuration captures HTTP traffic for all services in the mesh. Yo
 
 ### Scoped Deployment
 
-To deploy the agent to specific namespaces or workloads only, you can create a scoped WasmPlugin configuration. See the [Deployment Guide](../guides/deployment) for detailed configuration options.
+To deploy the agent to specific namespaces or workloads only, you can create a scoped WasmPlugin configuration.
 
 ## Testing with Bookinfo Demo
 
@@ -84,6 +84,5 @@ kubectl delete wasmplugin -n istio-system sp-istio-agent
 
 ## Next Steps
 
-- [Deployment Guide](../deployment/deployment) - Advanced deployment configurations
 - [Troubleshooting](../deployment/troubleshooting) - Common issues and solutions
 - [Architecture](../architecture) - Learn how the agent works

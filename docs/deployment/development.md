@@ -155,7 +155,6 @@ kubectl logs <pod-name> -c istio-proxy | grep "SP"
 
 ## Next Steps
 
-- [Deployment Guide](./deployment) - Deploy your custom build to Istio
 - [Architecture](../architecture) - Understand the internal workings
-- [CI/CD Pipeline](../cicd/index) - Automated testing and releases
+- [CI/CD Pipeline](../cicd/) - Automated testing and releases
 

@@ -15,10 +15,8 @@
 
 ## 开始使用
 
-1. [注册账户](/getting-started/installation)
-2. [配置您的第一个项目](/getting-started/configuration)
-3. [开始使用我们的API](/api/authentication)
+1. [安装指南](/getting-started/installation)
 
 ---
 
-*需要帮助？查看我们的[常见问题](/faq)或[联系支持](mailto:support@example.com)。*
+*需要帮助？[联系支持](mailto:support@example.com)。*

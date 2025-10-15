@@ -31,6 +31,5 @@ Ready to get started? Check out our [Quick Start Guide](./getting-started/quick-
 
 - [Architecture](./architecture) - Understand how SP-Istio Agent works
 - [Development Guide](./deployment/development) - Build and test the extension
-- [Deployment Guide](./deployment/deployment) - Deploy to your Istio cluster
 - [Troubleshooting](./deployment/troubleshooting) - Common issues and solutions
-- [CI/CD Pipeline](./cicd/index) - Automated testing and release process
+- [CI/CD Pipeline](./cicd/) - Automated testing and release process

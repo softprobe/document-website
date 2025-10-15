@@ -88,12 +88,16 @@ const config: Config = {
           title: 'Docs',
           items: [
             {
-              label: 'Getting Started',
-              to: '/getting-started',
+              label: 'Installation',
+              to: '/getting-started/installation',
             },
             {
-              label: 'API Reference',
-              to: '/api',
+              label: 'Architecture',
+              to: '/architecture',
+            },
+            {
+              label: 'Development',
+              to: '/deployment/development',
             },
           ],
         },
@@ -117,10 +121,6 @@ const config: Config = {
         {
           title: 'More',
           items: [
-            {
-              label: 'Blog',
-              to: '/blog',
-            },
             {
               label: 'GitHub',
               href: 'https://github.com/your-org/document-website',

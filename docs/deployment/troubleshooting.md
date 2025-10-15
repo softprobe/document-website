@@ -248,4 +248,3 @@ If you continue to experience issues:
 
 - [Architecture](../architecture) - Understand how the agent works
 - [Development Guide](./development) - Debug and customize the agent
-- [Deployment Guide](./deployment) - Review deployment configurations

@@ -222,7 +222,6 @@ The agent enriches data with:
 ## Next Steps
 
 - [Development Guide](./deployment/development) - Build and extend the agent
-- [Deployment Guide](./deployment/deployment) - Deploy to your cluster
 - [Troubleshooting](./deployment/troubleshooting) - Debug issues
-- [CI/CD Pipeline](./cicd/index) - Automated testing and releases
+- [CI/CD Pipeline](./cicd/) - Automated testing and releases
 

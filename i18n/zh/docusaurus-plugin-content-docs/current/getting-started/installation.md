@@ -43,18 +43,9 @@ curl -X POST https://api.example.com/v1/data \
   -d '{"message": "Hello, World!"}'
 ```
 
-## 下一步
-
-现在您已经设置好了，探索这些资源：
-
-- [API参考](/docs/api/authentication)
-- [配置指南](/docs/getting-started/configuration)
-- [最佳实践](/docs/guides/troubleshooting)
-
 ## 需要帮助？
 
 如果您遇到任何问题：
 
-- 查看我们的[常见问题](/docs/faq)
 - 加入我们的[社区论坛](https://forum.example.com)
 - [联系支持](mailto:support@example.com)
