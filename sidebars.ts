@@ -17,19 +17,15 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: 'Getting Started',
-      items: ['getting-started/installation', 'getting-started/configuration'],
+      items: ['getting-started/quick-start', 'getting-started/installation'],
     },
     {
       type: 'category',
-      label: 'API Reference',
-      items: ['api/authentication', 'api/endpoints', 'api/errors'],
+      label: 'Deployment',
+      items: ['deployment/development', 'deployment/deployment', 'deployment/troubleshooting'],
     },
-    {
-      type: 'category',
-      label: 'Guides',
-      items: ['guides/webhooks', 'guides/analytics', 'guides/troubleshooting'],
-    },
-    'faq',
+    'architecture',
+    'cicd/index',
   ],
 };
 

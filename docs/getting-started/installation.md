@@ -1,60 +1,89 @@
-# Installation
+---
+sidebar_position: 2
+---
 
-Welcome to our platform! This guide will help you get up and running quickly.
+# Production Installation
+
+Deploy SP-Istio Agent to your production Istio service mesh.
 
 ## Prerequisites
 
-Before you begin, make sure you have:
+Before installing SP-Istio Agent in production, ensure you have:
 
-- A modern web browser
-- An active internet connection
-- Basic knowledge of web development (helpful but not required)
+- A running Kubernetes cluster
+- Istio installed and configured
+- kubectl access with appropriate permissions
+- Network connectivity to Softprobe endpoints
 
-## Step 1: Create an Account
+## Installation
 
-1. Visit our [signup page](https://app.example.com/signup)
-2. Enter your email address and create a password
-3. Verify your email address
-4. Complete your profile setup
-
-## Step 2: Create Your First Project
-
-1. Log into your dashboard
-2. Click "Create New Project"
-3. Enter a project name and description
-4. Choose your preferred settings
-5. Click "Create Project"
-
-## Step 3: Get Your API Key
-
-1. Navigate to your project settings
-2. Go to the "API Keys" section
-3. Click "Generate New Key"
-4. Copy and securely store your API key
-
-## Step 4: Make Your First API Call
-
-Here's a simple example using curl:
+Install SP-Istio Agent using the production-ready manifest:
 
 ```bash
-curl -X POST https://api.example.com/v1/data \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"message": "Hello, World!"}'
+kubectl apply -f https://raw.githubusercontent.com/softprobe/sp-istio/main/deploy/minimal.yaml
+```
+
+This will deploy the WasmPlugin globally across your Istio service mesh.
+
+## Verify Installation
+
+Check that the WasmPlugin has been created successfully:
+
+```bash
+kubectl get wasmplugin -A
+```
+
+You should see the SP-Istio Agent plugin listed.
+
+## Configuration
+
+The default configuration captures HTTP traffic for all services in the mesh. You can customize the behavior by modifying the WasmPlugin resource.
+
+### Scoped Deployment
+
+To deploy the agent to specific namespaces or workloads only, you can create a scoped WasmPlugin configuration. See the [Deployment Guide](../guides/deployment) for detailed configuration options.
+
+## Testing with Bookinfo Demo
+
+To validate the installation using Istio's Bookinfo demo application:
+
+```bash
+# Enable Istio injection for default namespace
+kubectl label namespace default istio-injection=enabled --overwrite
+
+# Deploy Bookinfo application
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.22/samples/bookinfo/platform/kube/bookinfo.yaml
+
+# Deploy Bookinfo gateway
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.22/samples/bookinfo/networking/bookinfo-gateway.yaml
+
+# Apply scoped test configuration
+kubectl apply -f https://raw.githubusercontent.com/softprobe/sp-istio-wasm/main/deploy/test-bookinfo.yaml
+```
+
+### Generate Test Traffic
+
+```bash
+# Get the ingress gateway URL
+export GATEWAY_URL=$(kubectl -n istio-system get svc istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+
+# Generate some traffic
+curl -sf "http://${GATEWAY_URL}/productpage" >/dev/null
+
+# Verify the plugin is working
+kubectl get wasmplugin -A
+```
+
+## Uninstallation
+
+To remove SP-Istio Agent from your cluster:
+
+```bash
+kubectl delete wasmplugin -n istio-system sp-istio-agent
 ```
 
 ## Next Steps
 
-Now that you're set up, explore these resources:
-
-- [API Reference](/docs/api/authentication)
-- [Configuration Guide](/docs/getting-started/configuration)
-- [Best Practices](/docs/guides/troubleshooting)
-
-## Need Help?
-
-If you run into any issues:
-
-- Check our [FAQ](/docs/faq)
-- Join our [community forum](https://forum.example.com)
-- [Contact support](mailto:support@example.com)
+- [Deployment Guide](../deployment/deployment) - Advanced deployment configurations
+- [Troubleshooting](../deployment/troubleshooting) - Common issues and solutions
+- [Architecture](../architecture) - Learn how the agent works

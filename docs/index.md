@@ -1,24 +1,36 @@
-# Welcome to Our Documentation
+---
+sidebar_position: 1
+---
 
-Welcome to our comprehensive documentation platform. Here you'll find everything you need to get started with our SaaS service.
+# SP-Istio Agent
 
-## Quick Start
+**Business-level distributed tracing and analytics for Istio service mesh**
 
-Get up and running in minutes with our quick start guide.
+Zero-code changes required • Complete request visibility • Advanced troubleshooting
 
-## Features
+High-performance, asynchronous HTTP session capture built with Rust and WebAssembly (WASM)
 
-- **Easy Integration** - Simple API integration
-- **Real-time Analytics** - Monitor your data in real-time
-- **Scalable Infrastructure** - Built to grow with your business
-- **24/7 Support** - We're here to help when you need us
+## What is SP-Istio Agent?
+
+SP-Istio Agent is a WebAssembly (WASM) plugin for Istio that captures complete HTTP request/response data and sends it to Softprobe for business-level analytics and troubleshooting without modifying application code.
+
+## Key Benefits
+
+- **🔍 Complete Visibility**: Capture full HTTP request/response data across your service mesh
+- **🚀 Faster Troubleshooting**: Business-level tracing reduces debugging time from hours to minutes
+- **📊 Data Analytics**: Rich insights into API usage patterns and business flows
+- **⚡ Zero Intrusion**: No application code changes required
+- **🔒 Enterprise Ready**: Production-grade security and performance
+- **🏎️ High Performance & Async**: Rust+WASM streaming, asynchronous HTTP capture with minimal overhead
 
 ## Getting Started
 
-1. [Sign up for an account](/getting-started/installation)
-2. [Configure your first project](/getting-started/configuration)
-3. [Start using our API](/api/authentication)
+Ready to get started? Check out our [Quick Start Guide](./getting-started/quick-start) to set up a demo environment in minutes, or jump to the [Installation Guide](./getting-started/installation) for production deployment.
 
----
+## Learn More
 
-*Need help? Check out our [FAQ](/faq) or [contact support](mailto:support@example.com).*
+- [Architecture](./architecture) - Understand how SP-Istio Agent works
+- [Development Guide](./deployment/development) - Build and test the extension
+- [Deployment Guide](./deployment/deployment) - Deploy to your Istio cluster
+- [Troubleshooting](./deployment/troubleshooting) - Common issues and solutions
+- [CI/CD Pipeline](./cicd/index) - Automated testing and release process
