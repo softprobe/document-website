@@ -47,22 +47,17 @@ const config: Config = {
 
   presets: [
     [
-      'classic',
+      '@docusaurus/preset-classic',
       {
         docs: {
+          routeBasePath: '/', // Serve the docs at the site's root
           sidebarPath: './sidebars.ts',
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
             'https://github.com/your-org/document-website/tree/main/',
         },
-        blog: {
-          showReadingTime: true,
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/your-org/document-website/tree/main/',
-        },
+        blog: false, // Optional: disable the blog plugin
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -74,25 +69,14 @@ const config: Config = {
     // Replace with your project's social card
     image: 'img/docusaurus-social-card.jpg',
     navbar: {
-      title: 'Documentation',
+      title: 'Softprobe Documentation',
       logo: {
         alt: 'Documentation Logo',
-        src: 'img/logo.svg',
+        src: 'img/sp-logo-trans.ico',
       },
       items: [
         {
-          type: 'docSidebar',
-          sidebarId: 'tutorialSidebar',
-          position: 'left',
-          label: 'Docs',
-        },
-        {
           type: 'localeDropdown',
-          position: 'right',
-        },
-        {
-          href: 'https://github.com/your-org/document-website',
-          label: 'GitHub',
           position: 'right',
         },
       ],
@@ -105,11 +89,11 @@ const config: Config = {
           items: [
             {
               label: 'Getting Started',
-              to: '/docs/getting-started',
+              to: '/getting-started',
             },
             {
               label: 'API Reference',
-              to: '/docs/api',
+              to: '/api',
             },
           ],
         },

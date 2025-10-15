@@ -15,10 +15,10 @@ Get up and running in minutes with our quick start guide.
 
 ## Getting Started
 
-1. [Sign up for an account](/docs/getting-started/installation)
-2. [Configure your first project](/docs/getting-started/configuration)
-3. [Start using our API](/docs/api/authentication)
+1. [Sign up for an account](/getting-started/installation)
+2. [Configure your first project](/getting-started/configuration)
+3. [Start using our API](/api/authentication)
 
 ---
 
-*Need help? Check out our [FAQ](/docs/faq) or [contact support](mailto:support@example.com).*
+*Need help? Check out our [FAQ](/faq) or [contact support](mailto:support@example.com).*
