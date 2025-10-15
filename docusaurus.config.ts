@@ -8,14 +8,14 @@ const config: Config = {
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
-  url: 'https://your-docusaurus-site.example.com',
+  url: 'https://document.softprobe.ai/',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'your-org', // Usually your GitHub org/user name.
+  organizationName: 'Softprobe.ai', // Usually your GitHub org/user name.
   projectName: 'document-website', // Usually your repo name.
 
   onBrokenLinks: 'throw',
@@ -54,8 +54,8 @@ const config: Config = {
           sidebarPath: './sidebars.ts',
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl:
-            'https://github.com/your-org/document-website/tree/main/',
+          // editUrl:
+          //   'https://github.com/your-org/document-website/tree/main/',
         },
         blog: false, // Optional: disable the blog plugin
         theme: {
