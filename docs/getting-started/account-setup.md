@@ -2,131 +2,134 @@
 sidebar_position: 4
 ---
 
-# Account Setup Guide
+# Account Setup
 
-This guide walks you through setting up your Softprobe account, from registration to API key generation, so you can start using SP-Istio Agent with your service mesh.
+Set up your Softprobe account and generate API keys for SP-Istio Agent.
 
-## 📋 Table of Contents
+## 📋 Overview
 
-1. [Step 1: Register for a Softprobe Account](#step-1-register-for-a-softprobe-account)
-2. [Step 2: Create a Tenant Group](#step-2-create-a-tenant-group)
-3. [Step 3: Generate an API Key](#step-3-generate-an-api-key)
-4. [Frequently Asked Questions](#faq)
-5. [Technical Support](#technical-support)
+This guide walks you through:
+- Creating a Softprobe account
+- Setting up your tenant group
+- Generating API keys
+- Downloading configuration files
 
----
+## 🚀 Getting Started
 
-## Step 1: Register for a Softprobe Account
+### Step 1: Create Your Account
 
-### 1.1 Visit the Registration Page
+1. Visit [Softprobe Dashboard](https://dashboard.softprobe.ai)
+2. Click **"Sign Up"** to create a new account
+3. Fill in your details:
+   - **Email address** (will be your login username)
+   - **Password** (minimum 8 characters)
+4. Verify your email address by clicking the link sent to your inbox
 
-1. Open your browser and go to [https://dashboard.softprobe.ai](https://dashboard.softprobe.ai)
-2. Click the **"Sign Up"** button in the top right corner of the page
+### Step 2: Access Settings and Create Tenant Groups
 
-### 1.2 Fill in Your Registration Information
+After email verification and login, you can access the Settings page to manage tenant groups:
 
-On the registration page, fill in the following information:
+1. Navigate to the **[Settings](https://dashboard.softprobe.ai/settings)** page
+2. **Create your first tenant group**
+   - Click the "Create Group" button
+   - **Tenant Group Name**: Choose a unique name for your organization
+     - This will be used to organize your services and data
+     - Example: `my-company-prod`, `acme-corp`, `team-alpha`
+   - **Description** (optional): Add a brief description of your group
+3. Click **"Create Tenant Group"**
 
-- **Email Address**: Used for login and receiving notifications
-- **Password**: It is recommended to use a strong password (at least 8 characters, including letters, numbers, and special characters)
-- **Confirm Password**: Re-enter your password to confirm
+:::tip
+Choose your tenant group name carefully as it cannot be changed later. Use a name that clearly identifies your organization or team.
+:::
 
-### 1.3 Verify Your Email
+### Step 3: Generate API Key
 
-1. Click the **"Create Account"** button
-2. Check your email for a verification message
-3. Click the verification link in the email to complete email verification
+Once your tenant group is created:
 
-### 1.4 Log In to Your Account
+1. Navigate to **"API Keys"** in the dashboard sidebar
+2. Click **"Generate New API Key"**
+3. Provide the following information:
+   - **Key Name**: A descriptive name (e.g., `production-cluster`, `dev-environment`)
+4. Click **"Generate Key"**
 
-1. Return to [https://softprobe.ai](https://softprobe.ai)
-2. Click the **"Sign In"** button
-3. Enter your email and password
-4. Click **"Sign In"** to complete the login
+:::warning Important
+- Your API key will be displayed **only once**
+- Copy and store it securely immediately
+- The `minimal.yaml` configuration file will be automatically downloaded
+- You cannot retrieve the key again after closing the dialog
+:::
 
----
+## 📁 Configuration File
 
-## Step 2: Create a Tenant Group
+When you generate an API key, a `minimal.yaml` file is automatically downloaded. This file contains:
 
-A Tenant Group is a core concept in Softprobe, used to manage team members and API access permissions.
+- Your personalized API key
+- Pre-configured endpoints
+- Default collection rules
+- All necessary Kubernetes resources
 
-### 2.1 Go to the Settings Page
+### File Structure
 
-1. After logging in, click on **"Settings"** in the left navigation bar
-2. Find the **"Tenant Groups"** section on the settings page
+The downloaded `minimal.yaml` includes:
 
-### 2.2 Create Your First Tenant Group
-
-If you don't have any tenant groups yet, you will see an empty state prompt:
-
+```yaml
+# WasmPlugin configuration with your API key
+apiVersion: extensions.istio.io/v1alpha1
+kind: WasmPlugin
+metadata:
+  name: sp-istio-agent
+spec:
+  pluginConfig:
+    api_key: "your-generated-api-key"
+    # ... other configurations
 ```
-No tenant groups
-You are not part of any tenant groups yet. Create one to get started.
-```
 
-1. Click the **"Create Your First Group"** button
-2. In the dialog box that appears, fill in:
-   - **Group Name**: e.g., "My Development Team"
-   - **Description**: e.g., "Tenant group for the main development team"
-3. Click the **"Create"** button
+## 🔐 Security Best Practices
 
-### 2.3 Manage Team Members (Optional)
+### API Key Management
 
-After creating a tenant group, you can invite team members:
+- **Store securely**: Keep API keys in secure credential management systems
+- **Rotate regularly**: Generate new keys periodically and retire old ones
+- **Use descriptive names**: Name keys based on their purpose and environment
+- **Monitor usage**: Check the dashboard for API key activity
 
-1. Expand the tenant group card you created (click the dropdown arrow on the right)
-2. Find the input box at the bottom of the **"Members"** section
-3. Enter the member's email address
-4. Click the **"Add"** button or press **Enter**
 
-**Permission Descriptions:**
-- **Owner**: Can manage members and create API Keys
-- **Member**: Can view information and use API Keys
+This allows for better tracking and security isolation.
 
----
+## 🔧 Next Steps
 
-## Step 3: Generate an API Key
+After completing account setup:
 
-An API Key is the credential your application uses to communicate with the Softprobe service.
+1. **For Quick Testing**: Follow the [Quick Start Guide](./quick-start.md)
+2. **For Production**: Follow the [Production Installation Guide](./installation.md)
+3. **For Custom Configuration**: Review the [Configuration Guide](./config.md)
 
-### 3.1 Create an API Key
+## ❓ Troubleshooting
 
-1. In the tenant group card, find the **"API Keys"** section
-2. Click the **"Add API Key"** button
-3. In the dialog box that appears, fill in:
-   - **API Key Name**: e.g., "Production API Key" or "Development API Key"
-   - **Description** (optional): A description of the API Key's purpose
-4. Click the **"Create API Key"** button
+### Common Issues
 
-### 3.2 Create API Key and Download Configuration
+**Can't access the dashboard?**
+- Check your internet connection
+- Verify the URL: `https://dashboard.softprobe.ai`
+- Try clearing your browser cache
 
-When you click the **"Create API Key"** button, the system will automatically:
+**Email verification not received?**
+- Check your spam/junk folder
+- Ensure the email address is correct
+- Contact support if the issue persists
 
-1. Generate a new API Key for your tenant group
-2. **Automatically download** a `minimal.yaml` configuration file
+**API key generation failed?**
+- Ensure your tenant group is properly set up
+- Check that you have the necessary permissions
+- Try refreshing the page and generating again
 
-### 3.3 Important: Save the Configuration File
+### Getting Help
 
-⚠️ **Critical Reminder**: The `minimal.yaml` file will only be downloaded **once** when you create the API Key!
+If you encounter issues during account setup:
 
-**About the `minimal.yaml` file:**
-- This file contains the complete Kubernetes configuration for deploying SP-Istio WASM Plugin
-- Your API Key is already embedded in this configuration file
-- It includes all necessary settings for Istio service mesh integration
-- Ready to use with `kubectl apply -f minimal.yaml`
-
-**Important Notes:**
-- ✅ **Save the file immediately** after download
-- ⚠️ **No re-download option** - if you lose this file, you must create a new API Key
-- 🔒 **Keep it secure** - the file contains your API Key credentials
-
-### 3.4 API Key Format
-
-The format for a Softprobe API Key is:
-```
-sk_live_[random_string]  # Production environment
-sk_test_[random_string]  # Test environment
-```
+- **Documentation**: Check our [troubleshooting guide](../deployment/troubleshooting.md)
+- **Support**: Contact our support team through the dashboard
+- **Community**: Join our community discussions for peer help
 
 ---
 ## FAQ

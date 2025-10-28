@@ -2,53 +2,145 @@
 sidebar_position: 3
 ---
 
-# SP-Istio Agent - Configuration Guide
+# Configuration Guide
 
-Welcome to the SP-Istio Agent! This document serves as a detailed guide to help you understand and configure the `sp-istio-agent`. Our goal is to make it easy for you to deploy and use our agent to collect and analyze traffic in your service mesh.
+Learn how to configure SP-Istio Agent for your specific use cases.
 
-This document primarily explains the configuration in the `minimal.yaml` file, which is the core of deploying the SP-Istio Agent.
+## 📋 Overview
 
-## Table of Contents
+This guide covers:
+- Understanding the configuration structure
+- Setting up collection rules
+- Configuring service discovery
+- Advanced configuration options
 
-1.  [**Quick Start: `minimal.yaml` Overview**](#quick-start-minimalyaml-overview)
-2.  [**Core Component: WasmPlugin**](#core-component-wasmplugin)
-3.  [**Collection Rules Explained (`collectionRules`)**](#collection-rules-explained-collectionrules)
-    - [Collection in SERVER Mode](#collection-in-server-mode)
-    - [Collection in CLIENT Mode](#collection-in-client-mode)
-    - [Using Regular Expressions](#using-regular-expressions)
-4.  [**Service Discovery: Automatically Identifying Your Services**](#service-discovery-automatically-identifying-your-services)
-5.  [**External Communication: Connecting to the Softprobe Backend**](#external-communication-connecting-to-the-softprobe-backend)
+## 🏗️ Configuration Structure
 
----
+The SP-Istio Agent configuration is defined in a `minimal.yaml` file that contains three main components:
 
-## Quick Start: `minimal.yaml` Overview
+### 1. WasmPlugin Resource
 
-The `minimal.yaml` file contains all the configuration you need to get started with the SP-Istio Agent. It defines how the agent is injected into your service mesh and how it will collect data.
+The core component that loads the SP-Istio Agent into Istio's Envoy proxies:
 
-The file consists of three main parts:
+```yaml
+apiVersion: extensions.istio.io/v1alpha1
+kind: WasmPlugin
+metadata:
+  name: sp-istio-agent
+  namespace: istio-system
+spec:
+  url: oci://ghcr.io/softprobe/sp-istio-wasm:latest
+  pluginConfig:
+    # Your configuration goes here
+```
 
-1.  **WasmPlugin (SERVER and CLIENT modes)**: Configures the agent to monitor and collect traffic flowing in and out of your services.
-2.  **EnvoyFilter**: An auxiliary component that automatically detects and tags your service names, which is crucial for correctly identifying and classifying data in the Softprobe platform.
-3.  **Network Resources (`ServiceEntry` and `DestinationRule`)**: Ensures that your service mesh can securely send the collected data to the Softprobe backend.
+### 2. EnvoyFilter Resource
 
-Next, we will delve into each part.
+Configures Envoy proxy settings for optimal performance:
 
----
+```yaml
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: sp-istio-agent-config
+  namespace: istio-system
+spec:
+  configPatches:
+    # Envoy-specific configurations
+```
 
-## Core Component: WasmPlugin
+### 3. Network Resources
 
-`WasmPlugin` is a custom resource in Istio that allows us to dynamically load the SP-Istio Agent (a WebAssembly module) into your service's proxy (Envoy). This way, we can achieve traffic monitoring and data collection without making any changes to your application code.
+Defines network policies and service discovery settings.
 
-In `minimal.yaml`, we define two `WasmPlugin` instances: one for SERVER mode and one for CLIENT mode.
+## ⚙️ Core Configuration Options
 
-### Common Configuration Options
+### Basic Settings
 
-| Key | Description | Example |
-| :--- | :--- | :--- |
-| `sp_backend_url` | **Softprobe Backend URL**. The agent sends the collected data to this URL. Usually, no change is needed. | `https://o.softprobe.ai` |
-| `api_key` | **Your Organization's API Key**. Used for authentication to ensure data is securely sent to your account. | `"your-real-api-key"` |
-| `traffic_direction` | **Traffic Direction**. Explicitly specifies whether the agent handles `server` (inbound) or `client` (outbound) traffic. | `"server"` or `"client"` |
-| `collectionRules` | **Collection Rules**. The core configuration for precisely controlling what data to collect. See the next section for details. | |
+| Field | Type | Description | Default |
+|-------|------|-------------|---------|
+| `api_key` | string | Your Softprobe API key | Required |
+| `sp_backend_url` | string | Softprobe collection endpoint | `https://o.softprobe.ai` |
+| `service_name` | string | Override service name detection | Auto-detected |
+
+### Example Basic Configuration
+
+```yaml
+pluginConfig:
+  api_key: "your-api-key-here"
+  sp_backend_url: "https://o.softprobe.ai"
+  traffic_direction: "server"
+  collectionRules:
+    http:
+      server:
+        - path: ".*"
+```
+
+## 🎯 Collection Rules
+
+Collection rules define what traffic to capture and analyze. They support both `SERVER` (inbound) and `CLIENT` (outbound) modes through the `traffic_direction` setting.
+
+### Rule Structure
+
+**For SERVER mode (inbound traffic):**
+```yaml
+pluginConfig:
+  traffic_direction: "server"
+  collectionRules:
+    http:
+      server:
+        - path: ".*"              # Regex pattern for URL paths
+```
+
+**For CLIENT mode (outbound traffic):**
+```yaml
+pluginConfig:
+  traffic_direction: "client"
+  collectionRules:
+    http:
+      client:
+        - host: ".*"              # Regex pattern for hostnames
+          paths: [".*"]           # List of regex patterns for paths
+```
+
+### SERVER Mode Rules
+
+Capture inbound requests to your services:
+
+```yaml
+pluginConfig:
+  traffic_direction: "server"
+  collectionRules:
+    http:
+      server:
+        # Capture all API endpoints
+        - path: "/api/.*"
+        # Capture specific endpoints
+        - path: "/health"
+        - path: "/metrics"
+        - path: "/api/v1/users"
+```
+
+### CLIENT Mode Rules
+
+Capture outbound requests from your services:
+
+```yaml
+pluginConfig:
+  traffic_direction: "client"
+  collectionRules:
+    http:
+      client:
+        # Capture all outbound requests to any host
+        - host: ".*"
+          paths: [".*"]
+        # Capture specific API calls to external services
+        - host: ".*\\.googleapis\\.com"
+          paths: ["/maps/api/.*", "/drive/v3/files"]
+        # Capture requests to specific service
+        - host: "my-api\\.com"
+          paths: ["/api/.*"]
+```
 
 ---
 

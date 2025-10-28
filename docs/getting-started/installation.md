@@ -6,26 +6,44 @@ sidebar_position: 2
 
 Deploy SP-Istio Agent to your production Istio service mesh.
 
-## Prerequisites
+## 📋 Overview
+
+This guide covers production deployment of SP-Istio Agent, including:
+- Prerequisites and requirements
+- Installation steps
+- Verification procedures
+- Configuration options
+
+## ⚡ Prerequisites
 
 Before installing SP-Istio Agent in production, ensure you have:
 
-- A running Kubernetes cluster
-- Istio installed and configured
-- kubectl access with appropriate permissions
-- Network connectivity to Softprobe endpoints
+- **Kubernetes cluster** (v1.20+) with sufficient resources
+- **Istio installed and configured** (v1.15+)
+- **kubectl access** with cluster-admin permissions
+- **Network connectivity** to Softprobe endpoints `https://o.softprobe.ai`
+- **API key** from your Softprobe account ([Account Setup Guide](./account-setup))
 
-## Installation
+## 🚀 Installation
 
-Install SP-Istio Agent using the production-ready manifest:
+Install SP-Istio Agent using your personalized configuration:
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/softprobe/sp-istio/main/deploy/minimal.yaml
+# Apply the minimal.yaml file downloaded from your account setup
+kubectl apply -f minimal.yaml
 ```
+
+:::info
+The `minimal.yaml` file should be the one automatically downloaded when you generated your API key in the [Account Setup](./account-setup.md) step. This file contains your personalized API key and pre-configured settings.
+:::
 
 This will deploy the WasmPlugin globally across your Istio service mesh.
 
-## Verify Installation
+:::tip Custom Configuration
+If you need to customize the configuration (such as collection rules, endpoints, etc.), please refer to the [Configuration Guide](./config.md) for detailed instructions.
+:::
+
+## ✅ Verify Installation
 
 Check that the WasmPlugin has been created successfully:
 
@@ -33,9 +51,23 @@ Check that the WasmPlugin has been created successfully:
 kubectl get wasmplugin -A
 ```
 
-You should see the SP-Istio Agent plugin listed.
+You should see the SP-Istio Agent plugin listed:
 
-## Configuration
+```
+NAMESPACE      NAME              AGE
+istio-system   sp-istio-agent    30s
+```
+
+### Verify Plugin Loading
+
+Check Envoy logs to ensure the plugin is loading correctly:
+
+```bash
+# Get a pod with Istio sidecar
+kubectl get pods -l app=<your-app> -o name | head -1 | xargs kubectl logs -c istio-proxy | grep -i wasm
+```
+
+## ⚙️ Configuration
 
 The default configuration captures HTTP traffic for all services in the mesh. While the default settings are a great starting point, you will likely want to customize the collection rules to fit your specific needs.
 
@@ -45,7 +77,7 @@ For a detailed guide on all configuration options, including how to set up colle
 
 To deploy the agent to specific namespaces or workloads only, you can create a scoped WasmPlugin configuration. See the [Configuration Guide](./config.md) for examples.
 
-## Testing with Bookinfo Demo
+## 🧪 Testing with Bookinfo Demo
 
 To validate the installation using Istio's Bookinfo demo application:
 

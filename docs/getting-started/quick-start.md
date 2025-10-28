@@ -6,7 +6,15 @@ sidebar_position: 1
 
 Get started with SP-Istio Agent in minutes using a local Kubernetes cluster with Kind.
 
-## Prerequisites
+## 📋 What You'll Learn
+
+In this guide, you'll:
+- Set up a local Kubernetes cluster with Istio
+- Deploy SP-Istio Agent with a demo application
+- Generate sample traffic and view results in Softprobe Dashboard
+- Clean up resources when done
+
+## ⚡ Prerequisites
 
 - **Operating System**: macOS (or Linux with Docker)
 - **Required Tools**:

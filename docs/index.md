@@ -23,13 +23,38 @@ SP-Istio Agent is a WebAssembly (WASM) plugin for Istio that captures complete H
 - **🔒 Enterprise Ready**: Production-grade security and performance
 - **🏎️ High Performance & Async**: Rust+WASM streaming, asynchronous HTTP capture with minimal overhead
 
-## Getting Started
+## 🚀 Quick Start
 
-Ready to get started? Check out our [Quick Start Guide](./getting-started/quick-start) to set up a demo environment in minutes, or jump to the [Installation Guide](./getting-started/installation) for production deployment.
+New to SP-Istio Agent? Get up and running in minutes:
 
-## Learn More
+1. **[Account Setup](./getting-started/account-setup)** - Create your Softprobe account and get API keys
+2. **[Quick Start Guide](./getting-started/quick-start)** - Set up a demo environment with Kind
+3. **[Production Installation](./getting-started/installation)** - Deploy to your production cluster
+4. **[Configuration Guide](./getting-started/config)** - Customize collection rules and settings
 
-- [Architecture](./architecture) - Understand how SP-Istio Agent works
-- [Development Guide](./deployment/development) - Build and test the extension
-- [Troubleshooting](./deployment/troubleshooting) - Common issues and solutions
-- [CI/CD Pipeline](./cicd/) - Automated testing and release process
+## 📚 Documentation Sections
+
+### Getting Started
+Perfect for first-time users and quick deployments:
+- **[Account Setup](./getting-started/account-setup)** - Register and configure your Softprobe account
+- **[Quick Start](./getting-started/quick-start)** - Demo environment setup in minutes
+- **[Installation](./getting-started/installation)** - Production deployment guide
+- **[Configuration](./getting-started/config)** - Detailed configuration options
+
+### Architecture & Development
+For developers and system architects:
+- **[Architecture](./architecture)** - How SP-Istio Agent works under the hood
+- **[Development Guide](./deployment/development)** - Build and test the extension
+- **[CI/CD Pipeline](./cicd/)** - Automated testing and release process
+
+### Operations & Support
+For production operations and troubleshooting:
+- **[Deployment Guide](./deployment/deployment)** - Advanced deployment scenarios
+- **[Troubleshooting](./deployment/troubleshooting)** - Common issues and solutions
+
+## 💡 Need Help?
+
+- **First time user?** Start with our [Quick Start Guide](./getting-started/quick-start)
+- **Production deployment?** Check the [Installation Guide](./getting-started/installation)
+- **Having issues?** Visit our [Troubleshooting Guide](./deployment/troubleshooting)
+- **Want to contribute?** See our [Development Guide](./deployment/development)
