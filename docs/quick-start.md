@@ -33,10 +33,9 @@ brew install kind kubectl istioctl
 
 First, you need to obtain your personalized `minimal.yaml` configuration file:
 
-1. Go to [Softprobe Dashboard](https://dashboard.softprobe.ai)
-2. Follow the [Account Setup Guide](./account-setup.md) to create an account and generate an API key
-3. When you create an API key, a `minimal.yaml` file will be automatically downloaded
-4. **Important**: Save this file as it's a one-time download
+1. Follow the [Account Setup Guide](./account-setup.md) to create an account and generate an API key
+2. When you create an API key, a `minimal.yaml` file will be automatically downloaded
+3. **Important**: Save this file as it's a one-time download
 
 ## Step 2: Set up Kind Cluster with Istio
 

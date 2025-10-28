@@ -313,7 +313,7 @@ kubectl describe pods -l app=<your-app> > pod-status.txt
 
 ### 2. Support Channels
 
-- **Documentation**: Check our [configuration guide](../getting-started/config.md)
+- **Documentation**: Check our [configuration guide](../config.md)
 - **Dashboard**: Use the help section in Softprobe Dashboard
 - **Community**: Join our community discussions
 - **Support**: Contact technical support with diagnostic information
