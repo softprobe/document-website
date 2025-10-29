@@ -28,8 +28,8 @@ Softprobe is a comprehensive observability platform that provides business-level
 New to Softprobe? Get up and running in minutes:
 
 1. **[Account Setup](./account-setup)** - Create your Softprobe account and get API keys
-2. **[Quick Start Guide](./quick-start)** - Set up a demo environment with Kind
-3. **[Production Installation](./installation)** - Deploy to your production cluster
+2. **[Quick Start Guide](./getting-started/quick-start)** - Set up a demo environment with Kind
+3. **[Production Installation](./getting-started/installation)** - Deploy to your production cluster
 4. **[Configuration Guide](./config)** - Customize collection rules and settings
 
 ## 📚 Documentation Sections
@@ -37,8 +37,8 @@ New to Softprobe? Get up and running in minutes:
 ### Getting Started
 Perfect for first-time users and quick deployments:
 - **[Account Setup](./account-setup)** - Register and configure your Softprobe account
-- **[Quick Start](./quick-start)** - Demo environment setup in minutes
-- **[Installation](./installation)** - Production deployment guide
+- **[Quick Start](./getting-started/quick-start)** - Demo environment setup in minutes
+- **[Installation](./getting-started/installation)** - Production deployment guide
 - **[Configuration](./config)** - Detailed configuration options
 
 ### Architecture & Development
@@ -54,7 +54,7 @@ For production operations and troubleshooting:
 
 ## 💡 Need Help?
 
-- **First time user?** Start with our [Quick Start Guide](./quick-start)
-- **Production deployment?** Check the [Installation Guide](./installation)
+- **First time user?** Start with our [Quick Start Guide](./getting-started/quick-start)
+- **Production deployment?** Check the [Installation Guide](./getting-started/installation)
 - **Having issues?** Visit our [Troubleshooting Guide](./deployment/troubleshooting)
 - **Want to contribute?** See our [Development Guide](./deployment/development)

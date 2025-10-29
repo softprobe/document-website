@@ -2,30 +2,30 @@ import type {SidebarsConfig} from '@docusaurus/plugin-content-docs';
 
 /**
  * Creating a sidebar enables you to:
- - create an ordered group of docs
- - render a sidebar for each doc of that group
- - provide next/previous navigation
-
- The sidebars can be generated from the filesystem, or explicitly defined here.
-
- Create as many sidebars as you want.
+ * - create an ordered group of docs
+ * - render a sidebar for each doc of that group
+ * - provide next/previous navigation
+ *
+ * The sidebars can be generated from the filesystem, or explicitly defined here.
+ *
+ * Create as many sidebars as you want.
  */
 const sidebars: SidebarsConfig = {
   // By default, Docusaurus generates a sidebar from the docs folder structure
   tutorialSidebar: [
     'index',
-    'quick-start',
-    'account-setup',
-    'installation', 
-    'config',
-    // Deployment, architecture, and cicd sections are hidden
-    // {
-    //   type: 'category',
-    //   label: 'Deployment',
-    //   items: ['deployment/development', 'deployment/deployment', 'deployment/troubleshooting'],
-    // },
-    // 'architecture',
-    // 'cicd/index',
+    {
+      type: 'category',
+      label: 'Getting Started',
+      items: ['getting-started/quick-start', 'getting-started/installation'],
+    },
+    {
+      type: 'category',
+      label: 'Deployment',
+      items: ['deployment/development', 'deployment/deployment', 'deployment/troubleshooting'],
+    },
+    'architecture',
+    'cicd/index',
   ],
 };
 
