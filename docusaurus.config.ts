@@ -33,12 +33,14 @@ const config: Config = {
         direction: "ltr",
         htmlLang: "en-US",
         calendar: "gregory",
+        // path: "en",
       },
       zh: {
         label: "中文",
         direction: "ltr",
         htmlLang: "zh-CN",
         calendar: "gregory",
+        // path: "zh",
       },
     },
   },
@@ -72,7 +74,12 @@ const config: Config = {
         alt: "Documentation Logo",
         src: "img/sp-logo-trans.ico",
       },
-      items: [],
+      items: [
+        // {
+        //   type: "localeDropdown",
+        //   position: "right",
+        // },
+      ],
     },
     footer: {
       style: "dark",
