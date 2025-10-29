@@ -100,8 +100,8 @@ This allows for better tracking and security isolation.
 
 After completing account setup:
 
-1. **For Quick Testing**: Follow the [Quick Start Guide](./quick-start.md)
-2. **For Production**: Follow the [Production Installation Guide](./installation.md)
+1. **For Quick Testing**: Follow the [Quick Start Guide](./getting-started/quick-start)
+2. **For Production**: Follow the [Production Installation Guide](./getting-started/installation)
 3. **For Custom Configuration**: Review the [Configuration Guide](./config.md)
 
 ## ❓ Troubleshooting
@@ -127,7 +127,7 @@ After completing account setup:
 
 If you encounter issues during account setup:
 
-- **Documentation**: Check our [troubleshooting guide](../deployment/troubleshooting.md)
+- **Documentation**: Check our [troubleshooting guide](./deployment/troubleshooting)
 - **Support**: Contact our support team through the dashboard
 - **Community**: Join our community discussions for peer help
 
