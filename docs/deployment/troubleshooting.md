@@ -48,7 +48,7 @@ kubectl describe wasmplugin sp-istio-agent -n istio-system
 2. **Check Image URL:**
    ```yaml
    spec:
-     url: oci://ghcr.io/softprobe/sp-istio-wasm:latest  # Correct format
+     url:  oci://docker.io/softprobe/sp-istio-wasm:latest  # Correct format
    ```
 
 3. **Restart Affected Pods:**

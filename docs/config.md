@@ -29,7 +29,7 @@ metadata:
   name: sp-istio-agent
   namespace: istio-system
 spec:
-  url: oci://ghcr.io/softprobe/sp-istio-wasm:latest
+  url: oci://docker.io/softprobe/sp-istio-wasm:latest
   pluginConfig:
     # Your configuration goes here
 ```
