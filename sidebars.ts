@@ -14,18 +14,18 @@ const sidebars: SidebarsConfig = {
   // By default, Docusaurus generates a sidebar from the docs folder structure
   tutorialSidebar: [
     'index',
-    {
-      type: 'category',
-      label: 'Getting Started',
-      items: ['getting-started/quick-start', 'getting-started/installation'],
-    },
-    {
-      type: 'category',
-      label: 'Deployment',
-      items: ['deployment/development', 'deployment/deployment', 'deployment/troubleshooting'],
-    },
-    'architecture',
-    'cicd/index',
+    'quick-start',
+    'account-setup',
+    'installation', 
+    'config',
+    // Deployment, architecture, and cicd sections are hidden
+    // {
+    //   type: 'category',
+    //   label: 'Deployment',
+    //   items: ['deployment/development', 'deployment/deployment', 'deployment/troubleshooting'],
+    // },
+    // 'architecture',
+    // 'cicd/index',
   ],
 };
 

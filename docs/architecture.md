@@ -1,67 +1,111 @@
 ---
-sidebar_position: 3
+sidebar_position: 5
 ---
 
 # Architecture
 
-Understanding how SP-Istio Agent works under the hood.
+Understanding the SP-Istio Agent architecture and how it integrates with your service mesh.
 
-## Overview
+## 📋 Overview
 
-SP-Istio Agent is a high-performance WebAssembly (WASM) plugin that runs inside Envoy proxies (Istio sidecars) to capture and analyze HTTP traffic at the business level.
+SP-Istio Agent is a WebAssembly-based observability solution that integrates seamlessly with Istio service mesh to provide:
 
-## Technology Stack
+- **Non-intrusive monitoring** - No code changes required
+- **Real-time traffic analysis** - Capture and analyze HTTP/gRPC traffic
+- **Service dependency mapping** - Automatic service topology discovery
+- **Performance insights** - Latency, throughput, and error rate metrics
 
-- **Rust** - Memory-safe, high-performance systems programming
-- **WebAssembly (WASM)** - Portable, sandboxed execution environment
-- **Proxy-Wasm ABI** - Standard interface for Envoy proxy extensions
-- **Protocol Buffers** - Efficient data serialization
-- **OpenTelemetry** - Telemetry data collection and export
+## 🏗️ Architecture Components
 
-## Request Flow
+### Core Technology Stack
 
-The following diagram illustrates how requests flow through SP-Istio Agent:
+| Component | Technology | Purpose |
+|-----------|------------|---------|
+| **Runtime** | WebAssembly (WASM) | Secure, portable execution environment |
+| **Integration** | Proxy-Wasm ABI | Standard interface for Envoy proxy extensions |
+| **Language** | Rust | High-performance, memory-safe implementation |
+| **Serialization** | Protocol Buffers | Efficient data serialization |
+| **Telemetry** | OpenTelemetry | Industry-standard observability framework |
+
+### System Architecture
 
 ```
-┌─────────────┐         ┌──────────────────────────────────┐         ┌─────────────┐
-│             │         │       Envoy Proxy (Sidecar)      │         │             │
-│   Client    │────────▶│  ┌────────────────────────────┐  │────────▶│  Upstream   │
-│             │         │  │   SP-Istio Agent (WASM)    │  │         │   Service   │
-│             │◀────────│  └────────────────────────────┘  │◀────────│             │
-└─────────────┘         └──────────────────────────────────┘         └─────────────┘
-                                       │
-                                       │ Async
-                                       ▼
-                               ┌───────────────┐
-                               │   Softprobe   │
-                               │    Backend    │
-                               └───────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                    Softprobe Dashboard                      │
+│                 (dashboard.softprobe.ai)                   │
+└─────────────────────┬───────────────────────────────────────┘
+                      │ HTTPS/TLS
+                      │ (Telemetry Data)
+                      ▼
+┌─────────────────────────────────────────────────────────────┐
+│                 Softprobe Backend                           │
+│                 (o.softprobe.ai)                           │
+└─────────────────────┬───────────────────────────────────────┘
+                      │ HTTPS/TLS
+                      │ (Encrypted Telemetry)
+                      ▼
+┌─────────────────────────────────────────────────────────────┐
+│                Kubernetes Cluster                          │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │                Istio Service Mesh                   │   │
+│  │  ┌─────────────────────────────────────────────┐   │   │
+│  │  │              Service Pod                    │   │   │
+│  │  │  ┌─────────────┐  ┌─────────────────────┐   │   │   │
+│  │  │  │     App     │  │    Envoy Proxy      │   │   │   │
+│  │  │  │ Container   │  │  ┌───────────────┐  │   │   │   │
+│  │  │  │             │  │  │ SP-Istio Agent│  │   │   │   │
+│  │  │  │             │  │  │    (WASM)     │  │   │   │   │
+│  │  │  └─────────────┘  │  └───────────────┘  │   │   │   │
+│  │  │                   └─────────────────────┘   │   │   │
+│  │  └─────────────────────────────────────────────┘   │   │
+│  └─────────────────────────────────────────────────────┐   │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-### Detailed Flow
+## 🔄 Request Flow
 
-1. **Request Interception**: 
-   - Envoy proxy intercepts outgoing HTTP requests
-   - SP-Istio Agent WASM plugin receives request headers and body
+### 1. Request Interception
 
-2. **Agent Lookup**: 
-   - Plugin checks if cached response is available
-   - Sends request metadata to Softprobe backend asynchronously
+When a request enters your service mesh:
 
-3. **Cache Hit (Agent Response)**:
-   - If cached response exists, returns HTTP 200 with cached data
-   - Original upstream service is not called
-   - Significantly reduces latency and load
+```
+Client Request → Istio Gateway → Envoy Proxy → SP-Istio Agent → Application
+```
 
-4. **Cache Miss (Agent Miss)**:
-   - If no cache exists, returns HTTP 404
-   - Request continues to upstream service normally
-   - No impact on request path
+1. **Incoming Request**: Client sends HTTP/gRPC request to your service
+2. **Envoy Interception**: Istio's Envoy proxy intercepts the request
+3. **WASM Execution**: SP-Istio Agent (WASM module) processes the request
+4. **Data Collection**: Agent extracts relevant telemetry data
+5. **Request Forwarding**: Request continues to your application
 
-5. **Response Storage**:
-   - After successful upstream response, stores data asynchronously
-   - Captures response headers, body, timing information
-   - Sends to Softprobe for analytics and future caching
+### 2. Agent Processing
+
+The SP-Istio Agent performs several operations:
+
+#### Request Analysis
+- **URL Path Matching**: Applies collection rules to determine if request should be captured
+- **Header Extraction**: Captures relevant HTTP headers and metadata
+- **Timing Measurement**: Records request start time and duration
+- **Service Identification**: Automatically detects source and destination services
+
+#### Data Processing
+- **Serialization**: Converts telemetry data to Protocol Buffer format
+- **Batching**: Groups multiple requests for efficient transmission
+- **Compression**: Reduces payload size for network efficiency
+- **Encryption**: Secures data before transmission
+
+### 3. Data Transmission
+
+Collected telemetry data flows through secure channels:
+
+```
+SP-Istio Agent → Softprobe Backend → Softprobe Dashboard
+```
+
+1. **Secure Transmission**: Data sent via HTTPS/TLS to `o.softprobe.ai`
+2. **Authentication**: API key validates the data source
+3. **Processing**: Backend processes and stores telemetry data
+4. **Visualization**: Dashboard provides real-time insights and analytics
 
 ## Key Features
 
