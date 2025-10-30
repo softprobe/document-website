@@ -32,26 +32,6 @@ New to Softprobe? Get up and running in minutes:
 3. **[Production Installation](./getting-started/installation)** - Deploy to your production cluster
 4. **[Configuration Guide](./config)** - Customize collection rules and settings
 
-## 📚 Documentation Sections
-
-### Getting Started
-Perfect for first-time users and quick deployments:
-- **[Account Setup](./account-setup)** - Register and configure your Softprobe account
-- **[Quick Start](./getting-started/quick-start)** - Demo environment setup in minutes
-- **[Installation](./getting-started/installation)** - Production deployment guide
-- **[Configuration](./config)** - Detailed configuration options
-
-### Architecture & Development
-For developers and system architects:
-- **[Architecture](./architecture)** - How SP-Istio Agent works under the hood
-- **[Development Guide](./deployment/development)** - Build and test the extension
-- **[CI/CD Pipeline](./cicd/)** - Automated testing and release process
-
-### Operations & Support
-For production operations and troubleshooting:
-- **[Deployment Guide](./deployment/deployment)** - Advanced deployment scenarios
-- **[Troubleshooting](./deployment/troubleshooting)** - Common issues and solutions
-
 ## 💡 Need Help?
 
 - **First time user?** Start with our [Quick Start Guide](./getting-started/quick-start)
