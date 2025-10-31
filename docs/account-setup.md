@@ -25,6 +25,12 @@ This guide walks you through:
    - **Password** (minimum 8 characters)
 4. Verify your email address by clicking the link sent to your inbox
 
+<div style={{textAlign: 'center', margin: '24px 48px'}}>
+
+<img src="/img/docs/sign-up.png" alt="Sign Up in Dashboard" style={{maxWidth: '100%', height: 'auto', borderRadius: '8px'}} />
+
+</div>
+
 ### Step 2: Access Settings and Create Tenant Groups
 
 After email verification and login, you can access the Settings page to manage tenant groups:
@@ -41,6 +47,12 @@ After email verification and login, you can access the Settings page to manage t
 :::tip
 Choose your tenant group name carefully as it cannot be changed later. Use a name that clearly identifies your organization or team.
 :::
+
+<div style={{textAlign: 'center', margin: '24px 48px'}}>
+
+<img src="/img/docs/create-tenant.png" alt="Create Tenant Group" style={{maxWidth: '100%', height: 'auto', borderRadius: '8px'}} />
+
+</div>
 
 ### Step 3: Generate API Key
 
@@ -59,6 +71,12 @@ Once your tenant group is created:
 - You cannot retrieve the key again after closing the dialog
 :::
 
+<div style={{textAlign: 'center', margin: '24px 48px'}}>
+
+<img src="/img/docs/create-key.png" alt="Generate API Key" style={{maxWidth: '100%', height: 'auto', borderRadius: '8px'}} />
+
+</div>
+
 ## 📁 Configuration File
 
 When you generate an API key, a `minimal.yaml` file is automatically downloaded. This file contains:
@@ -67,6 +85,12 @@ When you generate an API key, a `minimal.yaml` file is automatically downloaded.
 - Pre-configured endpoints
 - Default collection rules
 - All necessary Kubernetes resources
+
+<div style={{textAlign: 'center', margin: '24px 48px'}}>
+
+<img src="/img/docs/download-yaml.png" alt="Download Yaml after Create API Key" style={{maxWidth: '100%', height: 'auto', borderRadius: '8px'}} />
+
+</div>
 
 ### File Structure
 
