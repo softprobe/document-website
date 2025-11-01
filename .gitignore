@@ -97,3 +97,5 @@ Thumbs.db
 .docusaurus/
 node_modules
 
+# AI
+ai_docs/
