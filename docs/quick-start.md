@@ -39,8 +39,8 @@ This script will:
 Deploy the demo application with SP-Istio Agent:
 
 ```bash
-# Install Softprobe Istio WASM Plugin
-kubectl apply -f https://raw.githubusercontent.com/softprobe/sp-istio-wasm/refs/heads/main/deploy/minimal.yaml
+# Install Softprobe Istio WASM Plugin (using the minimal.yaml downloaded from Account Setup)
+kubectl apply -f minimal.yaml
 
 # Install demo app
 kubectl apply -f https://raw.githubusercontent.com/softprobe/sp-istio-wasm/refs/heads/main/examples/travel/apps.yaml
