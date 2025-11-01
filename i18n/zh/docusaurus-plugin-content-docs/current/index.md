@@ -2,34 +2,39 @@
 sidebar_position: 1
 ---
 
-# SP-Istio Agent 介绍
+# Softprobe 用户指南
 
-**Istio 服务网格的业务级分布式追踪与分析**
+**业务级分布式追踪与分析平台**
 
 无需代码更改 • 完整的请求可见性 • 高级故障排除
 
-使用 Rust 和 WebAssembly (WASM) 构建的高性能异步 HTTP 会话捕获
+现代应用和微服务的综合可观测性解决方案
 
-## SP-Istio Agent 是什么？
+## Softprobe 是什么？
 
-SP-Istio Agent 是一个用于 Istio 的 WebAssembly (WASM) 插件，可捕获完整的 HTTP 请求/响应数据，并将其发送到 Softprobe 进行业务级分析和故障排除，而无需修改应用程序代码。
+Softprobe 是一个综合性的可观测性平台，为现代应用程序提供业务级分布式追踪和分析。该平台在 Kubernetes 环境中提供对应用程序行为、用户交互和系统性能的深入洞察。
 
 ## 主要优势
 
-- **🔍 完全可见性**: 在您的服务网格中捕获完整的 HTTP 请求/响应数据
-- **🚀 更快的故障排除**: 业务级追踪将调试时间从数小时缩短到数分钟
-- **📊 数据分析**: 深入了解 API 使用模式和业务流程
-- **⚡ 零侵入**: 无需更改应用程序代码
-- **🔒 企业级就绪**: 生产级的安全性和性能
-- **🏎️ 高性能 & 异步**: Rust+WASM 流式、异步 HTTP 捕获，开销极小
+- **🔍 完全可见性**: 捕获全面的应用程序数据和用户交互
+- **🚀 更快的故障排除**: 业务级洞察将调试时间从数小时缩短到数分钟
+- **📊 高级分析**: 深入了解使用模式、性能指标和业务流程
+- **⚡ 零代码更改**: 无需修改现有应用程序代码即可部署
+- **🔒 企业级就绪**: 生产级的安全性、合规性和性能
+- **🌐 多平台**: 支持各种部署环境和架构
 
-## 入门
+## 🚀 快速入门
 
-准备好开始了吗？请查看我们的 [快速入门指南](./getting-started/quick-start) 在几分钟内设置一个演示环境，或直接跳到 [安装指南](./getting-started/installation) 进行生产部署。
+Softprobe 新用户？几分钟内即可启动并运行：
 
-## 了解更多
+1. **[账户设置](./account-setup)** - 创建您的 Softprobe 账户并获取 API 密钥
+2. **[快速入门指南](./getting-started/quick-start)** - 使用 Kind 设置演示环境
+3. **[生产环境安装](./getting-started/installation)** - 部署到您的生产集群
+4. **[配置指南](./config)** - 自定义采集规则和设置
 
-- [架构](./architecture) - 了解 SP-Istio Agent 的工作原理
-- [开发指南](./deployment/development) - 构建和测试扩展
-- [故障排除](./deployment/troubleshooting) - 常见问题和解决方案
-- [CI/CD 流水线](./cicd/) - 自动化测试和发布流程
+## 💡 需要帮助？
+
+- **首次使用？** 从我们的 [快速入门指南](./getting-started/quick-start) 开始
+- **生产部署？** 查看 [安装指南](./getting-started/installation)
+- **遇到问题？** 访问我们的 [故障排除指南](./deployment/troubleshooting)
+- **想贡献代码？** 请参阅我们的 [开发指南](./deployment/development)

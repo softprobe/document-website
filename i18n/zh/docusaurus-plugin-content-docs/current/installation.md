@@ -41,7 +41,7 @@ kubectl get wasmplugin -A
 
 ### 范围化部署
 
-要仅将代理部署到特定的命名空间或工作负载，您可以创建一个范围化的 WasmPlugin 配置。
+要仅将代理部署到特定的命名空间或工作负载，您可以创建一个范围化的 WasmPlugin 配置。请参阅 [部署指南](../deployment/deployment) 以获取详细的配置选项。
 
 ## 使用 Bookinfo 演示进行测试
 
@@ -84,5 +84,6 @@ kubectl delete wasmplugin -n istio-system sp-istio-agent
 
 ## 下一步
 
-- [故障排除](../deployment/troubleshooting) - 常见问题和解决方案
-- [架构](../architecture) - 了解代理的工作原理
+- [部署指南](./deployment) - 高级部署配置
+- [故障排除](./troubleshooting) - 常见问题和解决方案
+- [架构](./architecture) - 了解代理的工作原理
