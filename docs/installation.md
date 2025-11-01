@@ -17,10 +17,11 @@ Before installing SP-Istio Agent in production, ensure you have:
 
 ## Installation
 
-Install SP-Istio Agent using the production-ready manifest:
+Install SP-Istio Agent using your personalized `minimal.yaml` file, which you downloaded during the [Account Setup](./account-setup) phase. This file contains your unique API key and pre-configured settings.
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/softprobe/sp-istio/main/deploy/minimal.yaml
+# Ensure you are using the minimal.yaml file downloaded from the Softprobe Dashboard
+kubectl apply -f minimal.yaml
 ```
 
 This will deploy the WasmPlugin globally across your Istio service mesh.

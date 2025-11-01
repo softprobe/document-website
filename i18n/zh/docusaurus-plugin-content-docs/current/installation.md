@@ -17,10 +17,11 @@ sidebar_position: 4
 
 ## 安装
 
-使用生产就绪的清单文件安装 SP-Istio Agent：
+使用您在 [账户设置](./account-setup) 阶段下载的个性化 `minimal.yaml` 文件安装 SP-Istio Agent。此文件包含您唯一的 API 密钥和预配置设置。
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/softprobe/sp-istio/main/deploy/minimal.yaml
+# 确保您使用的是从 Softprobe 控制台下载的 minimal.yaml 文件
+kubectl apply -f minimal.yaml
 ```
 
 这将在您的 Istio 服务网格中全局部署 WasmPlugin。
