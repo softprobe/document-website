@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 5
 ---
 
 # Configuration Guide
@@ -9,6 +9,7 @@ Learn how to configure SP-Istio Agent for your specific use cases.
 ## 📋 Overview
 
 This guide covers:
+
 - Understanding the configuration structure
 - Setting up collection rules
 - Configuring service discovery
@@ -57,11 +58,11 @@ Defines network policies and service discovery settings.
 
 ### Basic Settings
 
-| Field | Type | Description | Default |
-|-------|------|-------------|---------|
-| `api_key` | string | Your Softprobe API key | Required |
-| `sp_backend_url` | string | Softprobe collection endpoint | `https://o.softprobe.ai` |
-| `service_name` | string | Override service name detection | Auto-detected |
+| Field            | Type   | Description                     | Default                  |
+| ---------------- | ------ | ------------------------------- | ------------------------ |
+| `api_key`        | string | Your Softprobe API key          | Required                 |
+| `sp_backend_url` | string | Softprobe collection endpoint   | `https://o.softprobe.ai` |
+| `service_name`   | string | Override service name detection | Auto-detected            |
 
 ### Example Basic Configuration
 
@@ -83,24 +84,26 @@ Collection rules define what traffic to capture and analyze. They support both `
 ### Rule Structure
 
 **For SERVER mode (inbound traffic):**
+
 ```yaml
 pluginConfig:
   traffic_direction: "server"
   collectionRules:
     http:
       server:
-        - path: ".*"              # Regex pattern for URL paths
+        - path: ".*" # Regex pattern for URL paths
 ```
 
 **For CLIENT mode (outbound traffic):**
+
 ```yaml
 pluginConfig:
   traffic_direction: "client"
   collectionRules:
     http:
       client:
-        - host: ".*"              # Regex pattern for hostnames
-          paths: [".*"]           # List of regex patterns for paths
+        - host: ".*" # Regex pattern for hostnames
+          paths: [".*"] # List of regex patterns for paths
 ```
 
 ### SERVER Mode Rules
@@ -152,9 +155,9 @@ pluginConfig:
 
 In all collection rules, the values of the `path`, `host`, and `paths` fields are **regular expressions (Regex)**. This provides you with powerful matching capabilities.
 
--   To match everything, use `.*`.
--   For an exact match, write the string directly, for example, `"/api/users"`.
--   To match a specific pattern, use regex syntax, for example, `"/api/v[0-9]+/items"` can match `/api/v1/items` and `/api/v2/items`.
+- To match everything, use `.*`.
+- For an exact match, write the string directly, for example, `"/api/users"`.
+- To match a specific pattern, use regex syntax, for example, `"/api/v[0-9]+/items"` can match `/api/v1/items` and `/api/v2/items`.
 
 **Note**: If an invalid regular expression is provided, the system will automatically fall back to **exact string matching**.
 
@@ -169,11 +172,11 @@ pluginConfig:
   collectionRules:
     http:
       server:
-        - path: ".*"  # This is a collection rule
+        - path: ".*" # This is a collection rule
 ```
 
--   **`server`**: An array containing multiple collection rules.
--   **`path`**: A regular expression used to match the **URL path** of inbound requests.
+- **`server`**: An array containing multiple collection rules.
+- **`path`**: A regular expression used to match the **URL path** of inbound requests.
 
 **How it works**: For each request entering your service, the agent gets its URL path (e.g., `/api/users/123`) and matches it against the regular expression defined in the `path` field. If the match is successful, the request and its corresponding response are collected.
 
@@ -209,10 +212,10 @@ pluginConfig:
           paths: ["/api/data/.*", "/api/auth"]
 ```
 
--   **`client`**: An array containing multiple collection rules.
--   Each rule contains `host` and `paths` fields.
--   **`host`**: A regular expression used to match the **target hostname** of outbound requests.
--   **`paths`**: An array of strings, where each string is a regular expression used to match the **URL path** of outbound requests.
+- **`client`**: An array containing multiple collection rules.
+- Each rule contains `host` and `paths` fields.
+- **`host`**: A regular expression used to match the **target hostname** of outbound requests.
+- **`paths`**: An array of strings, where each string is a regular expression used to match the **URL path** of outbound requests.
 
 **How it works**: For each request sent from your service, the agent will:
 
@@ -258,8 +261,8 @@ The script sequentially attempts to get the service name from several common Kub
 
 To enable the SP-Istio Agent to send data to `o.softprobe.ai`, we need to explicitly authorize this external communication in Istio. This is done through two resources: `ServiceEntry` and `DestinationRule`.
 
--   **`ServiceEntry`**: Adds `o.softprobe.ai` to Istio's service registry, making it a legitimate external service.
--   **`DestinationRule`**: Configures TLS encryption for traffic to `o.softprobe.ai`, ensuring secure data transmission.
+- **`ServiceEntry`**: Adds `o.softprobe.ai` to Istio's service registry, making it a legitimate external service.
+- **`DestinationRule`**: Configures TLS encryption for traffic to `o.softprobe.ai`, ensuring secure data transmission.
 
 In short, these two resources together open a secure channel for the SP-Istio Agent to the Softprobe backend.
 

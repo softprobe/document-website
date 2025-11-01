@@ -31,6 +31,7 @@ New to Softprobe? Get up and running in minutes:
 2. **[Quick Start Guide](./quick-start)** - Set up a demo environment with Kind
 3. **[Production Installation](./installation)** - Deploy to your production cluster
 4. **[Configuration Guide](./config)** - Customize collection rules and settings
+5. **[Web SDK Guide](./web-sdk)** - Integrate with your web application
 
 ## 💡 Need Help?
 
