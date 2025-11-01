@@ -77,9 +77,3 @@ https://github.com/user-attachments/assets/dc8c68db-dd8b-4da8-a6e2-346adf6ecffb
 ```bash
 kind delete cluster --name sp-demo-cluster
 ```
-
-<h2>下一步</h2>
-
-- [生产环境安装](./installation) - 部署到您的生产集群
-- [开发指南](./development) - 了解如何构建和修改代理
-- [架构](./architecture) - 了解其内部工作原理

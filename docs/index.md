@@ -28,13 +28,11 @@ Softprobe is a comprehensive observability platform that provides business-level
 New to Softprobe? Get up and running in minutes:
 
 1. **[Account Setup](./account-setup)** - Create your Softprobe account and get API keys
-2. **[Quick Start Guide](./getting-started/quick-start)** - Set up a demo environment with Kind
-3. **[Production Installation](./getting-started/installation)** - Deploy to your production cluster
+2. **[Quick Start Guide](./quick-start)** - Set up a demo environment with Kind
+3. **[Production Installation](./installation)** - Deploy to your production cluster
 4. **[Configuration Guide](./config)** - Customize collection rules and settings
 
 ## 💡 Need Help?
 
-- **First time user?** Start with our [Quick Start Guide](./getting-started/quick-start)
-- **Production deployment?** Check the [Installation Guide](./getting-started/installation)
-- **Having issues?** Visit our [Troubleshooting Guide](./deployment/troubleshooting)
-- **Want to contribute?** See our [Development Guide](./deployment/development)
+- **First time user?** Start with our [Quick Start Guide](./quick-start)
+- **Production deployment?** Check the [Installation Guide](./installation)
