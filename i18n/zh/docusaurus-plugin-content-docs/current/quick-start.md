@@ -40,8 +40,8 @@ curl -L https://raw.githubusercontent.com/softprobe/sp-istio-wasm/refs/heads/mai
 部署带有 SP-Istio Agent 的演示应用程序：
 
 ```bash
-# 安装 Softprobe Istio WASM 插件
-kubectl apply -f https://raw.githubusercontent.com/softprobe/sp-istio-wasm/refs/heads/main/deploy/minimal.yaml
+# 安装 Softprobe Istio WASM 插件 (使用从账户设置下载的 minimal.yaml)
+kubectl apply -f minimal.yaml
 
 # 安装演示应用
 kubectl apply -f https://raw.githubusercontent.com/softprobe/sp-istio-wasm/refs/heads/main/examples/travel/apps.yaml
@@ -58,7 +58,7 @@ sleep 10 && kubectl port-forward -n istio-system svc/istio-ingressgateway 8080:8
 4. 使用任何测试信息完成预订
 5. 使用虚假信息处理付款
 
-<h2>步骤 4：在 Softprobe 仪表板中查看结果</h2>
+## 步骤 4：在 Softprobe 仪表板中查看结果
 
 在产生一些流量后：
 
@@ -66,11 +66,11 @@ sleep 10 && kubectl port-forward -n istio-system svc/istio-ingressgateway 8080:8
 2. 在左侧导航菜单中导航到 **Travel View**
 3. 探索捕获的请求和业务级追踪
 
-<h3>演示视频</h3>
+### 演示视频
 
 https://github.com/user-attachments/assets/dc8c68db-dd8b-4da8-a6e2-346adf6ecffb
 
-<h2>清理</h2>
+## 清理
 
 完成演示后，清理 Kind 集群：
 
