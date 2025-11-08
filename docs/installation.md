@@ -2,7 +2,7 @@
 sidebar_position: 4
 ---
 
-# Production Installation
+# Service Plugin Installation
 
 Deploy SP-Istio Agent to your production Istio service mesh.
 

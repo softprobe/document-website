@@ -2,7 +2,7 @@
 sidebar_position: 6
 ---
 
-# Web SDK
+# 前端插件安装
 
 本指南介绍 Softprobe Web SDK (@softprobe/web-inspector) 的安装和使用方法。
 

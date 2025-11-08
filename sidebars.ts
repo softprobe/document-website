@@ -17,8 +17,8 @@ const sidebars: SidebarsConfig = {
     "account-setup",
     "quick-start",
     "installation",
-    "config",
     "web-sdk",
+    "config",
   ],
 };
 

@@ -2,7 +2,7 @@
 sidebar_position: 6
 ---
 
-# Web SDK
+# Web Plugin Installation
 
 This guide covers the installation and usage of the Softprobe Web SDK (`@softprobe/web-inspector`).
 
