@@ -101,7 +101,7 @@ ADD opentelemetry-javaagent.jar /otel/javaagent.jar
 ```
 
 ```yaml
-# Deployment 片段
+# Deployment 片段（默认仅采集，不上报）
 spec:
   template:
     spec:
@@ -109,19 +109,29 @@ spec:
         - name: app
           image: your-registry/your-java-app:latest
           env:
-            - name: OTEL_EXPORTER_OTLP_ENDPOINT
-              value: "https://otel.example.com"
-            - name: OTEL_EXPORTER_OTLP_PROTOCOL
-              value: "http/protobuf"
-            - name: OTEL_SERVICE_NAME
-              value: "your-service"
+            - name: OTEL_TRACES_EXPORTER
+              value: "none"
+            - name: OTEL_METRICS_EXPORTER
+              value: "none"
+            - name: OTEL_LOGS_EXPORTER
+              value: "none"
             - name: OTEL_RESOURCE_ATTRIBUTES
               value: "service.namespace=production,service.version=1.0.0"
-            - name: OTEL_EXPORTER_OTLP_HEADERS
-              value: "Authorization=Bearer YOUR_TOKEN"
+            - name: OTEL_INSTRUMENTATION_HTTP_SERVER_CAPTURE_REQUEST_HEADERS
+              value: "x-request-id,authorization"
+            - name: OTEL_INSTRUMENTATION_HTTP_SERVER_CAPTURE_RESPONSE_HEADERS
+              value: "content-type,content-length"
             - name: JAVA_TOOL_OPTIONS
               value: "-javaagent:/otel/javaagent.jar"
-          # 若能直接控制 JVM 启动命令，也可在启动参数中追加 -javaagent
+          # 如需开启上报，请将上面 three exporter 改为 otlp，并补充以下 OTLP 配置：
+          # - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          #   value: "https://otel.example.com"
+          # - name: OTEL_EXPORTER_OTLP_PROTOCOL
+          #   value: "http/protobuf"  # 或 "grpc"
+          # - name: OTEL_EXPORTER_OTLP_HEADERS
+          #   value: "Authorization=Bearer YOUR_TOKEN"
+          # - name: OTEL_SERVICE_NAME
+          #   value: "your-service"
 ```
 
 ---
