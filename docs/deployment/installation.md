@@ -29,6 +29,10 @@ kubectl apply -f minimal.yaml
 
 This will deploy the WasmPlugin globally across your Istio service mesh.
 
+:::tip Front-End Web SDK (optional but recommended)
+To capture browser-side performance and user behavior, install the Softprobe Web SDK in your frontend application. See the [Web SDK guide](/web-sdk) for installation and configuration.
+:::
+
 ## Verify Installation
 
 Check that the WasmPlugin has been created successfully:
