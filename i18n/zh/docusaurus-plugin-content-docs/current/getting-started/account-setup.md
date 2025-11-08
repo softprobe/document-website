@@ -1,5 +1,7 @@
 ---
 sidebar_position: 2
+title: 账户设置
+description: 学习如何创建 Softprobe 账户、设置租户组并获取配置文件，以开始使用系统
 ---
 
 # 账户设置
@@ -75,7 +77,7 @@ sidebar_position: 2
 
 <div style={{textAlign: 'center', margin: '24px 48px'}}>
 
-<img src="/img/docs/create-key.png" alt="Generate API Key" style={{maxWidth: '100%', height: 'auto', borderRadius: '8px'}} />
+<img src="/img/docs/create-key.png" alt="Generate Public Key" style={{maxWidth: '100%', height: 'auto', borderRadius: '8px'}} />
 
 </div>
 
@@ -90,7 +92,7 @@ sidebar_position: 2
 
 <div style={{textAlign: 'center', margin: '24px 48px'}}>
 
-<img src="/img/docs/download-yaml.png" alt="Download Yaml after Create API Key" style={{maxWidth: '100%', height: 'auto', borderRadius: '8px'}} />
+<img src="/img/docs/download-yaml.png" alt="Download Yaml after Create Public Key" style={{maxWidth: '100%', height: 'auto', borderRadius: '8px'}} />
 
 </div>
 
@@ -99,7 +101,7 @@ sidebar_position: 2
 下载的 `minimal.yaml` 包含：
 
 ```yaml
-# WasmPlugin configuration with your API key
+# WasmPlugin configuration with your Public key
 apiVersion: extensions.istio.io/v1alpha1
 kind: WasmPlugin
 metadata:
@@ -125,9 +127,9 @@ spec:
 
 完成账户设置后：
 
-1. **快速测试**: 遵循 [快速入门](./quick-start)
-2. **生产环境**: 遵循 [生产安装](./installation)
-3. **自定义配置**: 查看 [配置指南](./config.md)
+1. **快速测试**: 遵循 [快速入门](../getting-started/quick-start)
+2. **生产环境**: 遵循 [生产安装](../deployment/installation)
+3. **自定义配置**: 查看 [配置指南](../configuration/config)
 
 ## ❓ 故障排除
 

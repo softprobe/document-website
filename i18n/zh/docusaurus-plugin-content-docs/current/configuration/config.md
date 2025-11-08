@@ -1,5 +1,7 @@
 ---
 sidebar_position: 5
+title: 配置指南
+description: 完整的 SP-Istio Agent 配置参考，包括采集规则、服务发现与高级选项
 ---
 
 # 配置指南

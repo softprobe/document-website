@@ -1,12 +1,21 @@
 ---
-sidebar_position: 5
+sidebar_position: 1
+sidebar_label: Configuration Reference
+title: Configuration Guide
+description: Complete reference for configuring SP-Istio Agent, including collection rules, service discovery, and advanced options
 ---
 
 # Configuration Guide
 
 Learn how to configure SP-Istio Agent for your specific use cases.
 
-## 📋 Overview
+:::info Before You Begin
+- Complete [Account Setup](/getting-started/account-setup) to get your public key
+- Have your `minimal.yaml` configuration file ready
+- Basic understanding of YAML and regular expressions
+:::
+
+## Overview
 
 This guide covers:
 
@@ -15,7 +24,7 @@ This guide covers:
 - Configuring service discovery
 - Advanced configuration options
 
-## 🏗️ Configuration Structure
+## Configuration Structure
 
 The SP-Istio Agent configuration is defined in a `minimal.yaml` file that contains three main components:
 
@@ -54,13 +63,13 @@ spec:
 
 Defines network policies and service discovery settings.
 
-## ⚙️ Core Configuration Options
+## Core Configuration Options
 
 ### Basic Settings
 
 | Field            | Type   | Description                     | Default                  |
 | ---------------- | ------ | ------------------------------- | ------------------------ |
-| `api_key`        | string | Your Softprobe API key          | Required                 |
+| `public_key`     | string | Your Softprobe public key       | Required                 |
 | `sp_backend_url` | string | Softprobe collection endpoint   | `https://o.softprobe.ai` |
 | `service_name`   | string | Override service name detection | Auto-detected            |
 
@@ -68,7 +77,7 @@ Defines network policies and service discovery settings.
 
 ```yaml
 pluginConfig:
-  api_key: "your-api-key-here"
+  public_key: "your-public-key-here"
   sp_backend_url: "https://o.softprobe.ai"
   traffic_direction: "server"
   collectionRules:
@@ -76,6 +85,10 @@ pluginConfig:
       server:
         - path: ".*"
 ```
+
+:::tip
+Always start with the basic configuration and gradually add collection rules based on your specific needs.
+:::
 
 ## 🎯 Collection Rules
 
@@ -159,91 +172,6 @@ In all collection rules, the values of the `path`, `host`, and `paths` fields ar
 - For an exact match, write the string directly, for example, `"/api/users"`.
 - To match a specific pattern, use regex syntax, for example, `"/api/v[0-9]+/items"` can match `/api/v1/items` and `/api/v2/items`.
 
-**Note**: If an invalid regular expression is provided, the system will automatically fall back to **exact string matching**.
-
-### Collection in SERVER Mode
-
-When `traffic_direction` is set to `server`, the agent collects **inbound** traffic. In this case, you need to configure `collectionRules.http.server`.
-
-```yaml
-# ...
-pluginConfig:
-  traffic_direction: "server"
-  collectionRules:
-    http:
-      server:
-        - path: ".*" # This is a collection rule
-```
-
-- **`server`**: An array containing multiple collection rules.
-- **`path`**: A regular expression used to match the **URL path** of inbound requests.
-
-**How it works**: For each request entering your service, the agent gets its URL path (e.g., `/api/users/123`) and matches it against the regular expression defined in the `path` field. If the match is successful, the request and its corresponding response are collected.
-
-**Examples**:
-
-```yaml
-# Collect only requests under /api/v1/
-collectionRules:
-  http:
-    server:
-      - path: "/api/v1/.*"
-
-# Collect requests related to users and orders
-collectionRules:
-  http:
-    server:
-      - path: "/users/[^/]+$"  # Matches /users/some-id
-      - path: "/orders/[0-9]+" # Matches /orders/12345
-```
-
-### Collection in CLIENT Mode
-
-When `traffic_direction` is set to `client`, the agent collects **outbound** traffic. In this case, you need to configure `collectionRules.http.client`.
-
-```yaml
-# ...
-pluginConfig:
-  traffic_direction: "client"
-  collectionRules:
-    http:
-      client:
-        - host: ".*\.external-service\.com"
-          paths: ["/api/data/.*", "/api/auth"]
-```
-
-- **`client`**: An array containing multiple collection rules.
-- Each rule contains `host` and `paths` fields.
-- **`host`**: A regular expression used to match the **target hostname** of outbound requests.
-- **`paths`**: An array of strings, where each string is a regular expression used to match the **URL path** of outbound requests.
-
-**How it works**: For each request sent from your service, the agent will:
-
-1.  **Determine the target host and path**: The agent attempts to extract the target hostname and path from HTTP headers such as `Referer`, `Origin`, or `Host`.
-2.  **Match `host`**: Matches the extracted target hostname against the regular expression in the `host` field.
-3.  **Match `paths`**: If the hostname matches, the agent continues to match the extracted URL path against **any one** of the regular expressions in the `paths` array.
-
-**Only when both the `host` and at least one path rule in `paths` are successfully matched, the outbound request and its corresponding response will be collected.**
-
-**Examples**:
-
-```yaml
-# Collect all outbound requests to my-api.com, regardless of the path
-collectionRules:
-  http:
-    client:
-      - host: "my-api\.com"
-        paths: [".*"]
-
-# Collect specific API calls to googleapis.com
-collectionRules:
-  http:
-    client:
-      - host: ".*\.googleapis\.com"
-        paths: ["/maps/api/.*", "/drive/v3/files"]
-```
-
----
 
 ## Service Discovery: Automatically Identifying Your Services
 
@@ -267,3 +195,25 @@ To enable the SP-Istio Agent to send data to `o.softprobe.ai`, we need to explic
 In short, these two resources together open a secure channel for the SP-Istio Agent to the Softprobe backend.
 
 We hope this detailed guide helps you better understand and use the SP-Istio Agent. If you have any questions, please feel free to contact us!
+
+## Who should use this guide
+
+This guide is intended for:
+
+- Platform/SRE engineers managing Kubernetes + Istio deployments
+- Dev teams needing fine-grained collection rules
+- Anyone customizing Softprobe to match business flows
+
+## Next Steps
+
+- Deploy or update your cluster with the [Installation Guide](/deployment/installation)
+- Verify data in the [Softprobe Dashboard](https://dashboard.softprobe.ai)
+- Add client-side visibility via the [Web SDK](/web-sdk)
+
+---
+
+## Related Topics
+
+- [Quick Start Guide](/getting-started/quick-start)
+- [Core Concepts](/advanced-guides/concepts)
+- [FAQ / Troubleshooting](/support/faq)

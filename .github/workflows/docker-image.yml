@@ -38,3 +38,4 @@ jobs:
           docker push "${{ steps.get-ocir-repository.outputs.repo_path }}:${{ env.IMAGE_TAG }}"
           # print the full image path
           echo "Pushed image to ${{ steps.get-ocir-repository.outputs.repo_path }}:${{ env.IMAGE_TAG }}"
+          echo "Note: Container exposes port 80. Make sure your service maps to 80 externally."

@@ -1,5 +1,7 @@
 ---
 sidebar_position: 3
+title: 快速入门指南
+description: 使用 Kind 和 Istio 在几分钟内开始使用 Softprobe
 ---
 
 # 快速入门

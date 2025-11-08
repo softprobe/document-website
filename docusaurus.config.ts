@@ -37,18 +37,12 @@ const config: Config = {
         direction: "ltr",
         htmlLang: "en-US",
         calendar: "gregory",
-        path: "en",
-        url: "https://document.softprobe.ai",
-        baseUrl: "/",
       },
       zh: {
         label: "中文",
         direction: "ltr",
         htmlLang: "zh-CN",
         calendar: "gregory",
-        path: "zh",
-        url: "https://document.softprobe.ai",
-        baseUrl: "/zh",
       },
     },
   },
@@ -97,7 +91,7 @@ const config: Config = {
           items: [
             {
               label: "Installation",
-              to: "/installation",
+              to: "/deployment/installation",
             },
             // {
             //   label: "Architecture",
