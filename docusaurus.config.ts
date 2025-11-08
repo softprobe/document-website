@@ -18,8 +18,12 @@ const config: Config = {
   organizationName: "Softprobe.ai", // Usually your GitHub org/user name.
   projectName: "document-website", // Usually your repo name.
 
-  onBrokenLinks: 'warn',
-  onBrokenMarkdownLinks: "warn",
+  onBrokenLinks: "warn",
+  markdown: {
+    hooks: {
+      onBrokenMarkdownLinks: "warn",
+    },
+  },
 
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
@@ -33,14 +37,18 @@ const config: Config = {
         direction: "ltr",
         htmlLang: "en-US",
         calendar: "gregory",
-        // path: "en",
+        path: "en",
+        url: "https://document.softprobe.ai",
+        baseUrl: "/",
       },
       zh: {
         label: "中文",
         direction: "ltr",
         htmlLang: "zh-CN",
         calendar: "gregory",
-        // path: "zh",
+        path: "zh",
+        url: "https://document.softprobe.ai",
+        baseUrl: "/zh",
       },
     },
   },
@@ -75,10 +83,10 @@ const config: Config = {
         src: "img/sp-logo-trans.ico",
       },
       items: [
-        // {
-        //   type: "localeDropdown",
-        //   position: "right",
-        // },
+        {
+          type: "localeDropdown",
+          position: "right",
+        },
       ],
     },
     footer: {
@@ -89,16 +97,16 @@ const config: Config = {
           items: [
             {
               label: "Installation",
-              to: "/getting-started/installation",
+              to: "/installation",
             },
-            {
-              label: "Architecture",
-              to: "/architecture",
-            },
-            {
-              label: "Development",
-              to: "/deployment/development",
-            },
+            // {
+            //   label: "Architecture",
+            //   to: "/architecture",
+            // },
+            // {
+            //   label: "Development",
+            //   to: "/deployment/development",
+            // },
           ],
         },
         {

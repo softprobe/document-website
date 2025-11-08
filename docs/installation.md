@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 4
 ---
 
 # Production Installation
@@ -17,10 +17,11 @@ Before installing SP-Istio Agent in production, ensure you have:
 
 ## Installation
 
-Install SP-Istio Agent using the production-ready manifest:
+Install SP-Istio Agent using your personalized `minimal.yaml` file, which you downloaded during the [Account Setup](./account-setup) phase. This file contains your unique API key and pre-configured settings.
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/softprobe/sp-istio/main/deploy/minimal.yaml
+# Ensure you are using the minimal.yaml file downloaded from the Softprobe Dashboard
+kubectl apply -f minimal.yaml
 ```
 
 This will deploy the WasmPlugin globally across your Istio service mesh.
@@ -41,7 +42,7 @@ The default configuration captures HTTP traffic for all services in the mesh. Yo
 
 ### Scoped Deployment
 
-To deploy the agent to specific namespaces or workloads only, you can create a scoped WasmPlugin configuration. See the [Deployment Guide](../deployment/deployment) for detailed configuration options.
+To deploy the agent to specific namespaces or workloads only, you can create a scoped WasmPlugin configuration. See the [Configuration Guide](./config) for detailed configuration options.
 
 ## Testing with Bookinfo Demo
 
@@ -81,10 +82,3 @@ To remove SP-Istio Agent from your cluster:
 ```bash
 kubectl delete wasmplugin -n istio-system sp-istio-agent
 ```
-
-## Next Steps
-
-- [Deployment Guide](../deployment/deployment) - Advanced deployment configurations
-- [Troubleshooting](../deployment/troubleshooting) - Common issues and solutions
-- [Architecture](../architecture) - Learn how the agent works
-

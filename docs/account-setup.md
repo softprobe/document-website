@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 2
 ---
 
 # Account Setup
@@ -9,6 +9,7 @@ Set up your Softprobe account and generate API keys for SP-Istio Agent.
 ## 📋 Overview
 
 This guide walks you through:
+
 - Creating a Softprobe account
 - Setting up your tenant group
 - Generating API keys
@@ -65,11 +66,12 @@ Once your tenant group is created:
 4. Click **"Generate Key"**
 
 :::warning Important
+
 - Your API key will be displayed **only once**
 - Copy and store it securely immediately
 - The `minimal.yaml` configuration file will be automatically downloaded
 - You cannot retrieve the key again after closing the dialog
-:::
+  :::
 
 <div style={{textAlign: 'center', margin: '24px 48px'}}>
 
@@ -117,15 +119,14 @@ spec:
 - **Use descriptive names**: Name keys based on their purpose and environment
 - **Monitor usage**: Check the dashboard for API key activity
 
-
 This allows for better tracking and security isolation.
 
 ## 🔧 Next Steps
 
 After completing account setup:
 
-1. **For Quick Testing**: Follow the [Quick Start Guide](./getting-started/quick-start)
-2. **For Production**: Follow the [Production Installation Guide](./getting-started/installation)
+1. **For Quick Testing**: Follow the [Quick Start Guide](./quick-start)
+2. **For Production**: Follow the [Production Installation Guide](./installation)
 3. **For Custom Configuration**: Review the [Configuration Guide](./config.md)
 
 ## ❓ Troubleshooting
@@ -133,16 +134,19 @@ After completing account setup:
 ### Common Issues
 
 **Can't access the dashboard?**
+
 - Check your internet connection
 - Verify the URL: `https://dashboard.softprobe.ai`
 - Try clearing your browser cache
 
 **Email verification not received?**
+
 - Check your spam/junk folder
 - Ensure the email address is correct
 - Contact support if the issue persists
 
 **API key generation failed?**
+
 - Ensure your tenant group is properly set up
 - Check that you have the necessary permissions
 - Try refreshing the page and generating again
@@ -151,16 +155,18 @@ After completing account setup:
 
 If you encounter issues during account setup:
 
-- **Documentation**: Check our [troubleshooting guide](./deployment/troubleshooting)
+- **Documentation**: Check our [Troubleshooting](#-troubleshooting)
 - **Support**: Contact our support team through the dashboard
 - **Community**: Join our community discussions for peer help
 
 ---
+
 ## FAQ
 
 ### Q1: What if I lose the minimal.yaml configuration file?
 
 **A:** The `minimal.yaml` file is only downloaded once when you create an API Key. If you lose it:
+
 1. Delete the current API Key from your dashboard
 2. Create a new API Key (this will generate a new `minimal.yaml` file)
 3. Save the new configuration file immediately
@@ -172,6 +178,7 @@ If you encounter issues during account setup:
 ### Q3: Can an API Key be reused?
 
 **A:** Yes, an API Key can be used in multiple environments, but it is recommended to:
+
 - Use a separate API Key for the production environment
 - Use a separate API Key for development/testing environments
 - Rotate API Keys periodically to improve security
@@ -179,6 +186,7 @@ If you encounter issues during account setup:
 ### Q4: How do I manage multiple projects?
 
 **A:** It is recommended to create different tenant groups for different projects:
+
 1. Create a separate tenant group for each project
 2. Generate a separate API Key for each project
 3. Invite the relevant team members to the corresponding tenant groups
@@ -186,6 +194,7 @@ If you encounter issues during account setup:
 ### Q5: Are there usage limits for an API Key?
 
 **A:** Usage limits for an API Key include:
+
 - Request rate limits
 - Data storage quotas
 - Feature permission restrictions
@@ -194,6 +203,7 @@ If you encounter issues during account setup:
 ### Q6: What if there is no data after configuration?
 
 **A:** Please check:
+
 1. If the `minimal.yaml` file was applied correctly with `kubectl apply -f minimal.yaml`
 2. If the Istio service mesh is properly installed in your cluster
 3. If the network connection is normal
@@ -220,6 +230,7 @@ If you encounter any problems during use, you can get help in the following ways
 ### 🐛 Problem Feedback
 
 If you find a bug or have a feature suggestion:
+
 1. Log in to the Dashboard
 2. Click the feedback button in the top right corner
 3. Describe the problem or suggestion in detail
@@ -240,5 +251,5 @@ Start exploring the powerful features of Softprobe and let data drive your produ
 
 ---
 
-*Last updated: January 2024*
-*Version: v1.0*
+_Last updated: January 2024_
+_Version: v1.0_

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 3
 ---
 
 # Quick Start
@@ -30,6 +30,7 @@ curl -L https://raw.githubusercontent.com/softprobe/sp-istio-wasm/refs/heads/mai
 ```
 
 This script will:
+
 - Create a local Kubernetes cluster using Kind
 - Install Istio service mesh
 - Install OpenTelemetry Operator for telemetry collection
@@ -52,7 +53,7 @@ sleep 10 && kubectl port-forward -n istio-system svc/istio-ingressgateway 8080:8
 ## Step 3: Try the Demo
 
 1. Open [`http://localhost:8080/`](http://localhost:8080/) in your browser
-2. Select a **pair** of cities 
+2. Select a **pair** of cities
 3. Search for flights
 4. Complete a booking with any test information
 5. Process a payment with fake details
@@ -76,10 +77,3 @@ When you're done with the demo, clean up the Kind cluster:
 ```bash
 kind delete cluster --name sp-demo-cluster
 ```
-
-## Next Steps
-
-- [Production Installation](./installation) - Deploy to your production cluster
-- [Development Guide](../deployment/development) - Learn how to build and modify the agent
-- [Architecture](../architecture) - Understand how it works under the hood
-

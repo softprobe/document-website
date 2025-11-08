@@ -1,4 +1,4 @@
-import type {SidebarsConfig} from '@docusaurus/plugin-content-docs';
+import type { SidebarsConfig } from "@docusaurus/plugin-content-docs";
 
 /**
  * Creating a sidebar enables you to:
@@ -13,11 +13,12 @@ import type {SidebarsConfig} from '@docusaurus/plugin-content-docs';
 const sidebars: SidebarsConfig = {
   // By default, Docusaurus generates a sidebar from the docs folder structure
   tutorialSidebar: [
-    'index',
-    'account-setup',
-    'quick-start',
-    'installation',
-    'config',
+    "index",
+    "account-setup",
+    "quick-start",
+    "installation",
+    "config",
+    "web-sdk",
   ],
 };
 

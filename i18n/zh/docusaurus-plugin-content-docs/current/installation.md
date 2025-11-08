@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 4
 ---
 
 # 生产安装
@@ -17,10 +17,11 @@ sidebar_position: 2
 
 ## 安装
 
-使用生产就绪的清单文件安装 SP-Istio Agent：
+使用您在 [账户设置](./account-setup) 阶段下载的个性化 `minimal.yaml` 文件安装 SP-Istio Agent。此文件包含您唯一的 API 密钥和预配置设置。
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/softprobe/sp-istio/main/deploy/minimal.yaml
+# 确保您使用的是从 Softprobe 控制台下载的 minimal.yaml 文件
+kubectl apply -f minimal.yaml
 ```
 
 这将在您的 Istio 服务网格中全局部署 WasmPlugin。
@@ -41,7 +42,7 @@ kubectl get wasmplugin -A
 
 ### 范围化部署
 
-要仅将代理部署到特定的命名空间或工作负载，您可以创建一个范围化的 WasmPlugin 配置。
+要仅将代理部署到特定的命名空间或工作负载，您可以创建一个范围化的 WasmPlugin 配置。请参阅 [配置指南](./config) 以获取详细的配置选项。
 
 ## 使用 Bookinfo 演示进行测试
 
@@ -81,8 +82,3 @@ kubectl get wasmplugin -A
 ```bash
 kubectl delete wasmplugin -n istio-system sp-istio-agent
 ```
-
-## 下一步
-
-- [故障排除](../deployment/troubleshooting) - 常见问题和解决方案
-- [架构](../architecture) - 了解代理的工作原理
