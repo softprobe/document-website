@@ -60,6 +60,7 @@ Ready for production? Follow this deployment path:
 - **🛠️ [Troubleshooting Guide](/support/faq)** - Common issues and solutions
 - **💬 [Community Support](https://community.softprobe.ai)** - Get help from other users
 - **📧 [Enterprise Support](mailto:support@softprobe.ai)** - Direct support for enterprise customers
+- **🖥️ [Dashboard User Guide](/support/dashboard-user-guide)** - Learn how to navigate the dashboard, manage tenants, and view metrics
 
 ## Need Help?
 
