@@ -1,8 +1,8 @@
 ---
 sidebar_position: 6
+title: 前端插件安装
+description: 学习如何集成 Softprobe Web SDK，实现浏览器端监控与分析
 ---
-
-# 前端插件安装
 
 本指南介绍 Softprobe Web SDK (@softprobe/web-inspector) 的安装和使用方法。
 
@@ -97,3 +97,6 @@ export default function Home() {
   return <button onClick={handleClick}>Start Checkout</button>;
 }
 ```
+
+- 配置服务端采集参见 [配置指南](../configuration/config)
+- 更多架构细节参见 [核心概念](../advanced-guides/concepts)

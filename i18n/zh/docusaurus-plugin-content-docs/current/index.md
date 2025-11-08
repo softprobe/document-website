@@ -1,5 +1,8 @@
 ---
 sidebar_position: 1
+slug: /
+title: Softprobe 用户指南
+description: Softprobe 用户指南——业务级分布式追踪与分析平台，零服务端代码改动
 ---
 
 # Softprobe 用户指南
@@ -27,13 +30,13 @@ Softprobe 是一个综合性的可观测性平台，为现代应用程序提供�
 
 Softprobe 新用户？几分钟内即可启动并运行：
 
-1. **[账户设置](./account-setup)** - 创建您的 Softprobe 账户并获取 API 密钥
-2. **[快速入门指南](./quick-start)** - 使用 Kind 设置演示环境
-3. **[Istio插件安装](./installation)** - 部署到您的生产集群
+1. **[账户设置](./getting-started/account-setup)** - 创建您的 Softprobe 账户并获取 API 密钥
+2. **[快速入门指南](./getting-started/quick-start)** - 使用 Kind 设置演示环境
+3. **[Istio插件安装](./deployment/installation)** - 部署到您的生产集群
 4. **[前端插件安装](./web-sdk)** - 与您的 Web 应用程序集成
-5. **[配置指南](./config)** - 自定义采集规则和设置
+5. **[配置指南](./configuration/config)** - 自定义采集规则和设置
 
 ## 💡 需要帮助？
 
-- **首次使用？** 从我们的 [快速入门指南](./quick-start) 开始
-- **生产部署？** 查看 [安装指南](./installation)
+- **首次使用？** 从我们的 [快速入门指南](./getting-started/quick-start) 开始
+- **生产部署？** 查看 [安装指南](./deployment/installation)

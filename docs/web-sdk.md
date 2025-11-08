@@ -1,8 +1,16 @@
 ---
 sidebar_position: 6
+sidebar_label: Web SDK
+title: Web SDK Integration
+description: Learn how to integrate Softprobe Web SDK for browser-based monitoring and analytics
 ---
 
-# Web Plugin Installation
+# Web SDK Integration
+
+:::info Note
+The Quick Start demo environment already has the Web SDK (`@softprobe/web-inspector`) pre-installed and enabled. If you're following the Quick Start, you don't need to install it again.
+This document is for integrating the SDK into your own frontend applications (React/Vue/Next.js, etc.).
+:::
 
 This guide covers the installation and usage of the Softprobe Web SDK (`@softprobe/web-inspector`).
 
@@ -13,7 +21,8 @@ The Softprobe Web SDK is designed to provide comprehensive insights into your we
 - **Automatic Performance Monitoring**: Automatically captures and reports key page load performance metrics.
 - **User Interaction Tracking**: Records user interactions such as clicks, scrolls, and form submissions to help you understand user journeys.
 - **Network Request Tracing**: Monitors all `fetch` and `XMLHttpRequest` requests to identify slow or failing API calls.
-- **Environment and Session Recording**: Gathers valuable context by recording browser, OS, and device information, and groups all events within a single user session.
+- **Intelligent Session Management**: Automatically generates a unique session when users open a browser tab, ensuring all operations within the same tab use the same session identifier for cross-request correlation.
+- **Environment and Device Recording**: Gathers valuable context by recording browser, OS, and device information, and groups all events within a single user session.
 - **Custom Instrumentation**: Provides a simple API to create custom spans for tracing specific business logic or user interactions.
 
 ## Installation
@@ -37,7 +46,7 @@ import { initInspector } from "@softprobe/web-inspector";
 export function register() {
   // Initialize the client
   initInspector({
-    apiKey: "",
+    publicKey: "",
     userId: "",
     serviceName: "YOUR_SERVICE_NAME",
     // Data collector endpoint: <INSPECTOR_COLLECTOR_URL>/v1/traces
@@ -97,3 +106,25 @@ export default function Home() {
   return <button onClick={handleClick}>Start Checkout</button>;
 }
 ```
+
+## Prerequisites
+
+To use the Softprobe Web SDK, you should have:
+
+- A modern web application (React, Vue, Next.js, or plain JavaScript)
+- Node.js 16+ and a bundler (e.g., Vite, Webpack)
+- A Softprobe account and public key from [Account Setup](/getting-started/account-setup)
+- Your collector endpoint (find it in Dashboard Settings), e.g. `<INSPECTOR_COLLECTOR_URL>/v1/traces`
+
+## FAQ
+
+- The SDK works in modern browsers. For legacy browsers, consider polyfills.
+- CSP: ensure `connect-src` allows your collection endpoint.
+
+---
+
+## Next Steps
+
+- Configure your server-side collection via [Configuration Reference](/configuration/config)
+- Verify telemetry ingestion in [Softprobe Dashboard](https://dashboard.softprobe.ai)
+- Explore advanced architecture in [Core Concepts](/advanced-guides/concepts)

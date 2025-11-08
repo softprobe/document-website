@@ -1,39 +1,68 @@
 ---
 sidebar_position: 1
+slug: /
+title: Softprobe Documentation
+description: Softprobe Documentation - Business-Level Distributed Tracing and Analytics Platform with zero code changes required
 ---
 
-# Softprobe User Guide
+# Softprobe Documentation
 
-**Business-level distributed tracing and analytics platform**
+**Business-Level Distributed Tracing and Analytics Platform**
 
 Zero-code changes required • Complete request visibility • Advanced troubleshooting
 
-Comprehensive observability solution for modern applications and microservices
+## Welcome to Softprobe
 
-## What is Softprobe?
+Softprobe is a comprehensive observability platform designed for modern applications and microservices. It provides deep insights into application behavior, user interactions, and system performance without requiring code changes on the server side.
 
-Softprobe is a comprehensive observability platform that provides business-level distributed tracing and analytics for modern applications. The platform offers deep insights into application behavior, user interactions, and system performance in Kubernetes environments.
+### How Softprobe Works
 
-## Key Benefits
+Softprobe collects and analyzes data through a multi-layered approach:
+
+- **Server-Side Collection**: A lightweight WebAssembly (Wasm) plugin runs inside Istio's Envoy sidecars to capture HTTP traffic and business flows
+- **Client-Side Enrichment**: Optional browser SDK records performance metrics and user interactions
+- **Secure Data Pipeline**: All data is encrypted and sent to Softprobe's backend using your public key for authentication
+
+### Key Benefits
 
 - **🔍 Complete Visibility**: Capture comprehensive application data and user interactions
 - **🚀 Faster Troubleshooting**: Business-level insights reduce debugging time from hours to minutes
 - **📊 Advanced Analytics**: Rich insights into usage patterns, performance metrics, and business flows
 - **⚡ Zero Code Changes**: Deploy without modifying existing application code
-- **🔒 Enterprise Ready**: Production-grade security, compliance, and performance
-- **🌐 Multi-Platform**: Support for various deployment environments and architectures
+- **☸️ Kubernetes-Native**: Deep integration with Kubernetes and Istio for seamless deployment
 
-## 🚀 Quick Start
+## Getting Started
 
-New to Softprobe? Get up and running in minutes:
+### For New Users
 
-1. **[Account Setup](./account-setup)** - Create your Softprobe account and get API keys
-2. **[Quick Start Guide](./quick-start)** - Set up a demo environment with Kind
-3. **[Istio WASM Plugin Installation](./installation)** - Deploy to your production cluster
-4. **[Web SDK Plugin Installation](./web-sdk)** - Integrate with your web application
-5. **[Configuration Guide](./config)** - Customize collection rules and settings
+If you're new to Softprobe, follow this learning path:
 
-## 💡 Need Help?
+1. **👤 [Account Setup & Public Key Management](/getting-started/account-setup)** - Create your account and manage public keys
+2. **🚀 [Quick Start Guide](/getting-started/quick-start)** - Set up a local demo environment with Kind
+3. **📋 [Understanding Softprobe Concepts](/advanced-guides/concepts)** - Learn how Softprobe works and its architecture
 
-- **First time user?** Start with our [Quick Start Guide](./quick-start)
-- **Production deployment?** Check the [Installation Guide](./installation)
+### For Production Deployment
+
+Ready for production? Follow this deployment path:
+
+1. **⚙️ [Production Installation Guide](/deployment/installation)** - Deploy to your production Kubernetes cluster
+2. **🎯 [Configuration Guide](/configuration/config)** - Customize collection rules and settings
+3. **🌐 [Web SDK Integration](/web-sdk)** - Add client-side monitoring to your web applications
+
+### Specialized Environments
+
+- **☁️ [GKE Autopilot Installation](/deployment/GKE-Autopilot-Istio-Installation-Guide)** - Deploy on Google Kubernetes Engine Autopilot
+
+
+## Support & Resources
+
+- **📚 [API Documentation](https://docs.softprobe.ai)** - Complete API reference
+- **🛠️ [Troubleshooting Guide](/support/faq)** - Common issues and solutions
+- **💬 [Community Support](https://community.softprobe.ai)** - Get help from other users
+- **📧 [Enterprise Support](mailto:support@softprobe.ai)** - Direct support for enterprise customers
+
+## Need Help?
+
+- **First-time user?** Start with our [Quick Start Guide](/getting-started/quick-start)
+- **Production deployment?** Check the [Production Installation Guide](/deployment/installation)
+- **Technical questions?** Visit our [API Documentation](https://docs.softprobe.ai)

@@ -1,5 +1,8 @@
 ---
-sidebar_position: 4
+sidebar_position: 1
+sidebar_label: Production Installation
+title: Production Installation Guide
+description: Complete guide for deploying Softprobe in production environments with Istio and Kubernetes
 ---
 
 # Istio WASM Plugin Installation
@@ -17,7 +20,7 @@ Before installing SP-Istio Agent in production, ensure you have:
 
 ## Installation
 
-Install SP-Istio Agent using your personalized `minimal.yaml` file, which you downloaded during the [Account Setup](./account-setup) phase. This file contains your unique API key and pre-configured settings.
+Install SP-Istio Agent using your personalized `minimal.yaml` file, which you downloaded during the [Account Setup](/getting-started/account-setup) phase. This file contains your public key identifier and pre-configured settings.
 
 ```bash
 # Ensure you are using the minimal.yaml file downloaded from the Softprobe Dashboard
@@ -36,13 +39,27 @@ kubectl get wasmplugin -A
 
 You should see the SP-Istio Agent plugin listed.
 
+## Restart Workloads
+
+After applying the WasmPlugin/EnvoyFilter, restart affected workloads to load the updated sidecar configuration:
+
+```bash
+# Restart all deployments in a namespace (replace <namespace>)
+kubectl rollout restart deployment -n <namespace>
+
+# Or restart a single deployment
+kubectl rollout restart deployment <name> -n <namespace>
+```
+
+If you enabled sidecar injection on a namespace just now, restarting ensures pods are recreated with the updated sidecar and configuration.
+
 ## Configuration
 
 The default configuration captures HTTP traffic for all services in the mesh. You can customize the behavior by modifying the WasmPlugin resource.
 
 ### Scoped Deployment
 
-To deploy the agent to specific namespaces or workloads only, you can create a scoped WasmPlugin configuration. See the [Configuration Guide](./config) for detailed configuration options.
+To deploy the agent to specific namespaces or workloads only, you can create a scoped WasmPlugin configuration. See the [Configuration Guide](/configuration/config) for detailed configuration options.
 
 ## Testing with Bookinfo Demo
 
@@ -82,3 +99,10 @@ To remove SP-Istio Agent from your cluster:
 ```bash
 kubectl delete wasmplugin -n istio-system sp-istio-agent
 ```
+
+## Next Steps
+
+- Tune collection behavior with the [Configuration Guide](/configuration/config)
+- Add front-end visibility using the [Web SDK](/web-sdk)
+- If you are testing locally, see the [Quick Start](/getting-started/quick-start)
+- For GKE Autopilot clusters, see [GKE Autopilot Istio Installation Guide](/deployment/GKE-Autopilot-Istio-Installation-Guide)

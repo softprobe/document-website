@@ -1,5 +1,7 @@
 ---
 sidebar_position: 2
+title: 账户设置
+description: 学习如何创建 Softprobe 账户、设置租户组并获取配置文件，以开始使用系统
 ---
 
 # 账户设置
@@ -125,9 +127,9 @@ spec:
 
 完成账户设置后：
 
-1. **快速测试**: 遵循 [快速入门](./quick-start)
-2. **生产环境**: 遵循 [生产安装](./installation)
-3. **自定义配置**: 查看 [配置指南](./config.md)
+1. **快速测试**: 遵循 [快速入门](../getting-started/quick-start)
+2. **生产环境**: 遵循 [生产安装](../deployment/installation)
+3. **自定义配置**: 查看 [配置指南](../configuration/config)
 
 ## ❓ 故障排除
 
