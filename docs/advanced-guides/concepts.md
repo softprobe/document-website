@@ -24,25 +24,11 @@ Softprobe is a comprehensive observability platform designed for modern cloud-na
 
 Softprobe operates through a distributed architecture:
 
-```
-┌─────────────────┐    ┌───────────────────┐    ┌────────────────────┐
-│   Your Apps     │    │   SP-Istio Agent   │    │  Softprobe Backend │
-│                 │    │                    │    │                    │
-│  ┌─────────────┐│    │  ┌───────────────┐ │    │  ┌──────────────┐  │
-│  │ Web SDK    ├───────►│  WASM Plugin  ├───────►│  Collector    │  │
-│  │ (Frontend) ││    │  │ (Service Mesh)│ │    │  │              │  │
-│  └─────────────┘│    │  └───────────────┘ │    │  └──────────────┘  │
-│                 │    │                    │    │                    │
-│  ┌─────────────┐│    │  ┌───────────────┐ │    │  ┌──────────────┐  │
-│  │ Backend     ├───────►│  Envoy Filter ├───────►│  Processing   │  │
-│  │ Services    ││    │  │ (Traffic Capt)│ │    │  │ Engine       │  │
-│  └─────────────┘│    │  └───────────────┘ │    │  └──────────────┘  │
-└─────────────────┘    └───────────────────┘    └────────────────────┘
-       │                         │                         │
-       │                         │                         │
-       └─────────────────────────┴─────────────────────────┘
-                    Authenticated Data Pipeline
-```
+<div style={{textAlign: 'center', margin: '24px 48px'}}>
+
+<img src="/img/docs/how-it-work.png" alt="Softprobe Architecture" style={{maxWidth: '100%', height: 'auto', borderRadius: '8px'}} />
+
+</div>
 
 ### Key Components
 

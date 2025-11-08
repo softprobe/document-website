@@ -73,8 +73,14 @@ sleep 10 && kubectl port-forward -n istio-system svc/istio-ingressgateway 8080:8
 
 1. Open [`http://localhost:8080/`](http://localhost:8080/) in your browser
 2. Select a **pair** of cities
+<div style={{textAlign: 'center', margin: '24px 48px'}}>
+
+<img src="/img/docs/search-flight.png" alt="Softprobe Demo Search Flight" style={{maxWidth: '100%', height: 'auto', borderRadius: '8px'}} />
+
+</div>
 3. Search for flights
 4. Complete a booking with any test information
+
 5. Process a payment with fake details
 
 :::tip
@@ -88,6 +94,12 @@ After generating some traffic:
 1. Go to [Softprobe Dashboard](https://dashboard.softprobe.ai)
 2. Navigate to **Travel View** in the left navigation menu
 3. Explore the captured requests and business-level traces
+
+<div style={{textAlign: 'center', margin: '24px 48px'}}>
+
+<img src="/img/docs/demo-session.png" alt="Softprobe Demo Session" style={{maxWidth: '100%', height: 'auto', borderRadius: '8px'}} />
+
+</div>
 
 ### Demo Video
 
