@@ -56,7 +56,7 @@ export function register() {
 }
 ```
 
-### Creating Spans Manually
+### Creating Custom Spans (Optional)
 
 You can create custom spans to trace specific business logic or user interactions.
 

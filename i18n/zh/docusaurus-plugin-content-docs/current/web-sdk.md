@@ -56,7 +56,7 @@ export function register() {
 }
 ```
 
-### 手动创建 Span
+### 创建自定义Span（可选）
 
 您可以创建自定义 Span 来追踪特定的业务逻辑或用户交互。
 

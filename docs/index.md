@@ -29,8 +29,8 @@ New to Softprobe? Get up and running in minutes:
 
 1. **[Account Setup](./account-setup)** - Create your Softprobe account and get API keys
 2. **[Quick Start Guide](./quick-start)** - Set up a demo environment with Kind
-3. **[Service Plugin Installation](./installation)** - Deploy to your production cluster
-4. **[Web Plugin Installation](./web-sdk)** - Integrate with your web application
+3. **[Istio WASM Plugin Installation](./installation)** - Deploy to your production cluster
+4. **[Web SDK Plugin Installation](./web-sdk)** - Integrate with your web application
 5. **[Configuration Guide](./config)** - Customize collection rules and settings
 
 ## 💡 Need Help?

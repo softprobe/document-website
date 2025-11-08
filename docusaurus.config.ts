@@ -112,17 +112,17 @@ const config: Config = {
         {
           title: "Community",
           items: [
-            {
-              label: "Stack Overflow",
-              href: "https://stackoverflow.com/questions/tagged/docusaurus",
-            },
-            {
-              label: "Discord",
-              href: "https://discordapp.com/invite/docusaurus",
-            },
+            // {
+            //   label: "Stack Overflow",
+            //   href: "https://stackoverflow.com/questions/tagged/docusaurus",
+            // },
+            // {
+            //   label: "Discord",
+            //   href: "https://discordapp.com/invite/docusaurus",
+            // },
             {
               label: "Twitter",
-              href: "https://twitter.com/docusaurus",
+              href: "https://x.com/softprobeai",
             },
           ],
         },
@@ -130,8 +130,12 @@ const config: Config = {
           title: "More",
           items: [
             {
-              label: "GitHub",
-              href: "https://github.com/your-org/document-website",
+              label: "Istio GitHub",
+              href: "https://github.com/softprobe/sp-istio-wasm",
+            },
+            {
+              label: "Web SDK GitHub",
+              href: "https://github.com/softprobe/web-inspector",
             },
           ],
         },

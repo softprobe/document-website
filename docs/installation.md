@@ -2,7 +2,7 @@
 sidebar_position: 4
 ---
 
-# Service Plugin Installation
+# Istio WASM Plugin Installation
 
 Deploy SP-Istio Agent to your production Istio service mesh.
 

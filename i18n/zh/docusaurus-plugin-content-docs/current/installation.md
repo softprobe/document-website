@@ -2,7 +2,7 @@
 sidebar_position: 4
 ---
 
-# 服务插件安装
+# Istio WASM 插件安装
 
 将 SP-Istio Agent 部署到您的生产 Istio 服务网格中。
 

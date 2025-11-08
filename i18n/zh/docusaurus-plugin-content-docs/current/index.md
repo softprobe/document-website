@@ -29,7 +29,7 @@ Softprobe 新用户？几分钟内即可启动并运行：
 
 1. **[账户设置](./account-setup)** - 创建您的 Softprobe 账户并获取 API 密钥
 2. **[快速入门指南](./quick-start)** - 使用 Kind 设置演示环境
-3. **[服务插件安装](./installation)** - 部署到您的生产集群
+3. **[Istio插件安装](./installation)** - 部署到您的生产集群
 4. **[前端插件安装](./web-sdk)** - 与您的 Web 应用程序集成
 5. **[配置指南](./config)** - 自定义采集规则和设置
 
