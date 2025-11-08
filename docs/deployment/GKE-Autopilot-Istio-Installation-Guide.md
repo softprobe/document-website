@@ -225,3 +225,240 @@ By following this guide, you should be able to successfully deploy and run Istio
 - [GKE Autopilot Hardened Defaults (Security)](https://cloud.google.com/kubernetes-engine/docs/concepts/autopilot-security)
 
 *This guide is based on actual deployment experience and is applicable to Istio 1.27+ and GKE 1.27+ versions.*
+
+
+## Application Instrumentation on Autopilot (without Operator)
+
+In some GKE Autopilot environments, installing cluster-wide operators (like OpenTelemetry Operator) can be constrained by security policies, private cluster firewall rules, or webhook requirements. If you can’t (or prefer not to) use the Operator, you can manually attach language-specific agents to your applications and export telemetry to an OTLP endpoint (Collector or Softprobe ingestion endpoint).
+
+### General setup
+
+- Choose an OTLP endpoint (Collector service or external ingestion URL)
+- Set service metadata via environment variables
+- Ensure egress from workloads to the OTLP endpoint (HTTP or gRPC)
+- Prefer non-root containers and define resource requests/limits to comply with Autopilot
+
+Common environment variables (adapt to your endpoint):
+
+```bash
+# Example (HTTP OTLP)
+export OTEL_EXPORTER_OTLP_ENDPOINT="https://otel.example.com"      # base URL, the SDK will append /v1/traces /v1/metrics
+export OTEL_EXPORTER_OTLP_PROTOCOL="http/protobuf"                 # or "grpc"
+export OTEL_SERVICE_NAME="your-service"
+export OTEL_RESOURCE_ATTRIBUTES="service.namespace=production,service.version=1.0.0"
+# Optional headers (e.g., auth token)
+export OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer YOUR_TOKEN"
+```
+
+You may set these variables directly in your Kubernetes Deployment under `env:`.
+
+---
+
+### Java (JVM)
+
+Attach the OpenTelemetry Java agent by adding `-javaagent` and environment variables:
+
+```dockerfile
+# Add the agent to the image (recommendation: bake into your app image)
+ADD opentelemetry-javaagent.jar /otel/javaagent.jar
+```
+
+```yaml
+# Deployment snippet
+spec:
+  template:
+    spec:
+      containers:
+        - name: app
+          image: your-registry/your-java-app:latest
+          env:
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: "https://otel.example.com"
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: "http/protobuf"
+            - name: OTEL_SERVICE_NAME
+              value: "your-service"
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "service.namespace=production,service.version=1.0.0"
+            - name: OTEL_EXPORTER_OTLP_HEADERS
+              value: "Authorization=Bearer YOUR_TOKEN"
+            - name: JAVA_TOOL_OPTIONS
+              value: "-javaagent:/otel/javaagent.jar"
+          # or use command/args if you manage the JVM startup explicitly
+```
+
+If you control the startup script, you can also add: `-javaagent:/otel/javaagent.jar` to the JVM arguments.
+
+---
+
+### Node.js
+
+Use the Node SDK and auto-instrumentations:
+
+```bash
+npm install @opentelemetry/sdk-node @opentelemetry/auto-instrumentations-node @opentelemetry/exporter-trace-otlp-http
+```
+
+Create a bootstrap file (e.g., `otel.js`):
+
+```js
+// otel.js
+const { NodeSDK } = require('@opentelemetry/sdk-node');
+const { getNodeAutoInstrumentations } = require('@opentelemetry/auto-instrumentations-node');
+const { OTLPTraceExporter } = require('@opentelemetry/exporter-trace-otlp-http');
+
+const exporter = new OTLPTraceExporter({
+  // The OTLP exporter appends /v1/traces automatically for HTTP
+  url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT,
+  headers: process.env.OTEL_EXPORTER_OTLP_HEADERS
+    ? Object.fromEntries(process.env.OTEL_EXPORTER_OTLP_HEADERS.split(',').map(h => h.split('=')))
+    : undefined,
+});
+
+const sdk = new NodeSDK({
+  traceExporter: exporter,
+  instrumentations: [getNodeAutoInstrumentations()],
+});
+
+sdk.start();
+```
+
+Start your app with the bootstrap required:
+
+```bash
+# Option 1: require bootstrap
+node -r ./otel.js app.js
+# Option 2: via NODE_OPTIONS
+export NODE_OPTIONS="--require ./otel.js" && node app.js
+```
+
+Set env variables in your Deployment as shown in the General setup section.
+
+---
+
+### Python
+
+Use the Python distro and the CLI instrumentation:
+
+```bash
+pip install opentelemetry-distro opentelemetry-exporter-otlp
+opentelemetry-bootstrap --action=install
+```
+
+Run the application with instrumentation:
+
+```bash
+# Set env vars (as in General setup) then
+opentelemetry-instrument python app.py
+```
+
+Alternatively, configure the SDK in code and use OTLP exporters.
+
+---
+
+### .NET
+
+For .NET, you can use SDK-based instrumentation or auto-instrumentation (native profiler). SDK-based is simpler to adopt:
+
+```csharp
+// Program.cs (example)
+using OpenTelemetry;
+using OpenTelemetry.Trace;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddOpenTelemetry().WithTracing(tracerProviderBuilder =>
+{
+    tracerProviderBuilder
+        .AddAspNetCoreInstrumentation()
+        .AddHttpClientInstrumentation()
+        .AddOtlpExporter(options =>
+        {
+            options.Endpoint = new Uri(Environment.GetEnvironmentVariable("OTEL_EXPORTER_OTLP_ENDPOINT") ?? "https://otel.example.com");
+            // For HTTP/protobuf, ensure protocol matches; set headers if needed
+        });
+});
+
+var app = builder.Build();
+app.MapGet("/", () => "Hello World!");
+app.Run();
+```
+
+If you need auto-instrumentation, mount the auto-instrumentation files and set the profiler env vars (`CORECLR_ENABLE_PROFILING`, `CORECLR_PROFILER`, `CORECLR_PROFILER_PATH`, and relevant `OTEL_*` variables) in the Deployment.
+
+---
+
+### Go
+
+Go commonly uses SDK-based instrumentation in code:
+
+```go
+// Example outline
+import (
+  "go.opentelemetry.io/otel"
+  "go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
+  "go.opentelemetry.io/otel/sdk/resource"
+  "go.opentelemetry.io/otel/sdk/trace"
+)
+
+func initTracer() (*trace.TracerProvider, error) {
+  exporter, err := otlptracehttp.New(context.Background(), otlptracehttp.WithEndpoint(os.Getenv("OTEL_EXPORTER_OTLP_ENDPOINT")))
+  if err != nil { return nil, err }
+
+  tp := trace.NewTracerProvider(
+    trace.WithBatcher(exporter),
+    trace.WithResource(resource.Default()),
+  )
+  otel.SetTracerProvider(tp)
+  return tp, nil
+}
+```
+
+For eBPF-based HTTP telemetry in Go environments without code changes, consider a separate DaemonSet like Beyla. In Autopilot, ensure it complies with non-privileged policies.
+
+---
+
+### Troubleshooting on Autopilot
+
+- Verify egress to the OTLP endpoint and TLS/cert requirements
+- Define resource requests/limits for all containers
+- Avoid privileged flags and root-only file paths
+- Prefer baking agents into images instead of initContainers if your policy restricts them
+- Check logs on both application and the OTLP backend/Collector to confirm export success
+
+### Disable exporting (collect-only / no-export mode)
+Sometimes you may want to enable instrumentation but temporarily disable exporting (e.g., for smoke tests in Autopilot). You can turn off exporters while keeping instrumentation active.
+
+- Cross-language (environment variables):
+  ```bash
+  export OTEL_TRACES_EXPORTER=none
+  export OTEL_METRICS_EXPORTER=none
+  export OTEL_LOGS_EXPORTER=none
+  ```
+  This disables all exporters. The SDK will still create spans/metrics/logs according to instrumentation, but they will not be sent to any backend.
+
+- Java (OpenTelemetry Java Agent):
+  ```bash
+  JAVA_TOOL_OPTIONS="-javaagent:/otel/opentelemetry-javaagent.jar \
+    -Dotel.traces.exporter=none \
+    -Dotel.metrics.exporter=none \
+    -Dotel.logs.exporter=none \
+    -Dotel.resource.attributes=service.name=sp-storage \
+    -Dotel.instrumentation.http.server.capture-request-headers=tracestate \
+    -Dotel.instrumentation.http.server.capture-response-headers=tracestate"
+  ```
+  Or add these system properties directly to your JVM start command:
+  ```bash
+  java -javaagent:/otel/opentelemetry-javaagent.jar \
+    -Dotel.traces.exporter=none \
+    -Dotel.metrics.exporter=none \
+    -Dotel.logs.exporter=none \
+    -Dotel.resource.attributes=service.name=sp-storage \
+    -Dotel.instrumentation.http.server.capture-request-headers=tracestate \
+    -Dotel.instrumentation.http.server.capture-response-headers=tracestate \
+    -jar app.jar
+  ```
+
+Note:
+- Disabling exporters reduces external traffic and is useful for validation; however, instrumentation overhead still exists because spans/metrics/logs are created. For production, restore the desired exporters (e.g., set OTEL_TRACES_EXPORTER=otlp).
+- Ensure resource attributes (service.name, namespace, version) remain configured so you can easily switch exporting back on later without needing to change application manifests.
