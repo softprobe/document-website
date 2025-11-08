@@ -28,6 +28,10 @@ kubectl apply -f minimal.yaml
 
 这将在您的 Istio 服务网格中全局部署 WasmPlugin。
 
+:::tip 前端 Web SDK（可选但推荐）
+若要在浏览器侧采集性能与用户行为数据，请在应用前端安装 Softprobe Web SDK。详见 [前端插件安装](/zh/web-sdk)。
+:::
+
 ## 验证安装
 
 检查 WasmPlugin 是否已成功创建：
@@ -41,6 +45,22 @@ kubectl get wasmplugin -A
 ## 配置
 
 默认配置会捕获网格中所有服务的 HTTP 流量。您可以通过修改 WasmPlugin 资源来自定义行为。
+
+## 前端可观测性与会话关联（sessionId）
+
+若要实现从浏览器到后端的全链路追踪，请在应用前端集成 Softprobe Web SDK。SDK 会在每个浏览器标签页初始化时自动生成并复用唯一的 sessionId：
+
+- 同一标签页内的页面跳转与交互会复用同一个 sessionId，使一次用户访问能够完整串联。
+- 打开新的标签页或窗口会生成新的 sessionId；关闭标签页或重新初始化后，会话也会随之重置。
+- 所有上报的前端事件、性能指标与网络请求都会携带该 sessionId，便于与后端链路数据进行关联，形成端到端视图。
+
+最佳实践：
+- 在前端将 sessionId 通过请求头（例如 `X-Session-Id`）或 Tracing Context 传递到后端；
+- 在后端采集与日志中记录该标识，或在可观测性系统中进行关联，以提升排障与定位效率。
+
+参考文档：
+- [前端插件安装](/zh/web-sdk)
+- [配置指南](/zh/configuration/config)
 
 ### 范围化部署
 
@@ -84,3 +104,19 @@ kubectl get wasmplugin -A
 ```bash
 kubectl delete wasmplugin -n istio-system sp-istio-agent
 ```
+
+## 端到端追踪与会话关联（sessionId）
+
+若要实现从浏览器到后端的全链路追踪，请在应用前端集成 Softprobe Web SDK。SDK 会在每个浏览器标签页初始化时自动生成并复用唯一的 sessionId：
+
+- 同一标签页内的页面跳转与交互会复用同一个 sessionId，使一次用户访问能够完整串联。
+- 打开新的标签页或窗口会生成新的 sessionId；关闭标签页或重新初始化后，会话也会随之重置。
+- 所有上报的前端事件、性能指标与网络请求都会携带该 sessionId，便于与后端链路数据进行关联，形成端到端视图。
+
+最佳实践：
+- 在前端将 sessionId 通过请求头（例如 `X-Session-Id`）或 Tracing Context 传递到后端；
+- 在后端采集与日志中记录该标识，或在可观测性系统中进行关联，以提升排障与定位效率。
+
+参考文档：
+- [前端插件安装](/zh/web-sdk)
+- [配置指南](/zh/configuration/config)

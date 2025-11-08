@@ -55,7 +55,7 @@ Softprobe operates through a distributed architecture:
 #### 2. Web SDK (Frontend Layer)
 
 - **Automatic Instrumentation**: Captures user interactions, performance metrics, and errors
-- **Session Management**: Correlates frontend and backend requests
+- **Session Management**: Generates a per-tab sessionId and reuses it across navigations within the same tab; all frontend telemetry carries the sessionId for end-to-end correlation with backend traces and logs
 - **Lightweight**: Minimal performance impact on your web applications
 
 #### 3. Softprobe Backend

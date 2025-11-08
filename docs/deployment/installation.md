@@ -61,6 +61,17 @@ The default configuration captures HTTP traffic for all services in the mesh. Yo
 
 To deploy the agent to specific namespaces or workloads only, you can create a scoped WasmPlugin configuration. See the [Configuration Guide](/configuration/config) for detailed configuration options.
 
+## Front-End Observability and Session Correlation (sessionId)
+
+Softprobe's Web SDK generates a unique sessionId for each browser tab and reuses it across navigation within the same tab. Opening a new tab creates a new sessionId; closing a tab ends the session. All front-end events, performance metrics, and network requests are reported with this sessionId to enable end-to-end correlation with backend telemetry.
+
+Best practices:
+- Propagate the sessionId to backend services via request headers (e.g., `X-Session-Id`) or tracing context.
+- Record the sessionId in backend logs/telemetry so that requests, traces, and events from the same session can be aligned.
+- Configure collection behavior and headers in the WasmPlugin as needed. See the Configuration Guide.
+
+Learn more in the Web SDK guide: [/web-sdk](/web-sdk). Configuration details: [/configuration/config](/configuration/config).
+
 ## Testing with Bookinfo Demo
 
 To validate the installation using Istio's Bookinfo demo application:

@@ -25,6 +25,25 @@ The Softprobe Web SDK is designed to provide comprehensive insights into your we
 - **Environment and Device Recording**: Gathers valuable context by recording browser, OS, and device information, and groups all events within a single user session.
 - **Custom Instrumentation**: Provides a simple API to create custom spans for tracing specific business logic or user interactions.
 
+## Session ID Generation and End-to-End Correlation
+
+The Web SDK generates a unique sessionId for each browser tab and reuses it across navigation within the same tab. Opening a new tab creates a new sessionId; closing a tab ends the session. All frontend events, performance metrics, and network requests carry this sessionId so they can be correlated with backend traces and logs end-to-end.
+
+Best practices:
+- Propagate the sessionId to backend services via request headers (e.g., `X-Session-Id`) or tracing context.
+- Record the sessionId in backend logs/telemetry to align requests, traces, and events from the same session.
+- Combine frontend session data with server-side collection rules. See the Configuration Guide.
+
+Learn more in the Web SDK guide: [/web-sdk](/web-sdk). Configuration details: [/configuration/config](/configuration/config). Deployment context: [/deployment/installation](/deployment/installation).
+
+### Session and Context Propagation
+
+- Per-tab generation: A new sessionId is created when a user opens a browser tab.
+- In-tab reuse: Navigations and interactions within the same tab reuse the same sessionId.
+- New tab behavior: Opening a new tab creates a new sessionId.
+- Session termination: Closing the tab ends the session.
+- Backend correlation: Pass the sessionId downstream via headers or context to enable end-to-end analysis.
+
 ## Installation
 
 Install the package using your preferred package manager:
