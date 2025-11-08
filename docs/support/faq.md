@@ -68,7 +68,7 @@ description: Common questions for account setup, public keys, and initial config
 
 - Dashboard: Modern responsive UI, real-time analytics, heatmaps, and user session recordings; built with React + Vite + TailwindCSS.
 - OTEL Backend: Ingests traces/logs/metrics; BigQuery storage with indexed request_body_hash for fast lookups and correlation.
-- Auth Service: Multi-tenant authentication/authorization; API key lifecycle, JWT utilities, role-based access (OWNER/ADMIN/MEMBER).
+- Auth Service: Multi-tenant authentication/authorization; Public key lifecycle, JWT utilities, role-based access (OWNER/ADMIN/MEMBER).
 
 :::info Why this matters
 These components work together to deliver end-to-end observability with session correlation, efficient data lookup, and secure multi-tenant controls.
@@ -77,8 +77,8 @@ These components work together to deliver end-to-end observability with session 
 ## Precautions & Best Practices
 
 - Environment separation: Use distinct tenants/public keys for prod vs. non-prod; start with conservative sampling and ramp up.
-- API key hygiene: Full keys are shown only at creation; store securely; rotate periodically; never commit secrets.
-- Rate limits: Each API key has hourly limits; design clients with retries/backoff and monitor usage counters.
+- Public key hygiene: Full keys are shown only at creation; store securely; rotate periodically; never commit secrets.
+- Rate limits: Each Public key has hourly limits; design clients with retries/backoff and monitor usage counters.
 - Data sensitivity: Avoid sending PII in attributes; rely on signing/verification and TLS; prefer hashed request bodies for correlation.
 - Performance: BigQuery indexes grow with data; combine filters with request_body_hash; consider time partitions and cache if needed.
 - Deployment: Use CI/CD (e.g., ArgoCD) with image tags; ensure dashboard release and backend schema changes are coordinated.
@@ -88,7 +88,7 @@ Create separate tenant groups and public keys per project/environment to ease au
 :::
 
 :::warning Caution
-Do not paste full API keys into issue trackers or chat tools. Use masked previews in UI and rotate compromised keys immediately.
+Do not paste full Public keys into issue trackers or chat tools. Use masked previews in UI and rotate compromised keys immediately.
 :::
 
 ## Plans & Quotas

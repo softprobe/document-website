@@ -77,7 +77,7 @@ description: 学习如何创建 Softprobe 账户、设置租户组并获取配�
 
 <div style={{textAlign: 'center', margin: '24px 48px'}}>
 
-<img src="/img/docs/create-key.png" alt="Generate API Key" style={{maxWidth: '100%', height: 'auto', borderRadius: '8px'}} />
+<img src="/img/docs/create-key.png" alt="Generate Public Key" style={{maxWidth: '100%', height: 'auto', borderRadius: '8px'}} />
 
 </div>
 
@@ -92,7 +92,7 @@ description: 学习如何创建 Softprobe 账户、设置租户组并获取配�
 
 <div style={{textAlign: 'center', margin: '24px 48px'}}>
 
-<img src="/img/docs/download-yaml.png" alt="Download Yaml after Create API Key" style={{maxWidth: '100%', height: 'auto', borderRadius: '8px'}} />
+<img src="/img/docs/download-yaml.png" alt="Download Yaml after Create Public Key" style={{maxWidth: '100%', height: 'auto', borderRadius: '8px'}} />
 
 </div>
 
@@ -101,7 +101,7 @@ description: 学习如何创建 Softprobe 账户、设置租户组并获取配�
 下载的 `minimal.yaml` 包含：
 
 ```yaml
-# WasmPlugin configuration with your API key
+# WasmPlugin configuration with your Public key
 apiVersion: extensions.istio.io/v1alpha1
 kind: WasmPlugin
 metadata:

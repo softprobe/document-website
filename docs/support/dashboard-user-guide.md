@@ -73,7 +73,7 @@ Resource isolation and management in multi-tenant environments
 #### Tenant Settings
 - Basic info: name, description, icon
 - Member management: add/remove, roles and permissions
-- API keys: create/manage keys and validity
+- Public keys: create/manage keys and validity
 - Danger zone: delete tenant, export backup, clear data
 
 ### 3. Team Member Management
@@ -90,7 +90,7 @@ Permission control and collaborative management
 - Roles: **Administrator**, **Editor**, **Viewer**
 
 #### Role Permissions
-- **Administrator**: Full control, manage members/settings, API keys, dangerous ops
+- **Administrator**: Full control, manage members/settings, Public keys, dangerous ops
 - **Editor**: Operate data and monitoring configs, cannot manage members/settings
 - **Viewer**: Read-only access, suitable for report viewers
 
@@ -101,8 +101,8 @@ Permission control and collaborative management
 
 - Data refresh: Homepage does not auto-refresh; change time range or tenant, or manually refresh to update.
 - Roles & safety: Use least-privilege roles; avoid granting Administrator globally; review member list regularly.
-- API keys: Full key is displayed only at creation; store securely and rotate periodically; never commit secrets.
-- Rate limits: Each API key has hourly caps; design clients with retries/backoff and monitor usage counters in Dashboard.
+- Public keys: Full key is displayed only at creation; store securely and rotate periodically; never commit secrets.
+- Rate limits: Each Public key has hourly caps; design clients with retries/backoff and monitor usage counters in Dashboard.
 - PII handling: Do not send sensitive personal data in attributes; use hashed request bodies for correlation.
 - Multi-environment: Create separate tenants and public keys per environment (prod/staging/dev) for isolation and auditability.
 - Performance tips: Combine time filters with request_body_hash; use partitions and caching strategies when datasets grow.

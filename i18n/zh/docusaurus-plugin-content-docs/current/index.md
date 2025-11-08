@@ -38,5 +38,10 @@ Softprobe 新用户？几分钟内即可启动并运行：
 
 ## 💡 需要帮助？
 
-- **首次使用？** 从我们的 [快速入门指南](./getting-started/quick-start) 开始
-- **生产部署？** 查看 [安装指南](./deployment/installation)
+- **[仪表盘使用指南](/support/dashboard-user-guide)** - 导航、租户管理与指标查看
+- **[常见问题与故障排除](/support/faq)** - 常见问题与解决方案
+- **[套餐与价格](/billing/pricing)** - 套餐类型、配额与价格说明
+- **[计费与订阅管理](/billing/subscriptions)** - 订阅生命周期、账期与取消策略
+- **[API 文档](https://docs.softprobe.ai)** - 完整的 API 参考
+- **[企业支持](mailto:support@softprobe.ai)** - 企业客户专属支持
+- **[社区支持](https://community.softprobe.ai)** - 与其他用户交流与获取帮助

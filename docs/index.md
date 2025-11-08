@@ -56,11 +56,13 @@ Ready for production? Follow this deployment path:
 
 ## Support & Resources
 
-- **📚 [API Documentation](https://docs.softprobe.ai)** - Complete API reference
-- **🛠️ [Troubleshooting Guide](/support/faq)** - Common issues and solutions
-- **💬 [Community Support](https://community.softprobe.ai)** - Get help from other users
-- **📧 [Enterprise Support](mailto:support@softprobe.ai)** - Direct support for enterprise customers
 - **🖥️ [Dashboard User Guide](/support/dashboard-user-guide)** - Learn how to navigate the dashboard, manage tenants, and view metrics
+- **🛠️ [Troubleshooting Guide](/support/faq)** - Common issues and solutions
+- **💳 [Plans & Pricing](/billing/pricing)** - Plan types, quotas, and pricing
+- **🧾 [Billing & Subscriptions](/billing/subscriptions)** - Subscription lifecycle, billing cycles, and cancellation policy
+- **📚 [API Documentation](https://docs.softprobe.ai)** - Complete API reference
+- **📧 [Enterprise Support](mailto:support@softprobe.ai)** - Direct support for enterprise customers
+- **💬 [Community Support](https://community.softprobe.ai)** - Get help from other users
 
 ## Need Help?
 
