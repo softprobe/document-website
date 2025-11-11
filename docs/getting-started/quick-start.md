@@ -75,7 +75,10 @@ sleep 10 && kubectl port-forward -n istio-system svc/istio-ingressgateway 8080:8
 2. Select a **pair** of cities
 <div style={{textAlign: 'center', margin: '24px 48px'}}>
 
-<img src="/img/docs/search-flight.png" alt="Softprobe Demo Search Flight" style={{maxWidth: '100%', height: 'auto', borderRadius: '8px'}} />
+<div className="sp-img">
+  <img src="/img/docs/search-flight.png" alt="Softprobe Demo Search Flight" />
+  <p className="sp-caption">Demo: Search Flight.</p>
+</div>
 
 </div>
 3. Search for flights
@@ -97,13 +100,19 @@ After generating some traffic:
 
 <div style={{textAlign: 'center', margin: '24px 48px'}}>
 
-<img src="/img/docs/demo-session.png" alt="Softprobe Demo Session" style={{maxWidth: '100%', height: 'auto', borderRadius: '8px'}} />
+<div className="sp-img">
+  <img src="/img/docs/demo-session.png" alt="Softprobe Demo Session" />
+  <p className="sp-caption">Demo: Session Overview.</p>
+</div>
 
 </div>
 
 ### Demo Video
 
-https://github.com/user-attachments/assets/dc8c68db-dd8b-4da8-a6e2-346adf6ecffb
+<div className="sp-img">
+  <video src="https://github.com/user-attachments/assets/dc8c68db-dd8b-4da8-a6e2-346adf6ecffb" controls playsInline preload="metadata" />
+  <p className="sp-caption">Quick Start Demo Video.</p>
+</div>
 
 ## Cleanup
 

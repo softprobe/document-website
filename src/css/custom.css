@@ -156,3 +156,152 @@ a:hover {
   --ifm-alert-border-color: var(--ifm-color-primary);
   --ifm-alert-color: var(--ifm-color-primary-darkest);
 }
+
+/* Utility: centered image wrapper */
+.sp-img {
+  text-align: center;
+  margin: 24px 0;
+}
+
+.sp-img img,
+.sp-img video {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  display: block;
+  margin: 0 auto;
+}
+
+/* Caption text */
+.sp-caption {
+  font-size: 0.9rem;
+  color: var(--ifm-color-secondary-dark);
+}
+
+/* Hero CTA buttons */
+.sp-hero-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 1rem 0 2rem;
+}
+
+.sp-hero-buttons .button {
+  padding: 0.6rem 1rem;
+  text-align: center;
+  flex: 1 1 220px; /* make buttons equal width with flexible basis */
+}
+
+/* Harmonize secondary buttons to outline style using brand color */
+.sp-hero-buttons .button.button--secondary {
+  background-color: transparent;
+  border: 1px solid var(--ifm-color-primary);
+  color: var(--ifm-color-primary);
+}
+.sp-hero-buttons .button.button--secondary:hover {
+  background-color: var(--ifm-color-primary-lightest);
+  color: var(--ifm-color-primary-dark);
+}
+
+/* Card grid styling */
+.sp-card-grid {
+  margin-top: 12px;
+}
+
+.sp-card-grid .card {
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  height: 100%;
+}
+
+.sp-card-grid .card__header h3 {
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .sp-hero-buttons {
+    gap: 8px;
+  }
+  .sp-hero-buttons .button {
+    flex: 1 1 100%; /* stack full-width on small screens for readability */
+  }
+}
+
+/* Roadmap tweaks */
+.sp-roadmap .badge {
+  font-size: 0.8rem;
+}
+
+.sp-roadmap .badge--success {
+  background: var(--ifm-color-success);
+}
+
+.sp-roadmap .badge--primary {
+  background: var(--ifm-color-primary);
+}
+
+.sp-roadmap .card__body {
+  min-height: 110px;
+}
+
+/* Core Outcomes: make all cards equal height and align bottoms */
+.sp-card-grid .col {
+  display: flex;
+}
+.sp-card-grid .col .card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+.sp-card-grid .card__body {
+  flex: 1;
+}
+
+/* Roadmap: pin status badge to bottom for consistent alignment */
+.sp-roadmap .card__body {
+  display: flex;
+  flex-direction: column;
+}
+.sp-roadmap .card__body > div:last-child {
+  margin-top: auto !important; /* override inline marginTop to anchor badge at bottom */
+}
+
+/* Lightweight link button group styling */
+.sp-link-buttons {
+  margin: 8px 0 16px;
+}
+.sp-link-buttons .button {
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  border: 1px solid var(--ifm-color-primary);
+  background: transparent;
+  color: var(--ifm-color-primary);
+}
+.sp-link-buttons .button:hover {
+  background: var(--ifm-color-primary-lightest);
+  color: var(--ifm-color-primary-dark);
+}
+
+/* Inline pill link for GitHub */
+.sp-link-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  margin-left: 6px;
+  border-radius: 999px;
+  border: 1px solid var(--ifm-color-primary);
+  color: var(--ifm-color-primary);
+  background: transparent;
+  font-size: 0.85rem;
+  line-height: 1.2;
+}
+.sp-link-pill:hover {
+  background: var(--ifm-color-primary-lightest);
+  color: var(--ifm-color-primary-dark);
+  text-decoration: none;
+}
+
+/* Remove heavy button below How it works, keep layout clean */
+.sp-link-buttons { display: none; }

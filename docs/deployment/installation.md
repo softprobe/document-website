@@ -5,9 +5,34 @@ title: Production Installation Guide
 description: Complete guide for deploying Softprobe in production environments with Istio and Kubernetes
 ---
 
-# Istio WASM Plugin Installation
+# Server-side Agent (Istio WASM) & Web SDK Installation
 
-Deploy SP-Istio Agent to your production Istio service mesh.
+Deploy SP‑Istio Agent to your Istio service mesh, and integrate the Web SDK for client-side enrichment.
+
+
+<div className="sp-link-buttons">
+  <a className="button button--secondary" href="https://github.com/softprobe/sp-istio-wasm" target="_blank" rel="noopener">SP‑Istio Agent on GitHub</a>
+</div>
+
+<div className="row sp-card-grid">
+  <div className="col col--6">
+    <div className="card">
+      <div className="card__header"><h3>Web SDK</h3></div>
+      <div className="card__body">
+        Creates session-scoped context across routes and enriches traces with client metrics and interaction events.
+      </div>
+    </div>
+  </div>
+  <div className="col col--6">
+    <div className="card">
+      <div className="card__header"><h3>SP‑Istio Agent</h3></div>
+      <div className="card__body">
+        Lightweight Wasm plugin in Istio’s Envoy sidecar capturing HTTP traffic and business flows, emitting native OpenTelemetry traces.
+      </div>
+    </div>
+  </div>
+</div>
+
 
 ## Prerequisites
 
@@ -18,20 +43,62 @@ Before installing SP-Istio Agent in production, ensure you have:
 - kubectl access with appropriate permissions
 - Network connectivity to Softprobe endpoints
 
-## Installation
+:::info Using GKE Autopilot?
+If your cluster runs on GKE Autopilot, be aware of these common installation/permission constraints (summary from the full guide):
+- NET_ADMIN capability is disabled by default, which can break istio-init/iptables steps
+- You cannot modify the CNI ConfigMap in the kube-system namespace (managed namespace restrictions)
+- Some system namespaces are managed/protected and certain resources cannot be changed
 
-Install SP-Istio Agent using your personalized `minimal.yaml` file, which you downloaded during the [Account Setup](/getting-started/account-setup) phase. This file contains your public key identifier and pre-configured settings.
+Quick fixes:
+- Enable workload policies when creating or updating the cluster: `--workload-policies=allow-net-admin`
+- Disable the Istio CNI component during installation: `--set components.cni.enabled=false`
+
+Read the full step-by-step guide, verification, and troubleshooting:
+[GKE Autopilot Istio Installation Guide →](./GKE-Autopilot-Istio-Installation-Guide.md)
+:::
+
+## Install Web SDK (Client-Side Enrichment)
+
+Add the Softprobe Web SDK to your frontend to create session-scoped context and capture route changes. This provides full-context visibility without modifying server-side code.
+
+### Install package
 
 ```bash
-# Ensure you are using the minimal.yaml file downloaded from the Softprobe Dashboard
+npm install @softprobe/web-inspector
+```
+
+### Initialize in your app entry
+
+```typescript
+import { initInspector } from "@softprobe/web-inspector";
+
+export function register() {
+  initInspector({
+    publicKey: "<YOUR_PUBLIC_KEY>",
+    userId: "<OPTIONAL_USER_ID>",
+    serviceName: "<YOUR_SERVICE_NAME>",
+    // Data collector endpoint: <INSPECTOR_COLLECTOR_URL>/v1/traces
+    collectorEndpoint: process.env.INSPECTOR_COLLECTOR_URL!,
+    env: process.env.NODE_ENV === "production" ? "prod" : "dev",
+    observeScroll: false,
+  })
+    .then(() => console.log("Softprobe inspector initialized"))
+    .catch((error) => console.error("Inspector init failed", error));
+}
+```
+
+See the full [Web SDK guide](/web-sdk) for framework-specific examples (React/Vue/Next.js) and advanced usage.
+
+## Install Server-side Agent (Istio WasmPlugin)
+
+Install SP‑Istio Agent using your personalized `minimal.yaml` file downloaded during [Account Setup](/getting-started/account-setup). It contains your public key identifier and pre-configured settings.
+
+```bash
+# Use the minimal.yaml file downloaded from the Softprobe Dashboard
 kubectl apply -f minimal.yaml
 ```
 
-This will deploy the WasmPlugin globally across your Istio service mesh.
-
-:::tip Front-End Web SDK (optional but recommended)
-To capture browser-side performance and user behavior, install the Softprobe Web SDK in your frontend application. See the [Web SDK guide](/web-sdk) for installation and configuration.
-:::
+This deploys the WasmPlugin globally across your Istio service mesh.
 
 ## Verify Installation
 
@@ -54,70 +121,35 @@ kubectl rollout restart deployment -n <namespace>
 # Or restart a single deployment
 kubectl rollout restart deployment <name> -n <namespace>
 ```
-
+## View Context View in Dashboard
 If you enabled sidecar injection on a namespace just now, restarting ensures pods are recreated with the updated sidecar and configuration.
+
+:::success Next: View Context View in Dashboard
+After deploying SP‑Istio Agent and initializing the Web SDK, generate some traffic in your app, then:
+
+1. Open your Softprobe Dashboard → Context View
+2. Select the time range and environment (env) matching your deployment
+3. Filter by serviceName if needed; search by userId/sessionId/request_body_hash to locate sessions
+4. Click a session to inspect the end‑to‑end graph, spans, client metrics, and interaction events
+
+You do not need to change server‑side code to get full‑context visibility.
+:::
+
+<div className="sp-hero-buttons">
+  <a className="button button--primary" href="/production/dashboard-user-guide">Dashboard Guide</a>
+  <a className="button button--secondary" href="/getting-started/account-setup">Account Setup</a>
+  <a className="button button--secondary" href="/support/faq">FAQ</a>
+</div>
+
+<div className="sp-img">
+  <img src="/img/docs/context-view.png" alt="Session Graph in Context View" />
+  <p className="sp-caption">Explore end‑to‑end session graphs after installation.</p>
+</div>
 
 ## Configuration
 
-The default configuration captures HTTP traffic for all services in the mesh. You can customize the behavior by modifying the WasmPlugin resource.
+Softprobe’s default configuration captures HTTP traffic for all services in the mesh. To customize the capture scope, service identification, and advanced options, please refer to the full Configuration Guide: [Configuration Guide](/configuration/config). You can start from the minimal example and gradually extend `collectionRules`, service discovery, and external communication settings based on your needs.
 
 ### Scoped Deployment
 
 To deploy the agent to specific namespaces or workloads only, you can create a scoped WasmPlugin configuration. See the [Configuration Guide](/configuration/config) for detailed configuration options.
-
-## Front-End Observability and Session Correlation (sessionId)
-
-Softprobe's Web SDK generates a unique sessionId for each browser tab and reuses it across navigation within the same tab. Opening a new tab creates a new sessionId; closing a tab ends the session. All front-end events, performance metrics, and network requests are reported with this sessionId to enable end-to-end correlation with backend telemetry.
-
-Best practices:
-- Propagate the sessionId to backend services via request headers (e.g., `X-Session-Id`) or tracing context.
-- Record the sessionId in backend logs/telemetry so that requests, traces, and events from the same session can be aligned.
-- Configure collection behavior and headers in the WasmPlugin as needed. See the Configuration Guide.
-
-Learn more in the Web SDK guide: [/web-sdk](/web-sdk). Configuration details: [/configuration/config](/configuration/config).
-
-## Testing with Bookinfo Demo
-
-To validate the installation using Istio's Bookinfo demo application:
-
-```bash
-# Enable Istio injection for default namespace
-kubectl label namespace default istio-injection=enabled --overwrite
-
-# Deploy Bookinfo application
-kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.22/samples/bookinfo/platform/kube/bookinfo.yaml
-
-# Deploy Bookinfo gateway
-kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.22/samples/bookinfo/networking/bookinfo-gateway.yaml
-
-# Apply scoped test configuration
-kubectl apply -f https://raw.githubusercontent.com/softprobe/sp-istio-wasm/main/deploy/test-bookinfo.yaml
-```
-
-### Generate Test Traffic
-
-```bash
-# Get the ingress gateway URL
-export GATEWAY_URL=$(kubectl -n istio-system get svc istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-
-# Generate some traffic
-curl -sf "http://${GATEWAY_URL}/productpage" >/dev/null
-
-# Verify the plugin is working
-kubectl get wasmplugin -A
-```
-
-## Uninstallation
-
-To remove SP-Istio Agent from your cluster:
-
-```bash
-kubectl delete wasmplugin -n istio-system sp-istio-agent
-```
-
-## Next Steps
-
-- Tune collection behavior with the [Configuration Guide](/configuration/config)
-- Add front-end visibility using the [Web SDK](/web-sdk)
-- If you are testing locally, see the [Quick Start](/getting-started/quick-start)
-- For GKE Autopilot clusters, see [GKE Autopilot Istio Installation Guide](/deployment/GKE-Autopilot-Istio-Installation-Guide)

@@ -7,65 +7,134 @@ description: Softprobe Documentation - Business-Level Distributed Tracing and An
 
 # Softprobe Documentation
 
-**Business-Level Distributed Tracing and Analytics Platform**
-
-Zero-code changes required • Complete request visibility • Advanced troubleshooting
-
-## Welcome to Softprobe
-
-Softprobe is a comprehensive observability platform designed for modern applications and microservices. It provides deep insights into application behavior, user interactions, and system performance without requiring code changes on the server side.
-
-### How Softprobe Works
-
-Softprobe collects and analyzes data through a multi-layered approach:
-
-- **Server-Side Collection**: A lightweight WebAssembly (Wasm) plugin runs inside Istio's Envoy sidecars to capture HTTP traffic and business flows
-- **Client-Side Enrichment**: Optional browser SDK records performance metrics and user interactions
-- **Secure Data Pipeline**: All data is encrypted and sent to Softprobe's backend using your public key for authentication
-
-### Key Benefits
-
-- **🔍 Complete Visibility**: Capture comprehensive application data and user interactions
-- **🚀 Faster Troubleshooting**: Business-level insights reduce debugging time from hours to minutes
-- **📊 Advanced Analytics**: Rich insights into usage patterns, performance metrics, and business flows
-- **⚡ Zero Code Changes**: Deploy without modifying existing application code
-- **☸️ Kubernetes-Native**: Deep integration with Kubernetes and Istio for seamless deployment
-
-## Getting Started
-
-### For New Users
-
-If you're new to Softprobe, follow this learning path:
-
-1. **👤 [Account Setup & Public Key Management](/getting-started/account-setup)** - Create your account and manage public keys
-2. **🚀 [Quick Start Guide](/getting-started/quick-start)** - Set up a local demo environment with Kind
-3. **📋 [Understanding Softprobe Concepts](/advanced-guides/concepts)** - Learn how Softprobe works and its architecture
-
-### For Production Deployment
-
-Ready for production? Follow this deployment path:
-
-1. **⚙️ [Production Installation Guide](/deployment/installation)** - Deploy to your production Kubernetes cluster
-2. **🎯 [Configuration Guide](/configuration/config)** - Customize collection rules and settings
-3. **🌐 [Web SDK Integration](/web-sdk)** - Add client-side monitoring to your web applications
-
-### Specialized Environments
-
-- **☁️ [GKE Autopilot Installation](/deployment/GKE-Autopilot-Istio-Installation-Guide)** - Deploy on Google Kubernetes Engine Autopilot
+**Zero code changes • Full-context visibility • Cost optimization**
 
 
-## Support & Resources
+<div className="sp-hero-buttons">
+  <a className="button button--primary" href="/getting-started/quick-start">Get Started</a>
+  <a className="button button--secondary" href="/advanced-guides/concepts">Core Concepts</a>
+  <a className="button button--secondary" href="/deployment/installation">Production Deployment</a>
+</div>
 
-- **🖥️ [Dashboard User Guide](/support/dashboard-user-guide)** - Learn how to navigate the dashboard, manage tenants, and view metrics
-- **🛠️ [Troubleshooting Guide](/support/faq)** - Common issues and solutions
-- **💳 [Plans & Pricing](/billing/pricing)** - Plan types, quotas, and pricing
-- **🧾 [Billing & Subscriptions](/billing/subscriptions)** - Subscription lifecycle, billing cycles, and cancellation policy
-- **📚 [API Documentation](https://docs.softprobe.ai)** - Complete API reference
-- **📧 [Enterprise Support](mailto:support@softprobe.ai)** - Direct support for enterprise customers
-- **💬 [Community Support](https://community.softprobe.ai)** - Get help from other users
+:::info
+Softprobe fixes observability’s “missing context” by capturing every user journey as a session graph—making interactions analyzable, automation-ready, and economical to retain.
+:::
 
-## Need Help?
+## Problem
+Traditional logs and observability tools center on costly indexing. Teams compensate by sampling heavily, which discards context and slows troubleshooting and support.
 
-- **First-time user?** Start with our [Quick Start Guide](/getting-started/quick-start)
-- **Production deployment?** Check the [Production Installation Guide](/deployment/installation)
-- **Technical questions?** Visit our [API Documentation](https://docs.softprobe.ai)
+## Solution
+- Session Graph: Group events by user session to form one coherent, end-to-end record
+- Cost Restructuring: Replace expensive indexing with session context so 100% of data can be retained and queried more efficiently
+- AI-Ready: Rich session context powers automated root-cause analysis, issue prediction, and smarter support
+
+## How it works
+- Server-Side Collection: A lightweight Wasm plugin in Istio’s Envoy sidecar captures HTTP traffic and business flows, emitting native OpenTelemetry trace data <a className="sp-link-pill" href="https://github.com/softprobe/sp-istio-wasm" target="_blank" rel="noopener">GitHub</a>
+- Client-Side Enrichment: The Web SDK creates sessions spanning multiple traces and adds route changes, performance metrics, and interaction events
+
+<div className="sp-link-buttons">
+  <a className="button button--secondary" href="https://github.com/softprobe/sp-istio-wasm" target="_blank" rel="noopener">SP‑Istio Agent on GitHub</a>
+</div>
+
+<div className="sp-img">
+  <img src="/img/docs/how-it-work.png" alt="Softprobe Architecture" />
+</div>
+
+## Product roadmap
+
+<div className="row sp-card-grid sp-roadmap">
+  <div className="col col--4">
+    <div className="card">
+      <div className="card__header"><h3>1. Context View</h3></div>
+      <div className="card__body">
+        Visualize end-to-end user journeys as a session graph.
+        <div style={{marginTop:'8px'}}>
+          <span className="badge badge--success">Current</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div className="col col--4">
+    <div className="card">
+      <div className="card__header"><h3>2. ETL</h3></div>
+      <div className="card__body">
+        Export and transform session data for downstream analytics and long-term retention.
+        <div style={{marginTop:'8px'}}>
+          <span className="badge badge--primary">Next</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div className="col col--4">
+    <div className="card">
+      <div className="card__header"><h3>3. Troubleshooting</h3></div>
+      <div className="card__body">
+        Guided workflows for root-cause diagnosis and resolution across services.
+        <div style={{marginTop:'8px'}}>
+          <span className="badge badge--primary">Planned</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+:::success Today
+Currently available:
+- Data collection: Web SDK (session-level context) and Wasm plugin on Istio/Envoy producing native OpenTelemetry traces — SP‑Istio Agent is open‑source: [github.com/softprobe/sp-istio-wasm](https://github.com/softprobe/sp-istio-wasm)
+- Visualization: Context View (session graph across services)
+:::
+
+<div className="sp-img">
+  <img src="/img/docs/context-view.png" alt="Session Graph in Context View" />
+  <p className="sp-caption">Current: Context View — session graph across services.</p>
+</div>
+
+## Compatibility & Isolation
+- Native OTEL compatibility: If your application already uses OpenTelemetry, Softprobe does not interfere and will not modify your application’s OTEL data
+
+<div className="sp-img">
+  <img src="/img/docs/trace-isolated.png" alt="Softprobe and user traces are isolated" />
+  <p className="sp-caption">Softprobe traces and user traces are mutually isolated</p>
+</div>
+
+## Core Outcomes
+
+<div className="row sp-card-grid">
+  <div className="col col--6">
+    <div className="card">
+      <div className="card__header"><h3>Full-context visibility</h3></div>
+      <div className="card__body">
+        Capture 100% of interaction details by session, eliminating blind spots caused by sampling.
+      </div>
+    </div>
+  </div>
+  <div className="col col--6">
+    <div className="card">
+      <div className="card__header"><h3>Cost optimization</h3></div>
+      <div className="card__body">
+        Retain full data while reducing overall observability cost.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div className="row sp-card-grid">
+  <div className="col col--6">
+    <div className="card">
+      <div className="card__header"><h3>Kubernetes-Native</h3></div>
+      <div className="card__body">
+        Deep integration with Kubernetes/Istio for seamless production deployment.
+      </div>
+    </div>
+  </div>
+  <div className="col col--6">
+    <div className="card">
+      <div className="card__header"><h3>Zero Code Changes</h3></div>
+      <div className="card__body">
+        Go live without modifying server-side code.
+      </div>
+    </div>
+  </div>
+</div>
+
