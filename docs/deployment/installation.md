@@ -136,9 +136,9 @@ You do not need to change server‑side code to get full‑context visibility.
 :::
 
 <div className="sp-hero-buttons">
-  <a className="button button--primary" href="../production/dashboard-user-guide">Dashboard Guide</a>
-  <a className="button button--secondary" href="../getting-started/account-setup">Account Setup</a>
-  <a className="button button--secondary" href="../support/faq">FAQ</a>
+  <a className="button button--primary" href="../production/dashboard-user-guide/">Dashboard Guide</a>
+  <a className="button button--secondary" href="../getting-started/account-setup/">Account Setup</a>
+  <a className="button button--secondary" href="../support/faq/">FAQ</a>
 </div>
 
 <div className="sp-img">

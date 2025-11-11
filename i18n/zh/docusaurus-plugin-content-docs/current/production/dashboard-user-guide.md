@@ -120,10 +120,10 @@ description: 了解如何在 Softprobe 仪表盘中导航、管理租户与成�
 
 ---
 <div className="sp-hero-buttons">
-  <a className="button button--primary" href="../deployment/installation">生产环境部署</a>
-  <a className="button button--secondary" href="../getting-started/account-setup">账号设置</a>
-  <a className="button button--secondary" href="../configuration/config">配置指南</a>
-  <a className="button button--secondary" href="../support/faq">常见问题</a>
+  <a className="button button--primary" href="../deployment/installation/">生产环境部署</a>
+  <a className="button button--secondary" href="../getting-started/account-setup/">账号设置</a>
+  <a className="button button--secondary" href="../configuration/config/">配置指南</a>
+  <a className="button button--secondary" href="../support/faq/">常见问题</a>
 </div>
 
 :::info 提示
@@ -163,9 +163,9 @@ description: 了解如何在 Softprobe 仪表盘中导航、管理租户与成�
 ---
 
 <div className="sp-hero-buttons">
-  <a className="button button--primary" href="/zh/advanced-guides/concepts">理解核心概念</a>
-  <a className="button button--secondary" href="/zh/deployment/installation">安装指南</a>
-  <a className="button button--secondary" href="/zh/configuration/config">配置参考</a>
+  <a className="button button--primary" href="/zh/advanced-guides/concepts/">理解核心概念</a>
+  <a className="button button--secondary" href="/zh/deployment/installation/">安装指南</a>
+  <a className="button button--secondary" href="/zh/configuration/config/">配置参考</a>
 </div>
 
 ---

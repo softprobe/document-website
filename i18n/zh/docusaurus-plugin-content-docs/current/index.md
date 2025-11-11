@@ -10,8 +10,8 @@ description: Softprobe 文档——业务级分布式追踪与分析平台，零
 **零代码改动 • 全上下文可见性 • 成本优化**
 
 <div className="sp-hero-buttons">
-  <a className="button button--primary" href="./getting-started/quick-start">快速开始</a>
-  <a className="button button--secondary" href="./deployment/installation">生产部署</a>
+  <a className="button button--primary" href="./getting-started/quick-start/">快速开始</a>
+  <a className="button button--secondary" href="./deployment/installation/">生产部署</a>
 </div>
 
 :::info
