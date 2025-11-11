@@ -20,9 +20,9 @@ description: 在生产环境的 Kubernetes 与 Istio 中部署 Softprobe 的完�
 :::
 
 <div className="sp-hero-buttons">
-  <a className="button button--primary" href="../production/dashboard-user-guide">仪表盘指南</a>
-  <a className="button button--secondary" href="../getting-started/account-setup">账号设置</a>
-  <a className="button button--secondary" href="../support/faq">常见问题</a>
+  <a className="button button--primary" href="../production/dashboard-user-guide/">仪表盘指南</a>
+  <a className="button button--secondary" href="../getting-started/account-setup/">账号设置</a>
+  <a className="button button--secondary" href="../support/faq/">常见问题</a>
 </div>
 
 <div className="sp-img">
