@@ -9,6 +9,36 @@ description: Learn how to navigate Softprobe Dashboard, manage tenants and membe
 
 Welcome to Softprobe Dashboard. This guide helps you quickly understand the interface, manage tenants and members, and operate key features consistently.
 
+
+## Overview
+
+<div className="row sp-card-grid">
+  <div className="col col--4">
+    <div className="card">
+      <div className="card__header"><h3>Dashboard</h3></div>
+      <div className="card__body">
+        Real-time cards for storage usage, data entries, session trends, and performance metrics (Avg, P95).
+      </div>
+    </div>
+  </div>
+  <div className="col col--4">
+    <div className="card">
+      <div className="card__header"><h3>Tenants</h3></div>
+      <div className="card__body">
+        Environment isolation with tenant switching, settings, and public key management.
+      </div>
+    </div>
+  </div>
+  <div className="col col--4">
+    <div className="card">
+      <div className="card__header"><h3>Members</h3></div>
+      <div className="card__body">
+        Roles and permissions for Admin, Editor, and Viewer with least‑privilege best practices.
+      </div>
+    </div>
+  </div>
+</div>
+
 ## 🚀 Quick Start
 
 ### 1. Registration & Login
@@ -16,10 +46,9 @@ Welcome to Softprobe Dashboard. This guide helps you quickly understand the inte
 - Enter email and password, complete email verification
 - Log in to start using the system
 
-<div style={{textAlign: 'center', margin: '24px 48px'}}>
-
-<img src="/img/docs/sign-up.png" alt="Sign Up in Dashboard" style={{maxWidth: '100%', height: 'auto', borderRadius: '8px'}} />
-
+<div className="sp-img">
+  <img src="/img/docs/sign-up.png" alt="Sign Up in Dashboard" />
+  <p className="sp-caption">Sign up to create your account and start using the Dashboard.</p>
 </div>
 
 :::tip
@@ -32,10 +61,9 @@ After logging in, you will see:
 - **Top Bar**: User info and tenant switching
 - **Main Area**: Operational interface for current module
 
-<div style={{textAlign: 'center', margin: '24px 48px'}}>
-
-<img src="/img/docs/main-board.png" alt="Main Board in Dashboard" style={{maxWidth: '100%', height: 'auto', borderRadius: '8px'}} />
-
+<div className="sp-img">
+  <img src="/img/docs/main-board.png" alt="Main Board in Dashboard" />
+  <p className="sp-caption">Main interface layout with navigation, top bar, and operational area.</p>
 </div>
 
 ## 📊 Core Features
@@ -64,10 +92,10 @@ Resource isolation and management in multi-tenant environments
 - Use the tenant selector in the top bar (search and filter supported)
 - Click target tenant to switch
 - Create new tenant via “+” button and fill basic info
-<div style={{textAlign: 'center', margin: '24px 48px'}}>
 
-<img src="/img/docs/tenant.png" alt="Tenant Management in Dashboard" style={{maxWidth: '100%', height: 'auto', borderRadius: '8px'}} />
-
+<div className="sp-img">
+  <img src="/img/docs/tenant.png" alt="Tenant Management in Dashboard" />
+  <p className="sp-caption">Create and switch tenants for environment isolation.</p>
 </div>
 
 #### Tenant Settings
@@ -78,10 +106,10 @@ Resource isolation and management in multi-tenant environments
 
 ### 3. Team Member Management
 Permission control and collaborative management
-<div style={{textAlign: 'center', margin: '24px 48px'}}>
 
-<img src="/img/docs/member.png" alt="Team Member Management in Dashboard" style={{maxWidth: '100%', height: 'auto', borderRadius: '8px'}} />
-
+<div className="sp-img">
+  <img src="/img/docs/member.png" alt="Team Member Management in Dashboard" />
+  <p className="sp-caption">Add members and assign roles for safe collaboration.</p>
 </div>
 
 #### Adding Members
@@ -95,28 +123,9 @@ Permission control and collaborative management
 - **Viewer**: Read-only access, suitable for report viewers
 
 
-## ❓ FAQ
-
-## ⚠️ Common Limits & Best Practices
-
-- Data refresh: Homepage does not auto-refresh; change time range or tenant, or manually refresh to update.
-- Roles & safety: Use least-privilege roles; avoid granting Administrator globally; review member list regularly.
-- Public keys: Full key is displayed only at creation; store securely and rotate periodically; never commit secrets.
-- Rate limits: Each Public key has hourly caps; design clients with retries/backoff and monitor usage counters in Dashboard.
-- PII handling: Do not send sensitive personal data in attributes; use hashed request bodies for correlation.
-- Multi-environment: Create separate tenants and public keys per environment (prod/staging/dev) for isolation and auditability.
-- Performance tips: Combine time filters with request_body_hash; use partitions and caching strategies when datasets grow.
-
 :::tip Quick reminder
 If you need higher quotas or custom retention, contact support@softprobe.ai with your tenant id and expected workload.
 :::
 
 See the [FAQ](/support/faq) for common questions, including data storage and security, mobile access, and export options.
 
-## ➡️ Next Steps
-- Learn core concepts: [Understanding Concepts](/advanced-guides/concepts)
-- Deploy to production: [Installation Guide](/deployment/installation)
-- Configure advanced rules: [Configuration Guide](/configuration/config)
-
----
-Last Updated: December 2024

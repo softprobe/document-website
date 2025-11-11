@@ -38,7 +38,7 @@ Softprobe 新用户？几分钟内即可启动并运行：
 
 ## 💡 需要帮助？
 
-- **[仪表盘使用指南](/support/dashboard-user-guide)** - 导航、租户管理与指标查看
+- **[仪表盘使用指南](/production/dashboard-user-guide)** - 导航、租户管理与指标查看
 - **[常见问题与故障排除](/support/faq)** - 常见问题与解决方案
 - **[套餐与价格](/billing/pricing)** - 套餐类型、配额与价格说明
 - **[计费与订阅管理](/billing/subscriptions)** - 订阅生命周期、账期与取消策略

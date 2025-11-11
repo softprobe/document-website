@@ -33,10 +33,9 @@ This guide walks you through:
    - **Password** (minimum 8 characters)
 4. Verify your email address by clicking the link sent to your inbox
 
-<div style={{textAlign: 'center', margin: '24px 48px'}}>
-
-<img src="/img/docs/sign-up.png" alt="Sign Up in Dashboard" style={{maxWidth: '100%', height: 'auto', borderRadius: '8px'}} />
-
+<div className="sp-img">
+  <img src="/img/docs/sign-up.png" alt="Sign Up in Dashboard" />
+  <p className="sp-caption">Sign Up in Dashboard.</p>
 </div>
 
 ### Step 2: Access Settings and Create Tenant Groups
@@ -56,10 +55,9 @@ After email verification and login, you can access the Settings page to manage t
 Choose your tenant group name carefully as it cannot be changed later. Use a name that clearly identifies your organization or team.
 :::
 
-<div style={{textAlign: 'center', margin: '24px 48px'}}>
-
-<img src="/img/docs/create-tenant.png" alt="Create Tenant Group" style={{maxWidth: '100%', height: 'auto', borderRadius: '8px'}} />
-
+<div className="sp-img">
+  <img src="/img/docs/create-tenant.png" alt="Create Tenant Group" />
+  <p className="sp-caption">Create Tenant Group.</p>
 </div>
 
 ### Step 3: Generate Public Key
@@ -82,10 +80,9 @@ Softprobe uses **public key authentication** instead of traditional Public keys.
 - Uses asymmetric cryptography for authentication
 :::
 
-<div style={{textAlign: 'center', margin: '24px 48px'}}>
-
-<img src="/img/docs/create-key.png" alt="Generate Public Key" style={{maxWidth: '100%', height: 'auto', borderRadius: '8px'}} />
-
+<div className="sp-img">
+  <img src="/img/docs/create-key.png" alt="Generate Public Key" />
+  <p className="sp-caption">Generate Public Key.</p>
 </div>
 
 ## 📁 Configuration File
@@ -97,10 +94,9 @@ When you generate a public key, a `minimal.yaml` file is automatically downloade
 - Default collection rules
 - All necessary Kubernetes resources
 
-<div style={{textAlign: 'center', margin: '24px 48px'}}>
-
-<img src="/img/docs/download-yaml.png" alt="Download Yaml after Create Public Key" style={{maxWidth: '100%', height: 'auto', borderRadius: '8px'}} />
-
+<div className="sp-img">
+  <img src="/img/docs/download-yaml.png" alt="Download Yaml after Create Public Key" />
+  <p className="sp-caption">Download Yaml.</p>
 </div>
 
 ### File Structure
@@ -119,7 +115,6 @@ spec:
     # ... other secure configurations
 ```
 
-## 🔧 Next Steps
 
 After completing account setup:
 
@@ -137,25 +132,12 @@ After completing account setup:
 - Verify the URL: `https://dashboard.softprobe.ai`
 - Try clearing your browser cache
 
-**Email verification not received?**
-
-- Check your spam/junk folder
-- Ensure the email address is correct
-- Contact support if the issue persists
 
 **Public key generation failed?**
 
 - Ensure your tenant group is properly set up
 - Check that you have the necessary permissions
 - Try refreshing the page and generating again
-
-### Getting Help
-
-If you encounter issues during account setup:
-
-- **Documentation**: Check our [Troubleshooting Guide](/support/faq)
-- **Support**: Contact our support team through the dashboard
-- **Community**: Join our community discussions for peer help
 
 ---
 
@@ -164,58 +146,4 @@ If you encounter issues during account setup:
 > Common questions have been moved to a separate page:
 > - [Getting Started FAQ](/support/faq)
 
----
 
-## Technical Support
-
-If you encounter any problems during use, you can get help in the following ways:
-
-### 📧 Contact Support
-
-- **Email**: support@softprobe.ai
-- **Response Time**: Within 24 hours on business days
-
-### 📚 Documentation Resources
-
-- **API Documentation**: [https://docs.softprobe.ai](https://docs.softprobe.ai)
-- **Developer Guide**: [Core Concepts](/advanced-guides/concepts)
-
-### 🐛 Problem Feedback
-
-If you find a bug or have a feature suggestion:
-
-1. Log in to the Dashboard
-2. Click the feedback button in the top right corner
-3. Describe the problem or suggestion in detail
-4. We will follow up in a timely manner
-
----
-
-## 🎉 Get Started
-
-Congratulations! You have completed the basic configuration of Softprobe. Now you can:
-
-1. **Deploy to your cluster** using the downloaded configuration
-2. **Monitor application performance** in real-time
-3. **Analyze business flows** and user interactions
-4. **Collaborate with your team** on observability insights
-
-Start exploring the powerful features of Softprobe and gain deep insights into your applications!
-
----
-
-_Last updated: January 2024_
-_Version: v2.0_
-
-> Note: Refer to the Configuration Reference for details on config file fields.
-
-See also:
-- [Configuration Reference](/configuration/config)
-
----
-
-## Next Steps
-
-- Proceed to [Quick Start](/getting-started/quick-start) for a local demo
-- Deploy to production with [Installation Guide](/deployment/installation)
-- Add browser visibility via [Web SDK Integration](/web-sdk)

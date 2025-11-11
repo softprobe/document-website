@@ -119,4 +119,54 @@ description: 了解如何在 Softprobe 仪表盘中导航、管理租户与成�
 - 配置高级规则：[配置参考](/configuration/config)
 
 ---
+<div className="sp-hero-buttons">
+  <a className="button button--primary" href="/zh/deployment/installation">生产环境部署</a>
+  <a className="button button--secondary" href="/zh/getting-started/account-setup">账号设置</a>
+  <a className="button button--secondary" href="/zh/configuration/config">配置指南</a>
+  <a className="button button--secondary" href="/zh/support/faq">常见问题</a>
+</div>
+
+:::info 提示
+部署完成并产生流量后，打开 Context View 即可查看端到端会话图谱、性能指标与交互事件。
+:::
+
+<div className="sp-card-grid">
+  <div className="sp-card">
+    <h3>仪表盘首页</h3>
+    <p>查看核心指标、数据用量与会话统计。</p>
+  </div>
+  <div className="sp-card">
+    <h3>租户与成员</h3>
+    <p>管理多租户与成员角色权限。</p>
+  </div>
+  <div className="sp-card">
+    <h3>Context View</h3>
+    <p>端到端可视化会话流转，快速定位问题。</p>
+  </div>
+</div>
+
+<div className="sp-img">
+  <img src="/img/docs/main-board.png" alt="仪表盘首页" />
+  <p className="sp-caption">仪表盘首页展示核心指标与概览卡片。</p>
+</div>
+
+<div className="sp-img">
+  <img src="/img/docs/tenant.png" alt="租户管理" />
+  <p className="sp-caption">租户管理支持多租户隔离与成员权限。</p>
+</div>
+
+<div className="sp-img">
+  <img src="/img/docs/demo-session.png" alt="Context View 会话图谱示例" />
+  <p className="sp-caption">Context View 展示会话图谱、Span 与交互事件。</p>
+</div>
+
+---
+
+<div className="sp-hero-buttons">
+  <a className="button button--primary" href="/zh/advanced-guides/concepts">理解核心概念</a>
+  <a className="button button--secondary" href="/zh/deployment/installation">安装指南</a>
+  <a className="button button--secondary" href="/zh/configuration/config">配置参考</a>
+</div>
+
+---
 最后更新：2024 年 12 月

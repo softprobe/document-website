@@ -8,6 +8,28 @@ description: 在生产环境的 Kubernetes 与 Istio 中部署 Softprobe 的完�
 
 将 SP-Istio Agent 部署到您的生产 Istio 服务网格中。
 
+:::success 下一步：在 Dashboard 查看 Context View
+部署 SP‑Istio Agent 并初始化 Web SDK 后，先在应用中产生一些流量，然后：
+
+1. 打开 Softprobe 仪表盘 → Context View
+2. 选择与部署相匹配的时间范围与环境（env）
+3. 如有需要可按 serviceName 过滤；也可用 userId/sessionId/request_body_hash 搜索定位会话
+4. 点击会话查看端到端图谱、span、客户端指标与交互事件
+
+无需改动服务端代码即可获得完整上下文可视化。
+:::
+
+<div className="sp-hero-buttons">
+  <a className="button button--primary" href="/zh/production/dashboard-user-guide">仪表盘指南</a>
+  <a className="button button--secondary" href="/zh/getting-started/account-setup">账号设置</a>
+  <a className="button button--secondary" href="/zh/support/faq">常见问题</a>
+</div>
+
+<div className="sp-img">
+  <img src="/img/docs/context-view.png" alt="Context View 会话图谱" />
+  <p className="sp-caption">安装完成后即可在 Context View 中探索端到端会话图谱。</p>
+</div>
+
 ## 先决条件
 
 在生产环境中安装 SP-Istio Agent 之前，请确保您拥有：
