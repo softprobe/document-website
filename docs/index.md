@@ -11,9 +11,8 @@ description: Softprobe Documentation - Business-Level Distributed Tracing and An
 
 
 <div className="sp-hero-buttons">
-  <a className="button button--primary" href="/getting-started/quick-start">Get Started</a>
-  <a className="button button--secondary" href="/advanced-guides/concepts">Core Concepts</a>
-  <a className="button button--secondary" href="/deployment/installation">Production Deployment</a>
+  <a className="button button--primary" href="./getting-started/quick-start">Get Started</a>
+  <a className="button button--secondary" href="./deployment/installation">Production Deployment</a>
 </div>
 
 :::info
