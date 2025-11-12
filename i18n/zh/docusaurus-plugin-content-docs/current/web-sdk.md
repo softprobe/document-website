@@ -32,70 +32,32 @@ npm install @softprobe/web-inspector
 在您的 Web 应用程序的入口点初始化监听器。
 
 ```typescript
-import { initInspector } from "@softprobe/web-inspector";
-
-// 只需调用一次 register
-export function register() {
-  // 初始化客户端
-  initInspector({
-    apiKey: "",
-    userId: "",
-    serviceName: "YOUR_SERVICE_NAME",
-    // 数据收集器端点: <INSPECTOR_COLLECTOR_URL>/v1/traces
-    collectorEndpoint: process.env.INSPECTOR_COLLECTOR_URL!,
-    // 在开发环境中自动启用控制台日志记录
-    env: "dev",
-    // 可选: 禁用滚动观察
-    observeScroll: false,
-  })
-    .then(({ provider }) => {
-      console.log("Softprobe inspector initialized successfully.");
+// src/components/InspectorInitializer.tsx
+'use client'
+import { useEffect } from 'react';
+import { initInspector } from '@softprobe/web-inspector';
+export const InspectorInitializer = () => {
+  useEffect(() => {
+    initInspector({
+      publicKey: 'YOUR_PUBLIC_KEY',
+      serviceName: "YOUR_SERVICE_NAME",
     })
-    .catch((error) => {
-      console.error("Failed to initialize Softprobe inspector:", error);
-    });
+  }, [])
+  return null
 }
-```
 
-### 创建自定义Span（可选）
+// app/layout.tsx
+import { InspectorInitializer } from '@/components/InspectorInitializer'
 
-您可以创建自定义 Span 来追踪特定的业务逻辑或用户交互。
-
-```typescript
-// 在 React 组件中的示例 (例如, pages/index.tsx)
-import { trace } from "@softprobe/web-inspector";
-
-export default function Home() {
-  const handleClick = () => {
-    // 获取 Tracer 实例
-    const tracer = trace.getTracer("nextjs-tracer");
-
-    // 启动一个新的 Span
-    const span = tracer.startSpan("checkout_process");
-
-    try {
-      // 您的业务逻辑在此处...
-      // 示例: 处理购物车中的商品
-
-      // 为 Span 添加属性以提供上下文
-      span.setAttribute("item_count", 3);
-      span.setAttribute("user_tier", "gold");
-
-      // 成功时将 Span 状态设置为 OK
-      span.setStatus({ code: trace.SpanStatusCode.OK });
-    } catch (error) {
-      // 失败时将 Span 状态设置为 ERROR
-      span.setStatus({
-        code: trace.SpanStatusCode.ERROR,
-        message: error.message,
-      });
-    } finally {
-      // 结束 Span 以记录它
-      span.end();
-    }
-  };
-
-  return <button onClick={handleClick}>Start Checkout</button>;
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body>
+        {children}
+        <InspectorInitializer />
+      </body>
+    </html>
+  );
 }
 ```
 
@@ -106,7 +68,3 @@ export default function Home() {
 - 打开新的标签页或窗口，会生成新的 sessionId；关闭标签页或重新初始化后，会话也会随之重置。
 - 所有上报的数据都会携带该 sessionId，使后端能够将同一次会话中的前端事件与后端服务侧的链路数据进行关联，实现端到端的可观测性与排障效率提升。
 
-提示：若你在应用中维护用户身份（userId），请在初始化时设置 userId 字段，配合 sessionId 可以更好地区分不同用户在不同访问会话中的行为。
-
-- 配置服务端采集参见 [配置指南](/zh/configuration/config)
-- 更多架构细节参见 [核心概念](/zh/advanced-guides/concepts)
