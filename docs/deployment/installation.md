@@ -70,20 +70,32 @@ npm install @softprobe/web-inspector
 ### Initialize in your app entry
 
 ```typescript
-import { initInspector } from "@softprobe/web-inspector";
+i// src/components/InspectorInitializer.tsx
+'use client'
+import { useEffect } from 'react';
+import { initInspector } from '@softprobe/web-inspector';
+export const InspectorInitializer = () => {
+  useEffect(() => {
+    initInspector({
+      publicKey: 'YOUR_PUBLIC_KEY',
+      serviceName: "YOUR_SERVICE_NAME",
+    })
+  }, [])
+  return null
+}
 
-export function register() {
-  initInspector({
-    publicKey: "<YOUR_PUBLIC_KEY>",
-    userId: "<OPTIONAL_USER_ID>",
-    serviceName: "<YOUR_SERVICE_NAME>",
-    // Data collector endpoint: <INSPECTOR_COLLECTOR_URL>/v1/traces
-    collectorEndpoint: process.env.INSPECTOR_COLLECTOR_URL!,
-    env: process.env.NODE_ENV === "production" ? "prod" : "dev",
-    observeScroll: false,
-  })
-    .then(() => console.log("Softprobe inspector initialized"))
-    .catch((error) => console.error("Inspector init failed", error));
+// app/layout.tsx
+import { InspectorInitializer } from '@/components/InspectorInitializer'
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body>
+        {children}
+        <InspectorInitializer />
+      </body>
+    </html>
+  );
 }
 ```
 
