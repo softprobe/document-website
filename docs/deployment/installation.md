@@ -110,6 +110,23 @@ Install SP‑Istio Agent using your personalized `minimal.yaml` file downloaded 
 kubectl apply -f minimal.yaml
 ```
 
+:::tip Namespace
+If your `minimal.yaml` does not set `metadata.namespace`, specify a namespace explicitly:
+
+```bash
+kubectl apply -n <YOUR_NAMESPACE> -f minimal.yaml
+```
+
+Or set it in the YAML:
+
+```yaml
+metadata:
+  namespace: <YOUR_NAMESPACE>
+```
+
+Choose the namespace that matches where Istio is installed and where you manage mesh‑wide resources in your cluster.
+:::
+
 This deploys the WasmPlugin globally across your Istio service mesh.
 
 ## Verify Installation
