@@ -11,7 +11,7 @@ Deploy SP‑Istio Agent to your Istio service mesh, and integrate the Web SDK fo
 
 
 <div className="sp-link-buttons">
-  <a className="button button--secondary" href="https://github.com/softprobe/sp-istio-wasm" target="_blank" rel="noopener">SP‑Istio Agent on GitHub</a>
+  <a className="button button--secondary" href="https://github.com/softprobe/softprobe" target="_blank" rel="noopener">SP‑Istio Agent on GitHub</a>
 </div>
 
 <div className="row sp-card-grid">

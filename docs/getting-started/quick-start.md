@@ -39,7 +39,7 @@ brew install kind kubectl istioctl
 Create a Kind cluster and install Istio with OpenTelemetry Operator:
 
 ```bash
-curl -L https://raw.githubusercontent.com/softprobe/sp-istio-wasm/main/scripts/cluster-setup.sh | sh
+curl -L https://raw.githubusercontent.com/softprobe/softprobe/main/scripts/cluster-setup.sh | sh
 ```
 
 :::tip
@@ -63,7 +63,7 @@ Use the `minimal.yaml` file you downloaded from the [Account Setup](/getting-sta
 kubectl apply -f minimal.yaml
 
 # Install demo app
-kubectl apply -f https://raw.githubusercontent.com/softprobe/sp-istio-wasm/main/examples/travel/apps.yaml
+kubectl apply -f https://raw.githubusercontent.com/softprobe/softprobe/main/examples/travel/apps.yaml
 
 # Expose the demo
 sleep 10 && kubectl port-forward -n istio-system svc/istio-ingressgateway 8080:80

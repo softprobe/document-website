@@ -28,7 +28,7 @@ brew install kind kubectl istioctl
 创建一个 Kind 集群并安装带有 OpenTelemetry Operator 的 Istio：
 
 ```bash
-curl -L https://raw.githubusercontent.com/softprobe/sp-istio-wasm/refs/heads/main/scripts/cluster-setup.sh | sh
+curl -L https://raw.githubusercontent.com/softprobe/softprobe/refs/heads/main/scripts/cluster-setup.sh | sh
 ```
 
 该脚本将：
@@ -46,7 +46,7 @@ curl -L https://raw.githubusercontent.com/softprobe/sp-istio-wasm/refs/heads/mai
 kubectl apply -f minimal.yaml
 
 # 安装演示应用
-kubectl apply -f https://raw.githubusercontent.com/softprobe/sp-istio-wasm/refs/heads/main/examples/travel/apps.yaml
+kubectl apply -f https://raw.githubusercontent.com/softprobe/softprobe/refs/heads/main/examples/travel/apps.yaml
 
 # 暴露演示
 sleep 10 && kubectl port-forward -n istio-system svc/istio-ingressgateway 8080:80
