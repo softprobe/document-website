@@ -103,7 +103,7 @@ kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.22/samp
 kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.22/samples/bookinfo/networking/bookinfo-gateway.yaml
 
 # 应用范围化的测试配置
-kubectl apply -f https://raw.githubusercontent.com/softprobe/sp-istio-wasm/main/deploy/test-bookinfo.yaml
+kubectl apply -f https://raw.githubusercontent.com/softprobe/softprobe/main/deploy/test-bookinfo.yaml
 ```
 
 ### 生成测试流量

@@ -125,7 +125,7 @@ const config: Config = {
           items: [
             {
               label: "Istio GitHub",
-              href: "https://github.com/softprobe/sp-istio-wasm",
+              href: "https://github.com/softprobe/softprobe",
             },
             {
               label: "Web SDK GitHub",
