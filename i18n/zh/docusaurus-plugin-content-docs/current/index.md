@@ -28,7 +28,7 @@ Softprobe 通过捕获每一次用户旅程并构建会话图谱，修复了可�
 
 ## 工作原理
 - 服务端采集：在 Istio 的 Envoy Sidecar 中通过轻量 Wasm 插件采集 HTTP 流量与业务流程，输出原生 OpenTelemetry 追踪数据 <a className="sp-link-pill" href="https://github.com/softprobe/softprobe" target="_blank" rel="noopener">GitHub</a>
-- 客户端加注：Web SDK 将多个 Trace 贯通为一个会话，补充路由变化、性能指标与交互事件
+- 客户端加注：SESSIFY 将多个 Trace 贯通为一个会话，补充路由变化、性能指标与交互事件
 
 <div className="sp-link-buttons">
   <a className="button button--secondary" href="https://github.com/softprobe/softprobe" target="_blank" rel="noopener">SP‑Istio 代理 GitHub</a>
@@ -79,7 +79,7 @@ Softprobe 通过捕获每一次用户旅程并构建会话图谱，修复了可�
 
 :::success 今天
 当前可用：
-- 数据采集：Web SDK（会话级上下文）与 Istio/Envoy Wasm 插件输出原生 OpenTelemetry 追踪——SP‑Istio 代理开源：[github.com/softprobe/softprobe](https://github.com/softprobe/softprobe)
+- 数据采集：SESSIFY（会话级上下文）与 Istio/Envoy Wasm 插件输出原生 OpenTelemetry 追踪——SP‑Istio 代理开源：[github.com/softprobe/softprobe](https://github.com/softprobe/softprobe)
 - 可视化：上下文视图（跨服务的会话图谱）
 :::
 

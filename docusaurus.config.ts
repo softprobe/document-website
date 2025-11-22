@@ -128,8 +128,8 @@ const config: Config = {
               href: "https://github.com/softprobe/softprobe",
             },
             {
-              label: "Web SDK GitHub",
-              href: "https://github.com/softprobe/web-inspector",
+              label: "SESSIFY GitHub",
+              href: "https://github.com/softprobe/sessify",
             },
           ],
         },

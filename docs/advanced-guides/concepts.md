@@ -38,7 +38,7 @@ Softprobe operates through a distributed architecture:
 - **Envoy Filter**: Injects service identity headers and manages traffic capture
 - **Zero Code Changes**: Works transparently with your existing applications
 
-#### 2. Web SDK (Frontend Layer)
+#### 2. SESSIFY (Frontend Layer)
 
 - **Automatic Instrumentation**: Captures user interactions, performance metrics, and errors
 - **Session Management**: Generates a per-tab sessionId and reuses it across navigations within the same tab; all frontend telemetry carries the sessionId for end-to-end correlation with backend traces and logs
@@ -55,7 +55,7 @@ Softprobe operates through a distributed architecture:
 ### Request Journey Through Your System
 
 1. **User Interaction**: User interacts with your web application
-2. **Frontend Capture**: Web SDK captures performance metrics and user actions
+2. **Frontend Capture**: SESSIFY captures performance metrics and user actions
 3. **Backend Request**: Application makes service-to-service calls
 4. **Mesh Capture**: SP-Istio Agent captures traffic within the service mesh
 5. **Data Enrichment**: Service identity and context are added
@@ -67,10 +67,10 @@ Softprobe operates through a distributed architecture:
 
 ```
 1. User clicks "Login" button
-   → Web SDK captures click event
+   → SESSIFY captures click event
 
 2. Frontend sends login request to backend
-   → Web SDK traces the API call
+   → SESSIFY traces the API call
 
 3. Backend service processes login
    → SP-Istio Agent captures service traffic
@@ -217,7 +217,7 @@ Now that you understand Softprobe's concepts:
 ## ❓ Frequently Asked Questions
 
 ### Q: Does Softprobe affect application performance?
-**A**: The impact is minimal. SP-Istio Agent uses efficient WASM plugins and the Web SDK is lightweight. Sampling can be configured to balance insight and overhead.
+**A**: The impact is minimal. SP-Istio Agent uses efficient WASM plugins and the SESSIFY is lightweight. Sampling can be configured to balance insight and overhead.
 
 ### Q: How is my data transmitted and authenticated?
 **A**: All data is encrypted in transit (TLS) and authenticated via public key signatures. No sensitive credentials are stored in your configuration.

@@ -78,7 +78,7 @@ Real-time monitoring of core system metrics
 - **Performance Metrics**: Average response time, P95 metrics, system health indicators
 
 :::tip
-For end-to-end user journey correlation, install the [Web SDK](/web-sdk) on your frontend and propagate sessionId through your service mesh.
+For end-to-end user journey correlation, install the [SESSIFY](/web-sdk) on your frontend and propagate sessionId through your service mesh.
 :::
 
 #### Operations

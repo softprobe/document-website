@@ -1,14 +1,14 @@
 ---
 sidebar_position: 6
 title: 前端插件安装
-description: 学习如何集成 Softprobe Web SDK，实现浏览器端监控与分析
+description: 学习如何集成 Softprobe SESSIFY，实现浏览器端监控与分析
 ---
 
-本指南介绍 Softprobe Web SDK (@softprobe/web-inspector) 的安装和使用方法。
+本指南介绍 Softprobe SESSIFY (@softprobe/sessify) 的安装和使用方法。
 
 ## 功能特性
 
-Softprobe Web SDK 旨在全面洞察您的 Web 应用程序性能和用户行为。主要功能包括：
+Softprobe SESSIFY 旨在全面洞察您的 Web 应用程序性能和用户行为。主要功能包括：
 
 - **自动性能监控**: 自动捕获并报告关键页面加载性能指标。
 - **用户交互追踪**: 记录用户交互行为（如点击、滚动和表单提交），帮助您理解用户使用路径。
@@ -22,7 +22,7 @@ Softprobe Web SDK 旨在全面洞察您的 Web 应用程序性能和用户行为
 使用您偏好的包管理器安装此包：
 
 ```bash
-npm install @softprobe/web-inspector
+npm install @softprobe/sessify
 ```
 
 ## 使用方法
@@ -35,7 +35,7 @@ npm install @softprobe/web-inspector
 // src/components/InspectorInitializer.tsx
 'use client'
 import { useEffect } from 'react';
-import { initInspector } from '@softprobe/web-inspector';
+import { initInspector } from '@softprobe/sessify';
 export const InspectorInitializer = () => {
   useEffect(() => {
     initInspector({

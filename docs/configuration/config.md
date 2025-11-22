@@ -208,7 +208,7 @@ This guide is intended for:
 
 - Deploy or update your cluster with the [Installation Guide](/deployment/installation)
 - Verify data in the [Softprobe Dashboard](https://dashboard.softprobe.ai)
-- Add client-side visibility via the [Web SDK](/web-sdk)
+- Add client-side visibility via the [SESSIFY](/web-sdk)
 
 ---
 
