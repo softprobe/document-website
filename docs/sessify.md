@@ -164,7 +164,7 @@ Resulting Header: tracestate: x-sp-session-id=...,x-sp-env=production,x-sp-ver=1
 ### Session Lifecycle Strategy
 
 - **Creation**: Uses a base36 timestamp combined with a Web Crypto API random string for a ~16 character unique ID.
-- **Expiration**: Defaults to a 30-minute sliding window. Every valid getSessionId() call or intercepted request updates the last active timestamp, keeping the session alive.
+
 - **Validation**: Automatically checks for timeout on every access. If the timeout is exceeded, the old session is discarded and a new one is seamlessly generated.
 
 ### HTTP Interception
