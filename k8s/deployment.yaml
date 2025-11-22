@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
       - name: saas-doc
-        image: ocir.us-sanjose-1.oci.oraclecloud.com/axqjl8ow85vi/saas-doc:v0.0.31
+        image: ocir.us-sanjose-1.oci.oraclecloud.com/axqjl8ow85vi/saas-doc:v0.0.32
         ports:
         - containerPort: 3000
 ---
