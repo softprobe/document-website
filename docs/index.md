@@ -29,7 +29,7 @@ Traditional logs and observability tools center on costly indexing. Teams compen
 
 ## How it works
 - Server-Side Collection: A lightweight Wasm plugin in Istio’s Envoy sidecar captures HTTP traffic and business flows, emitting native OpenTelemetry trace data <a className="sp-link-pill" href="https://github.com/softprobe/softprobe" target="_blank" rel="noopener">GitHub</a>
-- Client-Side Enrichment: The Web SDK creates sessions spanning multiple traces and adds route changes, performance metrics, and interaction events
+- Client-Side Enrichment: The SESSIFY creates sessions spanning multiple traces and adds route changes, performance metrics, and interaction events
 
 <div className="sp-link-buttons">
   <a className="button button--secondary" href="https://github.com/softprobe/softprobe" target="_blank" rel="noopener">SP‑Istio Agent on GitHub</a>
@@ -80,7 +80,7 @@ Traditional logs and observability tools center on costly indexing. Teams compen
 
 :::success Today
 Currently available:
-- Data collection: Web SDK (session-level context) and Wasm plugin on Istio/Envoy producing native OpenTelemetry traces — SP‑Istio Agent is open‑source: [github.com/softprobe/softprobe](https://github.com/softprobe/softprobe)
+- Data collection: SESSIFY (session-level context) and Wasm plugin on Istio/Envoy producing native OpenTelemetry traces — SP‑Istio Agent is open‑source: [github.com/softprobe/softprobe](https://github.com/softprobe/softprobe)
 - Visualization: Context View (session graph across services)
 :::
 

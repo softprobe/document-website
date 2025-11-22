@@ -50,7 +50,7 @@ description: 了解如何在 Softprobe 仪表盘中导航、管理租户与成�
 - **性能指标**：平均响应时间、P95 指标、系统健康状况
 
 :::tip
-如需实现端到端用户旅程关联，请在前端安装 [Web SDK](/web-sdk) 并通过服务网格传播 sessionId。
+如需实现端到端用户旅程关联，请在前端安装 [SESSIFY](/web-sdk) 并通过服务网格传播 sessionId。
 :::
 
 #### 操作与更新

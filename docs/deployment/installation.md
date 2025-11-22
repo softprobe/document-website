@@ -5,9 +5,9 @@ title: Production Installation Guide
 description: Complete guide for deploying Softprobe in production environments with Istio and Kubernetes
 ---
 
-# Server-side Agent (Istio WASM) & Web SDK Installation
+# Server-side Agent (Istio WASM) & SESSIFY Installation
 
-Deploy SP‑Istio Agent to your Istio service mesh, and integrate the Web SDK for client-side enrichment.
+Deploy SP‑Istio Agent to your Istio service mesh, and integrate the SESSIFY for client-side enrichment.
 
 
 <div className="sp-link-buttons">
@@ -17,7 +17,7 @@ Deploy SP‑Istio Agent to your Istio service mesh, and integrate the Web SDK fo
 <div className="row sp-card-grid">
   <div className="col col--6">
     <div className="card">
-      <div className="card__header"><h3>Web SDK</h3></div>
+      <div className="card__header"><h3>SESSIFY</h3></div>
       <div className="card__body">
         Creates session-scoped context across routes and enriches traces with client metrics and interaction events.
       </div>
@@ -57,49 +57,42 @@ Read the full step-by-step guide, verification, and troubleshooting:
 [GKE Autopilot Istio Installation Guide →](./GKE-Autopilot-Istio-Installation-Guide.md)
 :::
 
-## Install Web SDK (Client-Side Enrichment)
+## Install SESSIFY (Client-Side Enrichment)
 
-Add the Softprobe Web SDK to your frontend to create session-scoped context and capture route changes. This provides full-context visibility without modifying server-side code.
+Add the Softprobe SESSIFY to your frontend to create session-scoped context and capture route changes. This provides full-context visibility without modifying server-side code.
 
 ### Install package
 
 ```bash
-npm install @softprobe/web-inspector
+npm install @softprobe/sessify
 ```
 
-### Initialize in your app entry
+### Initialize at Your App Entry Point
 
-```typescript
-i// src/components/InspectorInitializer.tsx
+```jsx
+// app/layout.tsx or your application's entry file
 'use client'
 import { useEffect } from 'react';
-import { initInspector } from '@softprobe/web-inspector';
-export const InspectorInitializer = () => {
-  useEffect(() => {
-    initInspector({
-      publicKey: 'YOUR_PUBLIC_KEY',
-      serviceName: "YOUR_SERVICE_NAME",
-    })
-  }, [])
-  return null
-}
-
-// app/layout.tsx
-import { InspectorInitializer } from '@/components/InspectorInitializer'
+import { initSessify } from '@softprobe/sessify';
 
 export default function RootLayout({ children }) {
+  useEffect(() => {
+    // Initialize the session management library
+    // This is the necessary first step to use @softprobe/sessify
+    initSessify({});
+  }, []);
+
   return (
     <html lang="en">
       <body>
         {children}
-        <InspectorInitializer />
       </body>
     </html>
   );
 }
 ```
 
-See the full [Web SDK guide](/web-sdk) for framework-specific examples (React/Vue/Next.js) and advanced usage.
+See the full [Sessify guide](/sessify) for framework-specific examples (React/Vue/Next.js) and advanced usage.
 
 ## Install Server-side Agent (Istio WasmPlugin)
 
@@ -154,7 +147,7 @@ kubectl rollout restart deployment <name> -n <namespace>
 If you enabled sidecar injection on a namespace just now, restarting ensures pods are recreated with the updated sidecar and configuration.
 
 :::success Next: View Context View in Dashboard
-After deploying SP‑Istio Agent and initializing the Web SDK, generate some traffic in your app, then:
+After deploying SP‑Istio Agent and initializing the SESSIFY, generate some traffic in your app, then:
 
 1. Open your Softprobe Dashboard → Context View
 2. Select the time range and environment (env) matching your deployment

@@ -15,7 +15,7 @@ description: Softprobe 在安装、配置、性能影响、数据安全与运维
 建议按阶段部署：开发 → 预发 → 生产，并分别配置公钥，逐步扩大采样范围以降低风险。
 
 ### 需要修改应用代码吗？
-不需要。SP-Istio Agent 运行在服务网格层，Web SDK 可按需集成前端，无需改动后端代码。
+不需要。SP-Istio Agent 运行在服务网格层，SESSIFY 可按需集成前端，无需改动后端代码。
 
 ### 支持哪些 Kubernetes 环境？
 支持主流的 Kubernetes 环境，包括自建集群与云厂商托管方案。Istio 版本需与 SP-Istio Agent 兼容。

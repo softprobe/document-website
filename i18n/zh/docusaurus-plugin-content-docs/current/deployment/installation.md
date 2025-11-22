@@ -9,7 +9,7 @@ description: 在生产环境的 Kubernetes 与 Istio 中部署 Softprobe 的完�
 将 SP-Istio Agent 部署到您的生产 Istio 服务网格中。
 
 :::success 下一步：在 Dashboard 查看 Context View
-部署 SP‑Istio Agent 并初始化 Web SDK 后，先在应用中产生一些流量，然后：
+部署 SP‑Istio Agent 并初始化 SESSIFY 后，先在应用中产生一些流量，然后：
 
 1. 打开 Softprobe 仪表盘 → Context View
 2. 选择与部署相匹配的时间范围与环境（env）
@@ -50,8 +50,8 @@ kubectl apply -f minimal.yaml
 
 这将在您的 Istio 服务网格中全局部署 WasmPlugin。
 
-:::tip 前端 Web SDK（可选但推荐）
-若要在浏览器侧采集性能与用户行为数据，请在应用前端安装 Softprobe Web SDK。详见 [前端插件安装](/zh/web-sdk)。
+:::tip 前端 SESSIFY（可选但推荐）
+若要在浏览器侧采集性能与用户行为数据，请在应用前端安装 Softprobe SESSIFY。详见 [前端插件安装](/zh/web-sdk)。
 :::
 
 ## 验证安装
@@ -70,7 +70,7 @@ kubectl get wasmplugin -A
 
 ## 前端可观测性与会话关联（sessionId）
 
-若要实现从浏览器到后端的全链路追踪，请在应用前端集成 Softprobe Web SDK。SDK 会在每个浏览器标签页初始化时自动生成并复用唯一的 sessionId：
+若要实现从浏览器到后端的全链路追踪，请在应用前端集成 Softprobe SESSIFY。SDK 会在每个浏览器标签页初始化时自动生成并复用唯一的 sessionId：
 
 - 同一标签页内的页面跳转与交互会复用同一个 sessionId，使一次用户访问能够完整串联。
 - 打开新的标签页或窗口会生成新的 sessionId；关闭标签页或重新初始化后，会话也会随之重置。
@@ -129,7 +129,7 @@ kubectl delete wasmplugin -n istio-system sp-istio-agent
 
 ## 端到端追踪与会话关联（sessionId）
 
-若要实现从浏览器到后端的全链路追踪，请在应用前端集成 Softprobe Web SDK。SDK 会在每个浏览器标签页初始化时自动生成并复用唯一的 sessionId：
+若要实现从浏览器到后端的全链路追踪，请在应用前端集成 Softprobe SESSIFY。SDK 会在每个浏览器标签页初始化时自动生成并复用唯一的 sessionId：
 
 - 同一标签页内的页面跳转与交互会复用同一个 sessionId，使一次用户访问能够完整串联。
 - 打开新的标签页或窗口会生成新的 sessionId；关闭标签页或重新初始化后，会话也会随之重置。

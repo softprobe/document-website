@@ -8,8 +8,8 @@ description: Get started with Softprobe in minutes using our quick start guide w
 # Quick Start Guide
 
 :::info Important
-The Quick Start demo environment already has the Web SDK (`@softprobe/web-inspector`) pre-installed and enabled, so you don't need to install it again.
-If you want to integrate the SDK into your own frontend app, see [Web SDK Integration](/web-sdk).
+The Quick Start demo environment already has the SESSIFY (`@softprobe/sessify`) pre-installed and enabled, so you don't need to install it again.
+If you want to integrate the SDK into your own frontend app, see [SESSIFY Integration](/web-sdk).
 :::
 
 Get started with SP-Istio Agent in minutes using a local Kubernetes cluster with Kind.
