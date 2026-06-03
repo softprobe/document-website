@@ -1,15 +1,18 @@
 ---
 layout: home
-title: Softprobe Documentation
+title: Softprobe
 titleTemplate: false
 hero:
-  name: Softprobe Documentation
-  text: Platform observability and sp CLI automation
+  name: Softprobe
+  text: Business observability, Java record-replay testing, and sp CLI automation
   tagline: Zero code changes · Full-context visibility · Cost optimization
   actions:
     - theme: brand
-      text: Platform — Get Started
+      text: Business observability — Get Started
       link: /en/platform/getting-started/quick-start
+    - theme: alt
+      text: Testing — Overview
+      link: /en/testing/
     - theme: alt
       text: CLI — Overview
       link: /en/cli/guide/overview
@@ -17,18 +20,23 @@ hero:
       text: CLI Quickstart
       link: /en/cli/guide/quickstart
 features:
-  - title: Platform
+  - title: Business observability
     details: Istio Wasm agent, SESSIFY session context, dashboard, and GKE deployment guides.
     link: /en/platform/getting-started/quick-start
+  - title: Testing
+    details: Java record-and-replay with sp-agent.jar — capture traffic, mock dependencies, compare results.
+    link: /en/testing/
   - title: CLI & agents
     details: The sp CLI contract — setup, record, replay, policies, and --json output for automation.
     link: /en/cli/guide/overview
 ---
 
 ::: info
-Two products, one site — **Platform** (observability) and **CLI** (`sp` record/replay). Pick the path that matches your task.
+Three products, one site — **Platform** (observability), **Testing** (Java record/replay), and **CLI** (`sp` automation). Pick the path that matches your task.
 :::
 
-Automate record and replay from CI or coding agents? Start with [CLI overview](/en/cli/guide/overview).
+New to record-and-replay? Start with [Testing overview](/en/testing/).
+
+Automate from CI or coding agents? See [CLI overview](/en/cli/guide/overview).
 
 Deploy Istio collection or SESSIFY? Start with [Platform quick start](/en/platform/getting-started/quick-start).

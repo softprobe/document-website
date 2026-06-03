@@ -2,7 +2,7 @@
 # Quick Start Guide
 
 ::: tip Automate with sp CLI
-For Java record/replay via the `sp` CLI (AI agents, CI), see [CLI quickstart](/en/cli/guide/quickstart).
+For Java record-and-replay testing (agent, policies, replay), see [Testing getting started](/en/testing/getting-started). To automate with `sp`, see [CLI quickstart](/en/cli/guide/quickstart).
 :::
 
 ::: info Important

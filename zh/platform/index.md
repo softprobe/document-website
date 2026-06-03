@@ -10,4 +10,4 @@ title: 平台文档
 - [生产部署](/zh/platform/deployment/installation)
 - [SESSIFY](/zh/platform/sessify)
 
-CLI 录制/回放（英文）：[sp CLI 快速入门](/en/cli/guide/quickstart)。
+Java 录制/回放：[测试快速开始](/zh/testing/getting-started)。自动化命令：[CLI 快速入门](/zh/cli/guide/quickstart)。

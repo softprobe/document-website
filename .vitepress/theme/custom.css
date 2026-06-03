@@ -94,25 +94,41 @@
   background-color: var(--vp-nav-bg-color);
 }
 
-.VPFooter {
-  background-color: #1b1b1f !important;
-  color: rgba(255, 255, 255, 0.75) !important;
-  border-top: none !important;
-  margin-top: 0 !important;
+/* Hide default VitePress footer (hidden on sidebar pages); use SpFooter instead */
+footer.VPFooter {
+  display: none !important;
 }
 
-/* Home layout: keep footer visible (same as doc pages) */
-.VPHome ~ .VPFooter,
-.is-home .VPFooter {
-  display: block !important;
+/* SpFooter is injected via layout-bottom on every page */
+.Layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: clip;
 }
 
-.VPFooter a {
-  color: var(--sp-brand-lighter) !important;
+:root {
+  --sp-site-footer-height: 0px;
+  --sp-footer-in-view: 0;
 }
 
-.VPFooter a:hover {
-  color: var(--sp-brand-lightest) !important;
+/* Full-bleed site footer (same band as home page) */
+footer.SpFooter {
+  width: 100vw;
+  max-width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
+
+/*
+ * When the footer scrolls into view, shorten the fixed sidebar so the dark
+ * footer bar is visible edge-to-edge and does not cover the nav links.
+ */
+@media (min-width: 960px) {
+  .VPSidebar {
+    bottom: calc(var(--sp-footer-in-view) * var(--sp-site-footer-height));
+    transition: bottom 0.2s ease;
+  }
 }
 
 /* Home hero — old .hero__title / .hero__subtitle */

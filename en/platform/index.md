@@ -17,9 +17,9 @@ Softprobe captures every user journey as a session graph—making interactions a
 - [SESSIFY](/en/platform/sessify)
 - [Dashboard User Guide](/en/platform/production/dashboard-user-guide)
 
-## Automate with sp CLI
+## Record and replay (Java)
 
-For record/replay, policies, and AI-agent workflows, see the [CLI quickstart](/en/cli/guide/quickstart).
+For Java traffic capture, replay, and diff, see [Softprobe Testing](/en/testing/getting-started). Automate with the [CLI quickstart](/en/cli/guide/quickstart).
 
 ## How it works
 

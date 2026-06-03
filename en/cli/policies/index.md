@@ -14,7 +14,7 @@ SoftProbe server configuration for recording, mocking, and comparison is **decla
 
 Full authoring guide (merge rules, selectors, pipeline):
 
-**[Policy YAML guide](../../docs/policy-yaml-guide.md)**
+**[Policy YAML guide](/en/testing/policy-yaml-guide)**
 
 Example files ship in `sp-policy-rules/src/main/resources/examples/`.
 

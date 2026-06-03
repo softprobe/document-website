@@ -1,6 +1,15 @@
 # Short paths → English locale (200 = internal rewrite, keeps URL bar)
 /cli/* /en/cli/:splat 200
 /platform/* /en/platform/:splat 200
+/testing/* /en/testing/:splat 200
+
+# Legacy auto-testing (AREX era)
+/auto-testing /en/testing/ 301
+/auto-testing/* /en/testing/getting-started 301
+/en/auto-testing /en/testing/ 301
+/en/auto-testing/* /en/testing/getting-started 301
+/zh/auto-testing /zh/testing/ 301
+/zh/auto-testing/* /zh/testing/ 301
 
 # Renamed agent entry (sidebar Overview)
 /en/cli/guide/for-agents /en/cli/guide/overview 301

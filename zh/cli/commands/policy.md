@@ -86,7 +86,7 @@ Same path pattern under `/api/mock-policies`.
 
 ## Schema
 
-See [Policy YAML](/en/cli/policies/) and [policy-yaml-guide](../../docs/policy-yaml-guide.md).
+见 [CLI 策略索引](/zh/cli/policies/) 与 [策略 YAML 指南](/zh/testing/policy-yaml-guide)。
 
 ## Related
 

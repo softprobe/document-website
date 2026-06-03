@@ -1,5 +1,7 @@
 # Concepts
 
+For the Java record-and-replay product (agent, policies, replay semantics), see [Softprobe Testing](/en/testing/).
+
 For Istio/Envoy mesh capture and SESSIFY session context (separate from the Java agent), see [Platform core concepts](/en/platform/advanced-guides/concepts).
 
 ## Application (`appId`)
@@ -59,7 +61,7 @@ Optional **`sourceEnv`** on the same request is a separate URI used only when yo
 Declarative YAML (`kind: RecordingPolicy`) controlling what the agent records: sampling, operation include/exclude, time windows, sensitive-field scrubbing.
 
 - Managed via `sp policy recording`
-- Schema: [Policy YAML guide](../../docs/policy-yaml-guide.md)
+- Schema: [Policy YAML guide](/en/testing/policy-yaml-guide)
 
 ## Mock policy
 

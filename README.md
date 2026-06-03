@@ -1,6 +1,6 @@
 # Softprobe documentation (VitePress v2)
 
-Unified public docs: **Platform** (`/en/platform/…`, `/zh/platform/…`) and **CLI** (`/en/cli/…`).
+Unified public docs: **Platform** (`/en/platform/…`), **Testing** (`/en/testing/…` — Java record & replay), and **CLI** (`/en/cli/…`).
 
 ## Local dev
 
@@ -39,6 +39,8 @@ See [REDIRECTS.md](./REDIRECTS.md) for legacy URL mapping.
 |------|--------|
 | `en/platform/` | Former `document-website/docs/` |
 | `zh/platform/` | Former `i18n/zh/.../current/` |
+| `en/testing/` | New product docs (rewritten from legacy `auto-testing/` backup) |
+| `zh/testing/` | ZH overview + links to EN detail pages |
 | `en/cli/` | Former `backend/docs-site/` (public pages) |
 | `zh/cli/` | English CLI mirror + locale banner |
 | `en/cli/implementer/` | Internal only — excluded from build |

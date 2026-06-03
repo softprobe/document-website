@@ -46,7 +46,7 @@ function cliSidebar(locale: DocLocale) {
           ],
         },
         {
-          text: 'Platform',
+          text: 'Business Observability',
           collapsed: false,
           items: [
             { text: 'config', link: `${p}/cli/commands/config` },
@@ -104,6 +104,80 @@ function cliSidebar(locale: DocLocale) {
   ]
 }
 
+const testingSidebarEn = [
+  {
+    text: 'Overview',
+    items: [
+      { text: 'What is Softprobe Testing', link: '/en/testing/' },
+      { text: 'How it works', link: '/en/testing/how-it-works' },
+      { text: 'Getting started', link: '/en/testing/getting-started' },
+    ],
+  },
+  {
+    text: 'Java agent',
+    items: [
+      { text: 'Attach and configure', link: '/en/testing/java-agent' },
+      { text: 'Supported frameworks', link: '/en/testing/supported-frameworks' },
+    ],
+  },
+  {
+    text: 'Recording',
+    items: [
+      { text: 'How to record', link: '/en/testing/recording' },
+      { text: 'Recording policy', link: '/en/testing/policies#recording-policy' },
+    ],
+  },
+  {
+    text: 'Replay',
+    items: [
+      { text: 'Replay and diff', link: '/en/testing/replay-and-diff' },
+      { text: 'Mock and compare policies', link: '/en/testing/policies#mock-policy' },
+      { text: 'Policy YAML guide', link: '/en/testing/policy-yaml-guide' },
+    ],
+  },
+  {
+    text: 'Automate',
+    items: [{ text: 'CLI quickstart', link: '/en/cli/guide/quickstart' }],
+  },
+]
+
+const testingSidebarZh = [
+  {
+    text: '概览',
+    items: [
+      { text: 'Softprobe 测试', link: '/zh/testing/' },
+      { text: '工作原理', link: '/zh/testing/how-it-works' },
+      { text: '快速开始', link: '/zh/testing/getting-started' },
+    ],
+  },
+  {
+    text: 'Java Agent',
+    items: [
+      { text: '安装与配置', link: '/zh/testing/java-agent' },
+      { text: '支持的框架', link: '/zh/testing/supported-frameworks' },
+    ],
+  },
+  {
+    text: '录制',
+    items: [
+      { text: '如何录制', link: '/zh/testing/recording' },
+      { text: '录制策略', link: '/zh/testing/policies#recording-policy' },
+    ],
+  },
+  {
+    text: '回放',
+    items: [
+      { text: '回放与对比', link: '/zh/testing/replay-and-diff' },
+      { text: 'Mock 与对比策略', link: '/zh/testing/policies#mock-policy' },
+      { text: '策略 YAML 指南', link: '/zh/testing/policy-yaml-guide' },
+    ],
+  },
+  {
+    text: '自动化',
+    items: [{ text: 'CLI 快速入门', link: '/zh/cli/guide/quickstart' }],
+  },
+]
+
 const platformSidebarEn = [
   {
     text: 'Getting Started',
@@ -125,7 +199,7 @@ const platformSidebarEn = [
   },
   {
     text: 'Configuration',
-    items: [{ text: 'Platform configuration (Istio)', link: '/en/platform/configuration/config' }],
+    items: [{ text: 'Business Observability configuration (Istio)', link: '/en/platform/configuration/config' }],
   },
   {
     text: 'Advanced Guides',
@@ -194,16 +268,21 @@ const platformSidebarZh = [
 
 function sidebarForLocale(locale: DocLocale) {
   const platform = locale === 'zh' ? platformSidebarZh : platformSidebarEn
+  const testing = locale === 'zh' ? testingSidebarZh : testingSidebarEn
   const cli = cliSidebar(locale)
   const cliLabel = locale === 'zh' ? 'CLI 与自动化' : 'CLI & agents'
-  const platformLabel = locale === 'zh' ? '平台' : 'Platform'
+  const platformLabel = locale === 'zh' ? '业务观测' : 'Business Observability'
+  const testingLabel = locale === 'zh' ? '测试' : 'Testing'
   const platformBase = locale === 'zh' ? '/zh/platform/' : '/en/platform/'
+  const testingBase = locale === 'zh' ? '/zh/testing/' : '/en/testing/'
   const cliBase = locale === 'zh' ? '/zh/cli/' : '/en/cli/'
   return {
     [platformBase]: platform,
+    [testingBase]: testing,
     [cliBase]: cli,
     '/': [
       { text: platformLabel, items: platform },
+      { text: testingLabel, items: testing },
       { text: cliLabel, items: cli },
     ],
   }
@@ -211,8 +290,8 @@ function sidebarForLocale(locale: DocLocale) {
 
 export default withMermaid(
   defineConfig({
-  title: 'Softprobe Documentation',
-  description: 'Softprobe platform and sp CLI documentation',
+  title: 'Softprobe',
+  description: 'Softprobe platform, Java record-replay testing, and sp CLI documentation',
   base: '/',
   appearance: true,
   mermaid: {

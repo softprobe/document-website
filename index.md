@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Softprobe Documentation
+title: Softprobe
 ---
 
 <script setup>

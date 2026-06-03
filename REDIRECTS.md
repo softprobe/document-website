@@ -43,6 +43,10 @@ VitePress `rewrites` in [`.vitepress/config.ts`](.vitepress/config.ts) handle ma
 
 | Old path | New path |
 |----------|----------|
-| `/en/auto-testing/*` | `/en/cli/guide/quickstart` (or 410) |
+| `/en/auto-testing` | `/en/testing/` |
+| `/en/auto-testing/` | `/en/testing/` |
+| `/en/auto-testing/*` | `/en/testing/getting-started` |
+| `/zh/auto-testing` | `/zh/testing/` |
+| `/zh/auto-testing/*` | `/zh/testing/` |
 
 Update hardcoded links in `arex-client-opensource` separately.

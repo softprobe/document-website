@@ -1,5 +1,9 @@
 # Concepts
 
+Java 录制回放产品说明（Agent、策略、回放语义）见 [Softprobe 测试](/zh/testing/)。
+
+Istio/Envoy 网格采集与 SESSIFY 会话上下文（与 Java Agent 不同）见[平台核心概念](/zh/platform/advanced-guides/concepts)。
+
 ## Application (`appId`)
 
 A registered service under test. Recording, replay, policies, and extraction rules are all scoped by **`appId`**.
@@ -57,7 +61,7 @@ Optional **`sourceEnv`** on the same request is a separate URI used only when yo
 Declarative YAML (`kind: RecordingPolicy`) controlling what the agent records: sampling, operation include/exclude, time windows, sensitive-field scrubbing.
 
 - Managed via `sp policy recording`
-- Schema: [Policy YAML guide](../../docs/policy-yaml-guide.md)
+- Schema: [策略 YAML 指南](/zh/testing/policy-yaml-guide)
 
 ## Mock policy
 

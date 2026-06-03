@@ -42,5 +42,5 @@ See [Commands overview](commands/).
 
 ## Related tools
 
-- **[Policy YAML guide](../docs/policy-yaml-guide.md)** — schema for recording, mock, and compare policies
+- **[策略 YAML 指南](/zh/testing/policy-yaml-guide)** — 录制、Mock、对比策略的 schema 与示例
 - **`spcode` / `@spcode/plugin`** — OpenCode integration; migrates from `sp_api` endpoints to `sp` subcommands

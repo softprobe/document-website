@@ -1,11 +1,11 @@
 ---
 sidebar_position: 1
 slug: /
-title: Softprobe Documentation
-description: Softprobe Documentation - Business-Level Distributed Tracing and Analytics Platform with zero code changes required
+title: Softprobe
+description: Softprobe - Business-Level Distributed Tracing and Analytics Platform with zero code changes required
 ---
 
-# Softprobe Documentation
+# Softprobe
 
 **Zero code changes • Full-context visibility • Cost optimization**
 

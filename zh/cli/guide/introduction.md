@@ -64,10 +64,11 @@ The web UI remains available for visual inspection and manual review; the CLI co
 | **Web UI** | Visual diff, trace inspection, and console review |
 | **Java agent** | In-process instrumentation, recording, replay-time mocking, and replay observability |
 | **`spcode` CLI** | Local autonomous AI engine and interactive terminal workspace. Shared SSO configuration. |
-| **[Policy YAML guide](../../docs/policy-yaml-guide.md)** | Schema for `sp policy` inputs |
+| **[策略 YAML 指南](/zh/testing/policy-yaml-guide)** | `sp policy` 输入的 schema 与示例 |
 
 ## Documentation map
 
+- [Softprobe Testing](/zh/testing/) — product overview (Java agent, record/replay, policies)
 - [For AI agents](./overview.md) — start here if you write skills or tools
 - [spcode CLI](./spcode.md) — local autonomous AI engine and interactive terminal workspace
 - [Commands](/en/cli/commands/) — platform, investigation, and administration
