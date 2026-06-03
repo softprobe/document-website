@@ -67,7 +67,7 @@ dist
 
 # Gatsby files
 .cache/
-public
+# VitePress uses /public for static assets — do not ignore
 
 # Storybook build outputs
 .out
@@ -93,8 +93,9 @@ temp/
 ehthumbs.db
 Thumbs.db
 
-# Docusaurus
-.docusaurus/
+# VitePress
+.vitepress/dist
+.vitepress/cache
 node_modules
 
 # AI

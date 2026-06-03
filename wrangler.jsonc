@@ -1,0 +1,9 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "softprobe-docs",
+  "compatibility_date": "2026-06-02",
+  "assets": {
+    "directory": ".vitepress/dist",
+    "not_found_handling": "single-page-application"
+  }
+}

@@ -1,35 +1,52 @@
-# document
+# Softprobe documentation (VitePress v2)
 
-This is a Next.js application generated with
-[Create Fumadocs](https://github.com/fuma-nama/fumadocs).
+Unified public docs: **Platform** (`/en/platform/…`, `/zh/platform/…`) and **CLI** (`/en/cli/…`).
 
-Run development server:
+## Local dev
 
 ```bash
-npm run dev
-# or
-pnpm dev
-# or
-yarn dev
+npm install
+npm run docs:dev
 ```
 
-Open http://localhost:3000 with your browser to see the result.
+Open [http://localhost:5173/en/](http://localhost:5173/en/).
 
-## Learn More
+## Build
 
-To learn more about Next.js and Fumadocs, take a look at the following
-resources:
+```bash
+npm run docs:build
+npm run docs:preview
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js
-  features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-- [Fumadocs](https://fumadocs.vercel.app) - learn about Fumadocs
+## Deploy (Cloudflare Worker static assets)
 
+```bash
+# wrangler login (Softprobe account)
+npm run deploy
+```
 
-## Deploy Note
+Worker name: `softprobe-docs`. Output: `.vitepress/dist`.
 
-- 运行 sh release.sh 自动打最新tag，并推到github
-- 在[Deploy仓库](https://github.com/softprobe/deployment-k8s)更新最新最版本，文件是：pro/saas/doc/deployment.yaml，更新containers/image的后缀为刚刚更新的tag
-- 将Deployment仓库推上去会开始触发pipeline自动发布
-- 如果过几分钟没发布可去[Argo平台](https://argocd.softprobe.ai/applications/argocd/doc?view=tree)手动点一下SYNC按钮触发发布
-- 如果发布失败需要去业务Github Action看下是否是打包失败
+See [REDIRECTS.md](./REDIRECTS.md) for legacy URL mapping.
+
+## Content layout
+
+| Path | Source |
+|------|--------|
+| `en/platform/` | Former `document-website/docs/` |
+| `zh/platform/` | Former `i18n/zh/.../current/` |
+| `en/cli/` | Former `backend/docs-site/` (public pages) |
+| `zh/cli/` | English CLI mirror + locale banner |
+| `en/cli/implementer/` | Internal only — excluded from build |
+
+To refresh CLI content from backend after API changes:
+
+```bash
+node scripts/migrate-content.mjs
+node scripts/fix-html.mjs
+```
+
+## Branch
+
+- **`v2`** — VitePress + Workers (this layout)
+- **`main`** — legacy Docusaurus + K8s until cutover
