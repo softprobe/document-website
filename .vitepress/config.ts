@@ -5,7 +5,7 @@ const cliSidebar = [
     text: 'For AI agents',
     collapsed: false,
     items: [
-      { text: 'Overview', link: '/en/cli/guide/for-agents' },
+      { text: 'Overview', link: '/en/cli/guide/overview' },
       { text: 'Output contract', link: '/en/cli/guide/output-contract' },
       { text: 'Versioning', link: '/en/cli/guide/versioning' },
     ],
@@ -200,13 +200,13 @@ function sidebarForLocale(locale: 'en' | 'zh') {
 const navEn = [
   { text: 'Home', link: '/en/' },
   { text: 'Platform', link: '/en/platform/getting-started/quick-start' },
-  { text: 'CLI & agents', link: '/en/cli/guide/for-agents' },
+  { text: 'CLI & agents', link: '/en/cli/guide/overview' },
 ]
 
 const navZh = [
   { text: '首页', link: '/zh/' },
   { text: '平台', link: '/zh/platform/getting-started/quick-start' },
-  { text: 'CLI 与自动化', link: '/en/cli/guide/for-agents' },
+  { text: 'CLI 与自动化', link: '/en/cli/guide/overview' },
 ]
 
 export default defineConfig({

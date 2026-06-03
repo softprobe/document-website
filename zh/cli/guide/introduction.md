@@ -1,5 +1,5 @@
 ::: warning CLI reference (English)
-The `sp` CLI documentation is available in English. [Switch to English CLI docs](/en/cli/guide/for-agents).
+The `sp` CLI documentation is available in English. [Switch to English CLI docs](/en/cli/guide/overview).
 :::
 
 # Introduction
@@ -72,6 +72,6 @@ The web UI remains available for visual inspection and manual review; the CLI co
 
 ## Documentation map
 
-- [For AI agents](./for-agents.md) — start here if you write skills or tools
+- [For AI agents](./overview.md) — start here if you write skills or tools
 - [spcode CLI](./spcode.md) — local autonomous AI engine and interactive terminal workspace
 - [Commands](/en/cli/commands/) — platform, investigation, and administration

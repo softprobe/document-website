@@ -12,14 +12,14 @@ hero:
       link: /zh/platform/getting-started/quick-start
     - theme: alt
       text: CLI — 英文参考
-      link: /en/cli/guide/for-agents
+      link: /en/cli/guide/overview
 features:
   - title: 平台
     details: Istio Wasm 代理、SESSIFY 会话上下文、仪表盘与 GKE 部署指南。
     link: /zh/platform/getting-started/quick-start
   - title: CLI 与自动化
     details: sp CLI 规范（英文）— 安装、录制、回放、策略与 --json 输出。
-    link: /en/cli/guide/for-agents
+    link: /en/cli/guide/overview
   - title: English docs
     details: Full English documentation including CLI reference.
     link: /en/

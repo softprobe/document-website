@@ -108,5 +108,5 @@ Test cases are created only via **recording** (instrumented app traffic). Manual
 
 ## Related
 
-- [For agents](./for-agents.md)
+- [For agents](./overview.md)
 - [Commands](/en/cli/commands/)

@@ -11,7 +11,7 @@ const ROOT = path.join(__dirname, '..')
 const BACKEND_DOCS = path.join(ROOT, '..', 'backend', 'docs-site')
 
 const CLI_BANNER =
-  '::: warning CLI reference (English)\nThe `sp` CLI documentation is available in English. [Switch to English CLI docs](/en/cli/guide/for-agents).\n:::\n\n'
+  '::: warning CLI reference (English)\nThe `sp` CLI documentation is available in English. [Switch to English CLI docs](/en/cli/guide/overview).\n:::\n\n'
 
 function stripFrontmatter(content) {
   if (!content.startsWith('---')) return content

@@ -2,6 +2,11 @@
 /cli/* /en/cli/:splat 200
 /platform/* /en/platform/:splat 200
 
+# Renamed agent entry (sidebar Overview)
+/en/cli/guide/for-agents /en/cli/guide/overview 301
+/cli/guide/for-agents /en/cli/guide/overview 301
+/guide/for-agents /en/cli/guide/overview 301
+
 # Legacy CLI docs-site (root paths)
 /guide/* /en/cli/guide/:splat 200
 /commands/* /en/cli/commands/:splat 200

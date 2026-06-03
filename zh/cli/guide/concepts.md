@@ -1,5 +1,5 @@
 ::: warning CLI reference (English)
-The `sp` CLI documentation is available in English. [Switch to English CLI docs](/en/cli/guide/for-agents).
+The `sp` CLI documentation is available in English. [Switch to English CLI docs](/en/cli/guide/overview).
 :::
 
 # Concepts
@@ -110,5 +110,5 @@ Test cases are created only via **recording** (instrumented app traffic). Manual
 
 ## Related
 
-- [For agents](./for-agents.md)
+- [For agents](./overview.md)
 - [Commands](/en/cli/commands/)

@@ -8,7 +8,7 @@ hero:
   actions:
     - theme: brand
       text: For AI agents
-      link: /guide/for-agents
+      link: /guide/overview
     - theme: alt
       text: Quickstart
       link: /guide/quickstart

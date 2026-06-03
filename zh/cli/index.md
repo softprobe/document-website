@@ -1,5 +1,5 @@
 ::: warning CLI reference (English)
-The `sp` CLI documentation is available in English. [Switch to English CLI docs](/en/cli/guide/for-agents).
+The `sp` CLI documentation is available in English. [Switch to English CLI docs](/en/cli/guide/overview).
 :::
 
 ---
@@ -12,7 +12,7 @@ hero:
   actions:
     - theme: brand
       text: For AI agents
-      link: /guide/for-agents
+      link: /guide/overview
     - theme: alt
       text: Quickstart
       link: /guide/quickstart

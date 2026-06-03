@@ -1,5 +1,5 @@
 ::: warning CLI reference (English)
-The `sp` CLI documentation is available in English. [Switch to English CLI docs](/en/cli/guide/for-agents).
+The `sp` CLI documentation is available in English. [Switch to English CLI docs](/en/cli/guide/overview).
 :::
 
 # Implementer overview
@@ -8,7 +8,7 @@ This section is for engineers building the Go `sp` CLI in [sp-cli](../../sp-cli/
 
 ## Read order
 
-1. [For agents](/en/cli/guide/for-agents.md) — primary UX constraints
+1. [For agents](/en/cli/guide/overview.md) — primary UX constraints
 2. [Output contract](/en/cli/guide/output-contract.md) — JSON envelopes and exit codes
 3. [Architecture](./architecture.md) — recommended package layout
 4. [sp_api migration](./sp-api-migration.md) — parity with OpenCode plugin

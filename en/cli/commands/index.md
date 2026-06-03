@@ -84,6 +84,6 @@ sp diagnose replay <planId> --failed-only --out-dir .sp-work --json
 ## Related
 
 - [Quickstart](/en/cli/guide/quickstart.md)
-- [For AI agents](/en/cli/guide/for-agents.md)
+- [For AI agents](/en/cli/guide/overview.md)
 - [Examples](/en/cli/examples/agent-diagnose-replay.md)
 - [API mapping](/en/cli/reference/api-mapping.md)
