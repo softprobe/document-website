@@ -1,7 +1,3 @@
-::: warning CLI reference (English)
-The `sp` CLI documentation is available in English. [Switch to English CLI docs](/en/cli/guide/overview).
-:::
-
 # sp replay diff & logs
 
 **When agents use this:** Deep dive on a failed case — diff bodies, compare JSON, replay-phase logs.

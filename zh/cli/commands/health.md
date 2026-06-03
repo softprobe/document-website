@@ -1,7 +1,3 @@
-::: warning CLI reference (English)
-The `sp` CLI documentation is available in English. [Switch to English CLI docs](/en/cli/guide/overview).
-:::
-
 # sp health
 
 **When agents use this:** Preflight before a long diagnosis session; CI smoke check.

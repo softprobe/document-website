@@ -1,7 +1,3 @@
-::: warning CLI reference (English)
-The `sp` CLI documentation is available in English. [Switch to English CLI docs](/en/cli/guide/overview).
-:::
-
 # sp config
 
 **When agents use this:** Once per session to verify connectivity; CI uses env vars instead of `init`.

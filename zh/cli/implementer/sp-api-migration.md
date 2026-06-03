@@ -1,7 +1,3 @@
-::: warning CLI reference (English)
-The `sp` CLI documentation is available in English. [Switch to English CLI docs](/en/cli/guide/overview).
-:::
-
 # sp_api → sp migration
 
 Map for updating `@spcode/plugin` skills from `sp_api endpoint=…` to `sp` argv.

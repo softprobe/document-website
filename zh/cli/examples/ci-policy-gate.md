@@ -1,7 +1,3 @@
-::: warning CLI reference (English)
-The `sp` CLI documentation is available in English. [Switch to English CLI docs](/en/cli/guide/overview).
-:::
-
 # Example: CI policy gate
 
 **Audience:** GitHub Actions / GitLab CI (agents may generate this YAML)

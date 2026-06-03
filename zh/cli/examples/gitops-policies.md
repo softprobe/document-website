@@ -1,7 +1,3 @@
-::: warning CLI reference (English)
-The `sp` CLI documentation is available in English. [Switch to English CLI docs](/en/cli/guide/overview).
-:::
-
 # Example: GitOps policies
 
 **Audience:** Platform engineers and agents maintaining policy repos

@@ -1,7 +1,3 @@
-::: warning CLI reference (English)
-The `sp` CLI documentation is available in English. [Switch to English CLI docs](/en/cli/guide/overview).
-:::
-
 # sp replay
 
 **When agents use this:** Start and monitor replay plans. For failed cases and diffs, see [replay case](./replay-case.md) and [replay diff](./replay-diff.md).

@@ -1,7 +1,3 @@
-::: warning CLI reference (English)
-The `sp` CLI documentation is available in English. [Switch to English CLI docs](/en/cli/guide/overview).
-:::
-
 # Introduction
 
 SoftProbe is a record-and-replay testing system for Java services. It attaches to an application as a `-javaagent`, observes real traffic in the background, records request and dependency data, then replays recorded cases later with automatic mocking and automatic comparison.

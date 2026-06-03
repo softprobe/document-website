@@ -1,7 +1,3 @@
-::: warning CLI reference (English)
-The `sp` CLI documentation is available in English. [Switch to English CLI docs](/en/cli/guide/overview).
-:::
-
 # sp group & grant
 
 **When agents use this:** Admin automation for access control (not typical diagnosis flows).

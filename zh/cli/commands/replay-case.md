@@ -1,7 +1,3 @@
-::: warning CLI reference (English)
-The `sp` CLI documentation is available in English. [Switch to English CLI docs](/en/cli/guide/overview).
-:::
-
 # sp replay (data)
 
 **When agents use this:** After `sp replay run` completes — list failed cases, fetch metadata, paginate cases.

@@ -1,7 +1,3 @@
-::: warning CLI reference (English)
-The `sp` CLI documentation is available in English. [Switch to English CLI docs](/en/cli/guide/overview).
-:::
-
 # CLI architecture (recommended)
 
 Not implemented yet — target layout for extending [sp-cli](../../sp-cli/main.go).

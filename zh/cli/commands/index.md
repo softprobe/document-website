@@ -1,7 +1,3 @@
-::: warning CLI reference (English)
-The `sp` CLI documentation is available in English. [Switch to English CLI docs](/en/cli/guide/overview).
-:::
-
 # Commands
 
 Reference for public `sp` subcommands. Use `--json` on API-backed commands. See [Output contract](/en/cli/guide/output-contract.md).

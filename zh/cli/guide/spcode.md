@@ -1,7 +1,3 @@
-::: warning CLI reference (English)
-The `sp` CLI documentation is available in English. [Switch to English CLI docs](/en/cli/guide/overview).
-:::
-
 # Softprobe AI Engine CLI (`spcode`)
 
 The **`spcode`** command-line interface is the local autonomous AI engine and developer companion for the **Softprobe** product suite.

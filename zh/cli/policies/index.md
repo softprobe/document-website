@@ -1,7 +1,3 @@
-::: warning CLI reference (English)
-The `sp` CLI documentation is available in English. [Switch to English CLI docs](/en/cli/guide/overview).
-:::
-
 # Policies and the CLI
 
 SoftProbe server configuration for recording, mocking, and comparison is **declarative YAML** managed through `sp policy` (v1).

@@ -1,7 +1,3 @@
-::: warning CLI reference (English)
-The `sp` CLI documentation is available in English. [Switch to English CLI docs](/en/cli/guide/overview).
-:::
-
 # sp extraction-rule
 
 **When agents use this:** Configure or preview business-attribute extraction for `sp trace find`.

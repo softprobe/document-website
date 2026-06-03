@@ -10,6 +10,6 @@ if (typeof window !== 'undefined') {
 }
 </script>
 
-# Softprobe Documentation
-
-Redirecting… [English](/en/) · [中文](/zh/)
+<noscript>
+  <meta http-equiv="refresh" content="0;url=/en/" />
+</noscript>

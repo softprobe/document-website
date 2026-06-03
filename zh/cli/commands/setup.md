@@ -1,7 +1,3 @@
-::: warning CLI reference (English)
-The `sp` CLI documentation is available in English. [Switch to English CLI docs](/en/cli/guide/overview).
-:::
-
 # sp setup
 
 **When agents use this:** Validate prerequisites before `app create`, agent install, or replay.

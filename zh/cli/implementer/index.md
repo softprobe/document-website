@@ -1,7 +1,3 @@
-::: warning CLI reference (English)
-The `sp` CLI documentation is available in English. [Switch to English CLI docs](/en/cli/guide/overview).
-:::
-
 # Implementer overview
 
 This section is for engineers building the Go `sp` CLI in [sp-cli](../../sp-cli/main.go).

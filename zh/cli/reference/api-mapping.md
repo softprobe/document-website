@@ -1,7 +1,3 @@
-::: warning CLI reference (English)
-The `sp` CLI documentation is available in English. [Switch to English CLI docs](/en/cli/guide/overview).
-:::
-
 # API mapping
 
 Authoritative **REST ↔ CLI** reference for sp-boot (default port **8090**). Header `access-token` required on console APIs unless noted.

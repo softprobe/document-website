@@ -1,7 +1,3 @@
-::: warning CLI reference (English)
-The `sp` CLI documentation is available in English. [Switch to English CLI docs](/en/cli/guide/overview).
-:::
-
 # sp app
 
 **When agents use this:** Resolve `appId`, check agent connectivity, register a service, or list recent replay plans for an app.

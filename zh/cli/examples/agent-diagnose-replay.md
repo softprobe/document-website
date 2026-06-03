@@ -1,7 +1,3 @@
-::: warning CLI reference (English)
-The `sp` CLI documentation is available in English. [Switch to English CLI docs](/en/cli/guide/overview).
-:::
-
 # Example: Diagnose a failed replay
 
 **Audience:** AI agent skill (OpenCode, Claude Code, Codex)

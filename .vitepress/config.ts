@@ -183,7 +183,7 @@ const platformSidebarZh = [
 
 function sidebarForLocale(locale: 'en' | 'zh') {
   const platform = locale === 'zh' ? platformSidebarZh : platformSidebarEn
-  const cliLabel = locale === 'zh' ? 'CLI 与自动化（英文）' : 'CLI & agents'
+  const cliLabel = locale === 'zh' ? 'CLI 与自动化' : 'CLI & agents'
   const platformLabel = locale === 'zh' ? '平台' : 'Platform'
   const platformBase = locale === 'zh' ? '/zh/platform/' : '/en/platform/'
   const cliBase = locale === 'zh' ? '/zh/cli/' : '/en/cli/'
@@ -206,7 +206,7 @@ const navEn = [
 const navZh = [
   { text: '首页', link: '/zh/' },
   { text: '平台', link: '/zh/platform/getting-started/quick-start' },
-  { text: 'CLI 与自动化', link: '/en/cli/guide/overview' },
+  { text: 'CLI 与自动化', link: '/zh/cli/guide/overview' },
 ]
 
 export default defineConfig({

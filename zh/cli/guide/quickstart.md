@@ -1,7 +1,3 @@
-::: warning CLI reference (English)
-The `sp` CLI documentation is available in English. [Switch to English CLI docs](/en/cli/guide/overview).
-:::
-
 # Quickstart
 
 End-to-end record-and-replay flow. All examples use `--json`; omit it for human-readable tables when the CLI supports them.
