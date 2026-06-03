@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitepress'
+import { withMermaid } from 'vitepress-plugin-mermaid'
 import {
   footerForLocale,
   navForLocale,
@@ -208,11 +209,20 @@ function sidebarForLocale(locale: DocLocale) {
   }
 }
 
-export default defineConfig({
+export default withMermaid(
+  defineConfig({
   title: 'Softprobe Documentation',
   description: 'Softprobe platform and sp CLI documentation',
   base: '/',
   appearance: true,
+  mermaid: {
+    theme: 'neutral',
+  },
+  vite: {
+    optimizeDeps: {
+      include: ['mermaid', 'vitepress-plugin-mermaid'],
+    },
+  },
   head: [
     ['link', { rel: 'icon', href: '/img/sp-logo-trans.ico' }],
     ['meta', { name: 'theme-color', content: '#A14EFF' }],
@@ -263,4 +273,5 @@ export default defineConfig({
     nav: navForLocale('en'),
     footer: footerForLocale('en'),
   },
-})
+  }),
+)

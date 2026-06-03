@@ -173,6 +173,20 @@
   color: var(--sp-brand);
 }
 
+/* Mermaid diagrams */
+.mermaid,
+pre.mermaid,
+div[class*='mermaid'] {
+  margin: 1.5rem 0;
+  text-align: center;
+  overflow-x: auto;
+}
+
+.mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
+
 /* Content — links, blockquotes, tables (old custom.css) */
 .vp-doc a {
   color: var(--sp-brand);
