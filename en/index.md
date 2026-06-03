@@ -5,7 +5,7 @@ titleTemplate: false
 hero:
   name: Softprobe Documentation
   text: Platform observability and sp CLI automation
-  tagline: Zero code changes · Full-context visibility · Record & replay with AI agents
+  tagline: Zero code changes · Full-context visibility · Cost optimization
   actions:
     - theme: brand
       text: Platform — Get Started

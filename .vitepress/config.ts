@@ -213,6 +213,11 @@ export default defineConfig({
   title: 'Softprobe Documentation',
   description: 'Softprobe platform and sp CLI documentation',
   base: '/',
+  appearance: true,
+  head: [
+    ['link', { rel: 'icon', href: '/img/sp-logo-trans.ico' }],
+    ['meta', { name: 'theme-color', content: '#A14EFF' }],
+  ],
   ignoreDeadLinks: true,
   srcExclude: [
     '**/implementer/**',
@@ -263,8 +268,48 @@ export default defineConfig({
   },
   themeConfig: {
     logo: '/img/sp-logo-trans.png',
+    siteTitle: 'Softprobe Documentation',
     socialLinks: [
       { icon: 'github', link: 'https://github.com/softprobe/softprobe' },
+      { icon: 'x', link: 'https://x.com/softprobeai' },
     ],
+    footer: {
+      message: 'Zero code changes · Full-context visibility · Cost optimization',
+      copyright: `Copyright © ${new Date().getFullYear()} Softprobe`,
+      links: [
+        {
+          title: 'Docs',
+          items: [
+            {
+              text: 'Installation',
+              link: '/en/platform/deployment/installation',
+            },
+            {
+              text: 'CLI quickstart',
+              link: '/en/cli/guide/quickstart',
+            },
+          ],
+        },
+        {
+          title: 'Community',
+          items: [
+            { text: 'Twitter', link: 'https://x.com/softprobeai' },
+          ],
+        },
+        {
+          title: 'More',
+          items: [
+            {
+              text: 'SP-Istio GitHub',
+              link: 'https://github.com/softprobe/softprobe',
+            },
+            {
+              text: 'SESSIFY GitHub',
+              link: 'https://github.com/softprobe/sessify',
+            },
+          ],
+        },
+      ],
+    },
   },
 })

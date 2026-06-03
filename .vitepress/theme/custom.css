@@ -1,21 +1,318 @@
-.sp-img img {
+/**
+ * Softprobe brand theme — ported from document-website Docusaurus (Infima).
+ * Primary: #A14EFF
+ */
+
+:root {
+  --sp-brand: #a14eff;
+  --sp-brand-dark: #8b3aff;
+  --sp-brand-darker: #7a2eff;
+  --sp-brand-darkest: #5a1fcc;
+  --sp-brand-light: #b366ff;
+  --sp-brand-lighter: #c280ff;
+  --sp-brand-lightest: #d199ff;
+
+  --vp-c-brand-1: var(--sp-brand);
+  --vp-c-brand-2: var(--sp-brand-dark);
+  --vp-c-brand-3: var(--sp-brand-darker);
+  --vp-c-brand-soft: rgba(161, 78, 255, 0.14);
+
+  --vp-c-indigo-1: var(--sp-brand);
+  --vp-c-indigo-2: var(--sp-brand-dark);
+  --vp-c-indigo-3: var(--sp-brand-darker);
+
+  --vp-c-tip-1: var(--sp-brand);
+  --vp-c-tip-2: var(--sp-brand-dark);
+  --vp-c-tip-3: var(--sp-brand-darker);
+  --vp-c-tip-soft: var(--vp-c-brand-soft);
+
+  --vp-button-brand-bg: var(--sp-brand);
+  --vp-button-brand-hover-bg: var(--sp-brand-dark);
+  --vp-button-brand-active-bg: var(--sp-brand-darker);
+  --vp-button-brand-border: var(--sp-brand);
+
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: linear-gradient(
+    120deg,
+    var(--sp-brand-darkest) 0%,
+    var(--sp-brand) 45%,
+    var(--sp-brand-lighter) 100%
+  );
+  --vp-home-hero-image-filter: none;
+
+  --vp-nav-logo-height: 28px;
+}
+
+.dark {
+  --sp-brand: #b366ff;
+  --sp-brand-dark: #a14eff;
+  --sp-brand-darker: #8b3aff;
+  --sp-brand-darkest: #7a2eff;
+  --sp-brand-light: #c280ff;
+  --sp-brand-lighter: #d199ff;
+  --sp-brand-lightest: #e0b3ff;
+
+  --vp-c-brand-1: var(--sp-brand);
+  --vp-c-brand-2: var(--sp-brand-dark);
+  --vp-c-brand-3: var(--sp-brand-darker);
+  --vp-c-brand-soft: rgba(179, 102, 255, 0.16);
+
+  --vp-c-indigo-1: var(--sp-brand);
+  --vp-c-indigo-2: var(--sp-brand-dark);
+  --vp-c-indigo-3: var(--sp-brand-darker);
+
+  --vp-button-brand-bg: var(--sp-brand-dark);
+  --vp-button-brand-hover-bg: var(--sp-brand);
+}
+
+/* Nav — purple brand accent (old .navbar__brand) */
+.VPNavBar .title {
+  font-weight: 600;
+}
+
+.VPNavBarMenuLink.active,
+.VPNavBarMenuLink:hover,
+.VPSidebarItem.is-active > .item > .link,
+.VPSidebarItem.is-active > .item > .text {
+  color: var(--sp-brand) !important;
+}
+
+.VPSidebarItem.is-active > .item > .indicator {
+  background-color: var(--sp-brand);
+}
+
+.VPNavBarMenuLink.active::after {
+  background-color: var(--sp-brand);
+}
+
+/* Dark footer (old Docusaurus footer style: dark) */
+.VPFooter {
+  background-color: #1b1b1f !important;
+  color: rgba(255, 255, 255, 0.75) !important;
+  border-top: none !important;
+}
+
+.VPFooter a {
+  color: var(--sp-brand-lighter) !important;
+}
+
+.VPFooter a:hover {
+  color: var(--sp-brand-lightest) !important;
+}
+
+/* Home hero — old .hero__title / .hero__subtitle */
+.VPHomeHero .name {
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.VPHomeHero .text {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.VPHomeHero .tagline {
+  font-size: 1.05rem;
+}
+
+.VPHomeHero .action .VPButton.brand {
+  background-color: var(--sp-brand);
+  border-color: var(--sp-brand);
+}
+
+.VPHomeHero .action .VPButton.brand:hover {
+  background-color: var(--sp-brand-dark);
+  border-color: var(--sp-brand-dark);
+}
+
+.VPHomeHero .action .VPButton.alt {
+  background-color: transparent;
+  border: 1px solid var(--sp-brand);
+  color: var(--sp-brand);
+}
+
+.VPHomeHero .action .VPButton.alt:hover {
+  background-color: var(--sp-brand-lightest);
+  color: var(--sp-brand-dark);
+}
+
+.dark .VPHomeHero .action .VPButton.alt:hover {
+  background-color: rgba(161, 78, 255, 0.2);
+  color: var(--sp-brand-light);
+}
+
+/* Feature cards on home */
+.VPFeature {
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.VPFeature:hover {
+  border-color: var(--sp-brand-lighter);
+  box-shadow: 0 8px 24px rgba(161, 78, 255, 0.12);
+}
+
+.VPFeature .icon {
+  color: var(--sp-brand);
+}
+
+/* Content — links, blockquotes, tables (old custom.css) */
+.vp-doc a {
+  color: var(--sp-brand);
+  transition: color 0.2s ease;
+}
+
+.vp-doc a:hover {
+  color: var(--sp-brand-dark);
+}
+
+.vp-doc blockquote {
+  border-left: 4px solid var(--sp-brand);
+  border-radius: 0 8px 8px 0;
+  background-color: var(--vp-c-brand-soft);
+  padding: 1rem;
+  font-style: italic;
+}
+
+.vp-doc table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1rem 0;
+}
+
+.vp-doc th,
+.vp-doc td {
+  border: 1px solid var(--vp-c-divider);
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.vp-doc th {
+  background-color: var(--vp-c-bg-soft);
+  font-weight: 600;
+}
+
+.vp-doc :not(pre) > code {
+  font-size: 0.95em;
+}
+
+/* Custom blocks — brand-tinted tip/info */
+.custom-block.tip,
+.custom-block.info {
+  border-color: var(--sp-brand);
+  background-color: var(--vp-c-brand-soft);
+}
+
+.custom-block.tip .custom-block-title,
+.custom-block.info .custom-block-title {
+  color: var(--sp-brand-darkest);
+}
+
+.dark .custom-block.tip .custom-block-title,
+.dark .custom-block.info .custom-block-title {
+  color: var(--sp-brand-lighter);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--vp-c-bg-soft);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--vp-c-divider);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--vp-c-text-3);
+}
+
+/* --- Platform page components (Docusaurus sp-* / Infima) --- */
+
+.sp-img {
+  text-align: center;
+  margin: 24px 0;
+}
+
+.sp-img img,
+.sp-img video {
   max-width: 100%;
   height: auto;
   border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  display: block;
+  margin: 0 auto;
 }
 
 .sp-caption {
-  text-align: center;
-  color: var(--vp-c-text-2);
   font-size: 0.9rem;
+  color: var(--vp-c-text-2);
+  text-align: center;
 }
 
-.sp-hero-buttons,
-.sp-link-buttons {
+.sp-hero-buttons {
   display: flex;
-  gap: 0.75rem;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
   flex-wrap: wrap;
-  margin: 1rem 0;
+  margin: 1rem 0 2rem;
+}
+
+.sp-hero-buttons .button,
+.sp-link-buttons .button,
+a.button {
+  display: inline-block;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  text-decoration: none !important;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  flex: 1 1 220px;
+  text-align: center;
+  max-width: 280px;
+}
+
+.button--primary,
+.sp-hero-buttons .button--primary {
+  background-color: var(--sp-brand);
+  border: 1px solid var(--sp-brand);
+  color: #fff !important;
+}
+
+.button--primary:hover,
+.sp-hero-buttons .button--primary:hover {
+  background-color: var(--sp-brand-dark);
+  border-color: var(--sp-brand-dark);
+  color: #fff !important;
+}
+
+.button--secondary,
+.sp-hero-buttons .button--secondary,
+.sp-link-buttons .button {
+  background-color: transparent;
+  border: 1px solid var(--sp-brand);
+  color: var(--sp-brand) !important;
+}
+
+.button--secondary:hover,
+.sp-hero-buttons .button--secondary:hover,
+.sp-link-buttons .button:hover {
+  background-color: var(--sp-brand-lightest);
+  color: var(--sp-brand-dark) !important;
+}
+
+.dark .button--secondary:hover,
+.dark .sp-hero-buttons .button--secondary:hover {
+  background-color: rgba(161, 78, 255, 0.2);
+  color: var(--sp-brand-light) !important;
 }
 
 .sp-card-grid {
@@ -24,15 +321,120 @@
   margin: 1rem 0;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 768px) {
   .sp-card-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  .sp-card-grid.sp-roadmap,
+  .sp-card-grid:has(.col--4) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.sp-card-grid .col {
+  display: flex;
 }
 
 .sp-card-grid .card,
 .sp-card {
   border: 1px solid var(--vp-c-divider);
-  border-radius: 8px;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--vp-c-bg);
+}
+
+.sp-card-grid .card__header {
+  padding: 1rem 1rem 0.5rem;
+  border-bottom: 1px solid var(--vp-c-divider);
+}
+
+.sp-card-grid .card__header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--vp-c-text-1);
+}
+
+.sp-card-grid .card__body {
   padding: 1rem;
+  flex: 1;
+  color: var(--vp-c-text-2);
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.badge--success {
+  background: var(--vp-c-green-1, #10b981);
+}
+
+.badge--primary {
+  background: var(--sp-brand);
+}
+
+.sp-roadmap .card__body {
+  min-height: 110px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sp-roadmap .card__body > div:last-child {
+  margin-top: auto !important;
+}
+
+.sp-link-buttons {
+  display: none;
+  margin: 8px 0 16px;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.sp-link-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  margin-left: 6px;
+  border-radius: 999px;
+  border: 1px solid var(--sp-brand);
+  color: var(--sp-brand);
+  background: transparent;
+  font-size: 0.85rem;
+  line-height: 1.2;
+  text-decoration: none !important;
+}
+
+.sp-link-pill:hover {
+  background: var(--sp-brand-lightest);
+  color: var(--sp-brand-dark);
+}
+
+.dark .sp-link-pill:hover {
+  background: rgba(161, 78, 255, 0.2);
+  color: var(--sp-brand-light);
+}
+
+@media (max-width: 768px) {
+  .VPHomeHero .name {
+    font-size: 2rem;
+  }
+
+  .VPHomeHero .text {
+    font-size: 1rem;
+  }
+
+  .sp-hero-buttons .button,
+  .sp-hero-buttons a.button {
+    flex: 1 1 100%;
+    max-width: none;
+  }
 }
