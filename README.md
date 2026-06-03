@@ -27,6 +27,10 @@ npm run deploy
 
 Worker name: `softprobe-docs`. Output: `.vitepress/dist`.
 
+**Preview (v2):** https://softprobe-docs.github-visualizer.workers.dev/en/
+
+Attach custom domain `docs.softprobe.ai` in Cloudflare dashboard (Workers → `softprobe-docs` → Domains) after approval.
+
 See [REDIRECTS.md](./REDIRECTS.md) for legacy URL mapping.
 
 ## Content layout
