@@ -1,0 +1,35 @@
+# Short paths → English locale (200 = internal rewrite, keeps URL bar)
+/cli/* /en/cli/:splat 200
+/platform/* /en/platform/:splat 200
+/testing/* /en/testing/:splat 200
+
+# Legacy auto-testing (AREX era)
+/auto-testing /en/testing/ 301
+/auto-testing/* /en/testing/getting-started 301
+/en/auto-testing /en/testing/ 301
+/en/auto-testing/* /en/testing/getting-started 301
+/zh/auto-testing /zh/testing/ 301
+/zh/auto-testing/* /zh/testing/ 301
+
+# Renamed agent entry (sidebar Overview)
+/en/cli/guide/for-agents /en/cli/guide/overview 301
+/cli/guide/for-agents /en/cli/guide/overview 301
+/guide/for-agents /en/cli/guide/overview 301
+
+# Legacy CLI docs-site (root paths)
+/guide/* /en/cli/guide/:splat 200
+/commands/* /en/cli/commands/:splat 200
+/examples/* /en/cli/examples/:splat 200
+/reference/* /en/cli/reference/:splat 200
+/policies/* /en/cli/policies/:splat 200
+
+# Legacy Docusaurus platform paths
+/getting-started/* /en/platform/getting-started/:splat 200
+/deployment/* /en/platform/deployment/:splat 200
+/configuration/* /en/platform/configuration/:splat 200
+/production/* /en/platform/production/:splat 200
+/advanced-guides/* /en/platform/advanced-guides/:splat 200
+/billing/* /en/platform/billing/:splat 200
+/support/* /en/platform/support/:splat 200
+/sessify /en/platform/sessify 200
+/web-sdk /en/platform/sessify 200
