@@ -137,7 +137,10 @@ const testingSidebarEn = [
   },
   {
     text: 'Automate',
-    items: [{ text: 'CLI quickstart', link: '/en/cli/guide/quickstart' }],
+    items: [
+      { text: 'Webhook and CI/CD', link: '/en/testing/webhook-and-ci' },
+      { text: 'CLI quickstart', link: '/en/cli/guide/quickstart' },
+    ],
   },
 ]
 
@@ -174,7 +177,10 @@ const testingSidebarZh = [
   },
   {
     text: '自动化',
-    items: [{ text: 'CLI 快速入门', link: '/zh/cli/guide/quickstart' }],
+    items: [
+      { text: 'Webhook 与 CI/CD', link: '/zh/testing/webhook-and-ci' },
+      { text: 'CLI 快速入门', link: '/zh/cli/guide/quickstart' },
+    ],
   },
 ]
 

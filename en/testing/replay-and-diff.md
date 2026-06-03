@@ -104,9 +104,12 @@ There is no CLI workflow to manually author cases; expand coverage by recording 
 
 Humans often review diff trees in the workbench or dashboard; agents and CI should use **`sp replay diff`** and artifact `--out-dir` paths from [output contract](/en/cli/guide/output-contract).
 
+For deploy webhooks and GitHub Actions / Jenkins gates, see [Webhook and CI/CD](/en/testing/webhook-and-ci).
+
 ## Related
 
 - [How it works](/en/testing/how-it-works)
 - [Policies](/en/testing/policies)
 - [CLI: replay command](/en/cli/commands/replay)
+- [Webhook and CI/CD](/en/testing/webhook-and-ci)
 - [Example: diagnose replay failure](/en/cli/examples/agent-diagnose-replay)

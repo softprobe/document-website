@@ -72,5 +72,6 @@ The [Platform](/en/platform/advanced-guides/agent-architecture) **SP-Istio agent
 - [Java agent](/en/testing/java-agent) — attach, JVM flags, production safety
 - [Policies overview](/en/testing/policies) — YAML by lifecycle phase
 - [Replay and diff](/en/testing/replay-and-diff) — phase 2: regression run
+- [Webhook and CI/CD](/en/testing/webhook-and-ci) — post-deploy replay and pipeline gates
 - [Supported frameworks](/en/testing/supported-frameworks)
 - [End-to-end with `sp`](/en/cli/guide/quickstart)
