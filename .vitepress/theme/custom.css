@@ -85,11 +85,26 @@
   background-color: var(--sp-brand);
 }
 
-/* Dark footer (old Docusaurus footer style: dark) */
+/* Global shell — same header/footer on home, platform, and CLI pages */
+.VPNav {
+  border-bottom: 1px solid var(--vp-c-divider);
+}
+
+.VPNavBar:not(.home) {
+  background-color: var(--vp-nav-bg-color);
+}
+
 .VPFooter {
   background-color: #1b1b1f !important;
   color: rgba(255, 255, 255, 0.75) !important;
   border-top: none !important;
+  margin-top: 0 !important;
+}
+
+/* Home layout: keep footer visible (same as doc pages) */
+.VPHome ~ .VPFooter,
+.is-home .VPFooter {
+  display: block !important;
 }
 
 .VPFooter a {
