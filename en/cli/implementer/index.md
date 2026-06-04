@@ -25,7 +25,7 @@ Do **not** add `sp c` or embedded source to the public binary — see [Non-goals
 - Cobra command registered with stable argv
 - `--json` output matches [JSON types](/en/cli/reference/json-types.md)
 - Integration test with httptest or recorded fixtures
-- Doc page in `docs-site/commands/` updated if behavior differs
+- Doc page in `document-website/en/cli/commands/` updated if behavior differs
 
 ## Testing agents
 

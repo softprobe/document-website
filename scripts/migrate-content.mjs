@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * One-time migration: Docusaurus docs + backend/docs-site → VitePress en/zh layout.
+ * One-time migration (completed): Docusaurus docs + legacy backend/docs-site → VitePress en/zh layout.
  */
 import fs from 'fs'
 import path from 'path'
