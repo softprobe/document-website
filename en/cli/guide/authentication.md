@@ -32,14 +32,22 @@ access-token: <JWT>
 
 ### CI / agent hosts
 
-Set a long-lived token from your secret store:
+**CLI** (record, replay, app management) uses your user JWT:
 
 ```bash
 export SP_TOKEN="eyJ..."
 sp app list --json
 ```
 
-Never commit tokens to git. Rotate on leak.
+**Java agent** on Softprobe Cloud uses a **tenant API key** (long-lived, scoped to the org):
+
+```bash
+export SP_TENANT_API_KEY="…"   # from sp tenant key ensure or dashboard Settings
+export SP_TENANT_ID="35"
+sp agent command --app <appId> --json
+```
+
+Never commit tokens or API keys to git. Rotate on leak.
 
 ### Token refresh
 

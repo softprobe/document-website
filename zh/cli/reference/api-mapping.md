@@ -50,7 +50,7 @@ Authoritative **REST ↔ CLI** reference for sp-boot (default port **8090**). He
 |--------|------|-----|-------|
 | POST | `/api/createPlan` | `sp replay run` (`targetEnv` = service base URL) | platform |
 | GET | `/api/createPlan` | — (webhook only) | — |
-| GET | `/progress` | `sp replay status` | platform |
+| GET | `/api/progress` | `sp replay status` | platform |
 | GET | `/api/stopPlan` | `sp replay stop` | platform |
 | POST | `/api/reRunPlan` | `sp replay rerun` | platform |
 | POST | `/api/createRealTimePlan` | `sp replay realtime create` | investigation |

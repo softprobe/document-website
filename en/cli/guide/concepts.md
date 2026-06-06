@@ -81,7 +81,7 @@ Policies merge by `metadata.priority`; global defaults ship in `sp-policy-rules`
 
 A batch replay job with a `planId`. Created by `sp replay run`, tracked with `sp replay status`. Replay plans consume cases already recorded by an instrumented app; a fresh app with no recorded traffic has nothing meaningful to replay.
 
-Schedule service endpoints: `/api/createPlan`, `/progress`, `/api/stopPlan`.
+Schedule service endpoints: `/api/createPlan`, `/api/progress`, `/api/stopPlan`.
 
 ## Trace and replay IDs
 

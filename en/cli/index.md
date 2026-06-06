@@ -34,7 +34,7 @@ All public commands are **HTTP clients to sp-boot** (default `http://127.0.0.1:8
 
 | Area | Commands |
 |------|----------|
-| **Platform** | config, auth, app, policy, replay, health |
+| **Platform** | config, auth, app, **demo**, policy, replay, health |
 | **Investigation** | record, trace, replay case/diff, extraction-rule |
 | **Administration** | group, system, ops |
 

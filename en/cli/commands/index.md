@@ -9,6 +9,7 @@ Job-oriented commands that follow record-and-replay order:
 | Command | Synopsis |
 |---------|----------|
 | [setup](./setup.md) | `doctor` — config, health, auth, agent jar |
+| [demo](./demo.md) | `start`, `traffic`, `replay`, `status`, `stop` — Travel OTA demo stack |
 | [agent](./agent.md) | `download`, `command` — install jar and JVM flags |
 | [record](./record.md) | `case list` — recorded entry cases before replay |
 | [diagnose](./diagnose.md) | `replay`, `trace` — bundled investigation workflows |

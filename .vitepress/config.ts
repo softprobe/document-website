@@ -111,6 +111,7 @@ const testingSidebarEn = [
       { text: 'What is Softprobe Testing', link: '/en/testing/' },
       { text: 'How it works', link: '/en/testing/how-it-works' },
       { text: 'Getting started', link: '/en/testing/getting-started' },
+      { text: 'Demo quickstart (5 min)', link: '/en/testing/demo-quickstart' },
     ],
   },
   {

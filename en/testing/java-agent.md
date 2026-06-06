@@ -34,15 +34,33 @@ java \
   -jar your-service.jar
 ```
 
-| Property | Purpose |
-|----------|---------|
-| `-Dsp.app.id` | Registered application id (16-char hex from `sp app create`). **Pin this** in every environment that shares recordings. |
-| `-Dsp.storage.service.host` | sp-boot host:port for upload and mock query |
-| `-Dsp.config.service.host` | sp-boot host:port for policies and agent config sync |
+On SaaS, `sp agent command` also emits `-Dsp.api.token=…` (tenant API key).
 
 The agent may also resolve an app id automatically from jar name or environment; explicit `-Dsp.app.id` avoids mismatches between record and replay. Legacy docs and some configs still use **`sp.service.name`** — treat it as an alias in older deployments; prefer **`sp.app.id`** for new setups.
 
-Authentication uses your tenant token (configure via `SP_TOKEN` / `sp auth login`); do not embed long-lived tokens in shell history. The agent picks up credentials from the same config layer as the CLI where applicable.
+Authentication on **Softprobe Cloud** uses a **tenant API key** (not your user JWT). Create one with:
+
+```bash
+sp tenant key ensure --json
+```
+
+`sp agent command` auto-provisions the key on SaaS when missing and adds `-Dsp.api.token=<tenant_api_key>` to JVM flags. The Java agent sends this as the `sp-api-token` header; the gateway routes to your tenant.
+
+For CI and production hosts, set `SP_TENANT_API_KEY` from your secret store instead of saving to sp.jsonc:
+
+```bash
+export SP_TENANT_API_KEY="…"
+sp agent command --app <appId> --json
+```
+
+Self-hosted backends (`http://127.0.0.1:8090`) do not require `-Dsp.api.token` unless your deployment enforces it.
+
+| Property | Purpose |
+|----------|---------|
+| `-Dsp.api.token` | Tenant API key (SaaS) — agent authentication |
+| `-Dsp.app.id` | Registered application id (16-char hex from `sp app create`). **Pin this** in every environment that shares recordings. |
+| `-Dsp.storage.service.host` | Backend host for upload and mock query |
+| `-Dsp.config.service.host` | Backend host for policies and agent config sync |
 
 ## Environment tags
 

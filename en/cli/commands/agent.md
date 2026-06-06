@@ -45,7 +45,10 @@ Example envelope:
 
 ## `agent command`
 
+On **Softprobe Cloud**, run `sp tenant key ensure` once (or let this command auto-create the key). The output includes `-Dsp.api.token=` for the Java agent.
+
 ```bash
+sp tenant key ensure --json   # SaaS: once per tenant
 sp agent download --json
 sp agent command --app a1b2c3d4e5f67890 --json
 sp agent command --app a1b2c3d4e5f67890 --agent-jar /opt/softprobe/sp-agent.jar --app-jar target/app.jar --json
@@ -94,7 +97,8 @@ Example success `data` (abbreviated):
     "-javaagent:/home/user/.local/share/softprobe/agent/sp-agent.jar",
     "-Dsp.app.id=a1b2c3d4e5f67890",
     "-Dsp.storage.service.host=127.0.0.1:8090",
-    "-Dsp.config.service.host=127.0.0.1:8090"
+    "-Dsp.config.service.host=127.0.0.1:8090",
+    "-Dsp.api.token=…"
   ],
   "startCommand": "java -javaagent:… -Dsp.app.id=… …",
   "startCommandMultiline": "java \\\n  -javaagent:… \\\n  …",

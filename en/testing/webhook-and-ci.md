@@ -107,7 +107,7 @@ sp replay run \
   --json
 ```
 
-`--watch` polls `GET /progress?planId=…` until finished. The CLI may still exit **0** when compare failures exist — pipelines must check failed cases (below).
+`--watch` polls `GET /api/progress?planId=…` until finished. The CLI may still exit **0** when compare failures exist — pipelines must check failed cases (below).
 
 REST equivalent:
 
@@ -134,7 +134,7 @@ access-token: <JWT>
 sp replay status plan-abc123 --watch --json
 ```
 
-REST: `GET /progress?planId=plan-abc123` on the same `SP_API_URL`. When `percent` reaches 100, scheduling is done.
+REST: `GET /api/progress?planId=plan-abc123` on the same `SP_API_URL`. When `percent` reaches 100, scheduling is done.
 
 ### 2. Pass / fail gate
 

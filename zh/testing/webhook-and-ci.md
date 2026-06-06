@@ -107,7 +107,7 @@ sp replay run \
   --json
 ```
 
-`--watch` 会在创建计划后轮询 `GET /progress?planId=…`，直到进度结束。回放**对比失败**时 CLI 仍可能以 **0** 退出 — 流水线必须再检查失败用例（见下节）。
+`--watch` 会在创建计划后轮询 `GET /api/progress?planId=…`，直到进度结束。回放**对比失败**时 CLI 仍可能以 **0** 退出 — 流水线必须再检查失败用例（见下节）。
 
 等价的 REST 创建（需 `access-token` 头）：
 
@@ -134,7 +134,7 @@ access-token: <JWT>
 sp replay status plan-abc123 --watch --json
 ```
 
-REST：`GET /progress?planId=plan-abc123`（同一 `SP_API_URL`）。返回体含 `percent` 等字段；`percent` 达到 100 表示调度侧执行完毕。
+REST：`GET /api/progress?planId=plan-abc123`（同一 `SP_API_URL`）。返回体含 `percent` 等字段；`percent` 达到 100 表示调度侧执行完毕。
 
 ### 2. 判定通过 / 失败（CI 门禁）
 

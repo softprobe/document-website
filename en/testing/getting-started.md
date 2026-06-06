@@ -6,6 +6,10 @@ title: Getting started
 
 This page is the **product lifecycle** for Java record-and-replay. Hands-on commands live in the [CLI quickstart](/en/cli/guide/quickstart); read this first for *what* happens at each step and *why* replay cannot be step one.
 
+::: tip Try the demo first (5 minutes)
+New to Softprobe? Run the [Travel OTA demo quickstart](/en/testing/demo-quickstart): `sp demo start --watch`, book a flight at localhost:8080, then `sp demo replay --watch`.
+:::
+
 ## Prerequisites
 
 - Java service you can start with `-javaagent`
@@ -28,7 +32,7 @@ flowchart TD
 
 | Step | Action | Detail |
 |------|--------|--------|
-| 1 | Setup | `sp setup doctor`, configure `SP_API_URL` and token — [CLI quickstart §1](/en/cli/guide/quickstart#_1-setup) |
+| 1 | Setup | `sp setup doctor`, configure `SP_API_URL`, user token, and on SaaS `sp tenant key ensure` — [CLI quickstart §1](/en/cli/guide/quickstart#_1-setup) |
 | 2 | Register app | `sp app create <appName>` → save `appId` — [concepts](/en/cli/guide/concepts#application-appid) |
 | 3 | Recording policy | Before traffic: `sp policy recording apply` — [Recording policy](/en/testing/policies#recording-policy) |
 | 4 | Agent | `sp agent download` + start JVM with `-Dsp.app.id` — [Java agent](/en/testing/java-agent) |

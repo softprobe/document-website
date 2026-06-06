@@ -11,7 +11,7 @@ Create, monitor, stop, and rerun replay plans against recorded cases.
 | Subcommand | Description |
 |------------|-------------|
 | `run` | Create plan (`POST /api/createPlan`) |
-| `status <planId>` | Poll progress (`GET /progress`) |
+| `status <planId>` | Poll progress (`GET /api/progress`) |
 | `stop <planId>` | Stop plan |
 | `rerun <planId>` | Re-run plan |
 
@@ -100,7 +100,7 @@ With `--json`, stdout is newline-delimited envelopes:
 |------------|--------|------|
 | `run` | POST | `/api/createPlan` |
 | `run` (webhook style) | GET | `/api/createPlan?appId=…` (discouraged for CLI; use POST) |
-| `status` | GET | `/progress?planId=` |
+| `status` | GET | `/api/progress?planId=` |
 | `stop` | GET | `/api/stopPlan?planId=` |
 | `rerun` | POST | `/api/reRunPlan` |
 
