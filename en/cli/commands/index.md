@@ -36,6 +36,7 @@ Recorded data, traces, and replay failures.
 |---------|----------|
 | [record](./record.md) | Query recordings, completeness, record logs |
 | [trace](./trace.md) | Find traces by business attributes |
+| [recorder](./recorder.md) | Recorder logs query and health |
 | [replay case](./replay-case.md) | List cases, metadata, mock tree |
 | [replay diff](./replay-diff.md) | Diff artifacts, replay logs |
 | [extraction-rule](./extraction-rule.md) | Business attribute extraction rules |
