@@ -197,6 +197,8 @@ const platformSidebarEn = [
     text: 'Deployment',
     items: [
       { text: 'Production Installation', link: '/en/platform/deployment/installation' },
+      { text: 'sp-backend (Helm)', link: '/en/platform/deployment/sp-backend-helm' },
+      { text: 'spcode-web', link: '/en/platform/deployment/spcode-web' },
       { text: 'GKE Autopilot + Istio', link: '/en/platform/deployment/GKE-Autopilot-Istio-Installation-Guide' },
     ],
   },
@@ -241,6 +243,8 @@ const platformSidebarZh = [
     text: '部署',
     items: [
       { text: '生产环境安装', link: '/zh/platform/deployment/installation' },
+      { text: 'sp-backend（Helm）', link: '/en/platform/deployment/sp-backend-helm' },
+      { text: 'spcode-web', link: '/en/platform/deployment/spcode-web' },
       { text: 'GKE Autopilot + Istio', link: '/zh/platform/deployment/GKE-Autopilot-Istio-Installation-Guide' },
     ],
   },

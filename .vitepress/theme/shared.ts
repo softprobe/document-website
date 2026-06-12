@@ -51,6 +51,7 @@ export function footerForLocale(locale: DocLocale): DefaultTheme.Footer {
           title: '文档',
           items: [
             { text: '安装指南', link: `${p}/platform/deployment/installation` },
+            { text: 'sp-backend（Helm）', link: `${p}/platform/deployment/sp-backend-helm` },
             { text: '测试概览', link: `${p}/testing/` },
             { text: 'CLI 快速入门', link: `${p}/cli/guide/quickstart` },
           ],
@@ -77,6 +78,7 @@ export function footerForLocale(locale: DocLocale): DefaultTheme.Footer {
           title: 'Docs',
           items: [
             { text: 'Installation', link: `${p}/platform/deployment/installation` },
+            { text: 'sp-backend (Helm)', link: `${p}/platform/deployment/sp-backend-helm` },
             { text: 'Testing overview', link: `${p}/testing/` },
             { text: 'CLI quickstart', link: `${p}/cli/guide/quickstart` },
           ],
