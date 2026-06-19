@@ -58,7 +58,7 @@ Agent 也可能从 jar 名或环境自动解析 app id；显式设置 `-Dsp.app.
 
 ### `sp.agent.conf` 配置文件
 
-```conf title="sp.agent.conf"
+```properties title="sp.agent.conf"
 sp.app.id=a1b2c3d4e5f67890
 sp.storage.service.host=127.0.0.1:8090
 sp.config.service.host=127.0.0.1:8090

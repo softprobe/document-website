@@ -76,7 +76,7 @@ Recorded mockers carry `env:<value>` so you can replay only traffic from a given
 
 ### `sp.agent.conf` file
 
-```conf title="sp.agent.conf"
+```properties title="sp.agent.conf"
 sp.app.id=a1b2c3d4e5f67890
 sp.storage.service.host=127.0.0.1:8090
 sp.config.service.host=127.0.0.1:8090
