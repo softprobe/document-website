@@ -40,18 +40,18 @@ java -version
 ```
 
 ### 2. 下载演示应用 JAR 包
-从 GitHub Release 下载预构建的 [Travel OTA](https://github.com/softprobe/demo-ota) 应用程序 JAR 包：
+下载预构建的 [Travel OTA](https://github.com/softprobe/demo-ota) 应用程序 JAR 包（您可以 [点击下载 travel-ota.jar](https://github.com/softprobe/demo-ota/releases/download/v1.1.0/travel-ota.jar) 直接通过浏览器下载，也可以运行下方命令）：
 ```bash
 curl -L -O https://github.com/softprobe/demo-ota/releases/download/v1.1.0/travel-ota.jar
 ```
 
 ### 3. 下载 Softprobe Agent 包
-通过 CLI 快速下载 Java Agent 包，并将其复制到您当前的工作目录中：
+下载 Softprobe Java Agent 软件包（您可以 [点击下载 sp-agent.jar](https://github.com/softprobe/demo-ota/releases/download/v1.1.0/sp-agent.jar) 直接通过浏览器下载，也可以使用下方的 `sp` CLI 命令）：
 ```bash
 sp agent download
 cp ~/.local/share/softprobe/agent/sp-agent.jar .
 ```
-*(或者，您也可以直接从 GitHub 下载：`curl -L -O https://github.com/softprobe/demo-ota/releases/download/v1.1.0/sp-agent.jar`)*
+*(或者，您也可以在命令行中直接通过 curl 下载：`curl -L -O https://github.com/softprobe/demo-ota/releases/download/v1.1.0/sp-agent.jar`)*
 
 ### 4. 在 Softprobe 中创建应用
 在系统中注册该应用，以获取一个唯一的 `appId`（一个 16 位的十六进制标识符）。

@@ -40,18 +40,18 @@ java -version
 ```
 
 ### 2. Download the Demo Application
-Download the pre-built [Travel OTA](https://github.com/softprobe/demo-ota) application JAR from the latest release on GitHub:
+Download the pre-built [Travel OTA](https://github.com/softprobe/demo-ota) application JAR (either [click to download travel-ota.jar](https://github.com/softprobe/demo-ota/releases/download/v1.1.0/travel-ota.jar) directly via your browser, or run the command below):
 ```bash
 curl -L -O https://github.com/softprobe/demo-ota/releases/download/v1.1.0/travel-ota.jar
 ```
 
 ### 3. Download the Softprobe Agent
-Download the Softprobe Java agent JAR using the CLI, then copy it to your current working directory:
+Download the Softprobe Java agent JAR (either [click to download sp-agent.jar](https://github.com/softprobe/demo-ota/releases/download/v1.1.0/sp-agent.jar) directly via your browser, or use the `sp` CLI command below):
 ```bash
 sp agent download
 cp ~/.local/share/softprobe/agent/sp-agent.jar .
 ```
-*(Alternatively, download it directly: `curl -L -O https://github.com/softprobe/demo-ota/releases/download/v1.1.0/sp-agent.jar`)*
+*(Alternatively, download it directly via curl: `curl -L -O https://github.com/softprobe/demo-ota/releases/download/v1.1.0/sp-agent.jar`)*
 
 ### 4. Create an Application in Softprobe
 Register the demo application to receive a unique `appId` (a 16-character hex identifier):
