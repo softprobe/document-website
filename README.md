@@ -18,7 +18,18 @@ npm run docs:build
 npm run docs:preview
 ```
 
-## Deploy (Cloudflare Worker static assets)
+## Deploy (Cloudflare Git Integration)
+
+This repository is configured for automated deployments directly connected to Cloudflare (following the same pattern as `sp-airline-ndc`). 
+
+Any push to the **`v2`** branch automatically triggers a build and deploy on Cloudflare:
+- **Build Command**: `npm run docs:build`
+- **Output Directory**: `.vitepress/dist`
+
+No manual deployment commands are necessary.
+
+### Manual CLI Deploy (Fallback)
+If you ever need to deploy manually from your local machine:
 
 ```bash
 # wrangler login (Softprobe account)
