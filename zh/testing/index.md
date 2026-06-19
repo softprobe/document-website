@@ -6,6 +6,10 @@ title: Softprobe 测试
 
 **录制真实流量。回放时自动 Mock。无需手写用例即可对比。**
 
+::: tip 准备开始？
+🚀 如果您是首次接触 Softprobe，建议直接前往 **[演示快速入门 (5分钟)](/zh/testing/demo-quickstart)**！通过预构建的 JAR 快速上手体验，无需任何繁琐配置。
+:::
+
 Softprobe 测试面向 **Java** 服务的**录制回放**回归。以 `-javaagent` 挂载 Softprobe Java Agent，在后台采集入口 API 流量与对外依赖调用，随后在测试环境回放已录制用例：依赖由存储数据 Mock，结果自动对比。
 
 ::: info 本站三个产品
@@ -32,7 +36,7 @@ Softprobe 测试面向 **Java** 服务的**录制回放**回归。以 `-javaagen
 |------|------|
 | **你的 Java 服务** | 被测应用，以 `-javaagent:…/sp-agent.jar` 启动 |
 | **Softprobe Java Agent** | 运行时录制与回放；回放阶段 Mock 依赖 |
-| **sp-boot 后端**（`:8090`） | 存储用例（MongoDB）、下发策略、执行回放计划、计算差异 |
+| **Softprobe 后端**（`:8090`） | 通过 Helm 部署。存储用例（MongoDB）、下发策略、执行回放计划、计算差异 |
 | **`sp` CLI**（可选） | 注册应用、应用策略、发起回放、排查失败 — 见 [CLI 快速入门](/zh/cli/guide/quickstart) |
 | **仪表盘 / 工作台**（可选） | 可视化差异与链路查看 |
 
@@ -67,11 +71,11 @@ flowchart LR
 
 ## 快速链接
 
-- [快速开始](/zh/testing/getting-started) — 生命周期与前置条件
-- [如何录制](/zh/testing/recording) — 阶段 1：产生用例
-- [Java Agent](/zh/testing/java-agent) — 挂载、JVM 参数、生产安全
-- [策略概览](/zh/testing/policies) — 按阶段配置 YAML
-- [回放与对比](/zh/testing/replay-and-diff) — 阶段 2：回归运行
-- [Webhook 与 CI/CD](/zh/testing/webhook-and-ci) — 部署后触发回放与流水线门禁
+- [演示快速入门 (5分钟)](/zh/testing/demo-quickstart) — Travel OTA 演示项目动手实践。
+- [接入您的应用](/zh/testing/getting-started) — 将演示迁移至企业自己的 Java 服务。
+- [如何录制](/zh/testing/recording) — 阶段 1：产生用例。
+- [Java Agent](/zh/testing/java-agent) — 挂载、JVM 参数与生产安全。
+- [策略概览](/zh/testing/policies) — 按阶段配置 YAML。
+- [回放与对比](/zh/testing/replay-and-diff) — 阶段 2：回归运行。
+- [Webhook 与 CI/CD](/zh/testing/webhook-and-ci) — 部署后触发回放与流水线门禁。
 - [支持的框架](/zh/testing/supported-frameworks)
-- [用 `sp` 端到端实践](/zh/cli/guide/quickstart)

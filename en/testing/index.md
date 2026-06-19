@@ -6,6 +6,10 @@ title: Softprobe Testing
 
 **Record real traffic. Replay with automatic mocks. Compare without writing test cases.**
 
+::: tip Ready to start?
+🚀 If you are new to Softprobe, go straight to our **[Quickstart (5-minute Demo)](/en/testing/demo-quickstart)**! Try it out using a pre-built JAR in minutes without any complex setup.
+:::
+
 Softprobe Testing is record-and-replay regression for **Java** services. Attach the Softprobe Java agent as a `-javaagent`, capture inbound API traffic and outbound dependency calls in the background, then replay recorded cases in a test environment while dependencies are mocked from stored data and results are compared automatically.
 
 ::: info Three products on this site
@@ -32,7 +36,7 @@ Traditional integration tests require maintaining environments, seed data, and h
 |-----------|------|
 | **Your Java service** | The application under test, started with `-javaagent:…/sp-agent.jar` |
 | **Softprobe Java agent** | Records and replays at runtime; mocks dependencies during replay |
-| **sp-boot backend** (`:8090`) | Stores cases (MongoDB), serves policies, runs replay plans, computes diffs |
+| **Softprobe backend** (`:8090`) | Deployed via Helm. Stores cases (MongoDB), serves policies, runs replay plans, computes diffs |
 | **`sp` CLI** (optional) | Registers apps, applies policies, starts replay, inspects failures — see [CLI quickstart](/en/cli/guide/quickstart) |
 | **Dashboard / workbench** (optional) | Visual diff and trace review |
 
@@ -67,11 +71,11 @@ The [Platform](/en/platform/advanced-guides/agent-architecture) **SP-Istio agent
 
 ## Quick links
 
-- [Getting started](/en/testing/getting-started) — lifecycle and prerequisites
-- [How to record](/en/testing/recording) — phase 1: build the case corpus
-- [Java agent](/en/testing/java-agent) — attach, JVM flags, production safety
-- [Policies overview](/en/testing/policies) — YAML by lifecycle phase
-- [Replay and diff](/en/testing/replay-and-diff) — phase 2: regression run
-- [Webhook and CI/CD](/en/testing/webhook-and-ci) — post-deploy replay and pipeline gates
+- [Quickstart (5-minute Demo)](/en/testing/demo-quickstart) — Hands-on first experience with Travel OTA.
+- [Attach to Your App](/en/testing/getting-started) — Transition guide to connect your own application.
+- [How to record](/en/testing/recording) — Phase 1: build the case corpus.
+- [Java agent](/en/testing/java-agent) — Attach, JVM flags, and production safety.
+- [Policies overview](/en/testing/policies) — YAML by lifecycle phase.
+- [Replay and diff](/en/testing/replay-and-diff) — Phase 2: regression run.
+- [Webhook and CI/CD](/en/testing/webhook-and-ci) — Post-deploy replay and pipeline gates.
 - [Supported frameworks](/en/testing/supported-frameworks)
-- [End-to-end with `sp`](/en/cli/guide/quickstart)

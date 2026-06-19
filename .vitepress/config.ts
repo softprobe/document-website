@@ -110,8 +110,8 @@ const testingSidebarEn = [
     items: [
       { text: 'What is Softprobe Testing', link: '/en/testing/' },
       { text: 'How it works', link: '/en/testing/how-it-works' },
-      { text: 'Getting started', link: '/en/testing/getting-started' },
-      { text: 'Demo quickstart (5 min)', link: '/en/testing/demo-quickstart' },
+      { text: 'Quickstart (5-minute Demo)', link: '/en/testing/demo-quickstart' },
+      { text: 'Attach to Your App', link: '/en/testing/getting-started' },
     ],
   },
   {
@@ -151,8 +151,8 @@ const testingSidebarZh = [
     items: [
       { text: 'Softprobe 测试', link: '/zh/testing/' },
       { text: '工作原理', link: '/zh/testing/how-it-works' },
-      { text: '快速开始', link: '/zh/testing/getting-started' },
       { text: '演示快速入门 (5分钟)', link: '/zh/testing/demo-quickstart' },
+      { text: '接入您的应用', link: '/zh/testing/getting-started' },
     ],
   },
   {
