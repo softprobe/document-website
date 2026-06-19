@@ -4,84 +4,88 @@ title: Demo quickstart (5 minutes)
 
 # Travel OTA demo quickstart
 
-Try Softprobe record-and-replay in about five minutes using the bundled **Travel OTA** demo. You run the app locally with Docker; recordings and replay plans live in **your tenant** on app.softprobe.ai.
+Learn how Softprobe works in about five minutes using the pre-built **Travel OTA** demo app. This guide runs on your local machine using Java and connects directly to your private Softprobe cluster (installed via Helm).
 
 ## Prerequisites
 
-- [Docker Desktop](https://www.docker.com/products/docker-desktop) (Docker Compose v2)
-- [sp CLI](/en/cli/guide/installation) installed (`curl -fsSL https://install.softprobe.ai | sh`)
-- Logged in to [app.softprobe.ai](https://app.softprobe.ai) (or `sp auth login`)
-- For SaaS: `SP_API_URL`, `SP_TOKEN`, and `SP_TENANT_ID` configured (token from your session; tenant id from org switcher)
-- Run once: `sp tenant key ensure --json` — creates a **tenant API key** for the Java agent (stored as `tenant_api_key` in sp.jsonc)
+- **Java 8 or higher** (Java 17/21 recommended) installed and configured on your `PATH`.
+- **sp CLI** installed (`curl -fsSL https://install.softprobe.ai | sh`).
+- Your **Softprobe Helm chart** is installed and running (`sp-boot` / backend is available, e.g. at `http://localhost:8090`).
 
+---
+
+## 1. Install Java
+Ensure Java is configured correctly and available in your terminal:
 ```bash
-export SP_API_URL=https://api.softprobe.ai
-export SP_TOKEN=<your-token>
-export SP_TENANT_ID=<numeric-tenant-id>
-sp tenant key ensure --json
-sp setup doctor --json
+java -version
 ```
 
-## 1. Start the demo stack
-
+## 2. Download the Demo Application
+The Travel OTA (Online Travel Agency) demo is a lightweight Spring Boot application. Download the pre-built application JAR from the latest release on GitHub:
 ```bash
-sp demo start --watch --json
+curl -L -O https://github.com/softprobe/demo-ota/releases/download/v1.1.0/travel-ota.jar
 ```
 
-This command:
-
-1. Creates (or reuses) app **travel-ota** in your tenant
-2. Applies default recording, mock, and compare policies
-3. Downloads `sp-agent.jar` and demo JARs (first run)
-4. Starts **sp-airline** (:8081) and **travel-ota** (:8080) via Docker
-
-When `--watch` is set, the CLI waits until the agent reports **online**.
-
-## 2. Generate traffic
-
-Open [http://localhost:8080](http://localhost:8080) and complete one booking: search → book → pay.
-
-Or send automated sample traffic:
-
+## 3. Download the Softprobe Agent
+The Softprobe Java agent automatically intercepts and records database queries and HTTP downstream calls. Download it using the `sp` CLI:
 ```bash
-sp demo traffic --json
+sp agent download
 ```
-
-Verify recordings:
-
+This downloads `sp-agent.jar` to your local share directory. Copy it into your current working directory:
 ```bash
-sp record case list --app <appId> --since -1h --json
+cp ~/.local/share/softprobe/agent/sp-agent.jar .
 ```
+*(Alternatively, download it directly from GitHub: `curl -L -O https://github.com/softprobe/demo-ota/releases/download/v1.1.0/sp-agent.jar`)*
 
-(`appId` is printed by `sp demo start`.)
+## 4. Create an Application in Softprobe
+You need to register the application in Softprobe to receive an `appId` (a unique 16-character hex identifier).
 
-## 3. Run replay
+- **Via the Web UI:**
+  1. Open your Softprobe Dashboard.
+  2. Navigate to **Apps** and click **Create App**.
+  3. Enter `travel-ota` as the name and click Save.
+  4. Copy the generated **App ID**.
 
+- **Via the `sp` CLI:**
+  ```bash
+  export SP_API_URL=http://localhost:8090   # Point to your Helm/local sp-boot
+  sp app create travel-ota
+  ```
+  Save the `appId` returned in the JSON response.
+
+## 5. Start Travel OTA with the Agent
+Start the application with the `-javaagent` flag, passing your `appId`:
 ```bash
-sp demo replay --watch --json
+java -javaagent:sp-agent.jar \
+     -Dsp.app.id=<your-app-id> \
+     -Dsp.storage.service.host=http://localhost:8090 \
+     -Dsp.config.service.host=http://localhost:8090 \
+     -jar travel-ota.jar
 ```
+*(If your Helm chart's backend is hosted at another address, replace `http://localhost:8090` with your actual backend URL).*
 
-Replay sends recorded cases to `http://localhost:8080` with dependency mocking enabled. Open the workbench **Runs** tab on app.softprobe.ai to inspect pass/fail diffs.
+The application is now running locally at [http://localhost:8080](http://localhost:8080).
 
-## Other commands
+## 6. Perform a Booking (Shopping)
+Open [http://localhost:8080](http://localhost:8080) in your browser:
+1. Click **Search** to view available flights.
+2. Select a flight and click **Book**.
+3. Complete the checkout/payment process.
 
-| Command | Purpose |
-|---------|---------|
-| `sp demo status --json` | Stack health, agent status, case count |
-| `sp demo stop` | Stop Docker stack (keeps tenant app + recordings) |
+The Softprobe agent will intercept and capture this entire transaction automatically.
 
-## Troubleshooting
+## 7. View Recorded Data
+- **Via the Web UI**: Log in to your Softprobe Dashboard, go to the **Workbench** or **Recordings** tab, select `travel-ota`, and browse the recorded traces and deep dependency graphs.
+- **Via the CLI**:
+  ```bash
+  sp record case list --app <your-app-id> --since -10m
+  ```
 
-| Issue | Fix |
-|-------|-----|
-| `docker is not running` | Start Docker Desktop |
-| Demo JAR download fails | Check [demo-ota releases](https://github.com/softprobe/demo-ota/releases); delete cached JARs under `~/.local/share/softprobe/demo/data/` and retry |
-| Agent stays offline | Run `sp tenant key ensure`, then `sp demo stop` and `sp demo start --watch`. The agent uses your **tenant API key** (not your user JWT). Check `docker logs sp-demo-ota-travel-ota-1` |
-| `NO_RECORDED_CASES` on replay | Wait a few seconds after traffic, or run `sp demo traffic` |
-| Port 8080 in use | `sp demo start --ota-port 18080 --airline-port 18081` |
+## 8. Replay the Recordings
+Replay executes recorded transactions against a target environment to test for regressions, utilizing automated dependency mocking so your database and third-party APIs do not need to be set up.
 
-## Next steps
-
-- [Testing getting started](/en/testing/getting-started) — full lifecycle for your own Java app
-- [CLI quickstart](/en/cli/guide/quickstart) — command reference
-- [Java agent](/en/testing/java-agent) — attach SP Agent to production services
+- **Via the CLI**:
+  ```bash
+  sp replay run --app <your-app-id> --env http://localhost:8080
+  ```
+- **Via the Web UI**: Navigate to the **Replays** tab, click **New Replay Plan**, select `travel-ota`, set the target environment to `http://localhost:8080`, and click **Run**.

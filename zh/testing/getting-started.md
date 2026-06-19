@@ -6,6 +6,10 @@ title: 快速开始
 
 本文说明 Java 录制回放的**产品生命周期**。具体操作命令见 [CLI 快速入门](/zh/cli/guide/quickstart)；请先理解每一步在做什么，以及**为何回放不能作为第一步**。
 
+::: tip 优先尝试演示项目（5分钟）
+刚接触 Softprobe？阅读 [Travel OTA 演示快速入门](/zh/testing/demo-quickstart)，只需下载并运行预构建的 JAR 即可在 5 分钟内上手体验。
+:::
+
 ## 前置条件
 
 - 能以 `-javaagent` 启动的 Java 服务

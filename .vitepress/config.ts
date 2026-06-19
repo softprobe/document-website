@@ -152,6 +152,7 @@ const testingSidebarZh = [
       { text: 'Softprobe 测试', link: '/zh/testing/' },
       { text: '工作原理', link: '/zh/testing/how-it-works' },
       { text: '快速开始', link: '/zh/testing/getting-started' },
+      { text: '演示快速入门 (5分钟)', link: '/zh/testing/demo-quickstart' },
     ],
   },
   {

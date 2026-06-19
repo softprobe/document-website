@@ -7,7 +7,7 @@ title: Getting started
 This page is the **product lifecycle** for Java record-and-replay. Hands-on commands live in the [CLI quickstart](/en/cli/guide/quickstart); read this first for *what* happens at each step and *why* replay cannot be step one.
 
 ::: tip Try the demo first (5 minutes)
-New to Softprobe? Run the [Travel OTA demo quickstart](/en/testing/demo-quickstart): `sp demo start --watch`, book a flight at localhost:8080, then `sp demo replay --watch`.
+New to Softprobe? Run the [Travel OTA demo quickstart](/en/testing/demo-quickstart): download the lightweight JAR, attach the Java agent, and capture your first recording in minutes.
 :::
 
 ## Prerequisites
