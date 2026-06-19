@@ -18,17 +18,15 @@ npm run docs:build
 npm run docs:preview
 ```
 
-## Deploy (GitHub Actions to Cloudflare)
+## Deploy (Cloudflare Git Integration)
 
-This repository is configured for automated deployments to Cloudflare using GitHub Actions. 
+This repository is configured for automated deployments directly connected to Cloudflare (following the same pattern as `sp-airline-ndc`). 
 
-Any push to the **`v2`** branch automatically triggers the `.github/workflows/deploy-docs.yml` workflow, which builds the site and deploys it to Cloudflare:
-- **Trigger**: Automatically on pushing to the `v2` branch.
-- **Workflow**: Builds the site (`npm run docs:build`) and deploys it to Cloudflare Workers using Wrangler.
+Any push to the **`v2`** branch automatically triggers a build and deploy on Cloudflare:
+- **Build Command**: `npm run docs:build`
+- **Output Directory**: `.vitepress/dist`
 
-### Setup Requirement (GitHub Secrets)
-To enable this, make sure the following secret is added to your GitHub repository secrets (Go to **Settings** → **Secrets and variables** → **Actions**):
-* **`CLOUDFLARE_API_TOKEN`**: A Cloudflare API token with Edit Workers permissions.
+No manual deployment commands are necessary.
 
 ### Manual CLI Deploy (Fallback)
 If you ever need to deploy manually from your local machine:
