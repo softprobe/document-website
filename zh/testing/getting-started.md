@@ -85,7 +85,6 @@ sp app create travel-ota</code></pre>
 java -javaagent:sp-agent.jar \
      -Dsp.app.id=<您的应用ID> \
      -Dsp.storage.service.host=http://localhost:8090 \
-     -Dsp.config.service.host=http://localhost:8090 \
      -jar travel-ota.jar
 ```
 *(如果您的 Helm 部署后端服务在其他地址，请将 `http://localhost:8090` 替换为实际的后端地址)*。
@@ -210,7 +209,6 @@ sp policy mock apply -f mock.yaml --json
 java -javaagent:sp-agent.jar \
      -Dsp.app.id=<您的应用ID> \
      -Dsp.storage.service.host=http://<您的后端主机地址>:8090 \
-     -Dsp.config.service.host=http://<您的后端主机地址>:8090 \
      -jar your-application.jar
 ```
 

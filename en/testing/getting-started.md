@@ -85,7 +85,6 @@ Start the demo app with the `-javaagent` flag, passing your `appId`:
 java -javaagent:sp-agent.jar \
      -Dsp.app.id=<your-app-id> \
      -Dsp.storage.service.host=http://localhost:8090 \
-     -Dsp.config.service.host=http://localhost:8090 \
      -jar travel-ota.jar
 ```
 *(If your Helm backend is hosted at another address, replace `http://localhost:8090` with your actual backend URL).*
@@ -210,7 +209,6 @@ Start your application JVM with the following system properties:
 java -javaagent:sp-agent.jar \
      -Dsp.app.id=<your-app-id> \
      -Dsp.storage.service.host=http://<your-backend-host>:8090 \
-     -Dsp.config.service.host=http://<your-backend-host>:8090 \
      -jar your-application.jar
 ```
 
