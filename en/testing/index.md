@@ -7,7 +7,7 @@ title: Softprobe Testing
 **Record real traffic. Replay with automatic mocks. Compare without writing test cases.**
 
 ::: tip Ready to start?
-🚀 If you are new to Softprobe, go straight to our **[Quickstart (5-minute Demo)](/en/testing/demo-quickstart)**! Try it out using a pre-built JAR in minutes without any complex setup.
+🚀 If you are new to Softprobe, go straight to our **[Getting Started](/en/testing/getting-started)** guide! Try it out using a pre-built JAR in 5 minutes, and then onboard your own application.
 :::
 
 Softprobe Testing is record-and-replay regression for **Java** services. Attach the Softprobe Java agent as a `-javaagent`, capture inbound API traffic and outbound dependency calls in the background, then replay recorded cases in a test environment while dependencies are mocked from stored data and results are compared automatically.
@@ -71,8 +71,7 @@ The [Platform](/en/platform/advanced-guides/agent-architecture) **SP-Istio agent
 
 ## Quick links
 
-- [Quickstart (5-minute Demo)](/en/testing/demo-quickstart) — Hands-on first experience with Travel OTA.
-- [Attach to Your App](/en/testing/getting-started) — Transition guide to connect your own application.
+- [Getting Started](/en/testing/getting-started) — Try the 5-minute Travel OTA demo and onboard your application.
 - [How to record](/en/testing/recording) — Phase 1: build the case corpus.
 - [Java agent](/en/testing/java-agent) — Attach, JVM flags, and production safety.
 - [Policies overview](/en/testing/policies) — YAML by lifecycle phase.

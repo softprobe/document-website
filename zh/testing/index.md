@@ -7,7 +7,7 @@ title: Softprobe 测试
 **录制真实流量。回放时自动 Mock。无需手写用例即可对比。**
 
 ::: tip 准备开始？
-🚀 如果您是首次接触 Softprobe，建议直接前往 **[演示快速入门 (5分钟)](/zh/testing/demo-quickstart)**！通过预构建的 JAR 快速上手体验，无需任何繁琐配置。
+🚀 如果您是首次接触 Softprobe，建议直接阅读 **[快速开始](/zh/testing/getting-started)** 指南！在 5 分钟内通过预构建的 JAR 快速体验，并无缝接入您自己的应用程序。
 :::
 
 Softprobe 测试面向 **Java** 服务的**录制回放**回归。以 `-javaagent` 挂载 Softprobe Java Agent，在后台采集入口 API 流量与对外依赖调用，随后在测试环境回放已录制用例：依赖由存储数据 Mock，结果自动对比。
@@ -71,8 +71,7 @@ flowchart LR
 
 ## 快速链接
 
-- [演示快速入门 (5分钟)](/zh/testing/demo-quickstart) — Travel OTA 演示项目动手实践。
-- [接入您的应用](/zh/testing/getting-started) — 将演示迁移至企业自己的 Java 服务。
+- [快速开始](/zh/testing/getting-started) — 5分钟内体验 Travel OTA 演示并快速接入您自己的应用。
 - [如何录制](/zh/testing/recording) — 阶段 1：产生用例。
 - [Java Agent](/zh/testing/java-agent) — 挂载、JVM 参数与生产安全。
 - [策略概览](/zh/testing/policies) — 按阶段配置 YAML。
