@@ -16,7 +16,7 @@ const oReplayTab = ref('cli')
 
 Welcome to Softprobe Testing! This guide provides a single, cohesive path to get you started with record-and-replay in two progressive phases:
 
-1. **Phase 1: Try the 5-Minute Demo** — Hands-on experience using our pre-built Travel OTA demo application.
+1. **Phase 1: Try the 5-Minute Demo** — Hands-on experience using our pre-built [Travel OTA demo](https://github.com/softprobe/demo-ota) application.
 2. **Phase 2: Onboard Your Own Application** — Step-by-step checklist to connect your own Java services.
 
 ---
@@ -31,7 +31,7 @@ Welcome to Softprobe Testing! This guide provides a single, cohesive path to get
 
 ## Phase 1: Try the 5-Minute Demo
 
-Experience Softprobe in action by running our pre-built **Travel OTA** (Online Travel Agency) demo app on your local machine and capturing real traffic.
+Experience Softprobe in action by running our pre-built [Travel OTA (Online Travel Agency) demo](https://github.com/softprobe/demo-ota) app on your local machine and capturing real traffic.
 
 ### 1. Verify Java Installation
 Ensure Java is configured correctly and available in your terminal:
@@ -40,7 +40,7 @@ java -version
 ```
 
 ### 2. Download the Demo Application
-Download the pre-built Travel OTA application JAR from the latest release on GitHub:
+Download the pre-built [Travel OTA](https://github.com/softprobe/demo-ota) application JAR from the latest release on GitHub:
 ```bash
 curl -L -O https://github.com/softprobe/demo-ota/releases/download/v1.1.0/travel-ota.jar
 ```

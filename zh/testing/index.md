@@ -71,7 +71,7 @@ flowchart LR
 
 ## 快速链接
 
-- [快速开始](/zh/testing/getting-started) — 5分钟内体验 Travel OTA 演示并快速接入您自己的应用。
+- [快速开始](/zh/testing/getting-started) — 5分钟内体验 [Travel OTA](https://github.com/softprobe/demo-ota) 演示并快速接入您自己的应用。
 - [如何录制](/zh/testing/recording) — 阶段 1：产生用例。
 - [Java Agent](/zh/testing/java-agent) — 挂载、JVM 参数与生产安全。
 - [策略概览](/zh/testing/policies) — 按阶段配置 YAML。

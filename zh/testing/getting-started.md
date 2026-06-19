@@ -16,7 +16,7 @@ const oReplayTab = ref('cli')
 
 欢迎使用 Softprobe 测试！本指南将指导您通过以下两个阶段，在一篇文档中快速掌握录制与回放的完整流程：
 
-1. **阶段 1：运行 5 分钟演示** — 在本地运行预构建的 Travel OTA 演示应用，体验极速上手。
+1. **阶段 1：运行 5 分钟演示** — 在本地运行预构建的 [Travel OTA 演示应用](https://github.com/softprobe/demo-ota)，体验极速上手。
 2. **阶段 2：接入您自己的应用** — 按照标准清单，逐步将您自己的 Java 服务接入 Softprobe。
 
 ---
@@ -31,7 +31,7 @@ const oReplayTab = ref('cli')
 
 ## 阶段 1：运行 5 分钟演示
 
-通过在本地运行预构建的 **Travel OTA**（在线旅游代理）演示应用并捕获真实流量，快速体验 Softprobe 录制与回放功能。
+通过在本地运行预构建的 [Travel OTA（在线旅游代理）演示应用](https://github.com/softprobe/demo-ota)并捕获真实流量，快速体验 Softprobe 录制与回放功能。
 
 ### 1. 验证 Java 安装
 确保本地 Java 已正确配置，并可在终端中使用：
@@ -40,7 +40,7 @@ java -version
 ```
 
 ### 2. 下载演示应用 JAR 包
-从 GitHub Release 下载预构建的 Travel OTA 应用程序 JAR 包：
+从 GitHub Release 下载预构建的 [Travel OTA](https://github.com/softprobe/demo-ota) 应用程序 JAR 包：
 ```bash
 curl -L -O https://github.com/softprobe/demo-ota/releases/download/v1.1.0/travel-ota.jar
 ```

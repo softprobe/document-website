@@ -71,7 +71,7 @@ The [Platform](/en/platform/advanced-guides/agent-architecture) **SP-Istio agent
 
 ## Quick links
 
-- [Getting Started](/en/testing/getting-started) — Try the 5-minute Travel OTA demo and onboard your application.
+- [Getting Started](/en/testing/getting-started) — Try the 5-minute [Travel OTA](https://github.com/softprobe/demo-ota) demo and onboard your application.
 - [How to record](/en/testing/recording) — Phase 1: build the case corpus.
 - [Java agent](/en/testing/java-agent) — Attach, JVM flags, and production safety.
 - [Policies overview](/en/testing/policies) — YAML by lifecycle phase.

@@ -1,6 +1,6 @@
 # demo
 
-Run the bundled Travel OTA demo locally with Docker.
+Run the bundled [Travel OTA](https://github.com/softprobe/demo-ota) demo locally with Docker.
 
 ## Commands
 
@@ -12,4 +12,4 @@ Run the bundled Travel OTA demo locally with Docker.
 | `sp demo status` | Stack + agent + recording status |
 | `sp demo stop` | Stop Docker stack |
 
-See [Demo quickstart](/en/testing/demo-quickstart) for the full walkthrough.
+See [Getting Started](/en/testing/getting-started) for the full walkthrough.
