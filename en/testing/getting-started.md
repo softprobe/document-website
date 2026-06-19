@@ -7,17 +7,11 @@ import { ref } from 'vue'
 const dAppTab = ref('ui')
 const dViewTab = ref('ui')
 const dReplayTab = ref('cli')
-const oAppTab = ref('ui')
-const oViewTab = ref('ui')
-const oReplayTab = ref('cli')
 </script>
 
 # Getting Started with Softprobe Testing
 
-Welcome to Softprobe Testing! This guide provides a single, cohesive path to get you started with record-and-replay in two progressive phases:
-
-1. **Phase 1: Try the 5-Minute Demo** — Hands-on experience using our pre-built [Travel OTA demo](https://github.com/softprobe/demo-ota) application.
-2. **Phase 2: Onboard Your Own Application** — Step-by-step checklist to connect your own Java services.
+Welcome to Softprobe Testing! This guide provides a single, cohesive path to get you started with record-and-replay in minutes using our pre-built Travel OTA demo application, followed by a quick wrapup on how to connect your own Java service.
 
 ---
 
@@ -29,23 +23,19 @@ Welcome to Softprobe Testing! This guide provides a single, cohesive path to get
 
 ---
 
-## Phase 1: Try the 5-Minute Demo
-
-Experience Softprobe in action by running our pre-built [Travel OTA (Online Travel Agency) demo](https://github.com/softprobe/demo-ota) app on your local machine and capturing real traffic.
-
-### 1. Verify Java Installation
+## 1. Verify Java Installation
 Ensure Java is configured correctly and available in your terminal:
 ```bash
 java -version
 ```
 
-### 2. Download the Demo Application
+## 2. Download the Demo Application
 Download the pre-built [Travel OTA](https://github.com/softprobe/demo-ota) application JAR (either [click to download travel-ota.jar](https://github.com/softprobe/demo-ota/releases/download/v1.1.0/travel-ota.jar) directly via your browser, or run the command below):
 ```bash
 curl -L -O https://github.com/softprobe/demo-ota/releases/download/v1.1.0/travel-ota.jar
 ```
 
-### 3. Download the Softprobe Agent
+## 3. Download the Softprobe Agent
 Download the Softprobe Java agent JAR (either [click to download sp-agent.jar](https://github.com/softprobe/demo-ota/releases/download/v1.1.0/sp-agent.jar) directly via your browser, or use the `sp` CLI command below):
 ```bash
 sp agent download
@@ -53,8 +43,8 @@ cp ~/.local/share/softprobe/agent/sp-agent.jar .
 ```
 *(Alternatively, download it directly via curl: `curl -L -O https://github.com/softprobe/demo-ota/releases/download/v1.1.0/sp-agent.jar`)*
 
-### 4. Create an Application in Softprobe
-Register the demo application to receive a unique `appId` (a 16-character hex identifier):
+## 4. Register the Application
+Register the demo application in Softprobe to receive a unique `appId` (a 16-character hex identifier):
 
 <div class="tabs-container">
   <div class="tabs-nav">
@@ -79,7 +69,7 @@ sp app create travel-ota</code></pre>
   </div>
 </div>
 
-### 5. Start Travel OTA with the Agent
+## 5. Start the Application with the Agent
 Start the demo app with the `-javaagent` flag, passing your `appId`:
 ```bash
 java -javaagent:sp-agent.jar \
@@ -91,7 +81,7 @@ java -javaagent:sp-agent.jar \
 
 The application is now running locally at [http://localhost:8080](http://localhost:8080).
 
-### 6. Perform a Booking (Generate Traffic)
+## 6. Perform a Booking (Generate Traffic)
 Open [http://localhost:8080](http://localhost:8080) in your browser:
 1. Click **Search** to view available flights.
 2. Select a flight and click **Book**.
@@ -99,7 +89,7 @@ Open [http://localhost:8080](http://localhost:8080) in your browser:
 
 The Softprobe agent automatically intercepts and captures this entire transaction.
 
-### 7. View Recorded Data
+## 7. View Recorded Data
 
 <div class="tabs-container">
   <div class="tabs-nav">
@@ -122,7 +112,7 @@ The Softprobe agent automatically intercepts and captures this entire transactio
   </div>
 </div>
 
-### 8. Replay the Recordings
+## 8. Replay the Recordings
 Replay executes recorded transactions against a target environment with automated dependency mocking (your database and downstreams do not need to be set up).
 
 <div class="tabs-container">
@@ -150,117 +140,30 @@ Replay executes recorded transactions against a target environment with automate
 
 ---
 
-## Phase 2: Onboard Your Own Application
+## Onboard Your Own Application
 
-Now that you have seen record-and-replay in action, follow these steps to connect your own Java services.
+Onboarding your own service is **exactly the same** as running the Travel OTA demo! Your application is just another `.jar` file started with the same Softprobe Java Agent and your custom App ID.
 
-### 1. Register Your Application
+To connect your own application:
 
-<div class="tabs-container">
-  <div class="tabs-nav">
-    <button :class="{ active: oAppTab === 'ui' }" @click="oAppTab = 'ui'">Web UI</button>
-    <button :class="{ active: oAppTab === 'cli' }" @click="oAppTab = 'cli'">sp CLI</button>
-  </div>
-  <div class="tabs-content">
-    <div v-if="oAppTab === 'ui'">
-      <ol>
-        <li>Open your Softprobe Dashboard.</li>
-        <li>Navigate to <strong>Apps</strong> and click <strong>Create App</strong>.</li>
-        <li>Enter your service name and click <strong>Save</strong>.</li>
-        <li>Copy the generated <strong>App ID</strong>.</li>
-      </ol>
-    </div>
-    <div v-if="oAppTab === 'cli'">
-      <p>Register your service to receive its unique <code>appId</code>:</p>
-      <pre><code>export SP_API_URL=http://&lt;your-backend-host&gt;:8090   # Point to your Helm backend
-sp app create &lt;your-app-name&gt;</code></pre>
-    </div>
-  </div>
-</div>
+1. **Register Your App**: Create a new 16-character App ID either via **Apps** → **Create App** in the Web UI, or run:
+   ```bash
+   sp app create <your-app-name>
+   ```
+2. **Attach the Agent**: Start your own JVM service with the same `-javaagent` flag, passing your new App ID and Helm backend address:
+   ```bash
+   java -javaagent:sp-agent.jar \
+        -Dsp.app.id=<your-new-app-id> \
+        -Dsp.storage.service.host=http://<your-backend-host>:8090 \
+        -jar your-own-application.jar
+   ```
+3. **Verify and Replay**: Record traffic, list cases, and trigger replays exactly as you did with the demo app.
 
-### 2. Set Up Policies (YAML)
-Softprobe uses simple, declarative YAML configuration files to control what is recorded, mocked, and compared. Create these files in your project directory:
-
-- **`recording.yaml`** (Defines entry points and dependencies to capture):
-  ```yaml
-  excludePaths:
-    - /health
-    - /metrics
-  includePaths:
-    - /api/**
-  ```
-- **`mock.yaml`** (Defines which downstreams to mock):
-  ```yaml
-  mockCategories:
-    - HttpClient
-    - Database
-    - Redis
-  ```
-
-Apply these policies using the `sp` CLI:
-```bash
-sp policy recording apply -f recording.yaml --json
-sp policy mock apply -f mock.yaml --json
-```
-
-### 3. Attach the Agent to Your Service
-Start your application JVM with the following system properties:
-```bash
-java -javaagent:sp-agent.jar \
-     -Dsp.app.id=<your-app-id> \
-     -Dsp.storage.service.host=http://<your-backend-host>:8090 \
-     -jar your-application.jar
-```
-
-Replace `<your-app-id>` with your 16-character App ID, and `<your-backend-host>:8090` with your deployed Helm backend address.
-
-### 4. Verify and Record Traffic
-
-<div class="tabs-container">
-  <div class="tabs-nav">
-    <button :class="{ active: oViewTab === 'ui' }" @click="oViewTab = 'ui'">Web UI</button>
-    <button :class="{ active: oViewTab === 'cli' }" @click="oViewTab = 'cli'">sp CLI</button>
-  </div>
-  <div class="tabs-content">
-    <div v-if="oViewTab === 'ui'">
-      <ol>
-        <li>Go to the <strong>Workbench</strong> or <strong>Recordings</strong> tab in your Dashboard.</li>
-        <li>Select your application to view live recording logs and incoming traces.</li>
-      </ol>
-    </div>
-    <div v-if="oViewTab === 'cli'">
-      <p>Verify the agent is online:</p>
-      <pre><code>sp app status &lt;your-app-id&gt; --json
-# expected: "status": "online"</code></pre>
-      <p>Send test or production traffic to your service endpoints, and then confirm cases are successfully recorded:</p>
-      <pre><code>sp record case list --app &lt;your-app-id&gt; --since -10m</code></pre>
-    </div>
-  </div>
-</div>
-
-### 5. Replay and Verify
-
-<div class="tabs-container">
-  <div class="tabs-nav">
-    <button :class="{ active: oReplayTab === 'ui' }" @click="oReplayTab = 'ui'">Web UI</button>
-    <button :class="{ active: oReplayTab === 'cli' }" @click="oReplayTab = 'cli'">sp CLI</button>
-  </div>
-  <div class="tabs-content">
-    <div v-if="oReplayTab === 'ui'">
-      <ol>
-        <li>Navigate to the <strong>Replays</strong> section of your Dashboard.</li>
-        <li>Click <strong>New Replay Plan</strong>.</li>
-        <li>Select your application, specify the target environment as <code>http://localhost:8080</code>, and click <strong>Run</strong>.</li>
-      </ol>
-    </div>
-    <div v-if="oReplayTab === 'cli'">
-      <p>Run a regression check by sending recorded requests back to your test instance:</p>
-      <pre><code>sp replay run --app &lt;your-app-id&gt; --env http://localhost:8080</code></pre>
-      <p>Monitor progress and view visual comparison diffs:</p>
-      <pre><code>sp replay status &lt;replay-plan-id&gt; --watch</code></pre>
-    </div>
-  </div>
-</div>
+For deeper configuration, policy YAML schema (recording, mocking, compare rules), and production deployment patterns, see our in-depth guides:
+* [Java Agent Configuration](/en/testing/java-agent) — JVM properties and Tomcat/Docker setups
+* [How to Record Traffic](/en/testing/recording) — Creating robust test case corpora
+* [Replay and Diff](/en/testing/replay-and-diff) — Custom comparison rules and ignore parameters
+* [Policies Overview](/en/testing/policies) — Declarative YAML policies for DevOps
 
 <style scoped>
 .tabs-container {
