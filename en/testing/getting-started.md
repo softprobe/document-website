@@ -2,6 +2,16 @@
 title: Getting Started
 ---
 
+<script setup>
+import { ref } from 'vue'
+const dAppTab = ref('ui')
+const dViewTab = ref('ui')
+const dReplayTab = ref('cli')
+const oAppTab = ref('ui')
+const oViewTab = ref('ui')
+const oReplayTab = ref('cli')
+</script>
+
 # Getting Started with Softprobe Testing
 
 Welcome to Softprobe Testing! This guide provides a single, cohesive path to get you started with record-and-replay in two progressive phases:
@@ -46,17 +56,28 @@ cp ~/.local/share/softprobe/agent/sp-agent.jar .
 ### 4. Create an Application in Softprobe
 Register the demo application to receive a unique `appId` (a 16-character hex identifier):
 
-- **Via the Web UI:**
-  1. Open your Softprobe Dashboard.
-  2. Navigate to **Apps** and click **Create App**.
-  3. Enter `travel-ota` as the name and click Save. Copy the generated **App ID**.
-
-- **Via the `sp` CLI:**
-  ```bash
-  export SP_API_URL=http://localhost:8090   # Point to your Helm/local backend
-  sp app create travel-ota
-  ```
-  Save the `appId` returned in the JSON response.
+<div class="tabs-container">
+  <div class="tabs-nav">
+    <button :class="{ active: dAppTab === 'ui' }" @click="dAppTab = 'ui'">Web UI</button>
+    <button :class="{ active: dAppTab === 'cli' }" @click="dAppTab = 'cli'">sp CLI</button>
+  </div>
+  <div class="tabs-content">
+    <div v-if="dAppTab === 'ui'">
+      <ol>
+        <li>Open your Softprobe Dashboard.</li>
+        <li>Navigate to <strong>Apps</strong> and click <strong>Create App</strong>.</li>
+        <li>Enter <code>travel-ota</code> as the name and click <strong>Save</strong>.</li>
+        <li>Copy the generated <strong>App ID</strong>.</li>
+      </ol>
+    </div>
+    <div v-if="dAppTab === 'cli'">
+      <p>Run the following command to register the app via the CLI:</p>
+      <pre><code>export SP_API_URL=http://localhost:8090   # Point to your Helm/local backend
+sp app create travel-ota</code></pre>
+      <p>Save the <code>appId</code> returned in the JSON response.</p>
+    </div>
+  </div>
+</div>
 
 ### 5. Start Travel OTA with the Agent
 Start the demo app with the `-javaagent` flag, passing your `appId`:
@@ -80,20 +101,53 @@ Open [http://localhost:8080](http://localhost:8080) in your browser:
 The Softprobe agent automatically intercepts and captures this entire transaction.
 
 ### 7. View Recorded Data
-- **Via the Web UI**: Log in to your Softprobe Dashboard, go to the **Workbench** or **Recordings** tab, select `travel-ota`, and browse the recorded traces and deep dependency graphs.
-- **Via the CLI**:
-  ```bash
-  sp record case list --app <your-app-id> --since -10m
-  ```
+
+<div class="tabs-container">
+  <div class="tabs-nav">
+    <button :class="{ active: dViewTab === 'ui' }" @click="dViewTab = 'ui'">Web UI</button>
+    <button :class="{ active: dViewTab === 'cli' }" @click="dViewTab = 'cli'">sp CLI</button>
+  </div>
+  <div class="tabs-content">
+    <div v-if="dViewTab === 'ui'">
+      <ol>
+        <li>Log in to your Softprobe Dashboard.</li>
+        <li>Go to the <strong>Workbench</strong> or <strong>Recordings</strong> tab.</li>
+        <li>Select <code>travel-ota</code> from the app dropdown.</li>
+        <li>Browse the recorded traces and inspect the deep dependency graphs.</li>
+      </ol>
+    </div>
+    <div v-if="dViewTab === 'cli'">
+      <p>List cases recorded for the app in the last 10 minutes:</p>
+      <pre><code>sp record case list --app &lt;your-app-id&gt; --since -10m</code></pre>
+    </div>
+  </div>
+</div>
 
 ### 8. Replay the Recordings
 Replay executes recorded transactions against a target environment with automated dependency mocking (your database and downstreams do not need to be set up).
 
-- **Via the CLI**:
-  ```bash
-  sp replay run --app <your-app-id> --env http://localhost:8080
-  ```
-- **Via the Web UI**: Navigate to the **Replays** tab, click **New Replay Plan**, select `travel-ota`, set the target environment to `http://localhost:8080`, and click **Run**.
+<div class="tabs-container">
+  <div class="tabs-nav">
+    <button :class="{ active: dReplayTab === 'ui' }" @click="dReplayTab = 'ui'">Web UI</button>
+    <button :class="{ active: dReplayTab === 'cli' }" @click="dReplayTab = 'cli'">sp CLI</button>
+  </div>
+  <div class="tabs-content">
+    <div v-if="dReplayTab === 'ui'">
+      <ol>
+        <li>Navigate to the <strong>Replays</strong> tab and click <strong>New Replay Plan</strong>.</li>
+        <li>Select <code>travel-ota</code>.</li>
+        <li>Choose the cases to replay.</li>
+        <li>Set the target environment to <code>http://localhost:8080</code> and click <strong>Run</strong>.</li>
+      </ol>
+    </div>
+    <div v-if="dReplayTab === 'cli'">
+      <p>Trigger the replay plan pointing to your local running instance:</p>
+      <pre><code>sp replay run --app &lt;your-app-id&gt; --env http://localhost:8080</code></pre>
+      <p>Watch the replay status until it reaches a terminal state:</p>
+      <pre><code>sp replay status &lt;replay-plan-id&gt; --watch</code></pre>
+    </div>
+  </div>
+</div>
 
 ---
 
@@ -102,10 +156,28 @@ Replay executes recorded transactions against a target environment with automate
 Now that you have seen record-and-replay in action, follow these steps to connect your own Java services.
 
 ### 1. Register Your Application
-Register your service via the Dashboard or the CLI to get its unique `appId`:
-```bash
-sp app create <your-app-name>
-```
+
+<div class="tabs-container">
+  <div class="tabs-nav">
+    <button :class="{ active: oAppTab === 'ui' }" @click="oAppTab = 'ui'">Web UI</button>
+    <button :class="{ active: oAppTab === 'cli' }" @click="oAppTab = 'cli'">sp CLI</button>
+  </div>
+  <div class="tabs-content">
+    <div v-if="oAppTab === 'ui'">
+      <ol>
+        <li>Open your Softprobe Dashboard.</li>
+        <li>Navigate to <strong>Apps</strong> and click <strong>Create App</strong>.</li>
+        <li>Enter your service name and click <strong>Save</strong>.</li>
+        <li>Copy the generated <strong>App ID</strong>.</li>
+      </ol>
+    </div>
+    <div v-if="oAppTab === 'cli'">
+      <p>Register your service to receive its unique <code>appId</code>:</p>
+      <pre><code>export SP_API_URL=http://&lt;your-backend-host&gt;:8090   # Point to your Helm backend
+sp app create &lt;your-app-name&gt;</code></pre>
+    </div>
+  </div>
+</div>
 
 ### 2. Set Up Policies (YAML)
 Softprobe uses simple, declarative YAML configuration files to control what is recorded, mocked, and compared. Create these files in your project directory:
@@ -145,23 +217,101 @@ java -javaagent:sp-agent.jar \
 Replace `<your-app-id>` with your 16-character App ID, and `<your-backend-host>:8090` with your deployed Helm backend address.
 
 ### 4. Verify and Record Traffic
-1. Verify the agent is online:
-   ```bash
-   sp app status <your-app-id> --json
-   # expected: "status": "online"
-   ```
-2. Send test or production traffic to your service endpoints.
-3. Confirm cases are successfully recorded:
-   ```bash
-   sp record case list --app <your-app-id> --since -10m
-   ```
+
+<div class="tabs-container">
+  <div class="tabs-nav">
+    <button :class="{ active: oViewTab === 'ui' }" @click="oViewTab = 'ui'">Web UI</button>
+    <button :class="{ active: oViewTab === 'cli' }" @click="oViewTab = 'cli'">sp CLI</button>
+  </div>
+  <div class="tabs-content">
+    <div v-if="oViewTab === 'ui'">
+      <ol>
+        <li>Go to the <strong>Workbench</strong> or <strong>Recordings</strong> tab in your Dashboard.</li>
+        <li>Select your application to view live recording logs and incoming traces.</li>
+      </ol>
+    </div>
+    <div v-if="oViewTab === 'cli'">
+      <p>Verify the agent is online:</p>
+      <pre><code>sp app status &lt;your-app-id&gt; --json
+# expected: "status": "online"</code></pre>
+      <p>Send test or production traffic to your service endpoints, and then confirm cases are successfully recorded:</p>
+      <pre><code>sp record case list --app &lt;your-app-id&gt; --since -10m</code></pre>
+    </div>
+  </div>
+</div>
 
 ### 5. Replay and Verify
-Run a regression check by sending recorded requests back to your test instance:
-```bash
-sp replay run --app <your-app-id> --env http://localhost:8080
-```
-Monitor progress and view visual comparison diffs in the **Replays** section of your Web Dashboard or via the CLI:
-```bash
-sp replay status <replay-plan-id> --watch
-```
+
+<div class="tabs-container">
+  <div class="tabs-nav">
+    <button :class="{ active: oReplayTab === 'ui' }" @click="oReplayTab = 'ui'">Web UI</button>
+    <button :class="{ active: oReplayTab === 'cli' }" @click="oReplayTab = 'cli'">sp CLI</button>
+  </div>
+  <div class="tabs-content">
+    <div v-if="oReplayTab === 'ui'">
+      <ol>
+        <li>Navigate to the <strong>Replays</strong> section of your Dashboard.</li>
+        <li>Click <strong>New Replay Plan</strong>.</li>
+        <li>Select your application, specify the target environment as <code>http://localhost:8080</code>, and click <strong>Run</strong>.</li>
+      </ol>
+    </div>
+    <div v-if="oReplayTab === 'cli'">
+      <p>Run a regression check by sending recorded requests back to your test instance:</p>
+      <pre><code>sp replay run --app &lt;your-app-id&gt; --env http://localhost:8080</code></pre>
+      <p>Monitor progress and view visual comparison diffs:</p>
+      <pre><code>sp replay status &lt;replay-plan-id&gt; --watch</code></pre>
+    </div>
+  </div>
+</div>
+
+<style scoped>
+.tabs-container {
+  margin: 1.5rem 0;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--vp-c-bg-soft);
+}
+.tabs-nav {
+  display: flex;
+  background: var(--vp-c-bg-mute);
+  border-bottom: 1px solid var(--vp-c-divider);
+  padding: 0 4px;
+}
+.tabs-nav button {
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--vp-c-text-2);
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+  outline: none;
+}
+.tabs-nav button:hover {
+  color: var(--vp-c-text-1);
+}
+.tabs-nav button.active {
+  color: var(--sp-brand);
+  border-bottom-color: var(--sp-brand);
+}
+.tabs-content {
+  padding: 20px;
+  background: var(--vp-c-bg);
+}
+.tabs-content ol, .tabs-content ul {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-left: 20px;
+}
+.tabs-content p {
+  margin-top: 0 !important;
+  margin-bottom: 8px !important;
+}
+.tabs-content pre {
+  margin-top: 4px !important;
+  margin-bottom: 12px !important;
+}
+</style>
