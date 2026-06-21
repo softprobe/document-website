@@ -56,6 +56,16 @@ See [REDIRECTS.md](./REDIRECTS.md) for legacy URL mapping.
 | `zh/cli/` | English CLI mirror + locale banner |
 | `en/cli/implementer/` | Internal only — excluded from build |
 
+## Install/Release Contract Docs
+
+Public installation docs must mirror the central SoftProbe installer contract:
+
+```bash
+curl -fsSL https://install.softprobe.ai/install.sh | bash
+```
+
+The installer supports `--product sp|agent|spcode|all` and `--version vX.Y.Z|X.Y.Z|latest`. Do not document local release commands, channel manifests, checksum manifests, or product-specific final GCS publishing. Maintainer release docs should point to the standard GitHub Actions workflows only.
+
 To refresh CLI content from backend after API changes:
 
 ```bash

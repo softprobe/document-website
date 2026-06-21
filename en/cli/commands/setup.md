@@ -28,7 +28,6 @@ sp setup doctor --agent-jar /path/to/sp-agent.jar --json
 | Auth | Token configured → `authenticated` / `missing` |
 | Apps | `GET /api/applications/list` when token present → `appCount` |
 | Agent jar | `--agent-jar` or default `${XDG_DATA_HOME}/softprobe/agent/sp-agent.jar` |
-| Agent version | `GET /api/agent/java/manifest` when available; compares local jar sha256 |
 | SaaS agent auth | `tenantApiKeyConfigured` / `agentAuthReady` when URL is Softprobe Cloud |
 
 On SaaS, `nextActions` may include `sp tenant key ensure` when the tenant id is set but no agent key is in config.
@@ -49,15 +48,12 @@ Example success envelope:
     "appCount": 3,
     "agentJar": "/home/user/.local/share/softprobe/agent/sp-agent.jar",
     "agentJarExists": true,
-    "remoteAgentSha256": "abc…",
-    "localAgentSha256": "abc…",
-    "agentVersionMatch": true,
     "nextActions": []
   }
 }
 ```
 
-When the local jar does not match the backend manifest, `nextActions` includes `sp agent download`.
+When the local jar is missing, `nextActions` includes `sp agent download`.
 
 ## Related
 

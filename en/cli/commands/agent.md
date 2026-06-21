@@ -6,24 +6,24 @@
 
 | Subcommand | Description |
 |------------|-------------|
-| `download` | Fetch bundled jar from sp-boot; default install dir under XDG data home |
+| `download` | Fetch `sp-agent.jar` from install artifacts; default install dir under XDG data home |
 | `command` | Emit `-javaagent` and `sp.*` system properties for record mode |
 
 ## `agent download`
 
 ```bash
 sp agent download --json
+sp agent download --version v4.3.5 --json
 sp agent download --out-dir "${XDG_DATA_HOME:-$HOME/.local/share}/softprobe/agent" --json
 ```
 
 Default install directory: `${XDG_DATA_HOME:-~/.local/share}/softprobe/agent`.
 
+Without `--version`, `sp agent download` downloads `https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar`. Use `--version vX.Y.Z` or `--version X.Y.Z` to download an exact agent release.
+
 Writes:
 
-- `sp-agent.jar` — verified against backend manifest sha256
-- `manifest.json` — `{ "version", "sha256", "sizeBytes", "builtAt" }`
-
-Re-download is skipped when the on-disk jar already matches the backend manifest.
+- `sp-agent.jar`
 
 Example envelope:
 
@@ -34,11 +34,8 @@ Example envelope:
   "data": {
     "dir": "/home/user/.local/share/softprobe/agent",
     "path": "/home/user/.local/share/softprobe/agent/sp-agent.jar",
-    "manifestPath": "/home/user/.local/share/softprobe/agent/manifest.json",
     "version": "3.9.56",
-    "sha256": "…",
-    "sizeBytes": 27055970,
-    "reusedExisting": false
+    "sizeBytes": 27055970
   }
 }
 ```
@@ -122,7 +119,6 @@ Example success `data` (abbreviated):
 
 | Subcommand | Method | Path |
 |------------|--------|------|
-| `download` | GET | `/api/agent/java/manifest` |
 | `download` | GET | `/api/agent/java/download` |
 
 ## Related

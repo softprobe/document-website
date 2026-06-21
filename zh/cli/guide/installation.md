@@ -15,7 +15,7 @@ curl -fsSL https://install.softprobe.ai | bash -s -- --version latest --api-url 
 curl -fsSL https://install.softprobe.ai | bash -s -- --skip-spcode   # 仅安装 sp CLI
 ```
 
-`install.softprobe.ai` 由 `deployment-k8s` 仓库中的 Cloudflare Worker（`cloudflare/install-worker/`）提供，反向代理 `gs://softprobe-published-files/install/latest/`，避免 `curl | bash` 被重定向到 GCS 裸链。
+`install.softprobe.ai` 由 `deployment-k8s` 仓库中的 Cloudflare Worker（`cloudflare/install-worker/`）提供，反向代理 `gs://softprobe-published-files/artifacts/<product>/<version>/`，避免 `curl | bash` 被重定向到 GCS 裸链。
 
 ### 验证
 
@@ -80,13 +80,7 @@ sp config init
 
 ## 维护者
 
-在 `backend` 仓库发布更多平台：
-
-```bash
-./scripts/manual-publish-install.sh latest darwin-arm64 linux-arm64 linux-x64
-```
-
-产物上传到 `gs://softprobe-published-files/install/<version>/`。仅当修改 `cloudflare/install-worker/` 时需重新部署 Worker：
+产物由标准 GitHub Actions 工作流发布到 `gs://softprobe-published-files/artifacts/<product>/<version>/`，并刷新 `latest` 别名。仅当修改 `cloudflare/install-worker/` 时需重新部署 Worker：
 
 ```bash
 cd deployment-k8s/cloudflare/install-worker && wrangler deploy

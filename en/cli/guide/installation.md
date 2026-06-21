@@ -1,21 +1,27 @@
 # Installation
 
-## One-line install (`sp` + `spcode`)
+## One-line install
 
 ```bash
 curl -fsSL https://install.softprobe.ai | bash
 ```
 
-This installs both binaries under `~/.local/share/softprobe/bin` and symlinks into `~/.local/bin`. It seeds `~/.config/softprobe/config.jsonc` with `api_url` → `https://api.softprobe.ai`.
+This installs or updates the `sp` CLI, `sp-agent.jar`, and `spcode` by default. Binaries are installed under `~/.local/share/softprobe/bin`, the Java agent under `${XDG_DATA_HOME:-~/.local/share}/softprobe/agent`, and CLI binaries are symlinked into `~/.local/bin`. It seeds `~/.config/softprobe/config.jsonc` with `api_url` → `https://api.softprobe.ai`.
+
+By default, the installer uses the `latest` alias for all products.
 
 Options (pass after `bash -s --`):
 
 ```bash
-curl -fsSL https://install.softprobe.ai | bash -s -- --version latest --api-url https://api.softprobe.ai
-curl -fsSL https://install.softprobe.ai | bash -s -- --skip-spcode   # sp CLI only
+curl -fsSL https://install.softprobe.ai | bash -s -- --product sp
+curl -fsSL https://install.softprobe.ai | bash -s -- --product agent
+curl -fsSL https://install.softprobe.ai | bash -s -- --product spcode
+curl -fsSL https://install.softprobe.ai | bash -s -- --version v4.3.5
+curl -fsSL https://install.softprobe.ai | bash -s -- --version 4.3.5
+curl -fsSL https://install.softprobe.ai | bash -s -- --api-url https://api.softprobe.ai
 ```
 
-`install.softprobe.ai` is served by a Cloudflare Worker in the `deployment-k8s` repo (`cloudflare/install-worker/`) that proxies `gs://softprobe-published-files/install/latest/` without redirecting the browser to GCS.
+`install.softprobe.ai` is served by a Cloudflare Worker in the `deployment-k8s` repo (`cloudflare/install-worker/`) that proxies public installer and artifact URLs without redirecting the browser to GCS.
 
 ### Verify
 
@@ -24,12 +30,12 @@ sp version
 sp health --json    # requires sp-boot running (when implemented)
 ```
 
-## `sp` binary only
+## Product artifacts
 
-Per-version releases are also published as:
+Per-version releases are served as:
 
 ```text
-gs://softprobe-published-files/sp/<version>/sp-{os}-{arch}
+https://install.softprobe.ai/artifacts/<product>/<version>/<artifact>
 ```
 
 Supported platforms: `linux/amd64`, `linux/arm64`, `darwin/amd64`, `darwin/arm64`, `windows/amd64`, `windows/arm64`.
@@ -37,7 +43,7 @@ Supported platforms: `linux/amd64`, `linux/arm64`, `darwin/amd64`, `darwin/arm64
 Manual install example (Linux amd64):
 
 ```bash
-curl -fsSL -o sp "https://storage.googleapis.com/softprobe-published-files/sp/<version>/sp-linux-amd64"
+curl -fsSL -o sp "https://install.softprobe.ai/artifacts/sp/<version>/sp-linux-amd64"
 chmod +x sp
 sudo mv sp /usr/local/bin/
 sp version
@@ -74,19 +80,23 @@ See [Configuration](./configuration.md).
 
 ## `spcode` AI Engine CLI
 
-Included in the [one-line install](#one-line-install-sp--spcode) above. For local AI against a **self-hosted** SoftProbe UI, use the host-specific installer from the web UI (`curl <host>/spcode/install | bash`).
+Installed by default in the [one-line install](#one-line-install), or explicitly with `--product spcode`. For local AI against a **self-hosted** SoftProbe UI, use the host-specific installer from the web UI (`curl <host>/spcode/install | bash`).
 
 See the [spcode CLI guide](./spcode.md) for commands and configuration.
 
 ## Maintainers
 
-Publish more platforms from the `backend` repo:
+Product release workflows upload handoff artifacts first, then call `softprobe/dev/.github/workflows/publish-install-artifacts.yml@main` with the product and version, for example:
 
-```bash
-./scripts/manual-publish-install.sh latest darwin-arm64 linux-arm64 linux-x64
+```yaml
+with:
+  product: sp
+  version: v4.3.5
 ```
 
-Uploads to `gs://softprobe-published-files/install/<version>/`. Redeploy the Worker only when `cloudflare/install-worker/` changes:
+Do not document or use local release commands for public install artifacts. The standard GitHub Actions workflow owns the final GCS layout and the `latest` alias.
+
+Redeploy the Worker only when `deployment-k8s/cloudflare/install-worker/` changes.
 
 ```bash
 cd deployment-k8s/cloudflare/install-worker && wrangler deploy
