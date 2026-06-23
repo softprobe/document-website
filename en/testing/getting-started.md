@@ -74,7 +74,7 @@ Start the demo app with the `-javaagent` flag, passing your `appId`:
 ```bash
 java -javaagent:sp-agent.jar \
      -Dsp.app.id=<your-app-id> \
-     -Dsp.storage.service.host=http://localhost:8090 \
+     -Dsp.api.url=http://localhost:8090 \
      -jar travel-ota.jar
 ```
 *(If your Helm backend is hosted at another address, replace `http://localhost:8090` with your actual backend URL).*
@@ -154,7 +154,7 @@ To connect your own application:
    ```bash
    java -javaagent:sp-agent.jar \
         -Dsp.app.id=<your-new-app-id> \
-        -Dsp.storage.service.host=http://<your-backend-host>:8090 \
+        -Dsp.api.url=http://<your-backend-host>:8090 \
         -jar your-own-application.jar
    ```
 3. **Verify and Replay**: Record traffic, list cases, and trigger replays exactly as you did with the demo app.

@@ -33,8 +33,7 @@ Minimum startup flags:
 java \
   -javaagent:/opt/softprobe/sp-agent.jar \
   -Dsp.app.id=<appId> \
-  -Dsp.storage.service.host=<sp-boot-host:port> \
-  -Dsp.config.service.host=<sp-boot-host:port> \
+  -Dsp.api.url=http://<sp-boot-host>:8090 \
   -jar app.jar
 ```
 

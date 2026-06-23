@@ -143,7 +143,7 @@ kubectl delete pvc -n softprobe -l app.kubernetes.io/instance=softprobe
 Point instrumented applications at the in-cluster service:
 
 ```text
--Dsp.storage.service.host=softprobe-sp-backend.softprobe.svc.cluster.local:8090
+-Dsp.api.url=http://softprobe-sp-backend.softprobe.svc.cluster.local:8090
 ```
 
 ## Troubleshooting

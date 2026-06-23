@@ -124,6 +124,17 @@ settings in `spcode.jsonc`. `sp` never writes to legacy spcode files.
   modify config files.
 - `sp config show` must never print the full token.
 
+## Java agent (JVM)
+
+The Java agent does **not** read JSONC config. Required JVM properties:
+
+| Property | Env | Role |
+|----------|-----|------|
+| `-Dsp.app.id` | `SP_APP_ID` | Registered application id |
+| `-Dsp.api.url` | `SP_API_URL` | sp-boot base URL (`http://` or `https://` required) |
+
+Generate flags with `sp agent command --app <appId> --json`. See [Java agent](/en/testing/java-agent) and [agent command](/en/cli/commands/agent).
+
 ## Related & Cross-Repository Links
 
 - [Authentication](./authentication.md)

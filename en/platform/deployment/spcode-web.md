@@ -63,7 +63,7 @@ curl -sI http://127.0.0.1:8090/ | head -1
 Point instrumented apps at the **backend** storage API, not the web host:
 
 ```text
--Dsp.storage.service.host=<softprobe-sp-backend-host>:8090
+-Dsp.api.url=http://<softprobe-sp-backend-host>:8090
 ```
 
 Developers download the agent from the **web** host:
