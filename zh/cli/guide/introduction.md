@@ -38,8 +38,7 @@ The agent is attached with a JVM `-javaagent` flag. Pin the app id explicitly in
 java \
   -javaagent:/opt/softprobe/sp-agent.jar \
   -Dsp.app.id=a1b2c3d4e5f67890 \
-  -Dsp.storage.service.host=127.0.0.1:8090 \
-  -Dsp.config.service.host=127.0.0.1:8090 \
+  -Dsp.api.url=http://127.0.0.1:8090 \
   -jar order-service.jar
 ```
 

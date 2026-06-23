@@ -56,14 +56,11 @@ sp agent command --app a1b2c3d4e5f67890 --agent-jar /opt/softprobe/sp-agent.jar 
 | `--app` | Required. Registered `appId` from `sp app create` |
 | `--agent-jar` | Optional. Default: `$SP_AGENT_JAR`, then `${XDG_DATA_HOME}/softprobe/agent/sp-agent.jar` |
 | `--app-jar` | Optional. Trailing `-jar …` in `startCommand` |
-| `--storage-host` | Override `-Dsp.storage.service.host=` |
-| `--config-host` | Override `-Dsp.config.service.host=` (defaults to storage host) |
 | `--format` | `json` (default), `shell`, `docker`, `maven` |
 
-Host inference from profile URL:
+JSON 中的 `apiUrl` 来自 CLI 配置（`api_url` / `SP_API_URL`）。可通过 `sp config set-url`、`SP_API_URL` 或全局 `--api-url` 覆盖。
 
-- `http://127.0.0.1:8090` → `127.0.0.1:8090`
-- `https://api.example.com` → `api.example.com` (no default port)
+Agent 运行时解析顺序：JVM `-Dsp.api.url` → 环境变量 `SP_API_URL` → JAR 内嵌 `META-INF/sp/sp.agent.conf`。
 
 When the default jar is missing:
 
@@ -88,13 +85,12 @@ Example success `data` (abbreviated):
   "appId": "a1b2c3d4e5f67890",
   "agentJar": "/home/user/.local/share/softprobe/agent/sp-agent.jar",
   "agentJarExists": true,
-  "storageHost": "127.0.0.1:8090",
-  "configHost": "127.0.0.1:8090",
+  "apiUrl": "http://127.0.0.1:8090",
   "jvmArgs": [
     "-javaagent:/home/user/.local/share/softprobe/agent/sp-agent.jar",
     "-Dsp.app.id=a1b2c3d4e5f67890",
-    "-Dsp.storage.service.host=127.0.0.1:8090",
-    "-Dsp.config.service.host=127.0.0.1:8090"
+    "-Dsp.api.url=http://127.0.0.1:8090",
+    "-Dsp.api.token=…"
   ],
   "startCommand": "java -javaagent:… -Dsp.app.id=… …",
   "startCommandMultiline": "java \\\n  -javaagent:… \\\n  …",

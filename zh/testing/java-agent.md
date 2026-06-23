@@ -29,16 +29,14 @@ sp agent command --app <appId> --json
 java \
   -javaagent:${XDG_DATA_HOME:-~/.local/share}/softprobe/agent/sp-agent.jar \
   -Dsp.app.id=<appId> \
-  -Dsp.storage.service.host=127.0.0.1:8090 \
-  -Dsp.config.service.host=127.0.0.1:8090 \
+  -Dsp.api.url=http://127.0.0.1:8090 \
   -jar your-service.jar
 ```
 
 | 参数 | 含义 |
 |------|------|
 | `-Dsp.app.id` | 注册应用 id（`sp app create` 返回的 16 位十六进制）。**请在共享录制的各环境固定此值。** |
-| `-Dsp.storage.service.host` | sp-boot 地址，用于上传与 Mock 查询 |
-| `-Dsp.config.service.host` | sp-boot 地址，用于策略与 Agent 配置同步 |
+| `-Dsp.api.url` | **必填** — sp-boot 根 URL（须含 `http://` 或 `https://`）。环境变量回退：`SP_API_URL`。 |
 
 Agent 也可能从 jar 名或环境自动解析 app id；显式设置 `-Dsp.app.id` 可避免录制与回放 id 不一致。旧文档中的 **`sp.service.name`** 在部分部署中仍作别名；新环境请优先使用 **`sp.app.id`**。
 
@@ -58,17 +56,11 @@ Agent 也可能从 jar 名或环境自动解析 app id；显式设置 `-Dsp.app.
 
 ### `sp.agent.conf` 配置文件
 
-```properties title="sp.agent.conf"
-sp.app.id=a1b2c3d4e5f67890
-sp.storage.service.host=127.0.0.1:8090
-sp.config.service.host=127.0.0.1:8090
+```properties title="META-INF/sp/sp.agent.conf（打包进 agent JAR）"
+sp.api.url=http://127.0.0.1:8090
 ```
 
-```bash
-java -javaagent:/opt/softprobe/sp-agent.jar \
-  -Dsp.config.path=/path/to/sp.agent.conf \
-  -jar your-service.jar
-```
+一体化与 Helm 部署会在打包时烘焙该配置；运维通常只需 `-javaagent` 与 `-Dsp.app.id`。指向其他后端时用 `SP_API_URL` 或 `-Dsp.api.url` 覆盖。
 
 ### Tomcat / `JAVA_OPTS`
 

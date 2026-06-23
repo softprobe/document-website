@@ -84,13 +84,11 @@ Get copy-paste JVM flags (or use `--format shell` for a multiline script only):
 sp agent command --app a1b2c3d4e5f67890 --app-jar target/order-service.jar --json
 ```
 
-Use `data.startCommand` or `data.startCommandMultiline` from the envelope. Override storage/API hostnames when storage is not colocated with sp-boot:
+使用 `data.startCommand` 或 `data.startCommandMultiline`。后端地址与 profile 不一致时：
 
 ```bash
-sp agent command --app a1b2c3d4e5f67890 \
-  --storage-host storage.example.com \
-  --config-host storage.example.com \
-  --json
+SP_API_URL=https://api.example.com sp agent command --app a1b2c3d4e5f67890 --json
+# 或：sp --api-url https://api.example.com agent command --app a1b2c3d4e5f67890 --json
 ```
 
 Check that the backend sees the agent heartbeat, then send representative traffic through the running service:

@@ -74,7 +74,7 @@ sp app create travel-ota</code></pre>
 ```bash
 java -javaagent:sp-agent.jar \
      -Dsp.app.id=<您的应用ID> \
-     -Dsp.storage.service.host=http://localhost:8090 \
+     -Dsp.api.url=http://localhost:8090 \
      -jar travel-ota.jar
 ```
 *(如果您的 Helm 部署后端服务在其他地址，请将 `http://localhost:8090` 替换为实际的后端地址)*。
@@ -154,7 +154,7 @@ Softprobe Agent 会自动拦截并捕捉这一连串的调用流量。
    ```bash
    java -javaagent:sp-agent.jar \
         -Dsp.app.id=<您的应用ID> \
-        -Dsp.storage.service.host=http://<您的后端主机地址>:8090 \
+        -Dsp.api.url=http://<您的后端主机地址>:8090 \
         -jar your-own-application.jar
    ```
 3. **录制与回放**：就像运行演示应用一样，正常发起测试流量，然后列出录制用例并随时发起回放。

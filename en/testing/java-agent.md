@@ -29,8 +29,7 @@ The `agent command` output is the canonical `-javaagent` line for your environme
 java \
   -javaagent:${XDG_DATA_HOME:-~/.local/share}/softprobe/agent/sp-agent.jar \
   -Dsp.app.id=<appId> \
-  -Dsp.storage.service.host=127.0.0.1:8090 \
-  -Dsp.config.service.host=127.0.0.1:8090 \
+  -Dsp.api.url=http://127.0.0.1:8090 \
   -jar your-service.jar
 ```
 
@@ -59,8 +58,7 @@ Self-hosted backends (`http://127.0.0.1:8090`) do not require `-Dsp.api.token` u
 |----------|---------|
 | `-Dsp.api.token` | Tenant API key (SaaS) — agent authentication |
 | `-Dsp.app.id` | Registered application id (16-char hex from `sp app create`). **Pin this** in every environment that shares recordings. |
-| `-Dsp.storage.service.host` | Backend host for upload and mock query |
-| `-Dsp.config.service.host` | Backend host for policies and agent config sync |
+| `-Dsp.api.url` | **Required** — sp-boot base URL (must include `http://` or `https://`). Env fallback: `SP_API_URL`. |
 
 ## Environment tags
 
@@ -76,17 +74,11 @@ Recorded mockers carry `env:<value>` so you can replay only traffic from a given
 
 ### `sp.agent.conf` file
 
-```properties title="sp.agent.conf"
-sp.app.id=a1b2c3d4e5f67890
-sp.storage.service.host=127.0.0.1:8090
-sp.config.service.host=127.0.0.1:8090
+```properties title="META-INF/sp/sp.agent.conf (baked into agent JAR)"
+sp.api.url=http://127.0.0.1:8090
 ```
 
-```bash
-java -javaagent:/opt/softprobe/sp-agent.jar \
-  -Dsp.config.path=/path/to/sp.agent.conf \
-  -jar your-service.jar
-```
+All-in-one and Helm installs bake this at packaging time so operators only need `-javaagent:sp-agent.jar` and `-Dsp.app.id`. Override with `SP_API_URL` or `-Dsp.api.url` when redirecting to another backend.
 
 ### Tomcat / `JAVA_OPTS`
 
