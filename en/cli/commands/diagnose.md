@@ -61,6 +61,7 @@ Writes JSON under `{outDir}/trace-{traceId}/` and returns a summary plus `nextAc
 
 ## Related
 
+- [Log correlation IDs](/en/cli/guide/log-correlation-ids.md)
 - [replay](./replay.md)
 - [replay diff](./replay-diff.md)
 - [record](./record.md)

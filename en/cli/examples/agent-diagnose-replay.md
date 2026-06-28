@@ -54,14 +54,18 @@ sp replay diff get diff-abc --out-dir .sp-work --json
 
 Parse `data.artifact` and read the JSON file in a follow-up tool call. Inspect `baseMsg` vs `testMsg`.
 
-### 5. Optional: record logs
+### 5. Optional: correlated runtime logs
 
-When failure may be agent-side (no recording, incomplete trace):
+When the unified log pipeline is enabled, pull agent, application, and sp-backend logs for a failed replay:
 
 ```bash
-sp record logs overview --trace-id <traceId> --json
-sp record logs download --trace-id <traceId> --out-dir .sp-work --json
+sp recorder logs --replay-id <replayId> --since <start> --until <end> --json
+# add --include-recording-log when recording-time behavior may explain the failure
 ```
+
+See [Log correlation IDs](/en/cli/guide/log-correlation-ids.md) for id sources and time-bound rules.
+
+Legacy record-storage log commands (`sp record logs …`) remain for pre-pipeline record log paths; prefer `sp recorder logs` when the pipeline is deployed.
 
 ### 6. Optional: metadata for full-link
 
@@ -78,7 +82,8 @@ When diagnosing SoftProbe replay failures:
 1. Run `sp replay case list --plan <id> --failed --json`
 2. For each diffId: `sp replay diff get <id> --out-dir .sp-work --json`
 3. Read the artifact file path from JSON; do not parse multi-MB stdout
-4. If traceId unknown, ask user for business ID and run `sp trace find`
+4. For logs: `sp recorder logs --replay-id <replayId> --since … --until …` (see Log correlation IDs guide)
+5. If traceId unknown, ask user for business ID and run `sp trace find`
 ```
 
 ## Related
