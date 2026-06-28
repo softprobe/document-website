@@ -30,6 +30,7 @@ function cliSidebar(locale: DocLocale) {
         { text: 'CLI configuration (XDG)', link: `${p}/cli/guide/configuration` },
         { text: 'spcode CLI', link: `${p}/cli/guide/spcode` },
         { text: 'Concepts', link: `${p}/cli/guide/concepts` },
+        { text: 'Log correlation IDs', link: `${p}/cli/guide/log-correlation-ids` },
       ],
     },
     {
@@ -66,6 +67,7 @@ function cliSidebar(locale: DocLocale) {
             { text: 'replay case', link: `${p}/cli/commands/replay-case` },
             { text: 'replay diff & logs', link: `${p}/cli/commands/replay-diff` },
             { text: 'extraction-rule', link: `${p}/cli/commands/extraction-rule` },
+            { text: 'recorder logs', link: `${p}/cli/commands/recorder` },
           ],
         },
         {
