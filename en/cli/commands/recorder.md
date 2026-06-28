@@ -43,6 +43,8 @@ sp recorder logs --replay-id replay-456 --limit 500 --json
 
 Results are ordered by event time and include available trace, span, replay, session, and service metadata.
 
+For sp-backend schedule dispatch, filter **`sp.source=backend`** rows whose body contains **`Replay send start`**, **`Replay send done`**, or **`Replay send failed`** — the replay HTTP entry/exit markers. See [Replay send log markers](/en/cli/reference/replay-send-log-markers).
+
 ## `sp query`
 
 Run a bounded read-only query against Recorder logs.

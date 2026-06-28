@@ -97,6 +97,7 @@ function cliSidebar(locale: DocLocale) {
       text: 'Reference',
       items: [
         { text: 'API mapping', link: `${p}/cli/reference/api-mapping` },
+        { text: 'Replay send log markers', link: `${p}/cli/reference/replay-send-log-markers` },
         { text: 'JSON types', link: `${p}/cli/reference/json-types` },
         { text: 'Exit codes', link: `${p}/cli/reference/exit-codes` },
       ],

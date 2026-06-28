@@ -54,9 +54,18 @@ sp replay diff get diff-abc --out-dir .sp-work --json
 
 Parse `data.artifact` and read the JSON file in a follow-up tool call. Inspect `baseMsg` vs `testMsg`.
 
-### 5. Optional: record logs
+### 5. Optional: correlated runtime logs
 
-When failure may be agent-side (no recording, incomplete trace):
+Pull agent, application, and sp-backend logs for a failed case. Start with **backend replay send markers** — they show whether schedule reached your app:
+
+```bash
+sp recorder logs --replay-id <replayId> --since <start> --until <end> --json
+# or: sp recorder logs --trace-id <traceId> --since <start> --until <end> --json
+```
+
+Filter `sp.source=backend` rows for `Replay send start`, `Replay send done`, and `Replay send failed`. See [Replay send log markers](/en/cli/reference/replay-send-log-markers).
+
+When failure may be recording-time agent behavior:
 
 ```bash
 sp record logs overview --trace-id <traceId> --json
@@ -78,9 +87,11 @@ When diagnosing SoftProbe replay failures:
 1. Run `sp replay case list --plan <id> --failed --json`
 2. For each diffId: `sp replay diff get <id> --out-dir .sp-work --json`
 3. Read the artifact file path from JSON; do not parse multi-MB stdout
-4. If traceId unknown, ask user for business ID and run `sp trace find`
+4. For logs: `sp recorder logs --replay-id <replayId> …` — grep backend rows for `Replay send start/done/failed` (see Replay send log markers reference)
+5. If traceId unknown, ask user for business ID and run `sp trace find`
 ```
 
 ## Related
 
+- [Replay send log markers](/en/cli/reference/replay-send-log-markers)
 - [replay-diff](/en/cli/commands/replay-diff.md)

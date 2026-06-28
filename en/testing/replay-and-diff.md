@@ -47,7 +47,7 @@ sp replay status --plan <planId> --json
 ## What happens during replay
 
 1. Schedule loads selected cases and **preloads** mocks into Redis.
-2. For each case, schedule issues the recorded entry HTTP call to `targetEnv`.
+2. For each case, schedule issues the recorded entry HTTP call to `targetEnv`. sp-backend logs **`Replay send start`** before the call and **`Replay send done`** or **`Replay send failed`** after — the entry/exit boundary for replay HTTP dispatch. See [Replay send log markers](/en/cli/reference/replay-send-log-markers).
 3. Your service handles the request; on each dependency, the agent queries storage and returns the **recorded** response.
 4. Storage logs replay-side mockers for comparison.
 5. Compare engine runs; results land in replay reports and diff APIs.
