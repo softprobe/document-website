@@ -84,14 +84,14 @@ Schedule service endpoints: `/api/createPlan`, `/api/progress`, `/api/stopPlan`.
 
 ## Trace, replay, and plan ids {#trace-replay-and-plan-ids}
 
-Platform ids tie together recording, replay, diff, and **correlated log search**. For a full reference — what each id means, where to find it, and which `sp recorder logs` flag to use — see **[Log correlation IDs](/en/cli/guide/log-correlation-ids.md)**.
+Platform ids tie together recording, replay, diff, and **correlated log search**. For a full reference — what each id means, where to find it, and how to triage unified logs — see **[Log correlation IDs](/en/cli/guide/log-correlation-ids.md)**.
 
-| ID | Meaning | Log lookup |
-|----|---------|------------|
-| `traceId` | W3C trace id for a recorded or replayed request flow | `sp recorder logs --trace-id …` |
-| `replayId` | One replay **attempt** of a case — **start here** for a single failure | `sp recorder logs --replay-id …` |
-| `planId` | Replay plan container from `sp replay run` | `sp recorder logs --plan-id …` |
-| `planItemId` | Operation-level item within a plan | `sp recorder logs --plan-item-id …` |
+| ID | Meaning | Log lookup (v1) |
+|----|---------|-----------------|
+| `traceId` | W3C trace id for a recorded or replayed request flow | **`sp logs --trace-id …`** or `GET /api/recorder/logs?trace_id=…` — **only v1 key** |
+| `replayId` | One replay **attempt** of a case | Diff/diagnose only — copy **`traceId`** from the same case row for logs |
+| `planId` | Replay plan container from `sp replay run` | Case list / diagnose — per-case **`traceId`** for logs |
+| `planItemId` | Operation-level item within a plan | Same — not a log lookup key |
 | `diffId` | Comparison result row for deep diff fetch | Use `sp replay diff get` — not a log lookup key |
 
 **Where ids appear in CLI output**
@@ -104,7 +104,7 @@ Platform ids tie together recording, replay, diff, and **correlated log search**
 | `sp trace find … --json` | `traceId` when resolving business attributes |
 | `sp diagnose replay <planId> --json` | Failed cases with ids for follow-up |
 
-Agents should obtain `traceId` via `sp trace find` when users supply business attributes (orderId, caseId) instead of trace ids. For log diagnosis after a replay failure, prefer **`replayId`** from failed case list or the e2e **Softprobe correlation** block.
+Agents should obtain `traceId` via `sp trace find` when users supply business attributes (orderId, caseId) instead of trace ids. For log diagnosis after a replay failure, use **`traceId`** from the failed replay case or the e2e **Softprobe correlation** block (`trace_id` field) — not `replayId` as a log query key.
 
 ## Historical coupling: schedule ↔ recording
 

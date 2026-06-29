@@ -2,11 +2,11 @@
 
 **When agents use this:** Retrieve correlated application, agent, and sp-backend logs for a W3C trace within caller-provided time bounds — without direct access to Parquet files or storage credentials.
 
-> **Documentation stub.** This page describes the intended v1 contract before CLI implementation. Sections marked *(implementation)* may be refined when the command ships.
-
 **Prerequisite:** Unified log pipeline enabled (Vector ingest + Parquet storage + query wiring). See [Log correlation IDs](/en/cli/guide/log-correlation-ids.md) for what each id means and where to find it.
 
 v1 is **trace-id-only, canned lookup** — no SQL, no ad hoc query language, no `sp logs status` health command, and no replay/plan lookup keys.
+
+**API (available now):** `GET /api/recorder/logs?trace_id=…&since=…&until=…` on sp-backend. Top-level **`sp logs` CLI** ships in a follow-on slice; softprobe-code and Agent Skills call the HTTP API until then.
 
 ---
 
@@ -58,9 +58,13 @@ sp logs --trace-id 2057ad46a7ce03d3955385f2a4142d29 --since … --until … > /t
 grep ERROR /tmp/trace.log | head -20
 ```
 
-Agent Skills workflow *(implementation)*:
+Agent Skills workflow (API or future CLI):
 
 ```bash
+# HTTP API (v1 workbench path)
+curl -s "$SP_API_URL/api/recorder/logs?trace_id=$TRACE_ID&since=$SINCE&until=$UNTIL" > .spcode/unified-logs-"$TRACE_ID".json
+
+# Future CLI equivalent
 sp logs --trace-id "$TRACE_ID" --since "$SINCE" --until "$UNTIL" > .spcode/unified-logs-"$TRACE_ID".log
 grep ERROR .spcode/unified-logs-"$TRACE_ID".log | head -20
 ```
@@ -69,7 +73,7 @@ grep ERROR .spcode/unified-logs-"$TRACE_ID".log | head -20
 
 ## Output
 
-**Human (default):** Chronological log stream. *(Implementation)* — exact plain-text layout TBD.
+**Human (default):** Chronological log stream — one line per row with timestamp, severity, `source`, `service_name`, and body.
 
 **`--json`:** Same logical data in the standard CLI envelope (`ok`, `command`, `data`). Top-level `data` fields:
 
@@ -83,7 +87,40 @@ v1 responses do **not** include `source_summary` or per-source row-count bucketi
 
 Rows do **not** include pytest labels, suite names, or test node ids.
 
-Optional Softprobe labels (`sp.replay_id`, `sp.plan_id`, etc.) may appear on individual rows when the emitter had that context — they are not filter keys.
+Optional Softprobe labels (`replay_id`, `plan_id`, `plan_item_id`, …) may appear on individual rows when the emitter had that context — they are not filter keys.
+
+---
+
+## Troubleshooting failed replays
+
+Use this after `sp diagnose replay` or a pytest failure. See [Log correlation IDs](/en/cli/guide/log-correlation-ids.md) for id sources.
+
+```bash
+export SP_API_URL="${SP_API_URL:-http://127.0.0.1:18090}"
+TRACE_ID="<32-hex from replay case traceId or pytest correlation block>"
+SINCE="2026-06-27T10:00:00Z"
+UNTIL="2026-06-27T10:05:00Z"
+
+curl -s "${SP_API_URL}/api/recorder/logs?trace_id=${TRACE_ID}&since=${SINCE}&until=${UNTIL}" \
+  -H "Accept: application/json" -o /tmp/sp-logs.json
+
+jq '.rows | length' /tmp/sp-logs.json
+jq '[.rows[].source] | group_by(.) | map({source: .[0], n: length})' /tmp/sp-logs.json
+jq '.warnings' /tmp/sp-logs.json
+jq -r '.rows[] | select(.source=="backend" and .severity=="ERROR") | .body' /tmp/sp-logs.json | head -20
+```
+
+| Symptom | Likely cause |
+|---------|----------------|
+| 0 rows + non-empty `warnings` | Backend Parquet reader out of sync with schema — rebuild sp-backend image |
+| 0 rows, empty `warnings` | Wrong `trace_id`, time window, or ingest not flushed yet |
+| Rows from `agent`, `app`, and `backend` | Pipeline OK — inspect diff artifacts and log `body` for compare/mock timing |
+
+**Pytest:** read **Softprobe correlation** (`trace_id`) and **Unified logs** (row/source summary) in failure output.
+
+**Agent Skills:** shell first (`curl`, `jq`, `grep`) — do not implement Parquet readers in plugin code.
+
+---
 
 ### JSON output
 
@@ -108,10 +145,10 @@ Optional Softprobe labels (`sp.replay_id`, `sp.plan_id`, etc.) may appear on ind
         "severity": "WARN",
         "body": "Replay comparison mismatch",
         "service_name": "sp-backend",
-        "sp.source": "backend",
+        "source": "backend",
         "trace_id": "2057ad46a7ce03d3955385f2a4142d29",
         "span_id": "8d10c94a2a6f4e11",
-        "sp.replay_id": "6891fd300c676b31"
+        "replay_id": "6891fd300c676b31"
       }
     ],
     "warnings": []
