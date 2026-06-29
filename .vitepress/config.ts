@@ -199,6 +199,7 @@ const platformSidebarEn = [
     items: [
       { text: 'Production Installation', link: '/en/platform/deployment/installation' },
       { text: 'sp-backend (Helm)', link: '/en/platform/deployment/sp-backend-helm' },
+      { text: 'Unified log pipeline', link: '/en/platform/deployment/unified-log-pipeline' },
       { text: 'spcode-web', link: '/en/platform/deployment/spcode-web' },
       { text: 'GKE Autopilot + Istio', link: '/en/platform/deployment/GKE-Autopilot-Istio-Installation-Guide' },
     ],
