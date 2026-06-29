@@ -14,7 +14,7 @@ This reference describes **CLI and API query output** only. It does not document
 
 Each successful lookup returns one **chronological stream** of rows in `data.rows` (CLI `--json`) or the API `rows` array. Rows are ordered by event `timestamp` ascending.
 
-Human-readable CLI output prints the same logical fields when `sp logs` ships; until then softprobe-code and Agent Skills use curl + `jq` on API JSON.
+Human-readable CLI output prints the same logical fields as API JSON.
 
 See [sp logs](./logs.md) for the `--trace-id` lookup key, triage workflow, and required time bounds.
 

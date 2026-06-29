@@ -6,7 +6,7 @@
 
 v1 is **trace-id-only, canned lookup** — no SQL, no ad hoc query language, no `sp logs status` health command, and no replay/plan lookup keys.
 
-**API (available now):** `GET /api/recorder/logs?trace_id=…&since=…&until=…` on sp-backend. Top-level **`sp logs` CLI** ships in a follow-on slice; softprobe-code and Agent Skills call the HTTP API until then.
+**API:** `GET /api/recorder/logs?trace_id=…&since=…&until=…` on sp-backend. Top-level **`sp logs`** uses the same contract.
 
 ---
 
