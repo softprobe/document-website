@@ -58,15 +58,15 @@ sp logs --trace-id 2057ad46a7ce03d3955385f2a4142d29 --since … --until … > /t
 grep ERROR /tmp/trace.log | head -20
 ```
 
-Agent Skills workflow (API or future CLI):
+Agent Skills workflow (CLI or API):
 
 ```bash
-# HTTP API (v1 workbench path)
-curl -s "$SP_API_URL/api/recorder/logs?trace_id=$TRACE_ID&since=$SINCE&until=$UNTIL" > .spcode/unified-logs-"$TRACE_ID".json
-
-# Future CLI equivalent
+# Canonical CLI
 sp logs --trace-id "$TRACE_ID" --since "$SINCE" --until "$UNTIL" > .spcode/unified-logs-"$TRACE_ID".log
 grep ERROR .spcode/unified-logs-"$TRACE_ID".log | head -20
+
+# HTTP API (same contract)
+curl -s "$SP_API_URL/api/recorder/logs?trace_id=$TRACE_ID&since=$SINCE&until=$UNTIL" > .spcode/unified-logs-"$TRACE_ID".json
 ```
 
 ---
@@ -214,6 +214,7 @@ These pre-unified paths are removed, not shimmed:
 - `sp.session_id` in query results
 - `--limit` / row truncation — narrow time bounds or filter locally instead
 - Authentication for log lookups
+- Record trace tables, metrics tables, replay read migration, historical backfill, and non-replay-path service logs (dashboard, auth, etc.) — replay **data** stays on the legacy replay-compatible storage path
 
 ---
 

@@ -120,6 +120,16 @@ A startup line from the same service might omit correlation fields entirely:
 
 ---
 
+## Out of scope (v1)
+
+This reference covers unified pipeline **query output** only. Not part of v1 unless separately specified:
+
+- Record trace tables, metrics tables, replay read migration, historical backfill
+- Non-replay-path service logs (dashboard, auth, and other Helm/workspace services)
+- Direct Parquet file access, object-store credentials, or standalone query tools
+
+---
+
 ## Related
 
 - [sp logs](./logs.md) — command reference, flags, triage, and API mapping
