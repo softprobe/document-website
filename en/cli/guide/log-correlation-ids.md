@@ -46,7 +46,15 @@ Each log row carries **`source`**: `agent` (Java agent diagnostics), `app` (appl
 
 Every lookup requires **`trace_id`** plus **`since`** and **`until`**. Use **ISO-8601 UTC** (for example `2026-06-27T10:00:00Z`). `since` is **inclusive**; `until` is **exclusive** (`[since, until)`).
 
-### HTTP API (available now)
+### CLI (primary)
+
+```bash
+sp logs --trace-id <traceId> --since <start> --until <end> [--json]
+```
+
+Add **`--json`** for scripts and AI agents. Human-readable text is the default.
+
+### HTTP API (when `sp` is not in PATH)
 
 ```bash
 export SP_API_URL="${SP_API_URL:-http://127.0.0.1:18090}"
@@ -57,14 +65,6 @@ UNTIL="2026-06-27T10:05:00Z"
 curl -s "${SP_API_URL}/api/recorder/logs?trace_id=${TRACE_ID}&since=${SINCE}&until=${UNTIL}" \
   -H "Accept: application/json" -o /tmp/trace-logs.json
 ```
-
-### CLI (when implemented)
-
-```bash
-sp logs --trace-id <traceId> --since <start> --until <end> [--json]
-```
-
-Add **`--json`** for scripts and AI agents. Human-readable text is the default when the CLI ships.
 
 ### Picking `since` / `until`
 
@@ -88,19 +88,21 @@ There is no `--limit` on v1 log lookups.
 
 ## Triage unified log results
 
-After fetching logs, follow this order:
+After fetching logs, follow this order.
+
+**`sp --json logs`** wraps the API body in `.data` — use `jq '.data.rows'`, `jq '.data.warnings'`. **`curl`** saves the API JSON directly — use `jq '.rows'`, `jq '.warnings'`.
 
 ```bash
-# 1. Row count
+# After sp --json logs (CLI envelope)
+jq '.data.rows | length' /tmp/trace-logs.json
+jq '[.data.rows[].source] | group_by(.) | map({source: .[0], n: length})' /tmp/trace-logs.json
+jq '.data.warnings' /tmp/trace-logs.json
+jq -r '.data.rows[] | select(.source=="backend" and .severity=="ERROR") | "\(.timestamp) \(.body)"' /tmp/trace-logs.json | head -20
+
+# After curl GET /api/recorder/logs (API body at top level)
 jq '.rows | length' /tmp/trace-logs.json
-
-# 2. Per-source counts
 jq '[.rows[].source] | group_by(.) | map({source: .[0], n: length})' /tmp/trace-logs.json
-
-# 3. Non-fatal reader/schema notices
 jq '.warnings' /tmp/trace-logs.json
-
-# 4. Backend errors first, then agent, then app
 jq -r '.rows[] | select(.source=="backend" and .severity=="ERROR") | "\(.timestamp) \(.body)"' /tmp/trace-logs.json | head -20
 ```
 
@@ -119,11 +121,13 @@ Recording-phase and replay-phase lines for the **same business request** share o
 
 ## Reading the response
 
-**`--json` / API** top-level fields:
+**HTTP API** top-level fields:
 
 - `lookup` — type `trace`, value, and caller `[since, until)` bounds
 - `rows[]` — each row: `timestamp`, `severity`, `body`, `service_name`, `source`, and optional `trace_id`, `span_id`, `replay_id`, `plan_id`, `plan_item_id`
 - `warnings` — non-fatal schema-skip or similar (may be empty)
+
+**`sp --json logs`** returns a CLI envelope: `{"ok":true,"command":"logs","data":{...}}` — use `.data.rows` and `.data.warnings` in scripts.
 
 v1 responses do **not** include `source_summary`. Compute per-source counts locally with `jq` (see above).
 
@@ -148,8 +152,9 @@ Copy `trace_id` and the suggested `since`/`until` from the block, then run the t
 1. sp replay case list --plan <planId> --failed --json
       → copy traceId (and replayId for diff/diagnose)
 
-2. curl GET /api/recorder/logs?trace_id=<traceId>&since=…&until=…
+2. sp logs --trace-id <traceId> --since … --until … [--json]
       → triage: count → sources → warnings → read backend/agent/app bodies
+      (curl GET /api/recorder/logs only when sp is unavailable)
 
 3. sp diagnose replay <planId> --failed-only --out-dir .sp-work --json
       → read diff artifacts for field-level compare failures
