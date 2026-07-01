@@ -68,6 +68,10 @@ Add **`--json`** for scripts and AI agents. Human-readable text is the default w
 
 ### Picking `since` / `until`
 
+**When you have case timestamps (`recordTime` and `replayTime`):** run **two** ±2 minute lookups — one around each anchor — and merge rows. Never bridge record time to replay time in a single query. See [sp logs — Case-scoped lookup](/en/cli/commands/logs.md#case-scoped-lookup-dual-windows).
+
+**Otherwise:**
+
 1. Start with a window around the failure (for example five minutes before plan finish through one minute after).
 2. Widen the window if row counts show zeros for a `source` you expect (`agent`, `app`, `backend`).
 3. E2E after `make compose-parquet-clean`: rerun the session, then poll up to ~180s for Vector ingest.
