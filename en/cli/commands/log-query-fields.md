@@ -73,6 +73,8 @@ Common cases:
 
 When diagnosing a failed replay, query by the **`trace_id`** from the replay case or pytest correlation block. Filter rows by optional `replay_id` in local output when you need replay-scoped lines.
 
+**Case-scoped diagnosis:** when the case row includes **`recordTime`** (API `requestDateTime`) and **`replayTime`**, use two ±2 minute windows (one per anchor) instead of one span from record to replay. The replay window usually has the relevant lines; the record window is often empty. See [sp logs — Case-scoped lookup](./logs.md#case-scoped-lookup-dual-windows).
+
 ---
 
 ## Per-component logging ownership

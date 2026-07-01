@@ -91,6 +91,48 @@ Optional Softprobe labels (`replay_id`, `plan_id`, `plan_item_id`, …) may appe
 
 ---
 
+## Case-scoped lookup (dual windows)
+
+When diagnosing a **replay case**, you often have two timestamps:
+
+- **`recordTime`** — when the case was originally recorded (API field `requestDateTime`)
+- **`replayTime`** — when the replay run executed
+
+**Do not** query from `recordTime` through `replayTime` in one request. That spans every minute partition in between and can scan hundreds of Parquet files.
+
+Instead, run **two** narrow lookups (±2 minutes around each anchor) and merge rows client-side:
+
+```bash
+export SP_API_URL="${SP_API_URL:-http://127.0.0.1:18090}"
+TRACE_ID="<32-hex from replay case traceId>"
+RECORD_TIME_MS=1714000000000   # requestDateTime from case row
+REPLAY_TIME_MS=1714046100000   # replayTime from case row
+PADDING_MS=$((2 * 60 * 1000))
+
+# Window 1: recording
+RECORD_SINCE=$(date -u -d "@$(( (RECORD_TIME_MS - PADDING_MS) / 1000 ))" +%Y-%m-%dT%H:%M:%SZ)
+RECORD_UNTIL=$(date -u -d "@$(( (RECORD_TIME_MS + PADDING_MS) / 1000 ))" +%Y-%m-%dT%H:%M:%SZ)
+
+curl -s "${SP_API_URL}/api/recorder/logs?trace_id=${TRACE_ID}&since=${RECORD_SINCE}&until=${RECORD_UNTIL}" \
+  -H "Accept: application/json" -o /tmp/sp-logs-record.json
+
+# Window 2: replay
+REPLAY_SINCE=$(date -u -d "@$(( (REPLAY_TIME_MS - PADDING_MS) / 1000 ))" +%Y-%m-%dT%H:%M:%SZ)
+REPLAY_UNTIL=$(date -u -d "@$(( (REPLAY_TIME_MS + PADDING_MS) / 1000 ))" +%Y-%m-%dT%H:%M:%SZ)
+
+curl -s "${SP_API_URL}/api/recorder/logs?trace_id=${TRACE_ID}&since=${REPLAY_SINCE}&until=${REPLAY_UNTIL}" \
+  -H "Accept: application/json" -o /tmp/sp-logs-replay.json
+
+# Merge and sort by timestamp (example with jq)
+jq -s '[.[].rows[]] | sort_by(.timestamp)' /tmp/sp-logs-record.json /tmp/sp-logs-replay.json
+```
+
+The SoftProbe workbench **View case logs** action uses the same dual-window pattern automatically. The replay window usually contains the lines you need; the record window is often empty but cheap to query.
+
+See [Log query fields](./log-query-fields.md) and [Log correlation IDs](/en/cli/guide/log-correlation-ids.md).
+
+---
+
 ## Troubleshooting failed replays
 
 Use this after `sp diagnose replay` or a pytest failure. See [Log correlation IDs](/en/cli/guide/log-correlation-ids.md) for id sources.

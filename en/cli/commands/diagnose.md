@@ -35,15 +35,19 @@ Example `data` shape:
 {
   "planId": "plan-abc123",
   "status": "FINISHED",
-  "failedCaseCount": 2,
+  "classification": "invalid_target",
+  "message": "Connection refused: travel-ota:9999",
+  "failedCaseCount": 0,
+  "invalidCaseCount": 12,
   "artifacts": [
     ".sp-work/plan-abc123/item-1-diff.json"
-  ],
-  "nextActions": [
-    "sp record trace <traceId> --json"
   ]
 }
 ```
+
+`classification` is one of: `empty_window`, `invalid_target`, `assertion_failure`, `mixed`, `other`. `message` comes from backend `errorMessage` or case send errors when available — not fabricated client copy.
+
+**Note:** `nextActions` was removed from `diagnose replay --json` output (feature 007). Use `classification` + `message` for automation.
 
 ## `diagnose trace`
 
