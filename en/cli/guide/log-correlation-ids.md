@@ -46,7 +46,15 @@ Each log row carries **`source`**: `agent` (Java agent diagnostics), `app` (appl
 
 Every lookup requires **`trace_id`** plus **`since`** and **`until`**. Use **ISO-8601 UTC** (for example `2026-06-27T10:00:00Z`). `since` is **inclusive**; `until` is **exclusive** (`[since, until)`).
 
-### HTTP API (available now)
+### CLI (primary)
+
+```bash
+sp logs --trace-id <traceId> --since <start> --until <end> [--json]
+```
+
+Add **`--json`** for scripts and AI agents. Human-readable text is the default.
+
+### HTTP API (when `sp` is not in PATH)
 
 ```bash
 export SP_API_URL="${SP_API_URL:-http://127.0.0.1:18090}"
@@ -57,14 +65,6 @@ UNTIL="2026-06-27T10:05:00Z"
 curl -s "${SP_API_URL}/api/recorder/logs?trace_id=${TRACE_ID}&since=${SINCE}&until=${UNTIL}" \
   -H "Accept: application/json" -o /tmp/trace-logs.json
 ```
-
-### CLI (when implemented)
-
-```bash
-sp logs --trace-id <traceId> --since <start> --until <end> [--json]
-```
-
-Add **`--json`** for scripts and AI agents. Human-readable text is the default when the CLI ships.
 
 ### Picking `since` / `until`
 
@@ -148,8 +148,9 @@ Copy `trace_id` and the suggested `since`/`until` from the block, then run the t
 1. sp replay case list --plan <planId> --failed --json
       → copy traceId (and replayId for diff/diagnose)
 
-2. curl GET /api/recorder/logs?trace_id=<traceId>&since=…&until=…
+2. sp logs --trace-id <traceId> --since … --until … [--json]
       → triage: count → sources → warnings → read backend/agent/app bodies
+      (curl GET /api/recorder/logs only when sp is unavailable)
 
 3. sp diagnose replay <planId> --failed-only --out-dir .sp-work --json
       → read diff artifacts for field-level compare failures
