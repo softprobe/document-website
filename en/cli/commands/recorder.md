@@ -1,10 +1,15 @@
-# Recorder Commands
+# sp recorder logs (retired)
 
-Recorder commands query newly captured application logs from the Softprobe Recorder lakehouse. They are designed for humans, CI, and AI agents through the normal `sp` CLI JSON contract.
+**This page is retired.** v1 unified log lookup is **trace-id-only** via [sp logs](./logs.md) and `GET /api/recorder/logs?trace_id=…`.
 
-Phase one is logs-only. Traces, metrics, replay read migration, historical backfill, and direct lakehouse access are not part of this command surface.
+| Retired | Replacement |
+|---------|-------------|
+| `sp recorder logs --replay-id` | `sp logs --trace-id <traceId> …` or HTTP API with `trace_id` |
+| `sp recorder logs --plan-id` / `--plan-item-id` | Resolve per-case **`traceId`**, then `sp logs --trace-id …` |
+| `--include-recording-log` | **Removed** — record and replay share the same `trace_id` on replay |
+| `source_summary` in responses | **Removed** — use `jq` to group rows by `source` |
 
-## `sp recorder info`
+Obtain **`traceId`** from replay case JSON, pytest **Softprobe correlation** output, or [Log correlation IDs](/en/cli/guide/log-correlation-ids.md).
 
 Show Recorder product health without exposing catalog or object-store credentials.
 
@@ -75,3 +80,4 @@ sp recorder query \
 - Mutating SQL, unsupported tables, missing bounds, and broad scans fail closed.
 - CLI users and spcode never configure catalog URLs, object-store keys, or standalone query tools.
 - On-prem deployment is enabled through the existing Softprobe Helm chart; production/SaaS manifests are not part of phase one.
+See [sp logs](./logs.md) for flags, examples, triage workflow, and API mapping.

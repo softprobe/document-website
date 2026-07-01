@@ -35,15 +35,19 @@ Example `data` shape:
 {
   "planId": "plan-abc123",
   "status": "FINISHED",
-  "failedCaseCount": 2,
+  "classification": "invalid_target",
+  "message": "Connection refused: travel-ota:9999",
+  "failedCaseCount": 0,
+  "invalidCaseCount": 12,
   "artifacts": [
     ".sp-work/plan-abc123/item-1-diff.json"
-  ],
-  "nextActions": [
-    "sp record trace <traceId> --json"
   ]
 }
 ```
+
+`classification` is one of: `empty_window`, `invalid_target`, `assertion_failure`, `mixed`, `other`. `message` comes from backend `errorMessage` or case send errors when available — not fabricated client copy.
+
+**Note:** `nextActions` was removed from `diagnose replay --json` output (feature 007). Use `classification` + `message` for automation.
 
 ## `diagnose trace`
 
@@ -59,8 +63,30 @@ Fetches:
 
 Writes JSON under `{outDir}/trace-{traceId}/` and returns a summary plus `nextActions` (e.g. `sp record query --trace-id …`).
 
+## After diagnose: unified logs
+
+`diagnose replay` returns diff artifacts but not runtime log lines. For each failed case:
+
+1. Copy **`traceId`** from `sp replay case list --plan <planId> --failed --json` (v1 log lookup key — not `replayId`).
+2. Query unified logs:
+
+```bash
+curl -s "${SP_API_URL}/api/recorder/logs?trace_id=${TRACE_ID}&since=${SINCE}&until=${UNTIL}" \
+  -H "Accept: application/json" -o .sp-work/unified-logs.json
+
+jq '.rows | length' .sp-work/unified-logs.json
+jq '[.rows[].source] | group_by(.) | map({source: .[0], n: length})' .sp-work/unified-logs.json
+```
+
+3. Triage: empty rows + `warnings` → reader/schema issue; empty + no warnings → wrong window or ingest lag; rows from `agent`, `app`, and `backend` → pipeline OK, read `body` and diff artifacts together.
+
+On **`make e2e`** failures, pytest prints **Softprobe correlation** (`trace_id`) and **Unified logs** summaries — use those before widening the investigation.
+
+See [Log correlation IDs](/en/cli/guide/log-correlation-ids.md) and [sp logs — troubleshooting](./logs.md#troubleshooting-failed-replays).
+
 ## Related
 
+- [Log correlation IDs](/en/cli/guide/log-correlation-ids.md)
 - [replay](./replay.md)
 - [replay diff](./replay-diff.md)
 - [record](./record.md)

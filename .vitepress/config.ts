@@ -30,6 +30,7 @@ function cliSidebar(locale: DocLocale) {
         { text: 'CLI configuration (XDG)', link: `${p}/cli/guide/configuration` },
         { text: 'spcode CLI', link: `${p}/cli/guide/spcode` },
         { text: 'Concepts', link: `${p}/cli/guide/concepts` },
+        { text: 'Log correlation IDs', link: `${p}/cli/guide/log-correlation-ids` },
       ],
     },
     {
@@ -66,6 +67,7 @@ function cliSidebar(locale: DocLocale) {
             { text: 'replay case', link: `${p}/cli/commands/replay-case` },
             { text: 'replay diff & logs', link: `${p}/cli/commands/replay-diff` },
             { text: 'extraction-rule', link: `${p}/cli/commands/extraction-rule` },
+            { text: 'recorder logs', link: `${p}/cli/commands/recorder` },
           ],
         },
         {
@@ -198,6 +200,7 @@ const platformSidebarEn = [
     items: [
       { text: 'Production Installation', link: '/en/platform/deployment/installation' },
       { text: 'sp-backend (Helm)', link: '/en/platform/deployment/sp-backend-helm' },
+      { text: 'Unified log pipeline', link: '/en/platform/deployment/unified-log-pipeline' },
       { text: 'spcode-web', link: '/en/platform/deployment/spcode-web' },
       { text: 'GKE Autopilot + Istio', link: '/en/platform/deployment/GKE-Autopilot-Istio-Installation-Guide' },
     ],
