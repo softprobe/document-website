@@ -36,7 +36,6 @@ logPipeline:
   compaction:
     enabled: true            # local storage only
     schedule: "15 * * * *"   # previous closed UTC hour
-    image: softprobe/duckdb:1.1.3
   # Pin Vector + maintenance jobs to the same node pool as sp-backend when using taints:
   placement:
     nodeSelector:
