@@ -161,4 +161,4 @@ Point instrumented applications at the in-cluster service:
 
 After sp-backend is healthy, deploy the web UI: [spcode-web](./spcode-web.md).
 
-Optional: enable the [unified log pipeline](./unified-log-pipeline.md) for correlated trace-id log query (`sp logs`).
+Optional: enable the [unified log pipeline](./unified-log-pipeline.md) for correlated trace-id log query (`sp logs`). Set `logPipeline.enabled: true` in values (see that guide for PVC size, compaction, placement, and agent OTLP endpoint).
