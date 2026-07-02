@@ -2,7 +2,7 @@
 
 Enable correlated log ingest, Parquet storage, and trace-id query (`sp logs` / `GET /api/recorder/logs`) from the **sp-backend** Helm chart.
 
-**Prerequisites:** a healthy `sp-backend` release and a chart version that includes `logPipeline` (v4.3.x+). Instrumented workloads need the in-cluster Vector OTLP log endpoint (see [Agent OTLP export](#agent-otlp-export)).
+**Prerequisites:** a healthy `sp-backend` release on chart **v4.3.x+**. The pipeline is **enabled by default** (`logPipeline.enabled: true`). Instrumented workloads need the in-cluster Vector OTLP log endpoint (see [Agent OTLP export](#agent-otlp-export)).
 
 ## What the chart deploys
 
@@ -18,13 +18,13 @@ When `logPipeline.enabled: true`, Helm adds:
 
 sp-backend is wired for Parquet reads and exports its own diagnostic logs when the pipeline is enabled (`OTEL_ENABLED=true`, `OTEL_LOGS_EXPORTER=otlp-filtered`).
 
-## Enable in Helm
+## Configure in Helm
 
-Add to your values file (or `--set` on install/upgrade):
+The chart enables the pipeline by default. Override in your values file (or `--set` on install/upgrade) when you need non-default storage, placement, or to disable:
 
 ```yaml
 logPipeline:
-  enabled: true
+  enabled: true   # default; set false to disable
   storage:
     backend: local   # or s3
   parquet:
@@ -48,15 +48,16 @@ logPipeline:
         effect: NoSchedule
 ```
 
-Example upgrade on an existing release:
+**Upgrading from an older `values.yaml` without a `logPipeline` block?** You do not need to add one — chart defaults apply and the pipeline is deployed on upgrade. See [Upgrade an existing release](./sp-backend-helm.md#upgrade-an-existing-release).
+
+Example upgrade with explicit overrides (optional):
 
 ```bash
 helm upgrade softprobe softprobe/sp-backend \
-  --version 4.3.8 \
+  --version 4.3.9 \
   -n softprobe \
   -f values.yaml \
-  --set image.tag=v4.3.8 \
-  --set logPipeline.enabled=true
+  --set image.tag=v4.3.9
 ```
 
 Pin **`image.tag`** to a semver release (for example `v4.3.9`), not `latest`, so the backend matches your chart version.
@@ -160,7 +161,7 @@ End users and Agent Skills **must not** receive bucket credentials — query onl
 
 | Value | Description |
 |-------|-------------|
-| `logPipeline.enabled` | Deploy Vector, storage, and query wiring (default `false` on fresh chart defaults) |
+| `logPipeline.enabled` | Deploy Vector, storage, and query wiring (default `true`) |
 | `logPipeline.storage.backend` | `local` (PVC) or `s3` |
 | `logPipeline.parquet.storageSize` / `storageClass` | Local Parquet PVC size and class |
 | `logPipeline.vector.image` | Vector image (default `timberio/vector:0.56.0-debian`) |

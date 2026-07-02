@@ -111,20 +111,141 @@ kubectl port-forward -n softprobe svc/softprobe-sp-backend 8090:8090
 curl -s http://127.0.0.1:8090/actuator/health
 ```
 
-**Bundled mode:** expect pods for `mongodb`, `redis`, and `sp-backend`.
+**Bundled mode:** expect pods for `mongodb`, `redis`, `sp-backend`, and (chart v4.3.x+) `log-vector`.
 
-**External mode:** expect `redis` and `sp-backend` only (no `{release}-mongo` pod).
+**External mode:** expect `redis`, `sp-backend`, and `log-vector` (no `{release}-mongo` pod).
 
-## Upgrade
+Chart **v4.3.x+** enables the [unified log pipeline](./unified-log-pipeline.md) by default (Vector, Parquet PVC, compaction). Fresh installs need only the MongoDB and encryption keys above — no separate `logPipeline` block required.
+
+## Upgrade an existing release
+
+Use the same release name, namespace, and `values.yaml` you used at install. A Softprobe release tag maps to Helm as:
+
+| Release tag | Chart `--version` | `image.tag` |
+|-------------|-------------------|-------------|
+| `v4.3.9` | `4.3.9` | `v4.3.9` |
+
+### Before you upgrade
+
+1. **Keep your existing `values.yaml`** — you do not need to replace it. Helm merges your file with the new chart defaults for any key you omitted.
+2. **Older file without `logPipeline`?** If you installed on v4.3.5 or earlier with only `image`, `mongodb`, and `encryption`, bump `--version` and `image.tag` only. Missing keys inherit chart defaults — **`logPipeline.enabled` is `true`**, so Vector, the Parquet PVC (local mode), compaction, and retention are added on upgrade. Use `--dry-run` first to preview new resources.
+3. **Review optional overrides** — download [values.example.yaml](https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.3.9/values.example.yaml) for the target version and merge only what you need (PVC `storageClass`, `placement`, S3 backend). Do **not** change `encryption.secretKey` — existing encrypted payloads depend on it.
+4. **Keep your MongoDB mode** — do not switch between bundled and external MongoDB on upgrade.
+5. **Confirm registry access** — the `softprobe-gcr-pull` secret must still be valid for the new `image.tag`.
+6. **Preview the diff** (optional):
 
 ```bash
 helm repo update
 helm upgrade softprobe softprobe/sp-backend \
-  --version 4.3.6 \
+  --version 4.3.9 \
   -n softprobe \
   -f values.yaml \
-  --set image.tag=v4.3.6
+  --set image.tag=v4.3.9 \
+  --dry-run
 ```
+
+### Upgrade from the Helm repo
+
+Typical upgrade — same `values.yaml` as install, new chart and image version:
+
+```bash
+helm repo update
+helm upgrade softprobe softprobe/sp-backend \
+  --version 4.3.9 \
+  -n softprobe \
+  -f values.yaml \
+  --set image.tag=v4.3.9
+```
+
+Replace `softprobe` with your release name if different. Pin **`image.tag`** to the semver release Softprobe gave you — not `latest`.
+
+**Example — old values file, no `logPipeline` block:** your file still looks like this:
+
+```yaml
+image:
+  tag: "v4.3.5"
+  pullSecrets:
+    - name: softprobe-gcr-pull
+mongodb:
+  bundled:
+    auth:
+      password: "your-existing-password"
+encryption:
+  enabled: true
+  secretKey: "your-existing-key"
+```
+
+Upgrade command (no edits required):
+
+```bash
+helm upgrade softprobe softprobe/sp-backend \
+  --version 4.3.9 \
+  -n softprobe \
+  -f values.yaml \
+  --set image.tag=v4.3.9
+```
+
+Helm adds log-pipeline resources from chart defaults. After rollout, point agents at Vector (see below).
+
+### Upgrade from a downloaded chart package
+
+If you install offline or verify SHA-256 from GCS:
+
+```bash
+curl -fLO "https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.3.9/sp-backend-4.3.9.tgz"
+
+helm upgrade softprobe ./sp-backend-4.3.9.tgz \
+  -n softprobe \
+  -f values.yaml \
+  --set image.tag=v4.3.9
+```
+
+### Verify after upgrade
+
+```bash
+kubectl rollout status -n softprobe deploy/softprobe-sp-backend
+kubectl get pods -n softprobe
+kubectl get pods,cronjob,pvc -n softprobe | grep -E 'log-vector|log-parquet|compaction|retention'
+kubectl port-forward -n softprobe svc/softprobe-sp-backend 8090:8090
+curl -s http://127.0.0.1:8090/actuator/health
+```
+
+Expect a rolling restart of `sp-backend` (and Redis if the chart template changed). Bundled MongoDB data on the existing PVC is preserved. `sp-backend` may take up to ~2 minutes to become ready after the new pod starts (JVM warm-up).
+
+On v4.3.x+ you should also see `log-vector` and a `log-parquet` PVC (local storage). Point instrumented workloads at Vector:
+
+```text
+-Dsp.otel.exporter.otlp.log.endpoint=http://<release>-log-vector.<namespace>.svc.cluster.local:4320/v1/logs
+```
+
+### Customize or disable the log pipeline
+
+The pipeline is **on by default**. Merge overrides from [values.example.yaml](https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.3.9/values.example.yaml) only when you need non-default storage, placement, or S3:
+
+```yaml
+logPipeline:
+  parquet:
+    storageSize: 100Gi
+    storageClass: managed-csi
+```
+
+To **disable** on upgrade, add before running `helm upgrade`:
+
+```yaml
+logPipeline:
+  enabled: false
+```
+
+Full options: [Unified log pipeline (Helm)](./unified-log-pipeline.md).
+
+### Upgrade troubleshooting
+
+| Symptom | Check |
+|---------|--------|
+| `ImagePullBackOff` after upgrade | New `image.tag` exists in GCR; `softprobe-gcr-pull` secret valid |
+| `helm upgrade` fails on MongoDB | Still set **one** of `mongodb.connectionString` or `mongodb.bundled.auth.password` — do not clear both |
+| New log Parquet PVC pending | Cluster `StorageClass` — set `logPipeline.parquet.storageClass` |
+| Log query empty after enabling pipeline | Agent OTLP endpoint and trace bounds — see [unified log pipeline troubleshooting](./unified-log-pipeline.md#troubleshooting) |
 
 ## Uninstall
 
@@ -161,4 +282,4 @@ Point instrumented applications at the in-cluster service:
 
 After sp-backend is healthy, deploy the web UI: [spcode-web](./spcode-web.md).
 
-Optional: enable the [unified log pipeline](./unified-log-pipeline.md) for correlated trace-id log query (`sp logs`). Set `logPipeline.enabled: true` in values (see that guide for PVC size, compaction, placement, and agent OTLP endpoint).
+The unified log pipeline is included by default on chart v4.3.x+ — customize storage, retention, or agent OTLP in [Unified log pipeline (Helm)](./unified-log-pipeline.md).
