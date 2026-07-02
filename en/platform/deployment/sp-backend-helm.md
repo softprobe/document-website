@@ -19,7 +19,7 @@ Configure **exactly one** mode in your values file. `helm install` fails if both
 
 Download the example values file for your chart version:
 
-[values.example.yaml (v4.3.5)](https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.3.5/values.example.yaml)
+[values.example.yaml (v4.3.9)](https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.3.9/values.example.yaml)
 
 ## Install
 
@@ -57,7 +57,7 @@ Chart deploys MongoDB 7 and Redis 7 alongside sp-backend.
 
 ```yaml
 image:
-  tag: "v4.3.5"
+  tag: "v4.3.9"
   pullSecrets:
     - name: softprobe-gcr-pull
 
@@ -78,7 +78,7 @@ Use your existing MongoDB server. Do **not** set `mongodb.bundled.auth.password`
 
 ```yaml
 image:
-  tag: "v4.3.5"
+  tag: "v4.3.9"
   pullSecrets:
     - name: softprobe-gcr-pull
 
@@ -92,14 +92,14 @@ encryption:
 
 ### 4. Helm install
 
-Use the chart version and image tag from your Softprobe release (`v4.3.5` → chart `4.3.5`, image `v4.3.5`).
+Use the chart version and image tag from your Softprobe release (`v4.3.9` → chart `4.3.9`, image `v4.3.9`).
 
 ```bash
 helm install softprobe softprobe/sp-backend \
-  --version 4.3.5 \
+  --version 4.3.9 \
   --namespace softprobe \
   -f values.yaml \
-  --set image.tag=v4.3.5 \
+  --set image.tag=v4.3.9 \
   --set createNamespace=false
 ```
 
