@@ -212,7 +212,7 @@ curl -s http://127.0.0.1:8090/actuator/health
 
 Expect a rolling restart of `sp-backend` (and Redis if the chart template changed). Bundled MongoDB data on the existing PVC is preserved. `sp-backend` may take up to ~2 minutes to become ready after the new pod starts (JVM warm-up).
 
-On v4.3.x+ you should also see `log-vector` and a `log-parquet` PVC (local storage). Point instrumented workloads at Vector:
+On v4.3.9+ you should also see `log-vector` and a `log-parquet` PVC (local storage). Point instrumented workloads at Vector:
 
 ```text
 -Dsp.otel.exporter.otlp.log.endpoint=http://<release>-log-vector.<namespace>.svc.cluster.local:4320/v1/logs
