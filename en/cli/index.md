@@ -2,16 +2,16 @@
 layout: home
 
 hero:
-  name: SoftProbe CLI
-  text: "`sp` — record/replay testing from the command line"
-  tagline: Setup, create an app, list it, set recording policy, run the app with the Java agent, list recorded cases, set replay policy, replay, and inspect results.
+  name: Softprobe commands have moved
+  text: "`sp` now lives under Testing"
+  tagline: Use Testing for installation, setup, command reference, automation, and lifecycle documentation.
   actions:
     - theme: brand
-      text: For AI agents
-      link: /guide/overview
+      text: Testing commands
+      link: /en/testing/commands/
     - theme: alt
-      text: Quickstart
-      link: /guide/quickstart
+      text: Install Softprobe
+      link: /en/testing/installation/
 
 features:
   - title: Java-agent lifecycle
@@ -22,25 +22,4 @@ features:
     details: Stable `--json` output, exit codes, and artifact paths let AI coding agents and CI jobs script replay diagnosis without parsing tables.
 ---
 
-## What is `sp`?
-
-`sp` is the SoftProbe command-line interface. SoftProbe records real traffic from Java services through a `-javaagent`, stores those cases, then replays them later with automatic dependency mocking and response comparison.
-
-It is designed **primarily for AI agents** that automate app setup, policy changes, recording verification, replay diagnosis, and CI gates. Humans and shell scripts use the same commands.
-
-All public commands are **HTTP clients to sp-boot** (default `http://127.0.0.1:8090`). The Java agent separately talks to backend services to pull config, send heartbeats, and upload recording/replay data.
-
-## Command areas
-
-| Area | Commands |
-|------|----------|
-| **Platform** | config, auth, app, **demo**, policy, replay, health |
-| **Investigation** | record, trace, replay case/diff, extraction-rule |
-| **Administration** | group, system, ops |
-
-See [Commands overview](commands/).
-
-## Related tools
-
-- **[Policy YAML guide](/en/testing/policy-yaml-guide)** — schema and examples for recording, mock, and compare policies
-- **`spcode` / `@spcode/plugin`** — OpenCode integration; migrates from `sp_api` endpoints to `sp` subcommands
+The old CLI section is retained only as a compatibility entry point. Primary user documentation now lives under [Testing commands](/en/testing/commands/).

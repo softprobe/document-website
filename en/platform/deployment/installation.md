@@ -3,6 +3,10 @@
 
 Deploy SP‑Istio Agent to your Istio service mesh, and integrate the SESSIFY for client-side enrichment.
 
+::: tip Looking for user install?
+Softprobe user installation, `sp setup`, `sp code`, `sp doctor`, and `sp upgrade` are documented under [Testing installation](/en/testing/installation/). This Platform page is for server/operator deployment.
+:::
+
 
 <div class="sp-link-buttons">
   <a class="button button--secondary" href="https://github.com/softprobe/softprobe" target="_blank" rel="noopener">SP‑Istio Agent on GitHub</a>

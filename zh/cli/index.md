@@ -2,16 +2,16 @@
 layout: home
 
 hero:
-  name: SoftProbe CLI
-  text: "`sp` — record/replay testing from the command line"
-  tagline: Setup, create an app, list it, set recording policy, run the app with the Java agent, list recorded cases, set replay policy, replay, and inspect results.
+  name: Softprobe 命令已迁移
+  text: "`sp` 现在归入测试文档"
+  tagline: 安装、设置、命令参考、自动化和生命周期文档都在测试区域。
   actions:
     - theme: brand
-      text: For AI agents
-      link: /guide/overview
+      text: 测试命令
+      link: /zh/testing/commands/
     - theme: alt
-      text: Quickstart
-      link: /guide/quickstart
+      text: 安装 Softprobe
+      link: /zh/testing/installation/
 
 features:
   - title: Java-agent lifecycle
@@ -22,25 +22,4 @@ features:
     details: Stable `--json` output, exit codes, and artifact paths let AI coding agents and CI jobs script replay diagnosis without parsing tables.
 ---
 
-## What is `sp`?
-
-`sp` is the SoftProbe command-line interface. SoftProbe records real traffic from Java services through a `-javaagent`, stores those cases, then replays them later with automatic dependency mocking and response comparison.
-
-It is designed **primarily for AI agents** that automate app setup, policy changes, recording verification, replay diagnosis, and CI gates. Humans and shell scripts use the same commands.
-
-All public commands are **HTTP clients to sp-boot** (default `http://127.0.0.1:8090`). The Java agent separately talks to backend services to pull config, send heartbeats, and upload recording/replay data.
-
-## Command areas
-
-| Area | Commands |
-|------|----------|
-| **Platform** | config, auth, app, policy, replay, health |
-| **Investigation** | record, trace, replay case/diff, extraction-rule |
-| **Administration** | group, system, ops |
-
-See [Commands overview](commands/).
-
-## Related tools
-
-- **[策略 YAML 指南](/zh/testing/policy-yaml-guide)** — 录制、Mock、对比策略的 schema 与示例
-- **`spcode` / `@spcode/plugin`** — OpenCode integration; migrates from `sp_api` endpoints to `sp` subcommands
+旧 CLI 区域仅作为兼容入口保留。主要用户文档现在位于 [测试命令](/zh/testing/commands/)。

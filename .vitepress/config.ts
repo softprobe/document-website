@@ -117,6 +117,27 @@ const testingSidebarEn = [
     ],
   },
   {
+    text: 'Installation',
+    items: [
+      { text: 'Install Softprobe', link: '/en/testing/installation/' },
+      { text: 'Setup', link: '/en/testing/installation/setup' },
+      { text: 'Configuration', link: '/en/testing/installation/configuration' },
+      { text: 'Launch coding', link: '/en/testing/installation/code' },
+      { text: 'Doctor', link: '/en/testing/installation/doctor' },
+      { text: 'Upgrade', link: '/en/testing/installation/upgrade' },
+      { text: 'Java agent', link: '/en/testing/installation/agent' },
+    ],
+  },
+  {
+    text: 'Commands and automation',
+    items: [
+      { text: 'Commands', link: '/en/testing/commands/' },
+      { text: 'Examples', link: '/en/testing/examples/' },
+      { text: 'Reference', link: '/en/testing/reference/' },
+      { text: 'Policies', link: '/en/testing/policies/' },
+    ],
+  },
+  {
     text: 'Java agent',
     items: [
       { text: 'Attach and configure', link: '/en/testing/java-agent' },
@@ -142,7 +163,7 @@ const testingSidebarEn = [
     text: 'Automate',
     items: [
       { text: 'Webhook and CI/CD', link: '/en/testing/webhook-and-ci' },
-      { text: 'CLI quickstart', link: '/en/cli/guide/quickstart' },
+      { text: 'Commands', link: '/en/testing/commands/' },
     ],
   },
 ]
@@ -154,6 +175,27 @@ const testingSidebarZh = [
       { text: 'Softprobe 测试', link: '/zh/testing/' },
       { text: '工作原理', link: '/zh/testing/how-it-works' },
       { text: '快速开始', link: '/zh/testing/getting-started' },
+    ],
+  },
+  {
+    text: '安装',
+    items: [
+      { text: '安装 Softprobe', link: '/zh/testing/installation/' },
+      { text: '设置', link: '/zh/testing/installation/setup' },
+      { text: '配置', link: '/zh/testing/installation/configuration' },
+      { text: '启动编码', link: '/zh/testing/installation/code' },
+      { text: 'Doctor', link: '/zh/testing/installation/doctor' },
+      { text: '升级', link: '/zh/testing/installation/upgrade' },
+      { text: 'Java Agent', link: '/zh/testing/installation/agent' },
+    ],
+  },
+  {
+    text: '命令与自动化',
+    items: [
+      { text: '命令', link: '/zh/testing/commands/' },
+      { text: '示例', link: '/zh/testing/examples/' },
+      { text: '参考', link: '/zh/testing/reference/' },
+      { text: '策略', link: '/zh/testing/policies/' },
     ],
   },
   {
@@ -182,7 +224,7 @@ const testingSidebarZh = [
     text: '自动化',
     items: [
       { text: 'Webhook 与 CI/CD', link: '/zh/testing/webhook-and-ci' },
-      { text: 'CLI 快速入门', link: '/zh/cli/guide/quickstart' },
+      { text: '命令', link: '/zh/testing/commands/' },
     ],
   },
 ]
@@ -283,8 +325,6 @@ const platformSidebarZh = [
 function sidebarForLocale(locale: DocLocale) {
   const platform = locale === 'zh' ? platformSidebarZh : platformSidebarEn
   const testing = locale === 'zh' ? testingSidebarZh : testingSidebarEn
-  const cli = cliSidebar(locale)
-  const cliLabel = locale === 'zh' ? 'CLI 与自动化' : 'CLI & agents'
   const platformLabel = locale === 'zh' ? '业务观测' : 'Business Observability'
   const testingLabel = locale === 'zh' ? '测试' : 'Testing'
   const platformBase = locale === 'zh' ? '/zh/platform/' : '/en/platform/'
@@ -293,11 +333,10 @@ function sidebarForLocale(locale: DocLocale) {
   return {
     [platformBase]: platform,
     [testingBase]: testing,
-    [cliBase]: cli,
+    [cliBase]: testing,
     '/': [
       { text: platformLabel, items: platform },
       { text: testingLabel, items: testing },
-      { text: cliLabel, items: cli },
     ],
   }
 }
@@ -331,9 +370,9 @@ export default withMermaid(
     'REDIRECTS.md',
   ],
   rewrites: {
-    'cli/:path*': 'en/cli/:path*',
+    'cli': 'en/testing/commands/',
     'platform/:path*': 'en/platform/:path*',
-    'commands-v2/:path*': 'en/cli/commands/:path*',
+    'commands-v2': 'en/testing/commands/',
     'getting-started/:path*': 'en/platform/getting-started/:path*',
     'deployment/:path*': 'en/platform/deployment/:path*',
     'configuration/:path*': 'en/platform/configuration/:path*',
@@ -341,11 +380,30 @@ export default withMermaid(
     'advanced-guides/:path*': 'en/platform/advanced-guides/:path*',
     'billing/:path*': 'en/platform/billing/:path*',
     'support/:path*': 'en/platform/support/:path*',
-    'guide/:path*': 'en/cli/guide/:path*',
-    'commands/:path*': 'en/cli/commands/:path*',
-    'examples/:path*': 'en/cli/examples/:path*',
-    'reference/:path*': 'en/cli/reference/:path*',
-    'policies/:path*': 'en/cli/policies/:path*',
+    'guide/installation': 'en/testing/installation/',
+    'guide/quickstart': 'en/testing/getting-started',
+    'guide/configuration': 'en/testing/installation/configuration',
+    'guide/spcode': 'en/testing/installation/code',
+    'commands': 'en/testing/commands/',
+    'examples': 'en/testing/examples/',
+    'reference': 'en/testing/reference/',
+    'policies': 'en/testing/policies/',
+    'en/cli/guide/installation': 'en/testing/installation/',
+    'en/cli/guide/quickstart': 'en/testing/getting-started',
+    'en/cli/guide/configuration': 'en/testing/installation/configuration',
+    'en/cli/guide/spcode': 'en/testing/installation/code',
+    'en/cli/commands': 'en/testing/commands/',
+    'en/cli/examples': 'en/testing/examples/',
+    'en/cli/reference': 'en/testing/reference/',
+    'en/cli/policies': 'en/testing/policies/',
+    'zh/cli/guide/installation': 'zh/testing/installation/',
+    'zh/cli/guide/quickstart': 'zh/testing/getting-started',
+    'zh/cli/guide/configuration': 'zh/testing/installation/configuration',
+    'zh/cli/guide/spcode': 'zh/testing/installation/code',
+    'zh/cli/commands': 'zh/testing/commands/',
+    'zh/cli/examples': 'zh/testing/examples/',
+    'zh/cli/reference': 'zh/testing/reference/',
+    'zh/cli/policies': 'zh/testing/policies/',
   },
   locales: {
     en: {

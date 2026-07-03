@@ -18,7 +18,7 @@ Welcome to Softprobe Testing! This guide provides a single, cohesive path to get
 ## Prerequisites
 
 - **Java 8 or higher** (Java 17/21 recommended) installed and on your `PATH`.
-- **sp CLI** installed (`curl -fsSL https://install.softprobe.ai | sh`).
+- **`sp` command** installed (`curl -fsSL https://install.softprobe.ai/install.sh | bash`).
 - Your **Softprobe Helm chart** is deployed and running (with the Softprobe backend available, e.g. at `http://<your-backend-host>:8090`).
 
 ---
@@ -36,7 +36,7 @@ curl -L -O https://github.com/softprobe/demo-ota/releases/download/v1.1.0/travel
 ```
 
 ## 3. Download the Softprobe Agent
-Download the Softprobe Java agent JAR (either [click to download sp-agent.jar](https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar) directly via your browser, or use the `sp` CLI command below):
+Download the Softprobe Java agent JAR (either [click to download sp-agent.jar](https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar) directly via your browser, or use the `sp` command below):
 ```bash
 sp agent download
 cp ~/.local/share/softprobe/agent/sp-agent.jar .
@@ -49,7 +49,7 @@ Register the demo application in Softprobe to receive a unique `appId` (a 16-cha
 <div class="tabs-container">
   <div class="tabs-nav">
     <button :class="{ active: dAppTab === 'ui' }" @click="dAppTab = 'ui'">Web UI</button>
-    <button :class="{ active: dAppTab === 'cli' }" @click="dAppTab = 'cli'">sp CLI</button>
+    <button :class="{ active: dAppTab === 'cli' }" @click="dAppTab = 'cli'">sp command</button>
   </div>
   <div class="tabs-content">
     <div v-if="dAppTab === 'ui'">
@@ -61,7 +61,7 @@ Register the demo application in Softprobe to receive a unique `appId` (a 16-cha
       </ol>
     </div>
     <div v-if="dAppTab === 'cli'">
-      <p>Run the following command to register the app via the CLI:</p>
+      <p>Run the following command to register the app with <code>sp</code>:</p>
       <pre><code>export SP_API_URL=http://localhost:8090   # Point to your Helm/local backend
 sp app create travel-ota</code></pre>
       <p>Save the <code>appId</code> returned in the JSON response.</p>
@@ -94,7 +94,7 @@ The Softprobe agent automatically intercepts and captures this entire transactio
 <div class="tabs-container">
   <div class="tabs-nav">
     <button :class="{ active: dViewTab === 'ui' }" @click="dViewTab = 'ui'">Web UI</button>
-    <button :class="{ active: dViewTab === 'cli' }" @click="dViewTab = 'cli'">sp CLI</button>
+    <button :class="{ active: dViewTab === 'cli' }" @click="dViewTab = 'cli'">sp command</button>
   </div>
   <div class="tabs-content">
     <div v-if="dViewTab === 'ui'">
@@ -118,7 +118,7 @@ Replay executes recorded transactions against a target environment with automate
 <div class="tabs-container">
   <div class="tabs-nav">
     <button :class="{ active: dReplayTab === 'ui' }" @click="dReplayTab = 'ui'">Web UI</button>
-    <button :class="{ active: dReplayTab === 'cli' }" @click="dReplayTab = 'cli'">sp CLI</button>
+    <button :class="{ active: dReplayTab === 'cli' }" @click="dReplayTab = 'cli'">sp command</button>
   </div>
   <div class="tabs-content">
     <div v-if="dReplayTab === 'ui'">
