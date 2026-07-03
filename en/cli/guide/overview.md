@@ -35,7 +35,7 @@ when running in ephemeral CI containers.
 
 Use these job-oriented commands before low-level building blocks:
 
-1. `sp setup doctor --json`
+1. `sp doctor --json`
 2. `sp app create <name> --json` → save `data.appId`
 3. `sp policy recording apply -f … --json`
 4. `sp agent download --json` then `sp agent command --app <id> --json`

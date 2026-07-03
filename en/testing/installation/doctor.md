@@ -11,4 +11,4 @@ sp doctor
 sp doctor --json
 ```
 
-The doctor surface reports backend reachability, model provider readiness, the internal coding engine, and Java agent installation with remediation for failures.
+The doctor surface reports backend reachability and internal coding engine installation with remediation for failures.

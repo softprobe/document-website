@@ -8,7 +8,7 @@ Job-oriented commands that follow record-and-replay order:
 
 | Command | Synopsis |
 |---------|----------|
-| [setup](./setup.md) | `doctor` — config, health, auth, agent jar |
+| [setup](./setup.md) | Configure the self-hosted backend URL |
 | [demo](./demo.md) | `start`, `traffic`, `replay`, `status`, `stop` — [Travel OTA demo](https://github.com/softprobe/demo-ota) stack |
 | [agent](./agent.md) | `download`, `command` — install jar and JVM flags |
 | [record](./record.md) | `case list` — recorded entry cases before replay |
@@ -73,7 +73,7 @@ Groups, system config, diagnostics, legacy APIs.
 
 ```bash
 sp config init && sp auth login --email u@c.com --code 123456 --json
-sp setup doctor --json
+sp doctor --json
 sp app create my-svc --json
 sp agent download --json
 sp agent command --app <appId> --json   # copy startCommand into your run script

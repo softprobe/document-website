@@ -17,7 +17,7 @@ export SP_API_URL=http://127.0.0.1:8090
 sp config init
 sp auth login --email you@example.com --code 123456 --json
 # or: export SP_TOKEN=<jwt-from-ui>
-sp setup doctor --json
+sp doctor --json
 ```
 
 ## 2. Create an app

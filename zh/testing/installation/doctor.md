@@ -11,4 +11,4 @@ sp doctor
 sp doctor --json
 ```
 
-检查项包括后端、模型提供商、内部编码引擎和 Java Agent。
+检查项包括后端可达性和内部编码引擎安装状态。
