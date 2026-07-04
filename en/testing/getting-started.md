@@ -36,12 +36,11 @@ curl -L -O https://github.com/softprobe/demo-ota/releases/download/v1.1.0/travel
 ```
 
 ## 3. Download the Softprobe Agent
-Download the Softprobe Java agent JAR (either [click to download sp-agent.jar](https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar) directly via your browser, or use the `sp` command below):
+Download the Softprobe Java agent JAR (either [click to download sp-agent.jar](https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar) directly via your browser, or run the command below):
 ```bash
-sp agent download
-cp ~/.local/share/softprobe/agent/sp-agent.jar .
+curl -fsSL -o sp-agent.jar https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar
 ```
-*(Alternatively, download it directly via curl: `curl -L -O https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar`)*
+See [Java Agent installation](/en/testing/installation/agent) for immutable release versions.
 
 ## 4. Register the Application
 Register the demo application in Softprobe to receive a unique `appId` (a 16-character hex identifier):

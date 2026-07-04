@@ -19,15 +19,15 @@ Softprobe Java Agent（`sp-agent.jar`）通过 `-javaagent` 挂载到 JVM。它�
 ## 下载与启动命令
 
 ```bash
-sp agent download --json
-sp agent command --app <appId> --json
+curl -fsSL -o sp-agent.jar https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar
+sp agent command --app <appId> --agent-jar ./sp-agent.jar --json
 ```
 
 `agent command` 的输出是当前环境的标准 `-javaagent` 启动行。本地典型形式：
 
 ```bash
 java \
-  -javaagent:${XDG_DATA_HOME:-~/.local/share}/softprobe/agent/sp-agent.jar \
+  -javaagent:sp-agent.jar \
   -Dsp.app.id=<appId> \
   -Dsp.api.url=http://127.0.0.1:8090 \
   -jar your-service.jar

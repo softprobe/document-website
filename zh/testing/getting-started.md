@@ -36,12 +36,11 @@ curl -L -O https://github.com/softprobe/demo-ota/releases/download/v1.1.0/travel
 ```
 
 ## 3. 下载 Softprobe Agent 包
-下载 Softprobe Java Agent 软件包（您可以 [点击下载 sp-agent.jar](https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar) 直接通过浏览器下载，也可以使用下方的 `sp` 命令）：
+下载 Softprobe Java Agent 软件包（您可以 [点击下载 sp-agent.jar](https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar) 直接通过浏览器下载，也可以运行下方命令）：
 ```bash
-sp agent download
-cp ~/.local/share/softprobe/agent/sp-agent.jar .
+curl -fsSL -o sp-agent.jar https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar
 ```
-*(或者，您也可以在命令行中直接通过 curl 下载：`curl -L -O https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar`)*
+更多不可变发布版本见 [Java Agent 安装](/zh/testing/installation/agent)。
 
 ## 4. 注册应用程序
 在系统中注册该应用，以获取一个唯一的 `appId`（一个 16 位的十六进制标识符）：

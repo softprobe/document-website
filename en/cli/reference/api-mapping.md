@@ -27,8 +27,6 @@ Authoritative **REST ↔ CLI** reference for sp-boot (default port **8090**). He
 | PUT | `/api/applications/{appId}/extraction-rules` | `sp extraction-rule apply` | investigation |
 | POST | `/api/extraction-rules/preview` | `sp extraction-rule preview` | investigation |
 | GET | `/api/agent/extraction-rules` | — (agent) | — |
-| GET | `/api/agent/java/manifest` | `sp agent download` (manifest) | platform |
-| GET | `/api/agent/java/download` | `sp agent download` | platform |
 
 ## Policies
 

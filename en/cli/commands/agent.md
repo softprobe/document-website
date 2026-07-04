@@ -6,42 +6,7 @@
 
 | Subcommand | Description |
 |------------|-------------|
-| `download` | Fetch bundled jar from sp-boot; default install dir under XDG data home |
 | `command` | Emit `-javaagent` and `sp.*` system properties for record mode |
-
-## `agent download`
-
-```bash
-sp agent download --json
-sp agent download --out-dir "${XDG_DATA_HOME:-$HOME/.local/share}/softprobe/agent" --json
-```
-
-Default install directory: `${XDG_DATA_HOME:-~/.local/share}/softprobe/agent`.
-
-Writes:
-
-- `sp-agent.jar` — verified against backend manifest sha256
-- `manifest.json` — `{ "version", "sha256", "sizeBytes", "builtAt" }`
-
-Re-download is skipped when the on-disk jar already matches the backend manifest.
-
-Example envelope:
-
-```json
-{
-  "ok": true,
-  "command": "agent download",
-  "data": {
-    "dir": "/home/user/.local/share/softprobe/agent",
-    "path": "/home/user/.local/share/softprobe/agent/sp-agent.jar",
-    "manifestPath": "/home/user/.local/share/softprobe/agent/manifest.json",
-    "version": "3.9.56",
-    "sha256": "…",
-    "sizeBytes": 27055970,
-    "reusedExisting": false
-  }
-}
-```
 
 ## `agent command`
 
@@ -49,9 +14,9 @@ On **Softprobe Cloud**, run `sp tenant key ensure` once (or let this command aut
 
 ```bash
 sp tenant key ensure --json   # SaaS: once per tenant
-sp agent download --json
+curl -fsSL -o sp-agent.jar https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar
 sp agent command --app a1b2c3d4e5f67890 --json
-sp agent command --app a1b2c3d4e5f67890 --agent-jar /opt/softprobe/sp-agent.jar --app-jar target/app.jar --json
+sp agent command --app a1b2c3d4e5f67890 --agent-jar ./sp-agent.jar --app-jar target/app.jar --json
 ```
 
 | Flag | Description |
@@ -60,6 +25,8 @@ sp agent command --app a1b2c3d4e5f67890 --agent-jar /opt/softprobe/sp-agent.jar 
 | `--agent-jar` | Optional. Default: `$SP_AGENT_JAR`, then `${XDG_DATA_HOME}/softprobe/agent/sp-agent.jar` |
 | `--app-jar` | Optional. Trailing `-jar …` in `startCommand` |
 | `--format` | `json` (default), `shell`, `docker`, `maven` |
+
+Download `sp-agent.jar` from [Java Agent installation](/en/testing/installation/agent). Available immutable versions are published under `https://install.softprobe.ai/artifacts/agent/<version>/sp-agent.jar`.
 
 `apiUrl` in the JSON output comes from the resolved CLI profile (`api_url` / `SP_API_URL`). Override with `sp config set-url`, `SP_API_URL`, or the global `--api-url` flag before `agent command`.
 
@@ -73,9 +40,9 @@ When the default jar is missing:
   "command": "agent command",
   "error": {
     "code": "USAGE",
-    "message": "sp-agent.jar not found; run sp agent download",
+    "message": "sp-agent.jar not found",
     "backend": {
-      "nextActions": ["sp agent download"]
+      "nextActions": ["Download sp-agent.jar from https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar"]
     }
   }
 }
@@ -112,13 +79,6 @@ Example success `data` (abbreviated):
 | `shell` | `startCommandMultiline` only |
 | `docker` | `ENV JAVA_TOOL_OPTIONS='…'` |
 | `maven` | `<argLine>…</argLine>` |
-
-## REST mapping
-
-| Subcommand | Method | Path |
-|------------|--------|------|
-| `download` | GET | `/api/agent/java/manifest` |
-| `download` | GET | `/api/agent/java/download` |
 
 ## Related
 

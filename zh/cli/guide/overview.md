@@ -38,7 +38,7 @@ Use these job-oriented commands before low-level building blocks:
 1. `sp doctor --json`
 2. `sp app create <name> --json` → save `data.appId`
 3. `sp policy recording apply -f … --json`
-4. `sp agent download --json` then `sp agent command --app <id> --json`
+4. 从 `install.softprobe.ai` 下载 `sp-agent.jar`，然后运行 `sp agent command --app <id> --agent-jar ./sp-agent.jar --json`
 5. Start the app with `data.startCommand`; send traffic
 6. `sp record case list --app <id> --since -1h --json`
 7. `sp policy mock apply` / `sp policy compare apply`

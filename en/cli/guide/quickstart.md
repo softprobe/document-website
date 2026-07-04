@@ -67,21 +67,20 @@ sp extraction-rule apply --app a1b2c3d4e5f67890 -f extraction-rules.yaml --json
 
 ## 5. Install the agent
 
-Download the jar version bundled with your sp-boot release (default path under XDG data home):
+Download the latest Java agent:
 
 ```bash
-sp agent download --json
-# writes ${XDG_DATA_HOME:-~/.local/share}/softprobe/agent/sp-agent.jar
+curl -fsSL -o sp-agent.jar https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar
 ```
 
-Or build locally from `sp-agent-java/sp-agent-jar/` and pass `--agent-jar`.
+Or pin an immutable release from [Java Agent installation](/en/testing/installation/agent).
 
 ## 6. Run the app with the agent in record mode
 
 Get copy-paste JVM flags (or use `--format shell` for a multiline script only):
 
 ```bash
-sp agent command --app a1b2c3d4e5f67890 --app-jar target/order-service.jar --json
+sp agent command --app a1b2c3d4e5f67890 --agent-jar ./sp-agent.jar --app-jar target/order-service.jar --json
 ```
 
 Use `data.startCommand` or `data.startCommandMultiline` from the envelope. Override the backend URL when it differs from your profile:

@@ -2,18 +2,61 @@
 title: Java Agent
 ---
 
+<script setup>
+import { onMounted, ref } from 'vue'
+
+const agentVersions = ref([])
+const agentVersionError = ref('')
+
+onMounted(async () => {
+  try {
+    const response = await fetch('https://install.softprobe.ai/artifacts/agent/versions.json')
+    if (!response.ok) throw new Error(`HTTP ${response.status}`)
+    const body = await response.json()
+    agentVersions.value = Array.isArray(body.versions) ? body.versions : []
+  } catch {
+    agentVersionError.value = 'Version list is temporarily unavailable.'
+  }
+})
+</script>
+
 # Java Agent
 
-Install or refresh the Java agent with:
+Download the latest Java agent:
 
 ```bash
-sp agent download
+curl -fsSL -o sp-agent.jar https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar
 ```
 
-The default path is:
+Pin a specific release by replacing `latest` with a version:
 
-```text
-~/.local/share/softprobe/agent/sp-agent.jar
+```bash
+curl -fsSL -o sp-agent.jar https://install.softprobe.ai/artifacts/agent/v4.3.9/sp-agent.jar
 ```
 
-Use `sp agent command --app <appId>` to generate JVM flags for your service.
+## Available Versions
+
+The mutable `latest` alias always points at the current Java agent. Immutable releases are listed below from `install.softprobe.ai`.
+
+<ul v-if="agentVersions.length">
+  <li v-for="version in agentVersions" :key="version">
+    <a :href="`https://install.softprobe.ai/artifacts/agent/${version}/sp-agent.jar`">{{ version }}</a>
+  </li>
+</ul>
+<p v-else-if="agentVersionError">{{ agentVersionError }}</p>
+<p v-else>Loading versions...</p>
+
+Scriptable version list:
+
+```bash
+curl -fsSL https://install.softprobe.ai/artifacts/agent/versions.json
+```
+
+Start your JVM service with the downloaded agent:
+
+```bash
+java -javaagent:sp-agent.jar \
+     -Dsp.app.id=<your-app-id> \
+     -Dsp.api.url=<your-softprobe-api-url> \
+     -jar your-application.jar
+```
