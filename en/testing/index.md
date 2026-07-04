@@ -12,12 +12,11 @@ title: Softprobe Testing
 
 Softprobe Testing is record-and-replay regression for **Java** services. Attach the Softprobe Java agent as a `-javaagent`, capture inbound API traffic and outbound dependency calls in the background, then replay recorded cases in a test environment while dependencies are mocked from stored data and results are compared automatically.
 
-::: info Three products on this site
-| Product | You use it when… |
-|---------|------------------|
+::: info Product areas on this site
+| Area | You use it when... |
+|------|---------------------|
 | **[Platform](/en/platform/)** | You need Istio/Envoy mesh capture, SESSIFY session context, or the observability dashboard |
-| **Testing** (this section) | You need Java record/replay, the JVM agent, policies, and replay semantics |
-| **[CLI](/en/cli/)** | You automate setup, replay, and diagnosis with the `sp` command |
+| **Testing** (this section) | You need Java record/replay, the JVM agent, policies, replay semantics, installation, commands, and automation |
 :::
 
 ## Why record-and-replay
@@ -37,7 +36,7 @@ Traditional integration tests require maintaining environments, seed data, and h
 | **Your Java service** | The application under test, started with `-javaagent:…/sp-agent.jar` |
 | **Softprobe Java agent** | Records and replays at runtime; mocks dependencies during replay |
 | **Softprobe backend** (`:8090`) | Deployed via Helm. Stores cases (MongoDB), serves policies, runs replay plans, computes diffs |
-| **`sp` CLI** (optional) | Registers apps, applies policies, starts replay, inspects failures — see [CLI quickstart](/en/cli/guide/quickstart) |
+| **`sp` command** (optional) | Registers apps, applies policies, starts replay, inspects failures — see [Commands](/en/testing/commands/) |
 | **Dashboard / workbench** (optional) | Visual diff and trace review |
 
 ```mermaid
@@ -67,11 +66,12 @@ The [Platform](/en/platform/advanced-guides/agent-architecture) **SP-Istio agent
 - **Java developers** adopting record/replay for the first time
 - **QA / release engineers** running regression without full downstream stacks
 - **Platform engineers** wiring `sp-boot` and agent startup in K8s or VM images
-- **Automation authors** — start here for concepts, then [CLI overview](/en/cli/guide/overview) for `--json` contracts
+- **Automation authors** — start here for concepts, then [Commands](/en/testing/commands/) for `sp` automation
 
 ## Quick links
 
 - [Getting Started](/en/testing/getting-started) — Try the 5-minute [Travel OTA](https://github.com/softprobe/demo-ota) demo and onboard your application.
+- [Install Softprobe](/en/testing/installation/) — Install, set up, launch coding, diagnose, and upgrade with `sp`.
 - [How to record](/en/testing/recording) — Phase 1: build the case corpus.
 - [Java agent](/en/testing/java-agent) — Attach, JVM flags, and production safety.
 - [Policies overview](/en/testing/policies) — YAML by lifecycle phase.

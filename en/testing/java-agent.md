@@ -19,15 +19,15 @@ Mesh capture is documented under [Platform agent architecture](/en/platform/adva
 ## Download and startup command
 
 ```bash
-sp agent download --json
-sp agent command --app <appId> --json
+curl -fsSL -o sp-agent.jar https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar
+sp agent command --app <appId> --agent-jar ./sp-agent.jar --json
 ```
 
 The `agent command` output is the canonical `-javaagent` line for your environment. Typical local shape:
 
 ```bash
 java \
-  -javaagent:${XDG_DATA_HOME:-~/.local/share}/softprobe/agent/sp-agent.jar \
+  -javaagent:sp-agent.jar \
   -Dsp.app.id=<appId> \
   -Dsp.api.url=http://127.0.0.1:8090 \
   -jar your-service.jar

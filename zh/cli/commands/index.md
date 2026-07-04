@@ -8,7 +8,7 @@ Job-oriented commands that follow record-and-replay order:
 
 | Command | Synopsis |
 |---------|----------|
-| [setup](./setup.md) | `doctor` — config, health, auth, agent jar |
+| [setup](./setup.md) | 配置自托管后端 URL |
 | [agent](./agent.md) | `download`, `command` — install jar and JVM flags |
 | [record](./record.md) | `case list` — recorded entry cases before replay |
 | [diagnose](./diagnose.md) | `replay`, `trace` — bundled investigation workflows |
@@ -71,10 +71,10 @@ Groups, system config, diagnostics, legacy APIs.
 
 ```bash
 sp config init && sp auth login --email u@c.com --code 123456 --json
-sp setup doctor --json
+sp doctor --json
 sp app create my-svc --json
-sp agent download --json
-sp agent command --app <appId> --json   # copy startCommand into your run script
+curl -fsSL -o sp-agent.jar https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar
+sp agent command --app <appId> --agent-jar ./sp-agent.jar --json   # copy startCommand into your run script
 sp record case list --app <appId> --since -1h --json
 sp replay run --app <appId> --env http://your-service:8080 --from -24h --json
 sp replay status <planId> --watch --json

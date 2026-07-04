@@ -20,7 +20,7 @@ export const sharedChrome: Pick<
   ],
 }
 
-/** Top nav: Home · Business Observability · Testing · CLI — locale-aware links */
+/** Top nav: Home · Business Observability · Testing — locale-aware links */
 export function navForLocale(locale: DocLocale): DefaultTheme.NavItem[] {
   const p = locale === 'zh' ? '/zh' : '/en'
   if (locale === 'zh') {
@@ -28,14 +28,12 @@ export function navForLocale(locale: DocLocale): DefaultTheme.NavItem[] {
       { text: '首页', link: `${p}/` },
       { text: '业务观测', link: `${p}/platform/getting-started/quick-start` },
       { text: '测试', link: `${p}/testing/` },
-      { text: 'CLI 与自动化', link: `${p}/cli/guide/overview` },
     ]
   }
   return [
     { text: 'Home', link: `${p}/` },
     { text: 'Business Observability', link: `${p}/platform/getting-started/quick-start` },
     { text: 'Testing', link: `${p}/testing/` },
-    { text: 'CLI & agents', link: `${p}/cli/guide/overview` },
   ]
 }
 
@@ -50,10 +48,10 @@ export function footerForLocale(locale: DocLocale): DefaultTheme.Footer {
         {
           title: '文档',
           items: [
-            { text: '安装指南', link: `${p}/platform/deployment/installation` },
+            { text: '安装指南', link: `${p}/testing/installation/` },
             { text: 'sp-backend（Helm）', link: `${p}/platform/deployment/sp-backend-helm` },
             { text: '测试概览', link: `${p}/testing/` },
-            { text: 'CLI 快速入门', link: `${p}/cli/guide/quickstart` },
+            { text: '命令', link: `${p}/testing/commands/` },
           ],
         },
         {
@@ -77,10 +75,10 @@ export function footerForLocale(locale: DocLocale): DefaultTheme.Footer {
         {
           title: 'Docs',
           items: [
-            { text: 'Installation', link: `${p}/platform/deployment/installation` },
+            { text: 'Installation', link: `${p}/testing/installation/` },
             { text: 'sp-backend (Helm)', link: `${p}/platform/deployment/sp-backend-helm` },
             { text: 'Testing overview', link: `${p}/testing/` },
-            { text: 'CLI quickstart', link: `${p}/cli/guide/quickstart` },
+            { text: 'Commands', link: `${p}/testing/commands/` },
           ],
         },
       {

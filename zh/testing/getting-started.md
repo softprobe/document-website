@@ -18,7 +18,7 @@ const dReplayTab = ref('cli')
 ## 前置条件
 
 - 本地安装了 **Java 8 或更高版本**（推荐 Java 17/21）且已配置到 `PATH` 环境变量中。
-- 已安装 **sp CLI** (`curl -fsSL https://install.softprobe.ai | sh`)。
+- 已安装 **`sp` 命令** (`curl -fsSL https://install.softprobe.ai/install.sh | bash`)。
 - 您的 **Softprobe Helm chart** 已安装并运行（Softprobe 后端服务可用，例如：`http://<您的后端主机地址>:8090`）。
 
 ---
@@ -36,12 +36,11 @@ curl -L -O https://github.com/softprobe/demo-ota/releases/download/v1.1.0/travel
 ```
 
 ## 3. 下载 Softprobe Agent 包
-下载 Softprobe Java Agent 软件包（您可以 [点击下载 sp-agent.jar](https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar) 直接通过浏览器下载，也可以使用下方的 `sp` CLI 命令）：
+下载 Softprobe Java Agent 软件包（您可以 [点击下载 sp-agent.jar](https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar) 直接通过浏览器下载，也可以运行下方命令）：
 ```bash
-sp agent download
-cp ~/.local/share/softprobe/agent/sp-agent.jar .
+curl -fsSL -o sp-agent.jar https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar
 ```
-*(或者，您也可以在命令行中直接通过 curl 下载：`curl -L -O https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar`)*
+更多不可变发布版本见 [Java Agent 安装](/zh/testing/installation/agent)。
 
 ## 4. 注册应用程序
 在系统中注册该应用，以获取一个唯一的 `appId`（一个 16 位的十六进制标识符）：
@@ -49,7 +48,7 @@ cp ~/.local/share/softprobe/agent/sp-agent.jar .
 <div class="tabs-container">
   <div class="tabs-nav">
     <button :class="{ active: dAppTab === 'ui' }" @click="dAppTab = 'ui'">网页控制台 (Web UI)</button>
-    <button :class="{ active: dAppTab === 'cli' }" @click="dAppTab = 'cli'">sp CLI</button>
+    <button :class="{ active: dAppTab === 'cli' }" @click="dAppTab = 'cli'">sp 命令</button>
   </div>
   <div class="tabs-content">
     <div v-if="dAppTab === 'ui'">
@@ -94,7 +93,7 @@ Softprobe Agent 会自动拦截并捕捉这一连串的调用流量。
 <div class="tabs-container">
   <div class="tabs-nav">
     <button :class="{ active: dViewTab === 'ui' }" @click="dViewTab = 'ui'">网页控制台 (Web UI)</button>
-    <button :class="{ active: dViewTab === 'cli' }" @click="dViewTab = 'cli'">sp CLI</button>
+    <button :class="{ active: dViewTab === 'cli' }" @click="dViewTab = 'cli'">sp 命令</button>
   </div>
   <div class="tabs-content">
     <div v-if="dViewTab === 'ui'">
@@ -118,7 +117,7 @@ Softprobe Agent 会自动拦截并捕捉这一连串的调用流量。
 <div class="tabs-container">
   <div class="tabs-nav">
     <button :class="{ active: dReplayTab === 'ui' }" @click="dReplayTab = 'ui'">网页控制台 (Web UI)</button>
-    <button :class="{ active: dReplayTab === 'cli' }" @click="dReplayTab = 'cli'">sp CLI</button>
+    <button :class="{ active: dReplayTab === 'cli' }" @click="dReplayTab = 'cli'">sp 命令</button>
   </div>
   <div class="tabs-content">
     <div v-if="dReplayTab === 'ui'">

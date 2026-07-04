@@ -1,66 +1,21 @@
 # sp setup
 
-**When agents use this:** Validate prerequisites before `app create`, agent install, or replay.
+**When agents use this:** Configure the self-hosted Softprobe backend URL before `sp code`, record/replay, or agent workflows.
 
 ## Synopsis
 
-Lifecycle setup helpers. Today the main command is `doctor`.
-
-## Subcommands
-
-| Subcommand | Description |
-|------------|-------------|
-| `doctor` | Config path, backend health, auth, app count, optional agent jar check |
-
-## `setup doctor`
-
-Orchestrates several read-only checks (no single backend “doctor” API):
+`sp setup` writes the backend URL into the existing Softprobe config namespace. Bare `sp setup` launches an interactive wizard; pass `--backend-url` to set the URL non-interactively.
 
 ```bash
-sp setup doctor --json
-sp setup doctor --agent-jar /path/to/sp-agent.jar --json
+sp setup
+sp setup --backend-url http://127.0.0.1:8090
 ```
 
-| Check | Source |
-|-------|--------|
-| Config | Active profile URL, token presence |
-| Health | `GET /vi/health` |
-| Auth | Token configured → `authenticated` / `missing` |
-| Apps | `GET /api/applications/list` when token present → `appCount` |
-| Agent jar | `--agent-jar` or default `${XDG_DATA_HOME}/softprobe/agent/sp-agent.jar` |
-| Agent version | `GET /api/agent/java/manifest` when available; compares local jar sha256 |
-| SaaS agent auth | `tenantApiKeyConfigured` / `agentAuthReady` when URL is Softprobe Cloud |
-
-On SaaS, `nextActions` may include `sp tenant key ensure` when the tenant id is set but no agent key is in config.
-
-Example success envelope:
-
-```json
-{
-  "ok": true,
-  "command": "setup doctor",
-  "data": {
-    "configPath": "/home/user/.config/softprobe/sp.jsonc",
-    "profile": "default",
-    "url": "http://127.0.0.1:8090",
-    "health": "UP",
-    "authState": "authenticated",
-    "tokenConfigured": true,
-    "appCount": 3,
-    "agentJar": "/home/user/.local/share/softprobe/agent/sp-agent.jar",
-    "agentJarExists": true,
-    "remoteAgentSha256": "abc…",
-    "localAgentSha256": "abc…",
-    "agentVersionMatch": true,
-    "nextActions": []
-  }
-}
-```
-
-When the local jar does not match the backend manifest, `nextActions` includes `sp agent download`.
+Model provider setup stays with `sp code` or the internal coding engine. Use `sp doctor` for install health checks.
 
 ## Related
 
+- [Doctor](/en/testing/installation/doctor) — `sp doctor` backend and internal-engine checks
 - [agent](./agent.md) — download and JVM flags
 - [Quickstart](/en/cli/guide/quickstart.md)
 - [health](./health.md)

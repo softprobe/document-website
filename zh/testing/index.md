@@ -12,12 +12,11 @@ title: Softprobe 测试
 
 Softprobe 测试面向 **Java** 服务的**录制回放**回归。以 `-javaagent` 挂载 Softprobe Java Agent，在后台采集入口 API 流量与对外依赖调用，随后在测试环境回放已录制用例：依赖由存储数据 Mock，结果自动对比。
 
-::: info 本站三个产品
-| 产品 | 适用场景 |
+::: info 本站产品区域
+| 区域 | 适用场景 |
 |------|----------|
 | **[平台](/zh/platform/)** | 需要 Istio/Envoy 网格采集、SESSIFY 会话上下文或可观测性仪表盘 |
-| **测试**（本节） | 需要 Java 录制回放、JVM Agent、策略与回放语义 |
-| **[CLI](/zh/cli/)** | 用 `sp` 命令自动化安装、回放与诊断 |
+| **测试**（本节） | 需要 Java 录制回放、JVM Agent、策略、回放语义、安装、命令与自动化 |
 :::
 
 ## 为什么选择录制回放
@@ -37,7 +36,7 @@ Softprobe 测试面向 **Java** 服务的**录制回放**回归。以 `-javaagen
 | **你的 Java 服务** | 被测应用，以 `-javaagent:…/sp-agent.jar` 启动 |
 | **Softprobe Java Agent** | 运行时录制与回放；回放阶段 Mock 依赖 |
 | **Softprobe 后端**（`:8090`） | 通过 Helm 部署。存储用例（MongoDB）、下发策略、执行回放计划、计算差异 |
-| **`sp` CLI**（可选） | 注册应用、应用策略、发起回放、排查失败 — 见 [CLI 快速入门](/zh/cli/guide/quickstart) |
+| **`sp` 命令**（可选） | 注册应用、应用策略、发起回放、排查失败 — 见 [命令](/zh/testing/commands/) |
 | **仪表盘 / 工作台**（可选） | 可视化差异与链路查看 |
 
 ```mermaid
@@ -67,11 +66,12 @@ flowchart LR
 - 首次接触录制回放的 **Java 开发者**
 - 无需完整下游栈即可做回归的 **QA / 发布工程师**
 - 在 K8s 或镜像中配置 `sp-boot` 与 Agent 启动的 **平台工程师**
-- **自动化作者** — 先理解概念，再看 [CLI 概览](/zh/cli/guide/overview) 中的 `--json` 约定
+- **自动化作者** — 先理解概念，再看 [命令](/zh/testing/commands/) 中的 `sp` 自动化约定
 
 ## 快速链接
 
 - [快速开始](/zh/testing/getting-started) — 5分钟内体验 [Travel OTA](https://github.com/softprobe/demo-ota) 演示并快速接入您自己的应用。
+- [安装 Softprobe](/zh/testing/installation/) — 使用 `sp` 安装、设置、启动编码、诊断与升级。
 - [如何录制](/zh/testing/recording) — 阶段 1：产生用例。
 - [Java Agent](/zh/testing/java-agent) — 挂载、JVM 参数与生产安全。
 - [策略概览](/zh/testing/policies) — 按阶段配置 YAML。
