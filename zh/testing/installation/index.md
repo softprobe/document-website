@@ -22,21 +22,16 @@ sp doctor
 
 ## 设置
 
-`sp setup` 配置自托管或本地部署的 Softprobe 后端 URL。在 **Linux** 上还可选安装 **Spcode Service**（通过 systemd 常驻的团队 Web UI）。
+`sp setup` 配置自托管或本地部署的 Softprobe 后端 URL。
 
 ```bash
 sp setup
 sp setup --backend-url http://127.0.0.1:8090
-sp setup --backend-url http://sp-backend.corp:8090 --install-spcode-service
-sp setup --uninstall-spcode-service
 ```
 
 | 参数 | 说明 |
 |------|------|
 | `--backend-url` | Softprobe 后端 URL（省略时交互输入） |
-| `--install-spcode-service` | 安装 `spcode-web.service`（**仅 Linux**） |
-| `--uninstall-spcode-service` | 卸载 Spcode Service |
-| `--spcode-service-port` | 安装时监听端口（默认 `4096`） |
 
 模型提供商配置由 `sp code` 和内部编码引擎负责。
 
@@ -50,7 +45,21 @@ URL 写入**个人** XDG 配置 `~/.config/softprobe/config.jsonc`。
 
 ## Spcode Service（仅 Linux） {#spcode-service}
 
-**Spcode Service** 提供团队在内网共用的 Web 工作台。若只需在本机使用 UI，见 [手动启动 Softprobe Web UI](./code.md)。
+在 **Linux** 上，`sp setup` 还可选安装 **Spcode Service** —— 供团队在内网浏览器共用的 Web 工作台。若只需在本机使用 UI，见 [手动启动 Softprobe Web UI](./code.md)。
+
+```bash
+sp setup --backend-url http://sp-backend.corp:8090 --install-spcode-service
+sp setup --install-spcode-service --spcode-service-port 5000
+sp setup --uninstall-spcode-service
+```
+
+| 参数 | 说明 |
+|------|------|
+| `--install-spcode-service` | 安装共享 Web 工作台（**仅 Linux**） |
+| `--uninstall-spcode-service` | 卸载 Spcode Service |
+| `--spcode-service-port` | 安装时监听端口（默认 `4096`） |
+
+不可同时使用 `--install-spcode-service` 与 `--uninstall-spcode-service`。
 
 ### 安装
 

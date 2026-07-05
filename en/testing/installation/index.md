@@ -24,23 +24,18 @@ Component options such as `--product sp|agent|spcode|all` remain available for m
 
 ## Setup
 
-`sp setup` configures the self-hosted or on-prem Softprobe backend URL. On **Linux**, it can optionally install **Spcode Service** — a long-running team web UI via systemd.
+`sp setup` configures the self-hosted or on-prem Softprobe backend URL.
 
 ```bash
 sp setup
 sp setup --backend-url http://127.0.0.1:8090
-sp setup --backend-url http://sp-backend.corp:8090 --install-spcode-service
-sp setup --uninstall-spcode-service
 ```
 
 | Flag | Description |
 |------|-------------|
 | `--backend-url` | Softprobe backend URL (prompts when omitted) |
-| `--install-spcode-service` | Install `spcode-web.service` (**Linux only**) |
-| `--uninstall-spcode-service` | Stop and remove Spcode Service |
-| `--spcode-service-port` | Listen port when installing (default `4096`) |
 
-The setup wizard only owns the backend URL and optional Spcode Service in this release. Model provider configuration belongs to `sp code` and the internal coding engine.
+The setup wizard only owns the backend URL in this release. Model provider configuration belongs to `sp code` and the internal coding engine.
 
 For non-interactive setup:
 
@@ -52,7 +47,21 @@ The URL is stored in your **personal** Softprobe XDG config at `~/.config/softpr
 
 ## Spcode Service (Linux only) {#spcode-service}
 
-For a private UI on your own machine, see [Launch Softprobe Web UI Manually](./code.md).
+On **Linux**, `sp setup` can optionally install **Spcode Service** — a shared web workbench your team opens in the browser on the corp network. For a private UI on your own machine, see [Launch Softprobe Web UI Manually](./code.md) instead.
+
+```bash
+sp setup --backend-url http://sp-backend.corp:8090 --install-spcode-service
+sp setup --install-spcode-service --spcode-service-port 5000
+sp setup --uninstall-spcode-service
+```
+
+| Flag | Description |
+|------|-------------|
+| `--install-spcode-service` | Install the shared web workbench (**Linux only**) |
+| `--uninstall-spcode-service` | Stop and remove Spcode Service |
+| `--spcode-service-port` | Listen port when installing (default `4096`) |
+
+`--install-spcode-service` and `--uninstall-spcode-service` cannot be combined.
 
 ### Install
 
