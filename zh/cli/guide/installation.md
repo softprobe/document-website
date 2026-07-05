@@ -72,6 +72,17 @@ sp config init
 
 详见 [配置](./configuration.md)。
 
+## Spcode Service（Linux，可选）
+
+在 Linux 上，`sp setup` 可可选安装 **Spcode Service** — systemd 单元，以 root 运行团队 Web UI（`spcode serve --hostname 0.0.0.0`）。详见 [sp setup](/zh/cli/commands/setup.md)。
+
+```bash
+sp setup --backend-url http://sp-backend.corp:8090 --install-spcode-service
+systemctl status spcode-web.service
+```
+
+默认端口 **4096**。服务配置位于 `/root/.config/softprobe/`，与个人配置独立。升级 `sp`/`spcode` 后若服务异常，请执行 `systemctl restart spcode-web.service` 并查看 `journalctl -u spcode-web`。
+
 ## `spcode` AI 引擎 CLI
 
 已包含在上方 [一行安装](#一行安装sp--spcode) 中。若对接 **自建** SoftProbe Web UI 的本地 AI，请使用对应主机上的安装脚本（`curl <host>/spcode/install | bash`）。
