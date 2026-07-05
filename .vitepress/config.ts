@@ -20,7 +20,7 @@ const testingSidebarEn = [
   {
     text: 'Installation',
     items: [
-      { text: 'Install sp-backend (server)', link: '/en/testing/installation/server' },
+      { text: 'Install Softprobe Server', link: '/en/testing/installation/server' },
       { text: 'Install Softprobe (client)', link: '/en/testing/installation/' },
       { text: 'Configuration', link: '/en/testing/installation/configuration' },
       { text: 'Launch Web UI (manual)', link: '/en/testing/installation/code' },
@@ -83,7 +83,7 @@ const testingSidebarZh = [
   {
     text: '安装',
     items: [
-      { text: '安装 sp-backend（服务端）', link: '/en/testing/installation/server' },
+      { text: '安装 Softprobe 服务端', link: '/zh/testing/installation/server' },
       { text: '安装 Softprobe（客户端）', link: '/zh/testing/installation/' },
       { text: '配置', link: '/zh/testing/installation/configuration' },
       { text: '手动启动 Web UI', link: '/zh/testing/installation/code' },

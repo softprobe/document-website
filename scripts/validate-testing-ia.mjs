@@ -19,6 +19,7 @@ const required = [
   'en/testing/examples/index.md',
   'en/testing/reference/index.md',
   'en/testing/policies/index.md',
+  'zh/testing/installation/server.md',
   'zh/testing/installation/index.md',
   'zh/testing/installation/configuration.md',
   'zh/testing/installation/code.md',

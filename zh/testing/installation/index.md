@@ -5,7 +5,7 @@ title: 安装 Softprobe（客户端）
 # 安装 Softprobe（客户端）
 
 ::: tip 前置条件
-请先在集群中部署 Softprobe 后端：[安装 sp-backend（服务端）](/en/testing/installation/server)。
+请先在集群中部署 Softprobe 后端：[安装 Softprobe 服务端](./server.md)。
 :::
 
 使用全局安装器安装 Softprobe：
