@@ -3,6 +3,10 @@
 
 将 SP-Istio Agent 部署到您的生产 Istio 服务网格中。
 
+::: tip 查找用户安装？
+Softprobe 用户安装、`sp setup`、`sp code`、`sp doctor` 与 `sp upgrade` 位于 [测试安装](/zh/testing/installation/)。本平台页面仅面向服务端/运维部署。
+:::
+
 ::: tip 下一步：在 Dashboard 查看 Context View
 部署 SP‑Istio Agent 并初始化 SESSIFY 后，先在应用中产生一些流量，然后：
 

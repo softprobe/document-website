@@ -1,30 +1,77 @@
-# Unified log pipeline (on-prem)
+# Unified log pipeline (Helm)
 
-Enable correlated log ingest, Parquet storage, and trace-id query (`sp logs` / `GET /api/recorder/logs`) from the `sp-backend` Helm chart.
+Enable correlated log ingest, Parquet storage, and trace-id query (`sp logs` / `GET /api/recorder/logs`) from the **sp-backend** Helm chart.
 
-**Prerequisites:** `logPipeline.enabled: true` on a healthy `sp-backend` release. Instrumented apps need the Vector OTLP log endpoint (see below).
+**Prerequisites:** a healthy `sp-backend` release on chart **v4.3.x+**. The pipeline is **enabled by default** (`logPipeline.enabled: true`). Instrumented workloads need the in-cluster Vector OTLP log endpoint (see [Agent OTLP export](#agent-otlp-export)).
 
-## Enable in Helm
+## What the chart deploys
+
+When `logPipeline.enabled: true`, Helm adds:
+
+| Resource | Purpose |
+|----------|---------|
+| **Vector** (`{release}-log-vector`) | OTLP log ingest (gRPC/HTTP + agent JSON on `:4320`) |
+| **rclone sidecar** (local mode only) | S3-over-filesystem gateway so Vector writes Parquet via `aws_s3` sink |
+| **Parquet PVC** (local mode only) | Durable storage shared by Vector, sp-backend, compaction, and retention |
+| **Compaction CronJob** (local mode) | Merges closed-hour minute files → `part-hourly.parquet` (DuckDB) |
+| **Retention CronJob** (optional) | Prunes Parquet older than `ttlDays` |
+
+sp-backend is wired for Parquet reads and exports its own diagnostic logs when the pipeline is enabled (`OTEL_ENABLED=true`, `OTEL_LOGS_EXPORTER=otlp-filtered`).
+
+## Configure in Helm
+
+The chart enables the pipeline by default. Override in your values file (or `--set` on install/upgrade) when you need non-default storage, placement, or to disable:
 
 ```yaml
 logPipeline:
-  enabled: true
+  enabled: true   # default; set false to disable
   storage:
     backend: local   # or s3
   parquet:
-    storageSize: 50Gi
-    localRoot: /data/parquet/logs
+    storageSize: 100Gi
+    # storageClass: managed-csi   # optional — cluster default if omitted
   retention:
-    ttlDays: 30              # optional — enables TTL prune CronJob
+    ttlDays: 30              # set "" to disable retention CronJob
     cleanupSchedule: "0 3 * * *"
   compaction:
     enabled: true            # local storage only
-    schedule: "15 * * * *"   # merges closed hours into part-hourly.parquet
+    schedule: "15 * * * *"   # previous closed UTC hour
+  # Pin Vector + maintenance jobs to the same node pool as sp-backend when using taints:
+  placement:
+    nodeSelector:
+      workload: softprobe-backend
+    tolerations:
+      - key: workload
+        operator: Equal
+        value: backend
+        effect: NoSchedule
 ```
 
-After upgrade, verify Vector and sp-backend pods are running, then run a canned lookup:
+**Upgrading from an older `values.yaml` without a `logPipeline` block?** You do not need to add one — chart defaults apply and the pipeline is deployed on upgrade. See [Upgrade an existing release](./sp-backend-helm.md#upgrade-an-existing-release).
+
+Example upgrade with explicit overrides (optional):
 
 ```bash
+helm upgrade softprobe softprobe/sp-backend \
+  --version 4.3.9 \
+  -n softprobe \
+  -f values.yaml \
+  --set image.tag=v4.3.9
+```
+
+Pin **`image.tag`** to a semver release (for example `v4.3.9`), not `latest`, so the backend matches your chart version.
+
+### Verify
+
+```bash
+kubectl get pods,cronjob,pvc -n softprobe | grep -E 'log-vector|log-parquet|compaction|retention'
+kubectl port-forward -n softprobe svc/softprobe-sp-backend 8090:8090
+```
+
+Run a canned lookup (replace trace id and bounds):
+
+```bash
+export SP_API_URL=http://127.0.0.1:8090
 sp logs --trace-id <32-hex> --since 2026-06-27T10:00:00Z --until 2026-06-27T10:05:00Z
 ```
 
@@ -44,21 +91,37 @@ Point the Java agent at the in-cluster Vector JSON log ingest URL:
 -Dsp.otel.exporter.otlp.log.endpoint=http://<release>-log-vector.<namespace>.svc.cluster.local:4320/v1/logs
 ```
 
-When this property is set, correlated application and agent logs export during record and replay. Legacy capture flags (`sp.record.user.log`, `sp-capture-log`, etc.) are not used.
+For release `softprobe` in namespace `softprobe`:
+
+```text
+http://softprobe-log-vector.softprobe.svc.cluster.local:4320/v1/logs
+```
+
+When this property is set, correlated application and agent logs export during record and replay. Legacy capture flags (`sp.record.user.log`, `sp-capture-log`, `sp.user.log.level`, etc.) are not used in v1.
 
 ## Storage modes
 
 | Mode | `logPipeline.storage.backend` | Write path | Query path |
 |------|------------------------------|------------|------------|
-| **Local PVC** (default) | `local` | Vector → in-cluster Parquet PVC | sp-backend reads mounted volume |
-| **S3-compatible** | `s3` | Vector → your bucket (AWS S3, MinIO, GCS S3 interop, Azure via S3 API) | sp-backend reads via S3 API |
+| **Local PVC** (default) | `local` | Vector → Parquet PVC | sp-backend reads mounted volume |
+| **S3-compatible** | `s3` | Vector → your bucket | sp-backend reads via S3 API |
 
 ### Local disk
 
-- Chart deploys a Parquet PVC (size `logPipeline.parquet.storageSize`).
-- **Backup:** snapshot the PVC or copy `logPipeline.parquet.localRoot` while Vector is quiesced.
-- **Retention:** set `logPipeline.retention.ttlDays` to enable an optional prune CronJob.
-- **Compaction:** hourly DuckDB CronJob (`duckdb/duckdb` image) merges minute files into `part-hourly.parquet` per closed hour (reduces query file count).
+**Layout (fixed by chart — do not reconfigure paths):**
+
+- PVC is mounted at `/data/parquet` on Vector, sp-backend, compaction, and retention pods.
+- Parquet hive partitions live under `/data/parquet/logs/`:
+  - Minute files: `year=YYYY/month=MM/day=DD/hour=HH/minute=mm/part-<epoch>-<uuid>.parquet`
+  - After compaction: `year=.../hour=HH/part-hourly.parquet` (minute dirs for that hour removed)
+
+**Compaction:** the hourly CronJob (`logPipeline.compaction`) reads all `minute=*/part-*.parquet` for the **previous closed UTC hour**, writes `part-hourly.parquet`, then deletes the minute files. sp-backend prefers the hourly file when present for that hour.
+
+**Image:** `softprobe/duckdb:1.1.3` from Docker Hub (`linux/amd64`). For Apple Silicon dev clusters, build/load an `arm64` image locally (`make duckdb-image DUCKDB_PLATFORM=linux/arm64`) and override `logPipeline.compaction.image`.
+
+**Backup:** snapshot the `{release}-log-parquet` PVC or copy files under the PVC while Vector is quiesced.
+
+**Retention:** `logPipeline.retention.ttlDays` (default `30`) enables a prune CronJob. Set `ttlDays: ""` to disable.
 
 ### S3-compatible object storage
 
@@ -88,25 +151,59 @@ kubectl create secret generic softprobe-log-s3-credentials \
 ```
 
 - **No Parquet PVC** is created when `backend: s3`.
-- **Retention:** set `ttlDays` to enable S3 object prune CronJob (uses object last-modified time).
-- **Compaction:** not automated for S3 in v2 — use minute-level files or add an external compaction job; local-mode compaction CronJob does not run for `backend: s3`.
+- **Retention:** set `ttlDays` to enable S3 object prune (uses last-modified time).
+- **Compaction:** not automated for S3 in v1 — the local DuckDB CronJob is not deployed for `backend: s3`.
 
-End users and Agent Skills **must not** receive bucket credentials — query only through `sp logs` / API.
+End users and Agent Skills **must not** receive bucket credentials — query only through `sp logs` / `GET /api/recorder/logs`.
+
+## Helm values reference
+
+| Value | Description |
+|-------|-------------|
+| `logPipeline.enabled` | Deploy Vector, storage, and query wiring (default `true`) |
+| `logPipeline.storage.backend` | `local` (PVC) or `s3` |
+| `logPipeline.parquet.storageSize` / `storageClass` | Local Parquet PVC size and class |
+| `logPipeline.vector.image` | Vector image (default `timberio/vector:0.56.0-debian`) |
+| `logPipeline.vector.resources` | CPU/memory for Vector (+ rclone sidecar in local mode) |
+| `logPipeline.otlp.httpPort` / `grpcPort` / `agentJsonPort` | OTLP ports (defaults `4318` / `4317` / `4320`) |
+| `logPipeline.retention.ttlDays` | Prune TTL in days; `""` disables retention CronJob |
+| `logPipeline.retention.cleanupSchedule` | Retention CronJob schedule (default `0 3 * * *`) |
+| `logPipeline.compaction.enabled` / `schedule` / `image` | Local hourly compaction (default on, `15 * * * *`, `softprobe/duckdb:1.1.3`) |
+| `logPipeline.placement` | `nodeSelector` / `tolerations` / `affinity` for Vector and maintenance CronJobs |
+| `logPipeline.agentLogEndpointProperty` | Documented JVM property: `sp.otel.exporter.otlp.log.endpoint` |
+
+`logPipeline.parquet.localRoot` exists in chart defaults (`/data/parquet/logs`) and must stay aligned with the rclone bucket layout — operators normally **do not** override it.
 
 ## Maintenance jobs
 
 | CronJob | When | What |
 |---------|------|------|
-| `*-retention` | `ttlDays` set | Deletes Parquet files/objects older than TTL |
-| `*-compaction` | `compaction.enabled` + `backend: local` | DuckDB CronJob merges previous hour's minute files → `part-hourly.parquet` |
+| `{release}-log-vector-retention` | `ttlDays` set | Deletes Parquet files/objects older than TTL |
+| `{release}-log-vector-compaction` | `compaction.enabled` + `backend: local` | DuckDB merges previous hour's `part-*.parquet` → `part-hourly.parquet` |
 
-Both are opt-in (retention requires `ttlDays`; compaction defaults on for local storage).
+Check last run:
 
-## Out of scope
+```bash
+kubectl get cronjob,jobs -n softprobe -l 'app.kubernetes.io/component=log-pipeline-maintenance'
+kubectl logs -n softprobe job/<compaction-job-name>
+```
+
+## Troubleshooting
+
+| Symptom | Check |
+|---------|--------|
+| Empty `GET /api/recorder/logs` but data expected | Partial `part-hourly.parquet` from interrupted compaction — delete hourly file or wait for next compaction; confirm minute `part-*.parquet` files exist |
+| Vector pod not ready | `kubectl logs -n softprobe deploy/<release>-log-vector -c vector` |
+| Compaction `ImagePullBackOff` on arm64 | Override `logPipeline.compaction.image` with a local `arm64` build |
+| Agent logs missing | `sp.otel.exporter.otlp.log.endpoint` must reach Vector `:4320`; trace must have `trace_id` on export |
+| sp-backend logs missing | `logPipeline.enabled` auto-enables OTLP export on sp-backend |
+
+## Out of scope (v1)
 
 - Native Azure Blob SDK (use S3-compatible endpoint).
 - Iceberg, ad hoc SQL, direct Parquet access for end users.
 - Dual-write to local PVC and S3.
+- Dedicated log-pipeline health/status API.
 
 ## Related
 

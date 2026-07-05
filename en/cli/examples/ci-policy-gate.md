@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install sp
         run: |
-          curl -fsSL -o sp "$SP_DOWNLOAD_URL/sp-linux-amd64"
+          curl -fsSL -o sp "${SP_DOWNLOAD_URL:-https://install.softprobe.ai/artifacts/sp/latest}/sp-linux-amd64"
           chmod +x sp && sudo mv sp /usr/local/bin/
       - name: Validate recording policy
         run: sp policy recording validate -f policies/recording.yaml --json

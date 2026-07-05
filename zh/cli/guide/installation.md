@@ -1,21 +1,22 @@
 # 安装
 
-## 一行安装（`sp` + `spcode`）
+## 一行安装（`sp`、Java Agent 与 `spcode`）
 
 ```bash
 curl -fsSL https://install.softprobe.ai | bash
 ```
 
-安装脚本会将两个二进制放到 `~/.local/share/softprobe/bin`，并在 `~/.local/bin` 创建符号链接；同时写入 `~/.config/softprobe/config.jsonc`，默认 `api_url` 为 `https://api.softprobe.ai`。
+安装脚本会将 `sp` 和 `spcode` 放到 `~/.local/share/softprobe/bin`，将 `sp-agent.jar` 放到 `~/.local/share/softprobe/agent`，并在 `~/.local/bin` 创建二进制符号链接；同时写入 `~/.config/softprobe/config.jsonc`，默认 `api_url` 为 `https://api.softprobe.ai`。
 
 可选参数（写在 `bash -s --` 之后）：
 
 ```bash
 curl -fsSL https://install.softprobe.ai | bash -s -- --version latest --api-url https://api.softprobe.ai
-curl -fsSL https://install.softprobe.ai | bash -s -- --skip-spcode   # 仅安装 sp CLI
+curl -fsSL https://install.softprobe.ai | bash -s -- --product sp      # 仅安装 sp CLI
+curl -fsSL https://install.softprobe.ai | bash -s -- --product agent   # 仅安装 Java Agent
 ```
 
-`install.softprobe.ai` 由 `deployment-k8s` 仓库中的 Cloudflare Worker（`cloudflare/install-worker/`）提供，反向代理 `gs://softprobe-published-files/install/latest/`，避免 `curl | bash` 被重定向到 GCS 裸链。
+`install.softprobe.ai` 由 `deployment-k8s` 仓库中的 Cloudflare Worker（`cloudflare/install-worker/`）提供，反向代理公开安装产物，避免浏览器或 `curl | bash` 被重定向到 GCS 裸链。
 
 ### 验证
 
@@ -29,15 +30,15 @@ sp health --json    # 需要 sp-boot 已运行（若已实现）
 按版本发布的独立包路径：
 
 ```text
-gs://softprobe-published-files/sp/<version>/sp-{os}-{arch}
+https://install.softprobe.ai/artifacts/sp/<version>/sp-{os}-{arch}
 ```
 
-支持平台：`linux/amd64`、`linux/arm64`、`darwin/amd64`、`darwin/arm64`、`windows/amd64`、`windows/arm64`。
+支持平台：`linux/amd64`、`linux/arm64`、`darwin/amd64`、`darwin/arm64`、`windows/amd64`。
 
 手动安装示例（Linux amd64）：
 
 ```bash
-curl -fsSL -o sp "https://storage.googleapis.com/softprobe-published-files/sp/<version>/sp-linux-amd64"
+curl -fsSL -o sp "https://install.softprobe.ai/artifacts/sp/<version>/sp-linux-amd64"
 chmod +x sp
 sudo mv sp /usr/local/bin/
 sp version
@@ -97,7 +98,7 @@ systemctl status spcode-web.service
 ./scripts/manual-publish-install.sh latest darwin-arm64 linux-arm64 linux-x64
 ```
 
-产物上传到 `gs://softprobe-published-files/install/<version>/`。仅当修改 `cloudflare/install-worker/` 时需重新部署 Worker：
+产物上传到 `gs://softprobe-published-files/artifacts/<product>/<version>/`。仅当修改 `cloudflare/install-worker/` 时需重新部署 Worker：
 
 ```bash
 cd deployment-k8s/cloudflare/install-worker && wrangler deploy

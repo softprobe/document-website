@@ -8,7 +8,7 @@ Deploy the Softprobe web UI (`spcode-web`) after [sp-backend](./sp-backend-helm.
 # GCR login on the host running Docker (use pull key JSON from Softprobe)
 cat softprobe-registry-puller.json | docker login -u _json_key --password-stdin https://gcr.io
 
-IMAGE=gcr.io/cs-poc-sasxbttlzroculpau4u6e2l/spcode-web:1.0.21
+IMAGE=gcr.io/cs-poc-sasxbttlzroculpau4u6e2l/spcode-web:latest
 docker pull "$IMAGE"
 ```
 

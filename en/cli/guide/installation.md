@@ -1,21 +1,22 @@
 # Installation
 
-## One-line install (`sp` + `spcode`)
+## One-line install (`sp`, Java agent, and `spcode`)
 
 ```bash
 curl -fsSL https://install.softprobe.ai | bash
 ```
 
-This installs both binaries under `~/.local/share/softprobe/bin` and symlinks into `~/.local/bin`. It seeds `~/.config/softprobe/config.jsonc` with `api_url` → `https://api.softprobe.ai`.
+This installs `sp` and `spcode` under `~/.local/share/softprobe/bin`, installs `sp-agent.jar` under `~/.local/share/softprobe/agent`, and symlinks binaries into `~/.local/bin`. It seeds `~/.config/softprobe/config.jsonc` with `api_url` → `https://api.softprobe.ai`.
 
 Options (pass after `bash -s --`):
 
 ```bash
 curl -fsSL https://install.softprobe.ai | bash -s -- --version latest --api-url https://api.softprobe.ai
-curl -fsSL https://install.softprobe.ai | bash -s -- --skip-spcode   # sp CLI only
+curl -fsSL https://install.softprobe.ai | bash -s -- --product sp      # sp CLI only
+curl -fsSL https://install.softprobe.ai | bash -s -- --product agent   # Java agent only
 ```
 
-`install.softprobe.ai` is served by a Cloudflare Worker in the `deployment-k8s` repo (`cloudflare/install-worker/`) that proxies `gs://softprobe-published-files/install/latest/` without redirecting the browser to GCS.
+`install.softprobe.ai` is served by a Cloudflare Worker in the `deployment-k8s` repo (`cloudflare/install-worker/`) that proxies public artifacts without redirecting the browser to GCS.
 
 ### Verify
 
@@ -29,15 +30,15 @@ sp health --json    # requires sp-boot running (when implemented)
 Per-version releases are also published as:
 
 ```text
-gs://softprobe-published-files/sp/<version>/sp-{os}-{arch}
+https://install.softprobe.ai/artifacts/sp/<version>/sp-{os}-{arch}
 ```
 
-Supported platforms: `linux/amd64`, `linux/arm64`, `darwin/amd64`, `darwin/arm64`, `windows/amd64`, `windows/arm64`.
+Supported platforms: `linux/amd64`, `linux/arm64`, `darwin/amd64`, `darwin/arm64`, and `windows/amd64`.
 
 Manual install example (Linux amd64):
 
 ```bash
-curl -fsSL -o sp "https://storage.googleapis.com/softprobe-published-files/sp/<version>/sp-linux-amd64"
+curl -fsSL -o sp "https://install.softprobe.ai/artifacts/sp/<version>/sp-linux-amd64"
 chmod +x sp
 sudo mv sp /usr/local/bin/
 sp version
@@ -99,7 +100,7 @@ Publish more platforms from the `backend` repo:
 ./scripts/manual-publish-install.sh latest darwin-arm64 linux-arm64 linux-x64
 ```
 
-Uploads to `gs://softprobe-published-files/install/<version>/`. Redeploy the Worker only when `cloudflare/install-worker/` changes:
+Uploads to `gs://softprobe-published-files/artifacts/<product>/<version>/`. Redeploy the Worker only when `cloudflare/install-worker/` changes:
 
 ```bash
 cd deployment-k8s/cloudflare/install-worker && wrangler deploy
