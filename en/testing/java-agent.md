@@ -144,6 +144,6 @@ The **same** agent JAR must be attached on the instance that receives replay tra
 ## Related
 
 - [Getting started](/en/testing/getting-started)
-- [CLI: agent command](/en/cli/commands/agent)
+- [CLI: agent command](/en/testing/commands/agent)
 - [Supported frameworks](/en/testing/supported-frameworks)
-- [Configuration (JVM)](/en/cli/guide/configuration)
+- [Configuration (JVM)](/en/testing/installation/configuration)

@@ -126,6 +126,6 @@ sp.api.url=http://127.0.0.1:8090
 ## 相关文档
 
 - [快速开始](/zh/testing/getting-started)
-- [CLI：agent 命令](/zh/cli/commands/agent)
+- [CLI：agent 命令](/zh/testing/commands/agent)
 - [支持的框架](/zh/testing/supported-frameworks)
-- [配置（JVM）](/zh/cli/guide/configuration)
+- [配置（JVM）](/zh/testing/installation/configuration)

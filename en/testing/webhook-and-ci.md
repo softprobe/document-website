@@ -18,9 +18,9 @@ Webhooks and CI do not create cases for you. Complete [How to record](/en/testin
 | Deploy hooks (Argo CD, K8s Job, shell) that only need “deploy OK → start replay” | **GET webhook** (one-line `curl`) |
 | Custom orchestration with your own HTTP client and request bodies | **REST** (`POST /api/createPlan` + report APIs) |
 
-**Rule of thumb:** When the pipeline must **create a plan → wait → list failures → pass/fail**, use **`sp replay run --watch`** and **`sp replay case list --failed`** per the [output contract](/en/cli/guide/output-contract). Use GET webhook to **trigger only**; fetch results in a later step with `sp` or authenticated report APIs.
+**Rule of thumb:** When the pipeline must **create a plan → wait → list failures → pass/fail**, use **`sp replay run --watch`** and **`sp replay case list --failed`** per the [output contract](/en/testing/agents/output-contract). Use GET webhook to **trigger only**; fetch results in a later step with `sp` or authenticated report APIs.
 
-See [replay command](/en/cli/commands/replay) and [authentication](/en/cli/guide/authentication).
+See [replay command](/en/testing/commands/replay) and [authentication](/en/testing/agents/authentication).
 
 ## Architecture (brief)
 
@@ -36,7 +36,7 @@ sequenceDiagram
 ```
 
 - **`SP_API_URL`**: sp-boot (storage, schedule, report) — **not** the service under test.
-- **`targetEnv`**: base URL of the test instance (e.g. `http://order-service.test:8080`). Do not confuse with `SP_API_URL` — [CLI concepts: targetEnv](/en/cli/guide/concepts#replay-target-url-targetenv).
+- **`targetEnv`**: base URL of the test instance (e.g. `http://order-service.test:8080`). Do not confuse with `SP_API_URL` — [CLI concepts: targetEnv](/en/testing/agents/concepts#replay-target-url-targetenv).
 
 ## Option 1: Webhook (GET) trigger
 
@@ -151,7 +151,7 @@ sp replay diff get <diffId> --out-dir .sp-work --json
 sp diagnose replay plan-abc123 --failed-only --out-dir .sp-work --json
 ```
 
-See [Example: diagnose replay failure](/en/cli/examples/agent-diagnose-replay).
+See [Example: diagnose replay failure](/en/testing/examples/agent-diagnose-replay).
 
 ### 3. Dashboard (humans)
 
@@ -223,7 +223,7 @@ Optional fire-and-forget webhook after deploy:
             --data-urlencode "planName=deploy-${{ github.run_id }}"
 ```
 
-Policy validation on PRs: [CI policy gate example](/en/cli/examples/ci-policy-gate).
+Policy validation on PRs: [CI policy gate example](/en/testing/examples/ci-policy-gate).
 
 ## Jenkins example
 
@@ -263,7 +263,7 @@ Use `curl -G …/api/createPlan` in a post-deploy step; wait and gate in a later
 
 ## Security and operations
 
-- Store **`SP_TOKEN` in CI secrets** only — [authentication](/en/cli/guide/authentication).
+- Store **`SP_TOKEN` in CI secrets** only — [authentication](/en/testing/agents/authentication).
 - If webhook URLs are reachable from the internet, restrict access and always send **`access-token`**.
 - Replay sends **real HTTP** to `targetEnv`; point webhooks at test/staging instances — [replay prerequisites](/en/testing/replay-and-diff#prerequisites).
 - Lower or disable recording on replay hosts during runs.
@@ -272,6 +272,6 @@ Use `curl -G …/api/createPlan` in a post-deploy step; wait and gate in a later
 
 - [Replay and diff](/en/testing/replay-and-diff)
 - [Getting started](/en/testing/getting-started)
-- [CLI: replay](/en/cli/commands/replay)
-- [API mapping](/en/cli/reference/api-mapping)
+- [CLI: replay](/en/testing/commands/replay)
+- [API mapping](/en/testing/reference/api-mapping)
 - [CLI quickstart](/en/cli/guide/quickstart)

@@ -460,4 +460,4 @@ spec:
 
 - [Policies overview](/en/testing/policies)
 - [Replay and diff](/en/testing/replay-and-diff)
-- [CLI: policy command](/en/cli/commands/policy)
+- [CLI: policy command](/en/testing/commands/policy)

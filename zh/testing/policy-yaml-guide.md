@@ -465,4 +465,4 @@ spec:
 
 - [策略概览](/zh/testing/policies)
 - [回放与对比](/zh/testing/replay-and-diff)
-- [CLI：policy 命令](/zh/cli/commands/policy)
+- [CLI：policy 命令](/zh/testing/commands/policy)

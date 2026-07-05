@@ -8,6 +8,7 @@
     "docs:build": "vitepress build",
     "docs:preview": "vitepress preview",
     "validate:testing-ia": "node scripts/validate-testing-ia.mjs",
+    "migrate:cli-to-testing": "node scripts/complete-cli-to-testing-migration.mjs",
     "migrate": "node scripts/migrate-content.mjs",
     "deploy": "npm run docs:build && env -u CLOUDFLARE_API_TOKEN -u CF_API_TOKEN wrangler deploy"
   },

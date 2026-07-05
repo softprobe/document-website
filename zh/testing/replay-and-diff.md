@@ -42,7 +42,7 @@ sp replay status --plan <planId> --json
 | `replayId` | 单个用例的一次回放执行 |
 | Case | 一条录制的入口请求及其依赖 mocker |
 
-`SP_API_URL` 指向 **sp-boot**，不是 `targetEnv`。混淆二者是常见集成错误 — 见 [CLI 概念](/zh/cli/guide/concepts#replay-target-url-targetenv)。
+`SP_API_URL` 指向 **sp-boot**，不是 `targetEnv`。混淆二者是常见集成错误 — 见 [CLI 概念](/zh/testing/agents/concepts#replay-target-url-targetenv)。
 
 ## 回放时发生什么
 
@@ -102,7 +102,7 @@ CLI 不支持手写用例；扩大覆盖请录制更多流量或调整录制策�
 
 ## 仪表盘与 CLI
 
-人工常在 workbench 或仪表盘中查看差异树；Agent 与 CI 应使用 **`sp replay diff`** 及 [输出约定](/zh/cli/guide/output-contract) 中的 `--out-dir` 产物路径。
+人工常在 workbench 或仪表盘中查看差异树；Agent 与 CI 应使用 **`sp replay diff`** 及 [输出约定](/zh/testing/agents/output-contract) 中的 `--out-dir` 产物路径。
 
 部署 Webhook 或 GitHub Actions / Jenkins 门禁的完整示例见 [Webhook 与 CI/CD](/zh/testing/webhook-and-ci)。
 
@@ -110,6 +110,6 @@ CLI 不支持手写用例；扩大覆盖请录制更多流量或调整录制策�
 
 - [工作原理](/zh/testing/how-it-works)
 - [策略](/zh/testing/policies)
-- [CLI：replay 命令](/zh/cli/commands/replay)
+- [CLI：replay 命令](/zh/testing/commands/replay)
 - [Webhook 与 CI/CD](/zh/testing/webhook-and-ci)
-- [示例：诊断回放失败](/zh/cli/examples/agent-diagnose-replay)
+- [示例：诊断回放失败](/zh/testing/examples/agent-diagnose-replay)

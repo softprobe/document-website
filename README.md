@@ -1,6 +1,8 @@
 # Softprobe documentation (VitePress v2)
 
-Unified public docs: **Platform** (`/en/platform/…`), **Testing** (`/en/testing/…` — Java record & replay), and **CLI** (`/en/cli/…`).
+Unified public docs: **Platform** (`/en/platform/…`) and **Testing** (`/en/testing/…` — install, `sp` commands, record & replay).
+
+User-facing **`sp`** docs are canonical under **`en/testing/`** and **`zh/testing/`**. Legacy `/en/cli/*` URLs rewrite to Testing sources (see `CONTRIBUTING.md`).
 
 ## Local dev
 

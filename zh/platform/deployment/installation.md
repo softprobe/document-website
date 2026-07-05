@@ -4,7 +4,7 @@
 将 SP-Istio Agent 部署到您的生产 Istio 服务网格中。
 
 ::: tip 查找用户安装？
-Softprobe 用户安装、`sp setup`、`sp code`、`sp doctor` 与 `sp upgrade` 位于 [测试安装](/zh/testing/installation/)。本平台页面仅面向服务端/运维部署。
+Softprobe 服务端安装（Helm sp-backend）、客户端安装（`sp setup`、Spcode Service）、`sp code`、`sp doctor` 与 `sp upgrade` 位于 [测试安装](/zh/testing/installation/)。本平台页面仅面向 Istio 网格 / SESSIFY 部署。
 :::
 
 ::: tip 下一步：在 Dashboard 查看 Context View
@@ -19,9 +19,9 @@ Softprobe 用户安装、`sp setup`、`sp code`、`sp doctor` 与 `sp upgrade` �
 :::
 
 <div class="sp-hero-buttons">
-  <a class="button button--primary" href="../production/dashboard-user-guide/">仪表盘指南</a>
-  <a class="button button--secondary" href="../getting-started/account-setup/">账号设置</a>
-  <a class="button button--secondary" href="../support/faq/">常见问题</a>
+  <a class="button button--primary" href="/zh/platform/production/dashboard-user-guide">仪表盘指南</a>
+  <a class="button button--secondary" href="/zh/platform/getting-started/account-setup">账号设置</a>
+  <a class="button button--secondary" href="/zh/platform/support/faq">常见问题</a>
 </div>
 
 <div class="sp-img">
@@ -81,11 +81,11 @@ kubectl get wasmplugin -A
 
 参考文档：
 - [前端插件安装](/zh/platform/sessify)
-- [配置指南](/zh/configuration/config)
+- [配置指南](/zh/platform/configuration/config)
 
 ### 范围化部署
 
-要仅将代理部署到特定的命名空间或工作负载，您可以创建一个范围化的 WasmPlugin 配置。请参阅 [配置指南](../configuration/config) 以获取详细的配置选项。
+要仅将代理部署到特定的命名空间或工作负载，您可以创建一个范围化的 WasmPlugin 配置。请参阅 [配置指南](/zh/platform/configuration/config) 以获取详细的配置选项。
 
 ## 使用 Bookinfo 演示进行测试
 
@@ -140,4 +140,4 @@ kubectl delete wasmplugin -n istio-system sp-istio-agent
 
 参考文档：
 - [前端插件安装](/zh/platform/sessify)
-- [配置指南](/zh/configuration/config)
+- [配置指南](/zh/platform/configuration/config)
