@@ -21,7 +21,7 @@ const testingSidebarEn = [
     text: 'Installation',
     items: [
       { text: 'Install Softprobe Server', link: '/en/testing/installation/server' },
-      { text: 'Install Softprobe (client)', link: '/en/testing/installation/' },
+      { text: 'Install Softprobe Client', link: '/en/testing/installation/' },
       { text: 'Configuration', link: '/en/testing/installation/configuration' },
       { text: 'Launch Web UI (manual)', link: '/en/testing/installation/code' },
       { text: 'Doctor', link: '/en/testing/installation/doctor' },

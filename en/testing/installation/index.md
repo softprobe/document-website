@@ -1,8 +1,8 @@
 ---
-title: Install Softprobe (client)
+title: Install Softprobe Client
 ---
 
-# Install Softprobe (client)
+# Install Softprobe Client
 
 ::: tip Prerequisite
 Deploy the Softprobe backend on your cluster first: [Install Softprobe Server](./server.md).

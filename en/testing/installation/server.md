@@ -486,7 +486,7 @@ Point instrumented applications at the in-cluster service:
 
 ## Next step
 
-After sp-backend is healthy, install Softprobe on developer machines: [Install Softprobe (client)](./).
+After sp-backend is healthy, install Softprobe on developer machines: [Install Softprobe Client](./).
 
 For a shared team web workbench on Linux, see [Spcode Service](./index.md#spcode-service) on the client install page.
 
