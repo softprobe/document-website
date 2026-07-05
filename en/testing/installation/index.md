@@ -10,17 +10,15 @@ Install Softprobe with the global installer:
 curl -fsSL https://install.softprobe.ai/install.sh | bash
 ```
 
-The default install updates the Softprobe CLI (`sp`), the Java agent, and the internal coding engine used by `sp code`.
+The default install adds the Softprobe CLI (`sp`), the Java agent, and the web UI used for testing.
 
-After install:
+After install, confirm `sp` is available:
 
 ```bash
-sp setup
-sp code
-sp doctor
+sp -v
 ```
 
-Component options such as `--product sp|agent|spcode|all` remain available for maintainer automation, but the primary user workflow is the `sp` command.
+If that prints a version, you are ready for the steps below.
 
 ## Setup
 
@@ -28,16 +26,17 @@ Component options such as `--product sp|agent|spcode|all` remain available for m
 
 ```bash
 sp setup
-sp setup --backend-url http://127.0.0.1:8090
 ```
+
+If you omit `--backend-url`, the wizard **prompts** for your backend URL. On Linux it may also ask whether to install Spcode Service ([below](#spcode-service)).
 
 | Flag | Description |
 |------|-------------|
-| `--backend-url` | Softprobe backend URL (prompts when omitted) |
+| `--backend-url` | Backend URL (use this to skip the prompt) |
 
-The setup wizard only owns the backend URL in this release. Model provider configuration belongs to `sp code` and the internal coding engine.
+Model provider configuration belongs to `sp code`, not `sp setup`.
 
-For non-interactive setup:
+For non-interactive or scripted setup:
 
 ```bash
 sp setup --backend-url http://127.0.0.1:8090 --json

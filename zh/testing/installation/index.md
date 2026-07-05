@@ -10,15 +10,15 @@ title: 安装 Softprobe
 curl -fsSL https://install.softprobe.ai/install.sh | bash
 ```
 
-默认安装会更新 `sp`、Java Agent，以及 `sp code` 使用的内部编码引擎。
+默认安装包含 `sp` CLI、Java Agent 以及测试用的 Web UI。
 
-安装后：
+安装后先确认 `sp` 可用：
 
 ```bash
-sp setup
-sp code
-sp doctor
+sp -v
 ```
+
+若能输出版本号，即可继续下面的步骤。
 
 ## 设置
 
@@ -26,16 +26,17 @@ sp doctor
 
 ```bash
 sp setup
-sp setup --backend-url http://127.0.0.1:8090
 ```
+
+若未提供 `--backend-url`，向导会**交互式**询问后端 URL。在 Linux 上还可能询问是否安装 Spcode Service（见[下文](#spcode-service)）。
 
 | 参数 | 说明 |
 |------|------|
-| `--backend-url` | Softprobe 后端 URL（省略时交互输入） |
+| `--backend-url` | 后端 URL（提供后可跳过交互提示） |
 
-模型提供商配置由 `sp code` 和内部编码引擎负责。
+模型提供商配置由 `sp code` 负责，不在 `sp setup` 中配置。
 
-非交互示例：
+非交互或脚本场景可显式传入 URL：
 
 ```bash
 sp setup --backend-url http://127.0.0.1:8090 --json
