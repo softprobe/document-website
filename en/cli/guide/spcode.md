@@ -1,5 +1,15 @@
 # Softprobe AI Engine CLI (`spcode`)
 
+Most users should launch the coding engine through `sp code`.
+
+```bash
+sp setup --backend-url http://127.0.0.1:18090
+sp code web --port 4096
+```
+
+`sp code` reads shared Softprobe config and starts the internal engine with the
+resolved backend context.
+
 The **`spcode`** command-line interface is the local autonomous AI engine and developer companion for the **Softprobe** product suite.
 
 While the backend Go `sp` CLI orchestrates record-and-replay pipelines, mock policies, and replay trace analysis, `spcode` powers the interactive, agent-driven side of the platform—running local terminal user interfaces (TUI), executing autonomous background tasks, serving as the bridge for IDE plugins, and hosting Model Context Protocol (MCP) servers.

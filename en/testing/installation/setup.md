@@ -18,4 +18,6 @@ For non-interactive setup:
 sp setup --backend-url http://127.0.0.1:8090
 ```
 
-The URL is stored in the existing Softprobe XDG configuration namespace.
+The URL is stored in the shared Softprobe XDG config file:
+`~/.config/softprobe/config.jsonc`. You do not need to export `SP_API_URL` for
+normal `sp` or `sp code` usage after setup.
