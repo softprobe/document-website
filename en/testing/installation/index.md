@@ -32,6 +32,8 @@ sp setup
 
 Enter the Softprobe backend URL, for example `http://127.0.0.1:8090`.
 
+On Linux, `sp setup` can optionally install **Spcode Service** — a systemd unit for team browser access. See [Setup](./setup.md#spcode-service-linux-only).
+
 ## Next
 
 - [Setup](/en/testing/installation/setup)

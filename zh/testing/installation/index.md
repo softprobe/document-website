@@ -19,3 +19,12 @@ sp setup
 sp code
 sp doctor
 ```
+
+在 Linux 上，`sp setup` 还可选安装 **Spcode Service**（systemd 团队 Web UI）。见 [设置](./setup.md#spcode-service-linux-only)。
+
+## 下一步
+
+- [设置](./setup)
+- [启动编码](./code)
+- [Doctor](./doctor)
+- [升级](./upgrade)
