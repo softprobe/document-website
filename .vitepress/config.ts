@@ -20,7 +20,8 @@ const testingSidebarEn = [
   {
     text: 'Installation',
     items: [
-      { text: 'Install Softprobe', link: '/en/testing/installation/' },
+      { text: 'Install sp-backend (server)', link: '/en/testing/installation/server' },
+      { text: 'Install Softprobe (client)', link: '/en/testing/installation/' },
       { text: 'Configuration', link: '/en/testing/installation/configuration' },
       { text: 'Launch Web UI (manual)', link: '/en/testing/installation/code' },
       { text: 'Doctor', link: '/en/testing/installation/doctor' },
@@ -82,7 +83,8 @@ const testingSidebarZh = [
   {
     text: '安装',
     items: [
-      { text: '安装 Softprobe', link: '/zh/testing/installation/' },
+      { text: '安装 sp-backend（服务端）', link: '/en/testing/installation/server' },
+      { text: '安装 Softprobe（客户端）', link: '/zh/testing/installation/' },
       { text: '配置', link: '/zh/testing/installation/configuration' },
       { text: '手动启动 Web UI', link: '/zh/testing/installation/code' },
       { text: 'Doctor', link: '/zh/testing/installation/doctor' },
@@ -144,9 +146,6 @@ const platformSidebarEn = [
     text: 'Deployment',
     items: [
       { text: 'Production Installation', link: '/en/platform/deployment/installation' },
-      { text: 'sp-backend (Helm)', link: '/en/platform/deployment/sp-backend-helm' },
-      { text: 'Unified log pipeline', link: '/en/platform/deployment/unified-log-pipeline' },
-      { text: 'spcode-web', link: '/en/platform/deployment/spcode-web' },
       { text: 'GKE Autopilot + Istio', link: '/en/platform/deployment/GKE-Autopilot-Istio-Installation-Guide' },
     ],
   },
@@ -191,8 +190,6 @@ const platformSidebarZh = [
     text: '部署',
     items: [
       { text: '生产环境安装', link: '/zh/platform/deployment/installation' },
-      { text: 'sp-backend（Helm）', link: '/en/platform/deployment/sp-backend-helm' },
-      { text: 'spcode-web', link: '/en/platform/deployment/spcode-web' },
       { text: 'GKE Autopilot + Istio', link: '/zh/platform/deployment/GKE-Autopilot-Istio-Installation-Guide' },
     ],
   },
@@ -323,6 +320,9 @@ export default withMermaid(
     'zh/cli/reference': 'zh/testing/reference/',
     'zh/cli/policies': 'zh/testing/policies/',
     'zh/testing/installation/setup': 'zh/testing/installation/',
+    'en/platform/deployment/sp-backend-helm': 'en/testing/installation/server',
+    'en/platform/deployment/unified-log-pipeline': 'en/testing/installation/server',
+    'en/platform/deployment/spcode-web': 'en/testing/installation/',
   },
   locales: {
     en: {

@@ -2,7 +2,7 @@
 
 **When agents use this:** Retrieve correlated application, agent, and sp-backend logs for a W3C trace within caller-provided time bounds — without direct access to Parquet files or storage credentials.
 
-**Prerequisite:** Unified log pipeline enabled (Vector ingest + Parquet storage + query wiring). See [Unified log pipeline (on-prem)](/en/platform/deployment/unified-log-pipeline.md) and [Log correlation IDs](/en/testing/reference/log-correlation-ids.md).
+**Prerequisite:** Unified log pipeline enabled (Vector ingest + Parquet storage + query wiring). See [Install sp-backend (server) — unified log pipeline](/en/testing/installation/server#unified-log-pipeline) and [Log correlation IDs](/en/testing/reference/log-correlation-ids.md).
 
 v1 is **trace-id-only, canned lookup** — no SQL, no ad hoc query language, no `sp logs status` health command, and no replay/plan lookup keys.
 

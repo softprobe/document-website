@@ -6,11 +6,11 @@ User-facing **`sp`** install, setup, lifecycle, commands, and automation docs li
 
 | Topic | Edit here |
 |-------|-----------|
-| Install / setup / config / code / doctor / upgrade / agent | `{en,zh}/testing/installation/*.md` (setup is a section on `index.md`) |
+| Install sp-backend (server) / setup / config / code / doctor / upgrade / agent | `{en,zh}/testing/installation/*.md` (setup is a section on client `index.md`) |
 | Command reference | `{en,zh}/testing/commands/*.md` |
 | AI agent contracts (output, versioning, concepts) | `{en,zh}/testing/agents/*.md` |
 | Examples / reference / policies | `{en,zh}/testing/{examples,reference,policies}/` |
-| Platform / Helm / K8s ops | `{en,zh}/platform/deployment/` |
+| Platform / Istio / K8s mesh ops | `{en,zh}/platform/deployment/` (Helm sp-backend install lives under `{en}/testing/installation/server.md`) |
 
 **Do not** add feature content under `{en,zh}/cli/` — those files are **redirect stubs** for legacy URLs. VitePress `rewrites` map `/en/cli/*` bookmarks to `testing/*` sources.
 

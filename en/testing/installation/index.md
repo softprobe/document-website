@@ -1,8 +1,12 @@
 ---
-title: Install Softprobe
+title: Install Softprobe (client)
 ---
 
-# Install Softprobe
+# Install Softprobe (client)
+
+::: tip Prerequisite
+Deploy the Softprobe backend on your cluster first: [Install sp-backend (server)](./server.md).
+:::
 
 Install Softprobe with the global installer:
 

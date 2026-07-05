@@ -5,6 +5,7 @@ import path from 'node:path'
 const root = process.cwd()
 
 const required = [
+  'en/testing/installation/server.md',
   'en/testing/installation/index.md',
   'en/testing/installation/configuration.md',
   'en/testing/installation/code.md',
@@ -92,6 +93,10 @@ if (config.includes('function cliSidebar')) {
   fail('Remove dead cliSidebar() — Testing is the only product sidebar')
 }
 
+if (!config.includes('/en/testing/installation/server')) {
+  fail('Testing sidebar must link server installation before client')
+}
+
 for (const snippet of [
   '/en/testing/installation/',
   '/zh/testing/installation/',
@@ -133,6 +138,14 @@ for (const dir of stubDirs) {
 const setup = fs.readFileSync(path.join(root, 'en/testing/installation/index.md'), 'utf8')
 if (!setup.includes('Spcode Service')) {
   fail('en/testing/installation/index.md must document Spcode Service (011)')
+}
+if (!setup.includes('Prerequisite') || !setup.includes('server.md')) {
+  fail('en/testing/installation/index.md must link server install as prerequisite')
+}
+
+const server = fs.readFileSync(path.join(root, 'en/testing/installation/server.md'), 'utf8')
+if (!server.includes('Unified log pipeline') || !server.includes('helm install')) {
+  fail('en/testing/installation/server.md must combine Helm install and log pipeline')
 }
 
 const shared = fs.readFileSync(path.join(root, '.vitepress/theme/shared.ts'), 'utf8')
