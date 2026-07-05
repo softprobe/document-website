@@ -145,6 +145,7 @@ helm upgrade softprobe softprobe/sp-backend \
   -n softprobe \
   -f values.yaml \
   --set image.tag=v4.3.9 \
+  --set createNamespace=false \
   --dry-run
 ```
 
@@ -158,7 +159,8 @@ helm upgrade softprobe softprobe/sp-backend \
   --version 4.3.9 \
   -n softprobe \
   -f values.yaml \
-  --set image.tag=v4.3.9
+  --set image.tag=v4.3.9 \
+  --set createNamespace=false
 ```
 
 Replace `softprobe` with your release name if different. Pin **`image.tag`** to the semver release Softprobe gave you — not `latest`.
@@ -186,7 +188,8 @@ helm upgrade softprobe softprobe/sp-backend \
   --version 4.3.9 \
   -n softprobe \
   -f values.yaml \
-  --set image.tag=v4.3.9
+  --set image.tag=v4.3.9 \
+  --set createNamespace=false
 ```
 
 Helm adds log-pipeline resources from chart defaults. After rollout, point agents at Vector (see [Agent OTLP export](#agent-otlp-export)).
@@ -201,7 +204,8 @@ curl -fLO "https://storage.googleapis.com/softprobe-published-files/helm/sp-back
 helm upgrade softprobe ./sp-backend-4.3.9.tgz \
   -n softprobe \
   -f values.yaml \
-  --set image.tag=v4.3.9
+  --set image.tag=v4.3.9 \
+  --set createNamespace=false
 ```
 
 ### Verify after upgrade
@@ -309,7 +313,8 @@ helm upgrade softprobe softprobe/sp-backend \
   --version 4.3.9 \
   -n softprobe \
   -f values.yaml \
-  --set image.tag=v4.3.9
+  --set image.tag=v4.3.9 \
+  --set createNamespace=false
 ```
 
 Pin **`image.tag`** to a semver release (for example `v4.3.9`), not `latest`, so the backend matches your chart version.

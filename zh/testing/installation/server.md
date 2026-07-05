@@ -145,6 +145,7 @@ helm upgrade softprobe softprobe/sp-backend \
   -n softprobe \
   -f values.yaml \
   --set image.tag=v4.3.9 \
+  --set createNamespace=false \
   --dry-run
 ```
 
@@ -158,7 +159,8 @@ helm upgrade softprobe softprobe/sp-backend \
   --version 4.3.9 \
   -n softprobe \
   -f values.yaml \
-  --set image.tag=v4.3.9
+  --set image.tag=v4.3.9 \
+  --set createNamespace=false
 ```
 
 若 release 名称不同，请将 `softprobe` 替换为实际名称。**`image.tag`** 须固定为 Softprobe 提供的 semver 发布版本 — 不要用 `latest`。
@@ -186,7 +188,8 @@ helm upgrade softprobe softprobe/sp-backend \
   --version 4.3.9 \
   -n softprobe \
   -f values.yaml \
-  --set image.tag=v4.3.9
+  --set image.tag=v4.3.9 \
+  --set createNamespace=false
 ```
 
 Helm 会按 Chart 默认值添加日志管道资源。Rollout 完成后，将 Agent 指向 Vector（见 [Agent OTLP 导出](#agent-otlp-export)）。
@@ -201,7 +204,8 @@ curl -fLO "https://storage.googleapis.com/softprobe-published-files/helm/sp-back
 helm upgrade softprobe ./sp-backend-4.3.9.tgz \
   -n softprobe \
   -f values.yaml \
-  --set image.tag=v4.3.9
+  --set image.tag=v4.3.9 \
+  --set createNamespace=false
 ```
 
 ### 升级后验证
@@ -309,7 +313,8 @@ helm upgrade softprobe softprobe/sp-backend \
   --version 4.3.9 \
   -n softprobe \
   -f values.yaml \
-  --set image.tag=v4.3.9
+  --set image.tag=v4.3.9 \
+  --set createNamespace=false
 ```
 
 **`image.tag`** 须固定为 semver 发布版本（例如 `v4.3.9`），不要用 `latest`，以保证后端与 Chart 版本一致。
