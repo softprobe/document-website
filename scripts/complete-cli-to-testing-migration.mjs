@@ -46,7 +46,7 @@ const rewriteLinks = (content, locale) => {
     [`${p}/cli/guide/quickstart`, `${p}/testing/getting-started`],
     [`](/en/cli/`, `](/en/testing/`],
     [`](/zh/cli/`, `](/zh/testing/`],
-    ['./setup.md', `${p}/testing/installation/setup`],
+    ['./setup.md', `${p}/testing/installation/`],
   ]
   for (const [from, to] of pairs) {
     s = s.split(from).join(to)
@@ -141,7 +141,7 @@ function replaceWithStubs(locale) {
 
 const setupCommandRef = (locale) => {
   const p = locale === 'zh' ? '/zh' : '/en'
-  const install = `${p}/testing/installation/setup`
+  const install = `${p}/testing/installation/`
   if (locale === 'zh') {
     return `---
 title: sp setup
@@ -219,4 +219,4 @@ for (const locale of locales) {
 }
 
 console.log(`Migrated ${allCopied.length} paths; stubs written under ${locales.map((l) => `${l}/cli/`).join(', ')}`)
-console.log('Review testing/commands/setup.md (command ref) vs testing/installation/setup.md (operator guide).')
+console.log('Review testing/commands/setup.md (command ref) vs testing/installation/index.md (operator guide).')

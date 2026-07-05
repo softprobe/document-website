@@ -4,7 +4,7 @@ title: sp setup
 
 # sp setup
 
-Command reference. Install flow, Spcode Service, and systemd ops are documented in [Setup](/en/testing/installation/setup).
+Command reference. Install flow, Spcode Service, and systemd ops are documented in [Install Softprobe](/en/testing/installation/#spcode-service).
 
 ```bash
 sp setup

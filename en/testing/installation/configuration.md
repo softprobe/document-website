@@ -18,7 +18,7 @@ Use `sp setup` for the backend URL. Use `sp code` for coding-engine and model-pr
 
 ### Spcode Service (Linux systemd)
 
-When installed via [`sp setup --install-spcode-service`](./setup.md#spcode-service-linux-only), the **service** reads backend URL from root's XDG — not the invoking admin's home:
+When installed via [`sp setup --install-spcode-service`](./#spcode-service), the **service** reads backend URL from root's XDG — not the invoking admin's home:
 
 | Context | Config path |
 |---------|-------------|

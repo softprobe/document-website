@@ -6,7 +6,7 @@ User-facing **`sp`** install, setup, lifecycle, commands, and automation docs li
 
 | Topic | Edit here |
 |-------|-----------|
-| Install / setup / config / code / doctor / upgrade / agent | `{en,zh}/testing/installation/*.md` |
+| Install / setup / config / code / doctor / upgrade / agent | `{en,zh}/testing/installation/*.md` (setup is a section on `index.md`) |
 | Command reference | `{en,zh}/testing/commands/*.md` |
 | AI agent contracts (output, versioning, concepts) | `{en,zh}/testing/agents/*.md` |
 | Examples / reference / policies | `{en,zh}/testing/{examples,reference,policies}/` |
@@ -30,7 +30,7 @@ When you change `en/testing/...`, update the matching `zh/testing/...` path unle
 
 ## Preview URLs
 
-Check the **Testing** sidebar path, e.g. `/en/testing/installation/setup` — not `/en/cli/commands/setup`.
+Check the **Testing** sidebar path, e.g. `/en/testing/installation/` — not `/en/cli/commands/setup`.
 
 ## Migration script
 

@@ -21,7 +21,6 @@ const testingSidebarEn = [
     text: 'Installation',
     items: [
       { text: 'Install Softprobe', link: '/en/testing/installation/' },
-      { text: 'Setup', link: '/en/testing/installation/setup' },
       { text: 'Configuration', link: '/en/testing/installation/configuration' },
       { text: 'Launch coding', link: '/en/testing/installation/code' },
       { text: 'Doctor', link: '/en/testing/installation/doctor' },
@@ -84,7 +83,6 @@ const testingSidebarZh = [
     text: '安装',
     items: [
       { text: '安装 Softprobe', link: '/zh/testing/installation/' },
-      { text: '设置', link: '/zh/testing/installation/setup' },
       { text: '配置', link: '/zh/testing/installation/configuration' },
       { text: '启动编码', link: '/zh/testing/installation/code' },
       { text: 'Doctor', link: '/zh/testing/installation/doctor' },
@@ -301,6 +299,7 @@ export default withMermaid(
     'en/cli/examples': 'en/testing/examples/',
     'en/cli/reference': 'en/testing/reference/',
     'en/cli/policies': 'en/testing/policies/',
+    'en/testing/installation/setup': 'en/testing/installation/',
     'en/cli/guide/overview': 'en/testing/agents/overview',
     'en/cli/guide/output-contract': 'en/testing/agents/output-contract',
     'en/cli/guide/versioning': 'en/testing/agents/versioning',
@@ -323,6 +322,7 @@ export default withMermaid(
     'zh/cli/examples': 'zh/testing/examples/',
     'zh/cli/reference': 'zh/testing/reference/',
     'zh/cli/policies': 'zh/testing/policies/',
+    'zh/testing/installation/setup': 'zh/testing/installation/',
   },
   locales: {
     en: {

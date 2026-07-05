@@ -6,7 +6,6 @@ const root = process.cwd()
 
 const required = [
   'en/testing/installation/index.md',
-  'en/testing/installation/setup.md',
   'en/testing/installation/configuration.md',
   'en/testing/installation/code.md',
   'en/testing/installation/doctor.md',
@@ -20,7 +19,6 @@ const required = [
   'en/testing/reference/index.md',
   'en/testing/policies/index.md',
   'zh/testing/installation/index.md',
-  'zh/testing/installation/setup.md',
   'zh/testing/installation/configuration.md',
   'zh/testing/installation/code.md',
   'zh/testing/installation/doctor.md',
@@ -132,9 +130,9 @@ for (const dir of stubDirs) {
   }
 }
 
-const setup = fs.readFileSync(path.join(root, 'en/testing/installation/setup.md'), 'utf8')
+const setup = fs.readFileSync(path.join(root, 'en/testing/installation/index.md'), 'utf8')
 if (!setup.includes('Spcode Service')) {
-  fail('en/testing/installation/setup.md must document Spcode Service (011)')
+  fail('en/testing/installation/index.md must document Spcode Service (011)')
 }
 
 const shared = fs.readFileSync(path.join(root, '.vitepress/theme/shared.ts'), 'utf8')

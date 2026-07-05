@@ -14,7 +14,7 @@ Softprobe 使用一个共享的 XDG 配置命名空间。
 
 ### Spcode Service（Linux systemd）
 
-通过 [`sp setup --install-spcode-service`](./setup.md#spcode-service-linux-only) 安装后，**服务**从 root 的 XDG 读取后端 URL，而非调用管理员的家目录：
+通过 [`sp setup --install-spcode-service`](./#spcode-service) 安装后，**服务**从 root 的 XDG 读取后端 URL，而非调用管理员的家目录：
 
 | 场景 | 配置路径 |
 |------|----------|
