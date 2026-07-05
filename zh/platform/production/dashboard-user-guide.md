@@ -114,10 +114,10 @@
 
 ---
 <div class="sp-hero-buttons">
-  <a class="button button--primary" href="../deployment/installation/">生产环境部署</a>
-  <a class="button button--secondary" href="../getting-started/account-setup/">账号设置</a>
-  <a class="button button--secondary" href="../configuration/config/">配置指南</a>
-  <a class="button button--secondary" href="../support/faq/">常见问题</a>
+  <a class="button button--primary" href="/zh/platform/deployment/installation">生产环境部署</a>
+  <a class="button button--secondary" href="/zh/platform/getting-started/account-setup">账号设置</a>
+  <a class="button button--secondary" href="/zh/platform/configuration/config">配置指南</a>
+  <a class="button button--secondary" href="/zh/platform/support/faq">常见问题</a>
 </div>
 
 ::: info 提示
@@ -157,9 +157,9 @@
 ---
 
 <div class="sp-hero-buttons">
-  <a class="button button--primary" href="/zh/advanced-guides/concepts/">理解核心概念</a>
-  <a class="button button--secondary" href="/zh/deployment/installation/">安装指南</a>
-  <a class="button button--secondary" href="/zh/configuration/config/">配置参考</a>
+  <a class="button button--primary" href="/zh/platform/advanced-guides/concepts">理解核心概念</a>
+  <a class="button button--secondary" href="/zh/platform/deployment/installation">安装指南</a>
+  <a class="button button--secondary" href="/zh/platform/configuration/config">配置参考</a>
 </div>
 
 ---
