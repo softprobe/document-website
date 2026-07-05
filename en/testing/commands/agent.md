@@ -26,7 +26,7 @@ sp agent command --app a1b2c3d4e5f67890 --agent-jar ./sp-agent.jar --app-jar tar
 | `--app-jar` | Optional. Trailing `-jar …` in `startCommand` |
 | `--format` | `json` (default), `shell`, `docker`, `maven` |
 
-Download `sp-agent.jar` from [Java Agent installation](/en/testing/installation/agent). Available immutable versions are published under `https://install.softprobe.ai/artifacts/agent/<version>/sp-agent.jar`.
+Download `sp-agent.jar` from [Download Java agent](/en/testing/download-java-agent). Available immutable versions are published under `https://install.softprobe.ai/artifacts/agent/<version>/sp-agent.jar`.
 
 `apiUrl` in the JSON output comes from the resolved CLI profile (`api_url` / `SP_API_URL`). Override with `sp config set-url`, `SP_API_URL`, or the global `--api-url` flag before `agent command`.
 

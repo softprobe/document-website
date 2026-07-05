@@ -23,7 +23,7 @@ sp agent command --app a1b2c3d4e5f67890 --agent-jar ./sp-agent.jar --app-jar tar
 | `--app-jar` | Optional. Trailing `-jar …` in `startCommand` |
 | `--format` | `json` (default), `shell`, `docker`, `maven` |
 
-请从 [Java Agent 安装](/zh/testing/installation/agent) 下载 `sp-agent.jar`。不可变版本发布在 `https://install.softprobe.ai/artifacts/agent/<version>/sp-agent.jar`。
+请从 [下载 Java Agent](/zh/testing/download-java-agent) 下载 `sp-agent.jar`。不可变版本发布在 `https://install.softprobe.ai/artifacts/agent/<version>/sp-agent.jar`。
 
 JSON 中的 `apiUrl` 来自 CLI 配置（`api_url` / `SP_API_URL`）。可通过 `sp config set-url`、`SP_API_URL` 或全局 `--api-url` 覆盖。
 

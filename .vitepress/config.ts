@@ -26,23 +26,12 @@ const testingSidebarEn = [
       { text: 'Launch Web UI (manual)', link: '/en/testing/installation/code' },
       { text: 'Doctor', link: '/en/testing/installation/doctor' },
       { text: 'Upgrade', link: '/en/testing/installation/upgrade' },
-      { text: 'Java agent', link: '/en/testing/installation/agent' },
-    ],
-  },
-  {
-    text: 'Commands and automation',
-    items: [
-      { text: 'Commands', link: '/en/testing/commands/' },
-      { text: 'For AI agents', link: '/en/testing/agents/overview' },
-      { text: 'Output contract', link: '/en/testing/agents/output-contract' },
-      { text: 'Examples', link: '/en/testing/examples/' },
-      { text: 'Reference', link: '/en/testing/reference/' },
-      { text: 'Policies', link: '/en/testing/policies/' },
     ],
   },
   {
     text: 'Java agent',
     items: [
+      { text: 'Download Java agent', link: '/en/testing/download-java-agent' },
       { text: 'Attach and configure', link: '/en/testing/java-agent' },
       { text: 'Supported frameworks', link: '/en/testing/supported-frameworks' },
     ],
@@ -60,6 +49,17 @@ const testingSidebarEn = [
       { text: 'Replay and diff', link: '/en/testing/replay-and-diff' },
       { text: 'Mock and compare policies', link: '/en/testing/policies#mock-policy' },
       { text: 'Policy YAML guide', link: '/en/testing/policy-yaml-guide' },
+    ],
+  },
+  {
+    text: 'Commands and automation',
+    items: [
+      { text: 'Commands', link: '/en/testing/commands/' },
+      { text: 'For AI agents', link: '/en/testing/agents/overview' },
+      { text: 'Output contract', link: '/en/testing/agents/output-contract' },
+      { text: 'Examples', link: '/en/testing/examples/' },
+      { text: 'Reference', link: '/en/testing/reference/' },
+      { text: 'Policies', link: '/en/testing/policies/' },
     ],
   },
   {
@@ -89,23 +89,12 @@ const testingSidebarZh = [
       { text: '手动启动 Web UI', link: '/zh/testing/installation/code' },
       { text: 'Doctor', link: '/zh/testing/installation/doctor' },
       { text: '升级', link: '/zh/testing/installation/upgrade' },
-      { text: 'Java Agent', link: '/zh/testing/installation/agent' },
-    ],
-  },
-  {
-    text: '命令与自动化',
-    items: [
-      { text: '命令', link: '/zh/testing/commands/' },
-      { text: 'AI 代理', link: '/zh/testing/agents/overview' },
-      { text: '输出约定', link: '/zh/testing/agents/output-contract' },
-      { text: '示例', link: '/zh/testing/examples/' },
-      { text: '参考', link: '/zh/testing/reference/' },
-      { text: '策略', link: '/zh/testing/policies/' },
     ],
   },
   {
     text: 'Java Agent',
     items: [
+      { text: '下载 Java Agent', link: '/zh/testing/download-java-agent' },
       { text: '安装与配置', link: '/zh/testing/java-agent' },
       { text: '支持的框架', link: '/zh/testing/supported-frameworks' },
     ],
@@ -123,6 +112,17 @@ const testingSidebarZh = [
       { text: '回放与对比', link: '/zh/testing/replay-and-diff' },
       { text: 'Mock 与对比策略', link: '/zh/testing/policies#mock-policy' },
       { text: '策略 YAML 指南', link: '/zh/testing/policy-yaml-guide' },
+    ],
+  },
+  {
+    text: '命令与自动化',
+    items: [
+      { text: '命令', link: '/zh/testing/commands/' },
+      { text: 'AI 代理', link: '/zh/testing/agents/overview' },
+      { text: '输出约定', link: '/zh/testing/agents/output-contract' },
+      { text: '示例', link: '/zh/testing/examples/' },
+      { text: '参考', link: '/zh/testing/reference/' },
+      { text: '策略', link: '/zh/testing/policies/' },
     ],
   },
   {
@@ -323,6 +323,8 @@ export default withMermaid(
     'en/platform/deployment/sp-backend-helm': 'en/testing/installation/server',
     'en/platform/deployment/unified-log-pipeline': 'en/testing/installation/server',
     'en/platform/deployment/spcode-web': 'en/testing/installation/',
+    'en/testing/installation/agent': 'en/testing/download-java-agent',
+    'zh/testing/installation/agent': 'zh/testing/download-java-agent',
   },
   locales: {
     en: {

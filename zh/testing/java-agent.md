@@ -16,31 +16,40 @@ Softprobe Java Agent（`sp-agent.jar`）通过 `-javaagent` 挂载到 JVM。它�
 - Agent 主机可访问 **sp-boot**（本地默认 `http://127.0.0.1:8090`）
 - 已注册 **`appId`** — 使用 `sp app create` 创建，并在所有实例上固定同一 id
 
-## 下载与启动命令
+## 启动命令
 
-```bash
-curl -fsSL -o sp-agent.jar https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar
-sp agent command --app <appId> --agent-jar ./sp-agent.jar --json
-```
-
-`agent command` 的输出是当前环境的标准 `-javaagent` 启动行。本地典型形式：
+使用 `-javaagent` 及下列 JVM 参数挂载 Agent：
 
 ```bash
 java \
   -javaagent:sp-agent.jar \
   -Dsp.app.id=<appId> \
   -Dsp.api.url=http://127.0.0.1:8090 \
+  -Dsp.otel.exporter.otlp.log.endpoint=<Vector OTLP 日志 URL> \
   -jar your-service.jar
 ```
 
-| 参数 | 含义 |
-|------|------|
-| `-Dsp.app.id` | 注册应用 id（`sp app create` 返回的 16 位十六进制）。**请在共享录制的各环境固定此值。** |
-| `-Dsp.api.url` | **必填** — sp-boot 根 URL（须含 `http://` 或 `https://`）。环境变量回退：`SP_API_URL`。 |
+| 参数 | 指向 | 含义 |
+|------|------|------|
+| `-Dsp.app.id` | — | 注册应用 id（`sp app create` 返回的 16 位十六进制）。**请在共享录制的各环境固定此值。** |
+| `-Dsp.api.url` | **sp-backend**（如 `:8090`） | **必填** — sp-boot 根 URL（须含 `http://` 或 `https://`）。环境变量回退：`SP_API_URL`。录制、回放、Mock、对比。 |
+| `-Dsp.otel.exporter.otlp.log.endpoint` | **Vector** 日志采集（如 `:4320/v1/logs`） | 关联应用日志，便于诊断（`sp logs` / trace-id 查询） |
+
+在 Kubernetes 上使用 [Softprobe 服务端 Helm Chart](./installation/server.md) 时，使用集群内 Vector URL：
+
+```text
+-Dsp.otel.exporter.otlp.log.endpoint=http://<release>-log-vector.<namespace>.svc.cluster.local:4320/v1/logs
+```
+
+release 为 `softprobe`、命名空间为 `softprobe` 的示例：
+
+```text
+-Dsp.otel.exporter.otlp.log.endpoint=http://softprobe-log-vector.softprobe.svc.cluster.local:4320/v1/logs
+```
+
+未设置 `-Dsp.otel.exporter.otlp.log.endpoint` 时，录制与回放仍可用，但应用日志不会导出，该 trace 的 `sp logs` 将为空。详见 [安装 Softprobe 服务端 — Agent OTLP 导出](./installation/server.md#agent-otlp-export)。
 
 Agent 也可能从 jar 名或环境自动解析 app id；显式设置 `-Dsp.app.id` 可避免录制与回放 id 不一致。旧文档中的 **`sp.service.name`** 在部分部署中仍作别名；新环境请优先使用 **`sp.app.id`**。
-
-认证使用租户令牌（`SP_TOKEN` / `sp auth login` 配置）；勿将长期令牌写入 shell 历史。Agent 在适用时会与 CLI 共用同一配置层。
 
 ## 环境标签
 
@@ -125,7 +134,7 @@ sp.api.url=http://127.0.0.1:8090
 
 ## 相关文档
 
+- [下载 Java Agent](/zh/testing/download-java-agent)
 - [快速开始](/zh/testing/getting-started)
-- [CLI：agent 命令](/zh/testing/commands/agent)
 - [支持的框架](/zh/testing/supported-frameworks)
 - [配置（JVM）](/zh/testing/installation/configuration)

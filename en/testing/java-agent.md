@@ -16,49 +16,40 @@ Mesh capture is documented under [Platform agent architecture](/en/platform/adva
 - **sp-boot** reachable from the agent host (default `http://127.0.0.1:8090` locally)
 - Registered **`appId`** — create with `sp app create` and pin the same id on every instance
 
-## Download and startup command
+## Startup command
 
-```bash
-curl -fsSL -o sp-agent.jar https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar
-sp agent command --app <appId> --agent-jar ./sp-agent.jar --json
-```
-
-The `agent command` output is the canonical `-javaagent` line for your environment. Typical local shape:
+Attach the agent with `-javaagent` and the JVM properties below:
 
 ```bash
 java \
   -javaagent:sp-agent.jar \
   -Dsp.app.id=<appId> \
   -Dsp.api.url=http://127.0.0.1:8090 \
+  -Dsp.otel.exporter.otlp.log.endpoint=<vector-otlp-log-url> \
   -jar your-service.jar
 ```
 
-On SaaS, `sp agent command` also emits `-Dsp.api.token=…` (tenant API key).
-
 The agent may also resolve an app id automatically from jar name or environment; explicit `-Dsp.app.id` avoids mismatches between record and replay. Legacy docs and some configs still use **`sp.service.name`** — treat it as an alias in older deployments; prefer **`sp.app.id`** for new setups.
 
-Authentication on **Softprobe Cloud** uses a **tenant API key** (not your user JWT). Create one with:
+| Property | Points to | Purpose |
+|----------|-----------|---------|
+| `-Dsp.app.id` | — | Registered application id (16-char hex from `sp app create`). **Pin this** in every environment that shares recordings. |
+| `-Dsp.api.url` | **sp-backend** (e.g. `:8090`) | **Required** — sp-boot base URL (must include `http://` or `https://`). Env fallback: `SP_API_URL`. Record, replay, mock, compare. |
+| `-Dsp.otel.exporter.otlp.log.endpoint` | **Vector** log ingest (e.g. `:4320/v1/logs`) | Correlated application logs for diagnosis (`sp logs` / trace-id lookup) |
 
-```bash
-sp tenant key ensure --json
+On Kubernetes with the [Softprobe server Helm chart](./installation/server.md), use the in-cluster Vector URL:
+
+```text
+-Dsp.otel.exporter.otlp.log.endpoint=http://<release>-log-vector.<namespace>.svc.cluster.local:4320/v1/logs
 ```
 
-`sp agent command` auto-provisions the key on SaaS when missing and adds `-Dsp.api.token=<tenant_api_key>` to JVM flags. The Java agent sends this as the `sp-api-token` header; the gateway routes to your tenant.
+Example for release `softprobe` in namespace `softprobe`:
 
-For CI and production hosts, set `SP_TENANT_API_KEY` from your secret store instead of saving to sp.jsonc:
-
-```bash
-export SP_TENANT_API_KEY="…"
-sp agent command --app <appId> --json
+```text
+-Dsp.otel.exporter.otlp.log.endpoint=http://softprobe-log-vector.softprobe.svc.cluster.local:4320/v1/logs
 ```
 
-Self-hosted backends (`http://127.0.0.1:8090`) do not require `-Dsp.api.token` unless your deployment enforces it.
-
-| Property | Purpose |
-|----------|---------|
-| `-Dsp.api.token` | Tenant API key (SaaS) — agent authentication |
-| `-Dsp.app.id` | Registered application id (16-char hex from `sp app create`). **Pin this** in every environment that shares recordings. |
-| `-Dsp.api.url` | **Required** — sp-boot base URL (must include `http://` or `https://`). Env fallback: `SP_API_URL`. |
+Without `-Dsp.otel.exporter.otlp.log.endpoint`, record and replay still work, but application logs are not exported and `sp logs` will be empty for that trace. See [Install Softprobe Server — Agent OTLP export](./installation/server.md#agent-otlp-export).
 
 ## Environment tags
 
@@ -143,7 +134,7 @@ The **same** agent JAR must be attached on the instance that receives replay tra
 
 ## Related
 
+- [Download Java agent](/en/testing/download-java-agent)
 - [Getting started](/en/testing/getting-started)
-- [CLI: agent command](/en/testing/commands/agent)
 - [Supported frameworks](/en/testing/supported-frameworks)
 - [Configuration (JVM)](/en/testing/installation/configuration)

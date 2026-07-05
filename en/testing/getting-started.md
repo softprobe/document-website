@@ -40,7 +40,7 @@ Download the Softprobe Java agent JAR (either [click to download sp-agent.jar](h
 ```bash
 curl -fsSL -o sp-agent.jar https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar
 ```
-See [Java Agent installation](/en/testing/installation/agent) for immutable release versions.
+See [Download Java agent](/en/testing/download-java-agent) for immutable release versions.
 
 ## 4. Register the Application
 Register the demo application in Softprobe to receive a unique `appId` (a 16-character hex identifier):
