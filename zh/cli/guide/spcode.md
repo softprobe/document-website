@@ -99,6 +99,15 @@ Launches the local agent service background daemon. This is used by IDE extensio
 spcode serve --port 4096
 ```
 
+### 手动 Web UI 与 Spcode Service
+
+| 模式 | 命令 | 配置 | 场景 |
+|------|------|------|------|
+| 手动（开发者） | `sp code web` | 当前用户 `~/.config/softprobe/` | 本地开发 |
+| Spcode Service（Linux） | systemd 运行 `spcode serve --hostname 0.0.0.0 --port <port>` | `/root/.config/softprobe/` | 团队内网浏览器访问 |
+
+安装见 [`sp setup --install-spcode-service`](/zh/cli/commands/setup.md)，单元名 `spcode-web.service`。
+
 ### Analytics & Metrics
 Inspect operational analytics, token consumption, and success metrics for active agents.
 

@@ -15,6 +15,19 @@
 | Durable local data, including agent jars | `${XDG_DATA_HOME:-~/.local/share}/softprobe/` |
 | Logs and transient state | `${XDG_STATE_HOME:-~/.local/state}/softprobe/` |
 
+### Spcode Service (Linux systemd)
+
+When installed via `sp setup --install-spcode-service`, the **service** reads backend URL from root's default XDG — not the invoking admin's home:
+
+| Context | Config path |
+|---------|-------------|
+| Personal CLI / `sp code web` | `~/.config/softprobe/config.jsonc` |
+| Spcode Service (`spcode-web.service`, runs as root) | `/root/.config/softprobe/config.jsonc` |
+
+There is no sync between personal and service config after install. Change the service backend URL by uninstalling and reinstalling Spcode Service, or edit `/root/.config/softprobe/config.jsonc` manually (advanced).
+
+The systemd unit runs `spcode serve --hostname 0.0.0.0 --port <port>` with **no** custom `HOME` or `XDG_*` environment overrides.
+
 The shared configuration file (`config.jsonc`) is for values used by both Softprobe tools, such as the backend API URL and auth token. Tool-specific overrides and profiles are stored inside `sp.jsonc` (Go CLI) and `spcode.jsonc` (AI assistant engine) respectively.
 
 

@@ -15,6 +15,17 @@
 | Durable local data, including agent jars | `${XDG_DATA_HOME:-~/.local/share}/softprobe/` |
 | Logs and transient state | `${XDG_STATE_HOME:-~/.local/state}/softprobe/` |
 
+### Spcode Service（Linux systemd）
+
+通过 `sp setup --install-spcode-service` 安装后，**服务**从 root 默认 XDG 读取后端 URL，与管理员个人目录分离：
+
+| 场景 | 配置路径 |
+|------|----------|
+| 个人 CLI / `sp code web` | `~/.config/softprobe/config.jsonc` |
+| Spcode Service（`spcode-web.service`，root 运行） | `/root/.config/softprobe/config.jsonc` |
+
+安装后个人与服务配置**不同步**。修改服务后端 URL：卸载并重装 Spcode Service，或手动编辑 `/root/.config/softprobe/config.jsonc`（高级）。
+
 The shared configuration file (`config.jsonc`) is for values used by both Softprobe tools, such as the backend API URL and auth token. Tool-specific overrides and profiles are stored inside `sp.jsonc` (Go CLI) and `spcode.jsonc` (AI assistant engine) respectively.
 
 

@@ -73,6 +73,19 @@ sp config init
 
 See [Configuration](./configuration.md).
 
+## Spcode Service (Linux, optional)
+
+On Linux, `sp setup` can optionally install **Spcode Service** — a systemd unit that runs the team web UI (`spcode serve --hostname 0.0.0.0`) as root for corp-network browser access. See [sp setup](/en/cli/commands/setup.md) for flags, operations, and uninstall.
+
+```bash
+sp setup --backend-url http://sp-backend.corp:8090 --install-spcode-service
+systemctl status spcode-web.service
+```
+
+Default listen port is **4096**. Service config lives at `/root/.config/softprobe/` and is independent from your personal config.
+
+After upgrading `sp` or `spcode`, restart the service if needed: `systemctl restart spcode-web.service`, then check `journalctl -u spcode-web`.
+
 ## `spcode` AI Engine CLI
 
 Included in the [one-line install](#one-line-install-sp--spcode) above. For local AI against a **self-hosted** SoftProbe UI, use the host-specific installer from the web UI (`curl <host>/spcode/install | bash`).

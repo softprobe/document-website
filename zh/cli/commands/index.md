@@ -8,7 +8,7 @@ Job-oriented commands that follow record-and-replay order:
 
 | Command | Synopsis |
 |---------|----------|
-| [setup](./setup.md) | 配置自托管后端 URL |
+| [setup](./setup.md) | 配置自托管后端 URL；可选 Spcode Service（Linux） |
 | [agent](./agent.md) | `download`, `command` — install jar and JVM flags |
 | [record](./record.md) | `case list` — recorded entry cases before replay |
 | [diagnose](./diagnose.md) | `replay`, `trace` — bundled investigation workflows |

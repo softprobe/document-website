@@ -8,7 +8,7 @@ Job-oriented commands that follow record-and-replay order:
 
 | Command | Synopsis |
 |---------|----------|
-| [setup](./setup.md) | Configure the self-hosted backend URL |
+| [setup](./setup.md) | Configure self-hosted backend URL; optional Spcode Service (Linux) |
 | [demo](./demo.md) | `start`, `traffic`, `replay`, `status`, `stop` — [Travel OTA demo](https://github.com/softprobe/demo-ota) stack |
 | [agent](./agent.md) | `download`, `command` — install jar and JVM flags |
 | [record](./record.md) | `case list` — recorded entry cases before replay |
