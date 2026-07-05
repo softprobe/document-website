@@ -121,4 +121,4 @@ Operators running self-hosted sp-boot use a single **`sp-backend`** process on p
 - [Java agent](/en/testing/java-agent)
 - [Policies](/en/testing/policies)
 - [Replay and diff](/en/testing/replay-and-diff)
-- [CLI concepts](/en/cli/guide/concepts)
+- [CLI concepts](/en/testing/agents/concepts)

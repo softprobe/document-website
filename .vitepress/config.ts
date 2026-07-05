@@ -8,105 +8,6 @@ import {
   type DocLocale,
 } from './theme/shared'
 
-function cliSidebar(locale: DocLocale) {
-  const p = locale === 'zh' ? '/zh' : '/en'
-  return [
-    {
-      text: 'For AI agents',
-      collapsed: false,
-      items: [
-        { text: 'Overview', link: `${p}/cli/guide/overview` },
-        { text: 'Output contract', link: `${p}/cli/guide/output-contract` },
-        { text: 'Versioning', link: `${p}/cli/guide/versioning` },
-      ],
-    },
-    {
-      text: 'Guide',
-      items: [
-        { text: 'Introduction', link: `${p}/cli/guide/introduction` },
-        { text: 'Installation', link: `${p}/cli/guide/installation` },
-        { text: 'Quickstart', link: `${p}/cli/guide/quickstart` },
-        { text: 'Authentication', link: `${p}/cli/guide/authentication` },
-        { text: 'CLI configuration (XDG)', link: `${p}/cli/guide/configuration` },
-        { text: 'spcode CLI', link: `${p}/cli/guide/spcode` },
-        { text: 'Concepts', link: `${p}/cli/guide/concepts` },
-        { text: 'Log correlation IDs', link: `${p}/cli/guide/log-correlation-ids` },
-      ],
-    },
-    {
-      text: 'Commands',
-      items: [
-        { text: 'Overview', link: `${p}/cli/commands/` },
-        {
-          text: 'Lifecycle',
-          collapsed: false,
-          items: [
-            { text: 'setup', link: `${p}/cli/commands/setup` },
-            { text: 'agent', link: `${p}/cli/commands/agent` },
-            { text: 'diagnose', link: `${p}/cli/commands/diagnose` },
-          ],
-        },
-        {
-          text: 'Business Observability',
-          collapsed: false,
-          items: [
-            { text: 'config', link: `${p}/cli/commands/config` },
-            { text: 'auth', link: `${p}/cli/commands/auth` },
-            { text: 'app', link: `${p}/cli/commands/app` },
-            { text: 'policy', link: `${p}/cli/commands/policy` },
-            { text: 'replay', link: `${p}/cli/commands/replay` },
-            { text: 'health', link: `${p}/cli/commands/health` },
-          ],
-        },
-        {
-          text: 'Investigation',
-          collapsed: false,
-          items: [
-            { text: 'record', link: `${p}/cli/commands/record` },
-            { text: 'trace', link: `${p}/cli/commands/trace` },
-            { text: 'replay case', link: `${p}/cli/commands/replay-case` },
-            { text: 'replay diff & logs', link: `${p}/cli/commands/replay-diff` },
-            { text: 'extraction-rule', link: `${p}/cli/commands/extraction-rule` },
-            { text: 'recorder logs', link: `${p}/cli/commands/recorder` },
-          ],
-        },
-        {
-          text: 'Administration',
-          collapsed: true,
-          items: [
-            { text: 'group & grant', link: `${p}/cli/commands/group` },
-            { text: 'system & task', link: `${p}/cli/commands/system` },
-            { text: 'ops', link: `${p}/cli/commands/ops` },
-            { text: 'config legacy', link: `${p}/cli/commands/config-legacy` },
-          ],
-        },
-      ],
-    },
-    {
-      text: 'Policies',
-      items: [{ text: 'YAML policies', link: `${p}/cli/policies/` }],
-    },
-    {
-      text: 'Examples',
-      items: [
-        { text: 'Diagnose replay failure', link: `${p}/cli/examples/agent-diagnose-replay` },
-        { text: 'Attr → trace lookup', link: `${p}/cli/examples/agent-attr-trace-lookup` },
-        { text: 'CI policy gate', link: `${p}/cli/examples/ci-policy-gate` },
-        { text: 'GitOps policies', link: `${p}/cli/examples/gitops-policies` },
-      ],
-    },
-    {
-      text: 'Reference',
-      items: [
-        { text: 'API mapping', link: `${p}/cli/reference/api-mapping` },
-        { text: 'Replay send log markers', link: `${p}/cli/reference/replay-send-log-markers` },
-        { text: 'JSON types', link: `${p}/cli/reference/json-types` },
-        { text: 'Exit codes', link: `${p}/cli/reference/exit-codes` },
-      ],
-    },
-  ]
-}
-
 const testingSidebarEn = [
   {
     text: 'Overview',
@@ -132,6 +33,8 @@ const testingSidebarEn = [
     text: 'Commands and automation',
     items: [
       { text: 'Commands', link: '/en/testing/commands/' },
+      { text: 'For AI agents', link: '/en/testing/agents/overview' },
+      { text: 'Output contract', link: '/en/testing/agents/output-contract' },
       { text: 'Examples', link: '/en/testing/examples/' },
       { text: 'Reference', link: '/en/testing/reference/' },
       { text: 'Policies', link: '/en/testing/policies/' },
@@ -193,6 +96,8 @@ const testingSidebarZh = [
     text: '命令与自动化',
     items: [
       { text: '命令', link: '/zh/testing/commands/' },
+      { text: 'AI 代理', link: '/zh/testing/agents/overview' },
+      { text: '输出约定', link: '/zh/testing/agents/output-contract' },
       { text: '示例', link: '/zh/testing/examples/' },
       { text: '参考', link: '/zh/testing/reference/' },
       { text: '策略', link: '/zh/testing/policies/' },
@@ -396,6 +301,20 @@ export default withMermaid(
     'en/cli/examples': 'en/testing/examples/',
     'en/cli/reference': 'en/testing/reference/',
     'en/cli/policies': 'en/testing/policies/',
+    'en/cli/guide/overview': 'en/testing/agents/overview',
+    'en/cli/guide/output-contract': 'en/testing/agents/output-contract',
+    'en/cli/guide/versioning': 'en/testing/agents/versioning',
+    'en/cli/guide/log-correlation-ids': 'en/testing/reference/log-correlation-ids',
+    'en/cli/guide/authentication': 'en/testing/agents/authentication',
+    'en/cli/guide/concepts': 'en/testing/agents/concepts',
+    'en/cli/guide/introduction': 'en/testing/agents/introduction',
+    'zh/cli/guide/overview': 'zh/testing/agents/overview',
+    'zh/cli/guide/output-contract': 'zh/testing/agents/output-contract',
+    'zh/cli/guide/versioning': 'zh/testing/agents/versioning',
+    'zh/cli/guide/log-correlation-ids': 'zh/testing/reference/log-correlation-ids',
+    'zh/cli/guide/authentication': 'zh/testing/agents/authentication',
+    'zh/cli/guide/concepts': 'zh/testing/agents/concepts',
+    'zh/cli/guide/introduction': 'zh/testing/agents/introduction',
     'zh/cli/guide/installation': 'zh/testing/installation/',
     'zh/cli/guide/quickstart': 'zh/testing/getting-started',
     'zh/cli/guide/configuration': 'zh/testing/installation/configuration',

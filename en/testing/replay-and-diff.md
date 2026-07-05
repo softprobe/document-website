@@ -42,12 +42,12 @@ sp replay status --plan <planId> --json
 | `replayId` | One replay execution of a single case |
 | Case | One recorded entry request + its dependency mockers |
 
-`SP_API_URL` points at **sp-boot**, not at `targetEnv`. Mixing them up is a common integration mistake — see [CLI concepts](/en/cli/guide/concepts#replay-target-url-targetenv).
+`SP_API_URL` points at **sp-boot**, not at `targetEnv`. Mixing them up is a common integration mistake — see [CLI concepts](/en/testing/agents/concepts#replay-target-url-targetenv).
 
 ## What happens during replay
 
 1. Schedule loads selected cases and **preloads** mocks into Redis.
-2. For each case, schedule issues the recorded entry HTTP call to `targetEnv`. sp-backend logs **`Replay send start`** before the call and **`Replay send done`** or **`Replay send failed`** after — the entry/exit boundary for replay HTTP dispatch. See [Replay send log markers](/en/cli/reference/replay-send-log-markers).
+2. For each case, schedule issues the recorded entry HTTP call to `targetEnv`. sp-backend logs **`Replay send start`** before the call and **`Replay send done`** or **`Replay send failed`** after — the entry/exit boundary for replay HTTP dispatch. See [Replay send log markers](/en/testing/reference/replay-send-log-markers).
 3. Your service handles the request; on each dependency, the agent queries storage and returns the **recorded** response.
 4. Storage logs replay-side mockers for comparison.
 5. Compare engine runs; results land in replay reports and diff APIs.
@@ -102,7 +102,7 @@ There is no CLI workflow to manually author cases; expand coverage by recording 
 
 ## Dashboard and CLI
 
-Humans often review diff trees in the workbench or dashboard; agents and CI should use **`sp replay diff`** and artifact `--out-dir` paths from [output contract](/en/cli/guide/output-contract).
+Humans often review diff trees in the workbench or dashboard; agents and CI should use **`sp replay diff`** and artifact `--out-dir` paths from [output contract](/en/testing/agents/output-contract).
 
 For deploy webhooks and GitHub Actions / Jenkins gates, see [Webhook and CI/CD](/en/testing/webhook-and-ci).
 
@@ -110,6 +110,6 @@ For deploy webhooks and GitHub Actions / Jenkins gates, see [Webhook and CI/CD](
 
 - [How it works](/en/testing/how-it-works)
 - [Policies](/en/testing/policies)
-- [CLI: replay command](/en/cli/commands/replay)
+- [CLI: replay command](/en/testing/commands/replay)
 - [Webhook and CI/CD](/en/testing/webhook-and-ci)
-- [Example: diagnose replay failure](/en/cli/examples/agent-diagnose-replay)
+- [Example: diagnose replay failure](/en/testing/examples/agent-diagnose-replay)

@@ -18,9 +18,9 @@ Webhook 与 CI 都不会替你产生用例。请先完成 [如何录制](/zh/tes
 | **部署钩子**（Argo CD、K8s Job、脚本）只需「部署成功 → 立刻开跑」 | **GET Webhook**（`curl` 一行触发） |
 | **自研编排**、已有 HTTP 客户端、需精细控制请求体 | **REST**（`POST /api/createPlan` + 报告类 API） |
 
-**原则：** 流水线里负责「创建计划 → 等待结束 → 拉失败用例 → 判定通过/失败」时，优先用 **`sp replay run --watch`** 与 **`sp replay case list --failed`**，与 [CLI 输出约定](/zh/cli/guide/output-contract) 一致。Webhook GET 适合**只负责触发**；结果查询仍建议在同一流水线后续步骤用 `sp` 或带 `access-token` 的报告 API。
+**原则：** 流水线里负责「创建计划 → 等待结束 → 拉失败用例 → 判定通过/失败」时，优先用 **`sp replay run --watch`** 与 **`sp replay case list --failed`**，与 [CLI 输出约定](/zh/testing/agents/output-contract) 一致。Webhook GET 适合**只负责触发**；结果查询仍建议在同一流水线后续步骤用 `sp` 或带 `access-token` 的报告 API。
 
-CLI 细节见 [replay 命令](/zh/cli/commands/replay)、[认证](/zh/cli/guide/authentication)。
+CLI 细节见 [replay 命令](/zh/testing/commands/replay)、[认证](/zh/testing/agents/authentication)。
 
 ## 架构（简述）
 
@@ -36,7 +36,7 @@ sequenceDiagram
 ```
 
 - **`SP_API_URL`**：sp-boot 地址（存储、调度、报告），**不是**被测服务 URL。
-- **`targetEnv`**：被测服务基础 URL（如 `http://order-service.test.svc:8080`），与 `SP_API_URL` 不可混淆 — 见 [CLI 概念：targetEnv](/zh/cli/guide/concepts#replay-target-url-targetenv)。
+- **`targetEnv`**：被测服务基础 URL（如 `http://order-service.test.svc:8080`），与 `SP_API_URL` 不可混淆 — 见 [CLI 概念：targetEnv](/zh/testing/agents/concepts#replay-target-url-targetenv)。
 
 ## 方式一：Webhook（GET）触发回放
 
@@ -151,7 +151,7 @@ sp replay diff get <diffId> --out-dir .sp-work --json
 sp diagnose replay plan-abc123 --failed-only --out-dir .sp-work --json
 ```
 
-参见 [示例：诊断回放失败](/zh/cli/examples/agent-diagnose-replay)。
+参见 [示例：诊断回放失败](/zh/testing/examples/agent-diagnose-replay)。
 
 ### 3. 仪表盘（人工）
 
@@ -223,7 +223,7 @@ jobs:
             --data-urlencode "planName=deploy-${{ github.run_id }}"
 ```
 
-策略校验可合并到 PR，见 [示例：CI 策略门禁](/zh/cli/examples/ci-policy-gate)。
+策略校验可合并到 PR，见 [示例：CI 策略门禁](/zh/testing/examples/ci-policy-gate)。
 
 ## Jenkins 示例
 
@@ -265,7 +265,7 @@ Webhook 触发可放在 **Post-deployment** 步骤：`curl -G …/api/createPlan
 
 ## 安全与运维建议
 
-- **`SP_TOKEN` 仅放在 CI 密钥库**，不要提交到 Git；轮换泄露的令牌 — [认证](/zh/cli/guide/authentication)。
+- **`SP_TOKEN` 仅放在 CI 密钥库**，不要提交到 Git；轮换泄露的令牌 — [认证](/zh/testing/agents/authentication)。
 - Webhook URL 若暴露在公网，应配合网络策略、IP 允许列表，并始终携带 **`access-token`**（与 CLI 相同）。
 - 回放会向 **`targetEnv` 发送真实 HTTP**；仅在测试/预发实例上配置 Webhook，勿指向生产入口 — [回放与对比 § 前置条件](/zh/testing/replay-and-diff#前置条件)。
 - 回放机上**降低或关闭录制**，避免回放过程中再录一套数据。
@@ -274,6 +274,6 @@ Webhook 触发可放在 **Post-deployment** 步骤：`curl -G …/api/createPlan
 
 - [回放与对比](/zh/testing/replay-and-diff)
 - [快速开始](/zh/testing/getting-started)
-- [CLI：replay](/zh/cli/commands/replay)
-- [REST API 映射](/zh/cli/reference/api-mapping)
+- [CLI：replay](/zh/testing/commands/replay)
+- [REST API 映射](/zh/testing/reference/api-mapping)
 - [CLI 快速入门](/zh/cli/guide/quickstart)

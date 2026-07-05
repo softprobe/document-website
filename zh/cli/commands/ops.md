@@ -1,24 +1,7 @@
-# sp ops
+---
+title: Moved — ops
+---
 
-**When agents use this:** SRE-style diagnostics for storage and schedule health.
+# Moved
 
-## Synopsis
-
-Operational endpoints under `/vi/storage` and `/vi/schedule`.
-
-## Subcommands
-
-| Subcommand | Method | Path |
-|------------|--------|------|
-| `storage overview` | GET | `/vi/storage/overview` |
-| `storage diagnostics` | GET | `/vi/storage/diagnostics` |
-| `storage monitor` | GET | `/vi/storage/monitor` |
-| `schedule monitor` | GET | `/vi/schedule/monitor` |
-
-## Examples
-
-```bash
-sp ops storage overview --json
-sp ops schedule monitor --json
-```
-
+This page now lives under **Testing**: [ops](/zh/testing/commands/ops).

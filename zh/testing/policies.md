@@ -13,7 +13,7 @@ Softprobe 测试用**声明式 YAML 策略**（`apiVersion: softprobe.ai/v1`）�
 | **1 · 录制** | [如何录制](/zh/testing/recording) | 本节 [RecordingPolicy](#recording-policy) |
 | **2 · 回放** | [回放与对比](/zh/testing/replay-and-diff) | 本节 [MockPolicy](#mock-policy)、[CompareRulePolicy](#compare-policy) |
 
-逐字段说明与完整 YAML 示例：[策略 YAML 指南](/zh/testing/policy-yaml-guide) · [CLI 策略索引](/zh/cli/policies/)
+逐字段说明与完整 YAML 示例：[策略 YAML 指南](/zh/testing/policy-yaml-guide) · [CLI 策略索引](/zh/testing/policies/)
 
 ## CLI 速查
 
@@ -110,4 +110,4 @@ sp policy recording validate -f my-recording.yaml --json
 - [如何录制](/zh/testing/recording)
 - [回放与对比](/zh/testing/replay-and-diff)
 - [策略 YAML 指南](/zh/testing/policy-yaml-guide)
-- [CLI：policy 命令](/zh/cli/commands/policy)
+- [CLI：policy 命令](/zh/testing/commands/policy)

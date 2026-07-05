@@ -13,7 +13,7 @@ Separate **how to run each phase** from **policy configuration**:
 | **1 · Record** | [How to record](/en/testing/recording) | [RecordingPolicy](#recording-policy) below |
 | **2 · Replay** | [Replay and diff](/en/testing/replay-and-diff) | [MockPolicy](#mock-policy), [CompareRulePolicy](#compare-policy) below |
 
-Field reference and full examples: [Policy YAML guide](/en/testing/policy-yaml-guide) · [CLI policies index](/en/cli/policies/)
+Field reference and full examples: [Policy YAML guide](/en/testing/policy-yaml-guide) · [CLI policies index](/en/testing/policies/)
 
 ## CLI quick reference
 
@@ -110,4 +110,4 @@ Register methods in **dynamic class configuration** (dashboard/API), not in `Rec
 - [How to record](/en/testing/recording)
 - [Replay and diff](/en/testing/replay-and-diff)
 - [Policy YAML guide](/en/testing/policy-yaml-guide)
-- [CLI: policy command](/en/cli/commands/policy)
+- [CLI: policy command](/en/testing/commands/policy)

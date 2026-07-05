@@ -121,4 +121,4 @@ public Integer parseIp(String ip) {
 - [Java Agent](/zh/testing/java-agent)
 - [策略](/zh/testing/policies)
 - [回放与对比](/zh/testing/replay-and-diff)
-- [CLI 概念](/zh/cli/guide/concepts)
+- [CLI 概念](/zh/testing/agents/concepts)
