@@ -52,7 +52,7 @@ The URL is stored in your **personal** Softprobe XDG config at `~/.config/softpr
 
 ## Spcode Service (Linux only) {#spcode-service}
 
-**Spcode Service** runs `spcode serve --hostname 0.0.0.0` as **root** in `spcode-web.service` for corp-network browser access. Manual developer UI launch remains [Launch coding](./code.md) (`sp code web`).
+For a private UI on your own machine, see [Launch Softprobe Web UI Manually](./code.md).
 
 ### Install
 
@@ -92,6 +92,6 @@ Removes the systemd unit. Leaves `/root/.config/softprobe/` on disk.
 ## Next
 
 - [Configuration](./configuration.md) — personal vs service XDG paths
-- [Launch coding](./code.md)
+- [Launch Softprobe Web UI Manually](./code.md)
 - [Doctor](./doctor.md)
 - [Upgrade](./upgrade.md)

@@ -22,7 +22,7 @@ const testingSidebarEn = [
     items: [
       { text: 'Install Softprobe', link: '/en/testing/installation/' },
       { text: 'Configuration', link: '/en/testing/installation/configuration' },
-      { text: 'Launch coding', link: '/en/testing/installation/code' },
+      { text: 'Launch Web UI (manual)', link: '/en/testing/installation/code' },
       { text: 'Doctor', link: '/en/testing/installation/doctor' },
       { text: 'Upgrade', link: '/en/testing/installation/upgrade' },
       { text: 'Java agent', link: '/en/testing/installation/agent' },
@@ -84,7 +84,7 @@ const testingSidebarZh = [
     items: [
       { text: '安装 Softprobe', link: '/zh/testing/installation/' },
       { text: '配置', link: '/zh/testing/installation/configuration' },
-      { text: '启动编码', link: '/zh/testing/installation/code' },
+      { text: '手动启动 Web UI', link: '/zh/testing/installation/code' },
       { text: 'Doctor', link: '/zh/testing/installation/doctor' },
       { text: '升级', link: '/zh/testing/installation/upgrade' },
       { text: 'Java Agent', link: '/zh/testing/installation/agent' },

@@ -50,7 +50,7 @@ URL 写入**个人** XDG 配置 `~/.config/softprobe/config.jsonc`。
 
 ## Spcode Service（仅 Linux） {#spcode-service}
 
-**Spcode Service** 以 **root** 在 `spcode-web.service` 中运行 `spcode serve --hostname 0.0.0.0`，供内网浏览器访问。开发者本地 UI 仍见 [启动编码](./code.md)（`sp code web`）。
+**Spcode Service** 提供团队在内网共用的 Web 工作台。若只需在本机使用 UI，见 [手动启动 Softprobe Web UI](./code.md)。
 
 ### 安装
 
@@ -88,6 +88,6 @@ sp setup --uninstall-spcode-service
 ## 下一步
 
 - [配置](./configuration.md) — 个人与服务 XDG 路径
-- [启动编码](./code.md)
+- [手动启动 Softprobe Web UI](./code.md)
 - [Doctor](./doctor.md)
 - [升级](./upgrade.md)
