@@ -220,11 +220,7 @@ curl -s http://127.0.0.1:8090/actuator/health
 
 Expect a rolling restart of `sp-backend` (and Redis if the chart template changed). Bundled MongoDB data on the existing PVC is preserved. `sp-backend` may take up to ~2 minutes to become ready after the new pod starts (JVM warm-up).
 
-On v4.3.9+ you should also see `log-vector` and a `log-parquet` PVC (local storage). Point instrumented workloads at Vector:
-
-```text
--Dsp.otel.exporter.otlp.log.endpoint=http://<release>-log-vector.<namespace>.svc.cluster.local:4320/v1/logs
-```
+On v4.3.9+ you should also see `log-vector` and a `log-parquet` PVC (local storage). Instrumented workloads need only `sp.api.url`; agents discover the Vector log endpoint from `/api/config/agent/load` (see [Agent OTLP export](#agent-otlp-export)).
 
 ### Customize or disable the log pipeline
 
@@ -426,6 +422,8 @@ End users and Agent Skills **must not** receive bucket credentials — query onl
 | `logPipeline.retention.cleanupSchedule` | Retention CronJob schedule (default `0 3 * * *`) |
 | `logPipeline.compaction.enabled` / `schedule` / `image` | Local hourly compaction (default on, `15 * * * *`, `softprobe/duckdb:1.1.3`) |
 | `logPipeline.placement` | `nodeSelector` / `tolerations` / `affinity` for Vector and maintenance CronJobs |
+| `logPipeline.clusterDomain` | Kubernetes cluster DNS suffix for Vector service FQDN (default `svc.cluster.local`) |
+| `logPipeline.agentOtlpEndpoint` | Optional override for agent discovery (`OTEL_EXPORTER_OTLP_ENDPOINT_FOR_SP_AGENT` on sp-backend) |
 | `logPipeline.agentLogEndpointProperty` | Documented JVM property: `sp.otel.exporter.otlp.log.endpoint` |
 
 `logPipeline.parquet.localRoot` exists in chart defaults (`/data/parquet/logs`) and must stay aligned with the rclone bucket layout — operators normally **do not** override it.
@@ -484,7 +482,7 @@ Point instrumented applications at the in-cluster service:
 | Empty `GET /api/recorder/logs` but data expected | Partial `part-hourly.parquet` from interrupted compaction — delete hourly file or wait for next compaction; confirm minute `part-*.parquet` files exist |
 | Vector pod not ready | `kubectl logs -n softprobe deploy/<release>-log-vector -c vector` |
 | Compaction `ImagePullBackOff` on arm64 | Override `logPipeline.compaction.image` with a local `arm64` build |
-| Agent logs missing | `sp.otel.exporter.otlp.log.endpoint` must reach Vector `:4320`; trace must have `trace_id` on export |
+| Agent logs missing | Confirm `sp.api.url` reaches sp-backend and `/api/config/agent/load` returns `otlpLogEndpoint`; use JVM `-Dsp.otel.exporter.otlp.log.endpoint` only when cluster DNS is unreachable |
 | sp-backend logs missing | `logPipeline.enabled` auto-enables OTLP export on sp-backend |
 
 ## Next step

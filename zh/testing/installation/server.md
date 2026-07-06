@@ -192,7 +192,7 @@ helm upgrade softprobe softprobe/sp-backend \
   --set createNamespace=false
 ```
 
-Helm 会按 Chart 默认值添加日志管道资源。Rollout 完成后，将 Agent 指向 Vector（见 [Agent OTLP 导出](#agent-otlp-export)）。
+Helm 会按 Chart 默认值添加日志管道资源。Rollout 完成后，已插桩应用只需 `sp.api.url`；Agent 从 `/api/config/agent/load` 发现 Vector 日志端点（见 [Agent OTLP 导出](#agent-otlp-export)）。
 
 ### 从下载的 Chart 包升级
 
@@ -220,11 +220,7 @@ curl -s http://127.0.0.1:8090/actuator/health
 
 预期 sp-backend 滚动重启（若 Chart 模板变更，Redis 也可能重启）。内置 MongoDB 在现有 PVC 上的数据会保留。新 Pod 启动后 sp-backend 可能需要约 2 分钟就绪（JVM 预热）。
 
-v4.3.9+ 还应看到 `log-vector` 与 `log-parquet` PVC（本地存储）。将已插桩工作负载指向 Vector：
-
-```text
--Dsp.otel.exporter.otlp.log.endpoint=http://<release>-log-vector.<namespace>.svc.cluster.local:4320/v1/logs
-```
+v4.3.9+ 还应看到 `log-vector` 与 `log-parquet` PVC（本地存储）。已插桩工作负载只需 `sp.api.url`；Agent 从 `/api/config/agent/load` 发现 Vector 日志端点（见 [Agent OTLP 导出](#agent-otlp-export)）。
 
 ### 自定义或禁用日志管道
 
@@ -259,7 +255,7 @@ logPipeline:
 
 通过 **sp-backend** Helm Chart 启用关联日志采集、Parquet 存储与 trace-id 查询（`sp logs` / `GET /api/recorder/logs`）。
 
-**前置条件：** Chart **v4.3.x+** 上健康的 sp-backend release。管道**默认启用**（`logPipeline.enabled: true`）。已插桩工作负载需集群内 Vector OTLP 日志端点（见 [Agent OTLP 导出](#agent-otlp-export)）。
+**前置条件：** Chart **v4.3.x+** 上健康的 sp-backend release。管道**默认启用**（`logPipeline.enabled: true`）。已插桩工作负载只需 `sp.api.url`；Agent 从服务端配置发现 Vector 日志端点（见 [Agent OTLP 导出](#agent-otlp-export)）。
 
 ### Chart 部署的资源
 
@@ -484,7 +480,7 @@ kubectl delete pvc -n softprobe -l app.kubernetes.io/instance=softprobe
 | 预期有数据但 `GET /api/recorder/logs` 为空 | 中断的压缩留下不完整 `part-hourly.parquet` — 删除 hourly 文件或等待下次压缩；确认存在 minute `part-*.parquet` |
 | Vector Pod 未就绪 | `kubectl logs -n softprobe deploy/<release>-log-vector -c vector` |
 | arm64 上 Compaction `ImagePullBackOff` | 用本地 `arm64` 构建覆盖 `logPipeline.compaction.image` |
-| Agent 日志缺失 | `sp.otel.exporter.otlp.log.endpoint` 须可达 Vector `:4320`；导出须带 `trace_id` |
+| Agent 日志缺失 | 确认 `sp.api.url` 可达 sp-backend 且 `/api/config/agent/load` 返回 `otlpLogEndpoint`；仅当集群 DNS 不可达时使用 JVM `-Dsp.otel.exporter.otlp.log.endpoint` |
 | sp-backend 日志缺失 | `logPipeline.enabled` 会在 sp-backend 上自动启用 OTLP 导出 |
 
 ## 下一步
