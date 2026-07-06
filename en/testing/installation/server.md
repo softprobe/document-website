@@ -192,7 +192,7 @@ helm upgrade softprobe softprobe/sp-backend \
   --set createNamespace=false
 ```
 
-Helm adds log-pipeline resources from chart defaults. After rollout, point agents at Vector (see [Agent OTLP export](#agent-otlp-export)).
+Helm adds log-pipeline resources from chart defaults. After rollout, instrumented apps need only `sp.api.url`; agents discover the Vector log endpoint from `/api/config/agent/load` (see [Agent OTLP export](#agent-otlp-export)).
 
 ### Upgrade from a downloaded chart package
 
@@ -259,7 +259,7 @@ Full options: [Unified log pipeline](#unified-log-pipeline).
 
 Enable correlated log ingest, Parquet storage, and trace-id query (`sp logs` / `GET /api/recorder/logs`) from the **sp-backend** Helm chart.
 
-**Prerequisites:** a healthy `sp-backend` release on chart **v4.3.x+**. The pipeline is **enabled by default** (`logPipeline.enabled: true`). Instrumented workloads need the in-cluster Vector OTLP log endpoint (see [Agent OTLP export](#agent-otlp-export)).
+**Prerequisites:** a healthy `sp-backend` release on chart **v4.3.x+**. The pipeline is **enabled by default** (`logPipeline.enabled: true`). Instrumented workloads need only `sp.api.url`; the agent discovers the Vector log endpoint from server config (see [Agent OTLP export](#agent-otlp-export)).
 
 ### What the chart deploys
 
@@ -343,19 +343,17 @@ v1 has **no** dedicated pipeline health API — a successful trace-id lookup con
 
 ### Agent OTLP export {#agent-otlp-export}
 
-Point the Java agent at the in-cluster Vector JSON log ingest URL:
+sp-backend sets `OTEL_EXPORTER_OTLP_ENDPOINT` to the in-cluster Vector OTLP HTTP endpoint (port `4318`, full cluster DNS). On `POST /api/config/agent/load`, the server publishes `extendField.otlpLogEndpoint` (same host, port `4320`, path `/v1/logs`) for Java agents.
+
+Instrumented workloads need only:
 
 ```text
--Dsp.otel.exporter.otlp.log.endpoint=http://<release>-log-vector.<namespace>.svc.cluster.local:4320/v1/logs
+-javaagent:sp-agent.jar -Dsp.app.id=<appId> -Dsp.api.url=http://<release>-sp-backend.<namespace>.svc.cluster.local:8090
 ```
 
-For release `softprobe` in namespace `softprobe`:
+The agent applies the discovered URL automatically. Use `-Dsp.otel.exporter.otlp.log.endpoint=...` only when the workload cannot resolve cluster DNS (for example apps outside the Softprobe namespace without an ingress).
 
-```text
-http://softprobe-log-vector.softprobe.svc.cluster.local:4320/v1/logs
-```
-
-When this property is set, correlated application and agent logs export during record and replay. Legacy capture flags (`sp.record.user.log`, `sp-capture-log`, `sp.user.log.level`, etc.) are not used in v1.
+When an endpoint is available (discovery or JVM override), correlated application and agent logs export during record and replay. Legacy capture flags (`sp.record.user.log`, `sp-capture-log`, `sp.user.log.level`, etc.) are not used in v1.
 
 ### Storage modes
 

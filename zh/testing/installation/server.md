@@ -343,19 +343,17 @@ v1 **没有**专用管道健康 API — 成功的 trace-id 查询可确认采集
 
 ### Agent OTLP 导出 {#agent-otlp-export}
 
-将 Java Agent 指向集群内 Vector JSON 日志采集 URL：
+sp-backend 通过 `OTEL_EXPORTER_OTLP_ENDPOINT` 指向集群内 Vector OTLP HTTP（端口 `4318`，完整集群 DNS）。`POST /api/config/agent/load` 会向 Java Agent 返回 `extendField.otlpLogEndpoint`（同一主机、端口 `4320`、路径 `/v1/logs`）。
+
+已插桩工作负载通常只需：
 
 ```text
--Dsp.otel.exporter.otlp.log.endpoint=http://<release>-log-vector.<namespace>.svc.cluster.local:4320/v1/logs
+-javaagent:sp-agent.jar -Dsp.app.id=<appId> -Dsp.api.url=http://<release>-sp-backend.<namespace>.svc.cluster.local:8090
 ```
 
-release 为 `softprobe`、命名空间为 `softprobe` 时：
+Agent 自动应用发现到的 URL。仅当工作负载无法解析集群 DNS（例如 Softprobe 命名空间外的应用且无 Ingress）时，才使用 `-Dsp.otel.exporter.otlp.log.endpoint=...` 覆盖。
 
-```text
-http://softprobe-log-vector.softprobe.svc.cluster.local:4320/v1/logs
-```
-
-设置该属性后，录制与回放期间会导出关联的应用与 Agent 日志。v1 不使用旧版采集标志（`sp.record.user.log`、`sp-capture-log`、`sp.user.log.level` 等）。
+存在可用端点（发现或 JVM 覆盖）时，录制与回放期间会导出关联的应用与 Agent 日志。v1 不使用旧版采集标志（`sp.record.user.log`、`sp-capture-log`、`sp.user.log.level` 等）。
 
 ### 存储模式
 

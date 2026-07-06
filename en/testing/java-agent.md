@@ -25,7 +25,6 @@ java \
   -javaagent:sp-agent.jar \
   -Dsp.app.id=<appId> \
   -Dsp.api.url=http://127.0.0.1:8090 \
-  -Dsp.otel.exporter.otlp.log.endpoint=<vector-otlp-log-url> \
   -jar your-service.jar
 ```
 
@@ -34,22 +33,19 @@ The agent may also resolve an app id automatically from jar name or environment;
 | Property | Points to | Purpose |
 |----------|-----------|---------|
 | `-Dsp.app.id` | — | Registered application id (16-char hex from `sp app create`). **Pin this** in every environment that shares recordings. |
-| `-Dsp.api.url` | **sp-backend** (e.g. `:8090`) | **Required** — sp-boot base URL (must include `http://` or `https://`). Env fallback: `SP_API_URL`. Record, replay, mock, compare. |
-| `-Dsp.otel.exporter.otlp.log.endpoint` | **Vector** log ingest (e.g. `:4320/v1/logs`) | Correlated application logs for diagnosis (`sp logs` / trace-id lookup) |
+| `-Dsp.api.url` | **sp-backend** (e.g. `:8090`) | **Required** — sp-boot base URL (must include `http://` or `https://`). Env fallback: `SP_API_URL`. Record, replay, mock, compare, and **log export discovery**. |
 
-On Kubernetes with the [Softprobe server Helm chart](./installation/server.md), use the in-cluster Vector URL:
+On startup the agent calls `POST /api/config/agent/load` on sp-backend. When the server has unified log pipeline enabled, the response includes `extendField.otlpLogEndpoint` (Vector agent JSON ingest, port `4320`). The agent applies that URL automatically — you do **not** need a separate Vector URL in normal deployments.
 
-```text
--Dsp.otel.exporter.otlp.log.endpoint=http://<release>-log-vector.<namespace>.svc.cluster.local:4320/v1/logs
+### Optional JVM override
+
+Set `-Dsp.otel.exporter.otlp.log.endpoint` only when discovery cannot reach Vector (for example an app outside the cluster using an ingress URL):
+
+```bash
+-Dsp.otel.exporter.otlp.log.endpoint=http://<reachable-vector-host>:4320/v1/logs
 ```
 
-Example for release `softprobe` in namespace `softprobe`:
-
-```text
--Dsp.otel.exporter.otlp.log.endpoint=http://softprobe-log-vector.softprobe.svc.cluster.local:4320/v1/logs
-```
-
-Without `-Dsp.otel.exporter.otlp.log.endpoint`, record and replay still work, but application logs are not exported and `sp logs` will be empty for that trace. See [Install Softprobe Server — Agent OTLP export](./installation/server.md#agent-otlp-export).
+JVM override wins over server discovery. Without either source, record and replay still work, but application logs are not exported and `sp logs` will be empty for that trace.
 
 ## Environment tags
 
