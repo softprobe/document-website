@@ -32,18 +32,18 @@ sp -v
 sp setup
 ```
 
-若未提供 `--backend-url`，向导会**交互式**询问后端 URL。在 Linux 上还可能询问是否安装 Spcode Service（见[下文](#spcode-service)）。
+若未提供 `--api-url`，向导会**交互式**询问后端 URL。在 Linux 上还可能询问是否安装 Spcode Service（见[下文](#spcode-service)）。
 
 | 参数 | 说明 |
 |------|------|
-| `--backend-url` | 后端 URL（提供后可跳过交互提示） |
+| `--api-url` | 后端 URL（提供后可跳过交互提示） |
 
 模型提供商配置由 `sp code` 负责，不在 `sp setup` 中配置。
 
 非交互或脚本场景可显式传入 URL：
 
 ```bash
-sp setup --backend-url http://127.0.0.1:8090 --json
+sp setup --api-url http://127.0.0.1:8090 --json
 ```
 
 URL 写入**个人** XDG 配置 `~/.config/softprobe/config.jsonc`。
@@ -53,7 +53,7 @@ URL 写入**个人** XDG 配置 `~/.config/softprobe/config.jsonc`。
 在 **Linux** 上，`sp setup` 还可选安装 **Spcode Service** —— 供团队在内网浏览器共用的 Web 工作台。若只需在本机使用 UI，见 [手动启动 Softprobe Web UI](./code.md)。
 
 ```bash
-sp setup --backend-url http://sp-backend.corp:8090 --install-spcode-service
+sp setup --api-url http://sp-backend.corp:8090 --install-spcode-service
 sp setup --install-spcode-service --spcode-service-port 5000
 sp setup --uninstall-spcode-service
 ```
@@ -73,13 +73,13 @@ sp setup --uninstall-spcode-service
 sp setup
 
 # 非交互
-sp setup --backend-url http://sp-backend.corp:8090 --install-spcode-service
+sp setup --api-url http://sp-backend.corp:8090 --install-spcode-service
 
 # 无 TTY 自动化
-sudo sp setup --backend-url http://sp-backend.corp:8090 --install-spcode-service
+sudo sp setup --api-url http://sp-backend.corp:8090 --install-spcode-service
 ```
 
-服务配置在安装时写入 `/root/.config/softprobe/config.jsonc`。之后仅修改个人 `sp setup --backend-url` **不会**更新服务配置——需卸载后重装。
+服务配置在安装时写入 `/root/.config/softprobe/config.jsonc`。之后仅修改个人 `sp setup --api-url` **不会**更新服务配置——需卸载后重装。
 
 ### 运维
 

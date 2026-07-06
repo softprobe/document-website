@@ -8,14 +8,14 @@ Command reference. Install flow, Spcode Service, and systemd ops are documented 
 
 ```bash
 sp setup
-sp setup --backend-url http://127.0.0.1:8090
+sp setup --api-url http://127.0.0.1:8090
 sp setup --install-spcode-service
 sp setup --uninstall-spcode-service
 ```
 
 | Flag | Description |
 |------|-------------|
-| `--backend-url` | Softprobe backend URL |
+| `--api-url` | Softprobe API URL (backend base URL) |
 | `--install-spcode-service` | Install Spcode Service (Linux only) |
 | `--uninstall-spcode-service` | Remove Spcode Service |
 | `--spcode-service-port` | Listen port (default 4096) |
