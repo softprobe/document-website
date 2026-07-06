@@ -153,14 +153,14 @@ title: sp setup
 
 \`\`\`bash
 sp setup
-sp setup --backend-url http://127.0.0.1:8090
+sp setup --api-url http://127.0.0.1:8090
 sp setup --install-spcode-service
 sp setup --uninstall-spcode-service
 \`\`\`
 
 | 参数 | 说明 |
 |------|------|
-| \`--backend-url\` | 后端 URL |
+| \`--api-url\` | 后端 URL |
 | \`--install-spcode-service\` | 安装 Spcode Service（仅 Linux） |
 | \`--uninstall-spcode-service\` | 卸载 Spcode Service |
 | \`--spcode-service-port\` | 监听端口（默认 4096） |
@@ -178,14 +178,14 @@ Command reference. Install flow, Spcode Service, and systemd ops are documented 
 
 \`\`\`bash
 sp setup
-sp setup --backend-url http://127.0.0.1:8090
+sp setup --api-url http://127.0.0.1:8090
 sp setup --install-spcode-service
 sp setup --uninstall-spcode-service
 \`\`\`
 
 | Flag | Description |
 |------|-------------|
-| \`--backend-url\` | Softprobe backend URL |
+| \`--api-url\` | Softprobe API URL |
 | \`--install-spcode-service\` | Install Spcode Service (Linux only) |
 | \`--uninstall-spcode-service\` | Remove Spcode Service |
 | \`--spcode-service-port\` | Listen port (default 4096) |

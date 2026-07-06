@@ -26,24 +26,24 @@ If that prints a version, you are ready for the steps below.
 
 ## Setup
 
-`sp setup` configures the self-hosted or on-prem Softprobe backend URL.
+`sp setup` configures the self-hosted or on-prem Softprobe API URL.
 
 ```bash
 sp setup
 ```
 
-If you omit `--backend-url`, the wizard **prompts** for your backend URL. On Linux it may also ask whether to install Spcode Service ([below](#spcode-service)).
+If you omit `--api-url`, the wizard **prompts** for your API URL. On Linux it may also ask whether to install Spcode Service ([below](#spcode-service)).
 
 | Flag | Description |
 |------|-------------|
-| `--backend-url` | Backend URL (use this to skip the prompt) |
+| `--api-url` | API URL (use this to skip the prompt) |
 
 Model provider configuration belongs to `sp code`, not `sp setup`.
 
 For non-interactive or scripted setup:
 
 ```bash
-sp setup --backend-url http://127.0.0.1:8090 --json
+sp setup --api-url http://127.0.0.1:8090 --json
 ```
 
 The URL is stored in your **personal** Softprobe XDG config at `~/.config/softprobe/config.jsonc`.
@@ -53,7 +53,7 @@ The URL is stored in your **personal** Softprobe XDG config at `~/.config/softpr
 On **Linux**, `sp setup` can optionally install **Spcode Service** — a shared web workbench your team opens in the browser on the corp network. For a private UI on your own machine, see [Launch Softprobe Web UI Manually](./code.md) instead.
 
 ```bash
-sp setup --backend-url http://sp-backend.corp:8090 --install-spcode-service
+sp setup --api-url http://sp-backend.corp:8090 --install-spcode-service
 sp setup --install-spcode-service --spcode-service-port 5000
 sp setup --uninstall-spcode-service
 ```
@@ -69,17 +69,17 @@ sp setup --uninstall-spcode-service
 ### Install
 
 ```bash
-# Interactive: backend URL → opt-in → port (default 4096)
+# Interactive: API URL → opt-in → port (default 4096)
 sp setup
 
 # Non-interactive
-sp setup --backend-url http://sp-backend.corp:8090 --install-spcode-service
+sp setup --api-url http://sp-backend.corp:8090 --install-spcode-service
 
 # Automation without TTY
-sudo sp setup --backend-url http://sp-backend.corp:8090 --install-spcode-service
+sudo sp setup --api-url http://sp-backend.corp:8090 --install-spcode-service
 ```
 
-Service config is written once at install to `/root/.config/softprobe/config.jsonc`. Changing your personal `sp setup --backend-url` later does **not** update the service — uninstall and reinstall to change the service backend URL.
+Service config is written once at install to `/root/.config/softprobe/config.jsonc`. Changing your personal `sp setup --api-url` later does **not** update the service — uninstall and reinstall to change the service API URL.
 
 ### Operations
 
