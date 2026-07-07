@@ -373,7 +373,7 @@ Legacy capture flags (`sp.record.user.log`, `sp-capture-log`, `sp.user.log.level
 |------|------------------------------|------------|------------|
 | **Local PVC** (default) | `local` | Vector → Parquet PVC | sp-backend reads mounted volume |
 | **S3-compatible** | `s3` | Vector → your bucket | sp-backend reads via S3 API |
-| **Azure Blob** | `azure_blob` | Vector `azure_blob` sink → your container | sp-backend reads via Azure Blob API |
+| **Azure Blob** | `azure_blob` | Vector `aws_s3` sink → rclone sidecar → Azure Blob | Backend rclone sidecar → S3 API read |
 
 #### Local disk
 
@@ -427,6 +427,8 @@ End users and Agent Skills **must not** receive bucket credentials — query onl
 
 #### Azure Blob object storage
 
+Vector writes Parquet via the `aws_s3` sink to an in-pod **rclone S3 gateway** sidecar (`parquet-s3`) that proxies to Azure Blob Storage. The backend pod uses the same sidecar pattern and reads Parquet through the S3-compatible API at `http://127.0.0.1:9000`.
+
 ```yaml
 logPipeline:
   enabled: true
@@ -438,20 +440,19 @@ logPipeline:
       prefix: ""
       accountName: <account>
       existingSecret: softprobe-log-azure-credentials
-      secretConnectionStringField: connection-string
       secretAccountKeyField: account-key
 ```
 
-Create the secret:
+Create the secret (account key only — used by rclone sidecars):
 
 ```bash
 kubectl create secret generic softprobe-log-azure-credentials \
-  --from-literal=connection-string='DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net' \
   --from-literal=account-key='...' \
   -n softprobe
 ```
 
-- **No Parquet PVC** or rclone sidecar is created when `backend: azure_blob`.
+- **No Parquet PVC** is created when `backend: azure_blob`.
+- Both **vector** and **backend** pods run an rclone `parquet-s3` sidecar targeting Azure Blob.
 - **Retention/compaction:** v1 maintenance CronJobs remain local/S3-focused.
 
 ### Helm values reference
