@@ -192,7 +192,7 @@ helm upgrade softprobe softprobe/sp-backend \
   --set createNamespace=false
 ```
 
-Helm adds log-pipeline resources from chart defaults. After rollout, point agents at Vector (see [Agent OTLP export](#agent-otlp-export)).
+Helm adds log-pipeline resources from chart defaults. After rollout, instrument workloads with `-Dsp.api.url` pointing at sp-backend (see [Agent log export](#agent-log-export)).
 
 ### Upgrade from a downloaded chart package
 
@@ -220,11 +220,13 @@ curl -s http://127.0.0.1:8090/actuator/health
 
 Expect a rolling restart of `sp-backend` (and Redis if the chart template changed). Bundled MongoDB data on the existing PVC is preserved. `sp-backend` may take up to ~2 minutes to become ready after the new pod starts (JVM warm-up).
 
-On v4.3.9+ you should also see `log-vector` and a `log-parquet` PVC (local storage). Point instrumented workloads at Vector:
+On v4.3.9+ you should also see `log-vector` and a `log-parquet` PVC (local storage). Instrument workloads with:
 
 ```text
--Dsp.otel.exporter.otlp.log.endpoint=http://<release>-log-vector.<namespace>.svc.cluster.local:4320/v1/logs
+-Dsp.api.url=http://<release>-sp-backend.<namespace>.svc.cluster.local:8090
 ```
+
+Log export uses `{sp.api.url}/v1/logs`; sp-backend proxies to Vector internally.
 
 ### Customize or disable the log pipeline
 
@@ -259,7 +261,7 @@ Full options: [Unified log pipeline](#unified-log-pipeline).
 
 Enable correlated log ingest, Parquet storage, and trace-id query (`sp logs` / `GET /api/recorder/logs`) from the **sp-backend** Helm chart.
 
-**Prerequisites:** a healthy `sp-backend` release on chart **v4.3.x+**. The pipeline is **enabled by default** (`logPipeline.enabled: true`). Instrumented workloads need the in-cluster Vector OTLP log endpoint (see [Agent OTLP export](#agent-otlp-export)).
+**Prerequisites:** a healthy `sp-backend` release on chart **v4.3.x+**. The pipeline is **enabled by default** (`logPipeline.enabled: true`). Instrumented workloads need `-Dsp.api.url` pointing at sp-backend (see [Agent log export](#agent-log-export)).
 
 ### What the chart deploys
 
@@ -341,21 +343,29 @@ curl -s "$SP_API_URL/api/recorder/logs?trace_id=<id>&since=2026-06-27T10:00:00Z&
 
 v1 has **no** dedicated pipeline health API — a successful trace-id lookup confirms ingest, storage, and query wiring.
 
-### Agent OTLP export {#agent-otlp-export}
+### Agent log export {#agent-log-export}
 
-Point the Java agent at the in-cluster Vector JSON log ingest URL:
+Point the Java agent at sp-backend only:
 
 ```text
--Dsp.otel.exporter.otlp.log.endpoint=http://<release>-log-vector.<namespace>.svc.cluster.local:4320/v1/logs
+-Dsp.api.url=http://<release>-sp-backend.<namespace>.svc.cluster.local:8090
 ```
 
 For release `softprobe` in namespace `softprobe`:
 
 ```text
-http://softprobe-log-vector.softprobe.svc.cluster.local:4320/v1/logs
+-Dsp.api.url=http://softprobe-sp-backend.softprobe.svc.cluster.local:8090
 ```
 
-When this property is set, correlated application and agent logs export during record and replay. Legacy capture flags (`sp.record.user.log`, `sp-capture-log`, `sp.user.log.level`, etc.) are not used in v1.
+Correlated application and agent logs export to `{sp.api.url}/v1/logs` during record and replay. sp-backend proxies agent JSON to Vector `:4320` and OTLP to `:4318` when the log pipeline is enabled.
+
+Optional advanced override — direct Vector ingest (bypasses backend proxy):
+
+```text
+-Dsp.otel.exporter.otlp.log.endpoint=http://<release>-log-vector.<namespace>.svc.cluster.local:4320/v1/logs
+```
+
+Legacy capture flags (`sp.record.user.log`, `sp-capture-log`, `sp.user.log.level`, etc.) are not used in v1.
 
 ### Storage modes
 
@@ -486,7 +496,7 @@ Point instrumented applications at the in-cluster service:
 | Empty `GET /api/recorder/logs` but data expected | Partial `part-hourly.parquet` from interrupted compaction — delete hourly file or wait for next compaction; confirm minute `part-*.parquet` files exist |
 | Vector pod not ready | `kubectl logs -n softprobe deploy/<release>-log-vector -c vector` |
 | Compaction `ImagePullBackOff` on arm64 | Override `logPipeline.compaction.image` with a local `arm64` build |
-| Agent logs missing | `sp.otel.exporter.otlp.log.endpoint` must reach Vector `:4320`; trace must have `trace_id` on export |
+| Agent logs missing | `sp.api.url` must reach sp-backend; log pipeline enabled; trace must have `trace_id` on export |
 | sp-backend logs missing | `logPipeline.enabled` auto-enables OTLP export on sp-backend |
 
 ## Next step

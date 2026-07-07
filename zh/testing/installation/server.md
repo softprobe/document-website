@@ -192,7 +192,7 @@ helm upgrade softprobe softprobe/sp-backend \
   --set createNamespace=false
 ```
 
-Helm 会按 Chart 默认值添加日志管道资源。Rollout 完成后，将 Agent 指向 Vector（见 [Agent OTLP 导出](#agent-otlp-export)）。
+Helm 会按 Chart 默认值添加日志管道资源。Rollout 完成后，为工作负载配置 `-Dsp.api.url` 指向 sp-backend（见 [Agent 日志导出](#agent-log-export)）。
 
 ### 从下载的 Chart 包升级
 
@@ -220,11 +220,13 @@ curl -s http://127.0.0.1:8090/actuator/health
 
 预期 sp-backend 滚动重启（若 Chart 模板变更，Redis 也可能重启）。内置 MongoDB 在现有 PVC 上的数据会保留。新 Pod 启动后 sp-backend 可能需要约 2 分钟就绪（JVM 预热）。
 
-v4.3.9+ 还应看到 `log-vector` 与 `log-parquet` PVC（本地存储）。将已插桩工作负载指向 Vector：
+v4.3.9+ 还应看到 `log-vector` 与 `log-parquet` PVC（本地存储）。为已插桩工作负载配置：
 
 ```text
--Dsp.otel.exporter.otlp.log.endpoint=http://<release>-log-vector.<namespace>.svc.cluster.local:4320/v1/logs
+-Dsp.api.url=http://<release>-sp-backend.<namespace>.svc.cluster.local:8090
 ```
+
+日志通过 `{sp.api.url}/v1/logs` 导出；sp-backend 内部代理到 Vector。
 
 ### 自定义或禁用日志管道
 
@@ -259,7 +261,7 @@ logPipeline:
 
 通过 **sp-backend** Helm Chart 启用关联日志采集、Parquet 存储与 trace-id 查询（`sp logs` / `GET /api/recorder/logs`）。
 
-**前置条件：** Chart **v4.3.x+** 上健康的 sp-backend release。管道**默认启用**（`logPipeline.enabled: true`）。已插桩工作负载需集群内 Vector OTLP 日志端点（见 [Agent OTLP 导出](#agent-otlp-export)）。
+**前置条件：** Chart **v4.3.x+** 上健康的 sp-backend release。管道**默认启用**（`logPipeline.enabled: true`）。已插桩工作负载需 `-Dsp.api.url` 指向 sp-backend（见 [Agent 日志导出](#agent-log-export)）。
 
 ### Chart 部署的资源
 
@@ -341,21 +343,29 @@ curl -s "$SP_API_URL/api/recorder/logs?trace_id=<id>&since=2026-06-27T10:00:00Z&
 
 v1 **没有**专用管道健康 API — 成功的 trace-id 查询可确认采集、存储与查询链路。
 
-### Agent OTLP 导出 {#agent-otlp-export}
+### Agent 日志导出 {#agent-log-export}
 
-将 Java Agent 指向集群内 Vector JSON 日志采集 URL：
+Java Agent 仅需指向 sp-backend：
 
 ```text
--Dsp.otel.exporter.otlp.log.endpoint=http://<release>-log-vector.<namespace>.svc.cluster.local:4320/v1/logs
+-Dsp.api.url=http://<release>-sp-backend.<namespace>.svc.cluster.local:8090
 ```
 
 release 为 `softprobe`、命名空间为 `softprobe` 时：
 
 ```text
-http://softprobe-log-vector.softprobe.svc.cluster.local:4320/v1/logs
+-Dsp.api.url=http://softprobe-sp-backend.softprobe.svc.cluster.local:8090
 ```
 
-设置该属性后，录制与回放期间会导出关联的应用与 Agent 日志。v1 不使用旧版采集标志（`sp.record.user.log`、`sp-capture-log`、`sp.user.log.level` 等）。
+录制与回放期间，关联的应用与 Agent 日志导出至 `{sp.api.url}/v1/logs`。日志管道启用时，sp-backend 将 Agent JSON 代理到 Vector `:4320`，OTLP 代理到 `:4318`。
+
+可选高级覆盖 — 直连 Vector（绕过 backend 代理）：
+
+```text
+-Dsp.otel.exporter.otlp.log.endpoint=http://<release>-log-vector.<namespace>.svc.cluster.local:4320/v1/logs
+```
+
+v1 不使用旧版采集标志（`sp.record.user.log`、`sp-capture-log`、`sp.user.log.level` 等）。
 
 ### 存储模式
 
@@ -486,7 +496,7 @@ kubectl delete pvc -n softprobe -l app.kubernetes.io/instance=softprobe
 | 预期有数据但 `GET /api/recorder/logs` 为空 | 中断的压缩留下不完整 `part-hourly.parquet` — 删除 hourly 文件或等待下次压缩；确认存在 minute `part-*.parquet` |
 | Vector Pod 未就绪 | `kubectl logs -n softprobe deploy/<release>-log-vector -c vector` |
 | arm64 上 Compaction `ImagePullBackOff` | 用本地 `arm64` 构建覆盖 `logPipeline.compaction.image` |
-| Agent 日志缺失 | `sp.otel.exporter.otlp.log.endpoint` 须可达 Vector `:4320`；导出须带 `trace_id` |
+| Agent 日志缺失 | `sp.api.url` 须可达 sp-backend；日志管道已启用；导出须带 `trace_id` |
 | sp-backend 日志缺失 | `logPipeline.enabled` 会在 sp-backend 上自动启用 OTLP 导出 |
 
 ## 下一步

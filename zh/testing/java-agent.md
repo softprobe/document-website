@@ -25,29 +25,27 @@ java \
   -javaagent:sp-agent.jar \
   -Dsp.app.id=<appId> \
   -Dsp.api.url=http://127.0.0.1:8090 \
-  -Dsp.otel.exporter.otlp.log.endpoint=<Vector OTLP 日志 URL> \
   -jar your-service.jar
 ```
 
 | 参数 | 指向 | 含义 |
 |------|------|------|
 | `-Dsp.app.id` | — | 注册应用 id（`sp app create` 返回的 16 位十六进制）。**请在共享录制的各环境固定此值。** |
-| `-Dsp.api.url` | **sp-backend**（如 `:8090`） | **必填** — sp-boot 根 URL（须含 `http://` 或 `https://`）。环境变量回退：`SP_API_URL`。录制、回放、Mock、对比。 |
-| `-Dsp.otel.exporter.otlp.log.endpoint` | **Vector** 日志采集（如 `:4320/v1/logs`） | 关联应用日志，便于诊断（`sp logs` / trace-id 查询） |
+| `-Dsp.api.url` | **sp-backend**（如 `:8090`） | **必填** — sp-boot 根 URL（须含 `http://` 或 `https://`）。环境变量回退：`SP_API_URL`。录制、回放、Mock、对比，**以及关联日志导出**（`{sp.api.url}/v1/logs`）。 |
 
-在 Kubernetes 上使用 [Softprobe 服务端 Helm Chart](./installation/server.md) 时，使用集群内 Vector URL：
+当 `sp.api.url` 已设置且服务端 [统一日志管道](./installation/server.md#unified-log-pipeline) 已启用时，日志由 sp-backend 内部代理到 Vector — Agent **无需**单独配置 Vector URL。
 
-```text
--Dsp.otel.exporter.otlp.log.endpoint=http://<release>-log-vector.<namespace>.svc.cluster.local:4320/v1/logs
+### 可选：直连 Vector
+
+高级场景（绕过 backend 代理）可设置：
+
+```bash
+-Dsp.otel.exporter.otlp.log.endpoint=http://<vector-host>:4320/v1/logs
 ```
 
-release 为 `softprobe`、命名空间为 `softprobe` 的示例：
+该 JVM 属性优先于 `{sp.api.url}/v1/logs`。
 
-```text
--Dsp.otel.exporter.otlp.log.endpoint=http://softprobe-log-vector.softprobe.svc.cluster.local:4320/v1/logs
-```
-
-未设置 `-Dsp.otel.exporter.otlp.log.endpoint` 时，录制与回放仍可用，但应用日志不会导出，该 trace 的 `sp logs` 将为空。详见 [安装 Softprobe 服务端 — Agent OTLP 导出](./installation/server.md#agent-otlp-export)。
+未设置 `sp.api.url`（且未设置上述覆盖）时，录制与回放仍可用，但应用日志不会导出，该 trace 的 `sp logs` 将为空。
 
 Agent 也可能从 jar 名或环境自动解析 app id；显式设置 `-Dsp.app.id` 可避免录制与回放 id 不一致。旧文档中的 **`sp.service.name`** 在部分部署中仍作别名；新环境请优先使用 **`sp.app.id`**。
 
