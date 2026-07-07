@@ -373,6 +373,7 @@ Legacy capture flags (`sp.record.user.log`, `sp-capture-log`, `sp.user.log.level
 |------|------------------------------|------------|------------|
 | **Local PVC** (default) | `local` | Vector → Parquet PVC | sp-backend reads mounted volume |
 | **S3-compatible** | `s3` | Vector → your bucket | sp-backend reads via S3 API |
+| **Azure Blob** | `azure_blob` | Vector `azure_blob` sink → your container | sp-backend reads via Azure Blob API |
 
 #### Local disk
 
@@ -424,12 +425,41 @@ kubectl create secret generic softprobe-log-s3-credentials \
 
 End users and Agent Skills **must not** receive bucket credentials — query only through `sp logs` / `GET /api/recorder/logs`.
 
+#### Azure Blob object storage
+
+```yaml
+logPipeline:
+  enabled: true
+  storage:
+    backend: azure_blob
+    azureBlob:
+      container: my-softprobe-logs
+      endpoint: https://<account>.blob.core.windows.net
+      prefix: ""
+      accountName: <account>
+      existingSecret: softprobe-log-azure-credentials
+      secretConnectionStringField: connection-string
+      secretAccountKeyField: account-key
+```
+
+Create the secret:
+
+```bash
+kubectl create secret generic softprobe-log-azure-credentials \
+  --from-literal=connection-string='DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net' \
+  --from-literal=account-key='...' \
+  -n softprobe
+```
+
+- **No Parquet PVC** or rclone sidecar is created when `backend: azure_blob`.
+- **Retention/compaction:** v1 maintenance CronJobs remain local/S3-focused.
+
 ### Helm values reference
 
 | Value | Description |
 |-------|-------------|
 | `logPipeline.enabled` | Deploy Vector, storage, and query wiring (default `true`) |
-| `logPipeline.storage.backend` | `local` (PVC) or `s3` |
+| `logPipeline.storage.backend` | `local` (PVC), `s3`, or `azure_blob` |
 | `logPipeline.parquet.storageSize` / `storageClass` | Local Parquet PVC size and class |
 | `logPipeline.vector.image` | Vector image (default `timberio/vector:0.56.0-debian`) |
 | `logPipeline.vector.resources` | CPU/memory for Vector (+ rclone sidecar in local mode) |
@@ -458,7 +488,6 @@ kubectl logs -n softprobe job/<compaction-job-name>
 
 ### Out of scope (v1)
 
-- Native Azure Blob SDK (use S3-compatible endpoint).
 - Iceberg, ad hoc SQL, direct Parquet access for end users.
 - Dual-write to local PVC and S3.
 - Dedicated log-pipeline health/status API.
