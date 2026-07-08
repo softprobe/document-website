@@ -270,8 +270,8 @@ When `logPipeline.enabled: true`, Helm adds:
 | Resource | Purpose |
 |----------|---------|
 | **Vector** (`{release}-log-vector`) | OTLP log ingest (gRPC/HTTP + agent JSON on `:4320`) |
-| **rclone sidecar** (local mode only) | S3-over-filesystem gateway so Vector writes Parquet via `aws_s3` sink |
-| **Parquet PVC** (local mode only) | Durable storage shared by Vector, sp-backend, compaction, and retention |
+| **rclone gateway** (`{release}-log-rclone`, local + Azure Blob) | Shared S3 gateway Deployment + Service that Vector and sp-backend use to write/read Parquet |
+| **Parquet PVC** (local mode only) | Durable storage fronted by the rclone gateway, shared with compaction and retention |
 | **Compaction CronJob** (local mode) | Merges closed-hour minute files → `part-hourly.parquet` (DuckDB) |
 | **Retention CronJob** (optional) | Prunes Parquet older than `ttlDays` |
 
@@ -373,7 +373,7 @@ Legacy capture flags (`sp.record.user.log`, `sp-capture-log`, `sp.user.log.level
 |------|------------------------------|------------|------------|
 | **Local PVC** (default) | `local` | Vector → Parquet PVC | sp-backend reads mounted volume |
 | **S3-compatible** | `s3` | Vector → your bucket | sp-backend reads via S3 API |
-| **Azure Blob** | `azure_blob` | Vector `aws_s3` sink → rclone sidecar → Azure Blob | Backend rclone sidecar → S3 API read |
+| **Azure Blob** | `azure_blob` | Vector `aws_s3` sink → shared rclone gateway → Azure Blob | sp-backend → shared rclone gateway → S3 API read |
 
 #### Local disk
 
@@ -427,7 +427,7 @@ End users and Agent Skills **must not** receive bucket credentials — query onl
 
 #### Azure Blob object storage
 
-Vector writes Parquet via the `aws_s3` sink to an in-pod **rclone S3 gateway** sidecar (`parquet-s3`) that proxies to Azure Blob Storage. The backend pod uses the same sidecar pattern and reads Parquet through the S3-compatible API at `http://127.0.0.1:9000`.
+Vector writes Parquet via the `aws_s3` sink to a shared **rclone S3 gateway** (`{release}-log-rclone` Deployment + Service) that proxies to Azure Blob Storage. sp-backend reads Parquet through that same gateway over the S3-compatible API at `http://{release}-log-rclone:9000`. The backend is unaware of Azure — it is configured with `SP_LOG_PARQUET_STORAGE_BACKEND=s3` and talks only to the gateway.
 
 ```yaml
 logPipeline:
@@ -443,7 +443,7 @@ logPipeline:
       secretAccountKeyField: account-key
 ```
 
-Create the secret (account key only — used by rclone sidecars):
+Create the secret (account key only — used by the rclone gateway):
 
 ```bash
 kubectl create secret generic softprobe-log-azure-credentials \
@@ -452,7 +452,7 @@ kubectl create secret generic softprobe-log-azure-credentials \
 ```
 
 - **No Parquet PVC** is created when `backend: azure_blob`.
-- Both **vector** and **backend** pods run an rclone `parquet-s3` sidecar targeting Azure Blob.
+- A single shared **rclone gateway** (`{release}-log-rclone`) targets Azure Blob; both Vector and sp-backend connect to it — neither runs an rclone sidecar.
 - **Retention/compaction:** v1 maintenance CronJobs remain local/S3-focused.
 
 ### Helm values reference
@@ -463,7 +463,7 @@ kubectl create secret generic softprobe-log-azure-credentials \
 | `logPipeline.storage.backend` | `local` (PVC), `s3`, or `azure_blob` |
 | `logPipeline.parquet.storageSize` / `storageClass` | Local Parquet PVC size and class |
 | `logPipeline.vector.image` | Vector image (default `timberio/vector:0.56.0-debian`) |
-| `logPipeline.vector.resources` | CPU/memory for Vector (+ rclone sidecar in local mode) |
+| `logPipeline.vector.resources` | CPU/memory for Vector (the rclone gateway runs as its own Deployment) |
 | `logPipeline.otlp.httpPort` / `grpcPort` / `agentJsonPort` | OTLP ports (defaults `4318` / `4317` / `4320`) |
 | `logPipeline.retention.ttlDays` | Prune TTL in days; `""` disables retention CronJob |
 | `logPipeline.retention.cleanupSchedule` | Retention CronJob schedule (default `0 3 * * *`) |
