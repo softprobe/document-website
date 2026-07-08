@@ -23,9 +23,9 @@ Configure **exactly one** mode in your values file. `helm install` fails if both
 
 **Shared external MongoDB:** multiple Helm releases can use one MongoDB host. Put a **unique database name** in each connection string (for example `acme_prod_sp_storage_db`).
 
-Download the example values file for your chart version:
+Download the example values file (always the current version):
 
-[values.example.yaml (v4.3.9)](https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.3.9/values.example.yaml)
+[values.example.yaml](https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/latest/values.example.yaml)
 
 ## Install
 
@@ -133,7 +133,7 @@ Use the same release name, namespace, and `values.yaml` you used at install. A S
 
 1. **Keep your existing `values.yaml`** — you do not need to replace it. Helm merges your file with the new chart defaults for any key you omitted.
 2. **Older file without `logPipeline`?** If you installed on v4.3.5 or earlier with only `image`, `mongodb`, and `encryption`, bump `--version` and `image.tag` only. Missing keys inherit chart defaults — **`logPipeline.enabled` is `true`**, so Vector, the Parquet PVC (local mode), compaction, and retention are added on upgrade. Use `--dry-run` first to preview new resources.
-3. **Review optional overrides** — download [values.example.yaml](https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.3.9/values.example.yaml) for the target version and merge only what you need (PVC `storageClass`, `placement`, S3 backend). Do **not** change `encryption.secretKey` — existing encrypted payloads depend on it.
+3. **Review optional overrides** — download the current [values.example.yaml](https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/latest/values.example.yaml) and merge only what you need (PVC `storageClass`, `placement`, S3 backend). Do **not** change `encryption.secretKey` — existing encrypted payloads depend on it.
 4. **Keep your MongoDB mode** — do not switch between bundled and external MongoDB on upgrade.
 5. **Confirm registry access** — the `softprobe-gcr-pull` secret must still be valid for the new `image.tag`.
 6. **Preview the diff** (optional):
@@ -230,7 +230,7 @@ Log export uses `{sp.api.url}/v1/logs`; sp-backend proxies to Vector internally.
 
 ### Customize or disable the log pipeline
 
-The pipeline is **on by default**. Merge overrides from [values.example.yaml](https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.3.9/values.example.yaml) only when you need non-default storage, placement, or S3:
+The pipeline is **on by default**. Merge overrides from [values.example.yaml](https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/latest/values.example.yaml) only when you need non-default storage, placement, or S3:
 
 ```yaml
 logPipeline:

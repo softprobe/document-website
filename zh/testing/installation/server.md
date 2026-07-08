@@ -23,9 +23,9 @@ Chart **v4.3.x+** 默认启用[统一日志管道](#unified-log-pipeline)（Vect
 
 **共享外部 MongoDB：** 多个 Helm release 可共用同一 MongoDB 主机。请在各连接字符串中使用**唯一的数据库名**（例如 `acme_prod_sp_storage_db`）。
 
-下载对应 Chart 版本的示例 values 文件：
+下载示例 values 文件（始终为当前版本）：
 
-[values.example.yaml (v4.3.9)](https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.3.9/values.example.yaml)
+[values.example.yaml](https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/latest/values.example.yaml)
 
 ## 安装
 
@@ -133,7 +133,7 @@ curl -s http://127.0.0.1:8090/actuator/health
 
 1. **保留现有 `values.yaml`** — 无需整文件替换。Helm 会将您的文件与新 Chart 默认值合并（未设置的键使用默认值）。
 2. **旧文件没有 `logPipeline`？** 若在 v4.3.5 或更早版本安装且仅有 `image`、`mongodb`、`encryption`，只需提升 `--version` 与 `image.tag`。缺失键继承 Chart 默认值 — **`logPipeline.enabled` 为 `true`**，升级时会添加 Vector、Parquet PVC（本地模式）、压缩与保留策略。建议先用 `--dry-run` 预览新资源。
-3. **审阅可选覆盖项** — 下载目标版本的 [values.example.yaml](https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.3.9/values.example.yaml)，仅合并所需项（PVC `storageClass`、`placement`、S3 后端）。**不要**更改 `encryption.secretKey` — 已有加密载荷依赖该密钥。
+3. **审阅可选覆盖项** — 下载当前的 [values.example.yaml](https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/latest/values.example.yaml)，仅合并所需项（PVC `storageClass`、`placement`、S3 后端）。**不要**更改 `encryption.secretKey` — 已有加密载荷依赖该密钥。
 4. **保持 MongoDB 模式不变** — 升级时不要在内置与外部 MongoDB 之间切换。
 5. **确认镜像仓库访问** — `softprobe-gcr-pull` Secret 对新 `image.tag` 仍有效。
 6. **预览差异**（可选）：
@@ -230,7 +230,7 @@ v4.3.9+ 还应看到 `log-vector` 与 `log-parquet` PVC（本地存储）。为�
 
 ### 自定义或禁用日志管道
 
-管道**默认开启**。仅在需要非默认存储、放置策略或 S3 时，从 [values.example.yaml](https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.3.9/values.example.yaml) 合并覆盖项：
+管道**默认开启**。仅在需要非默认存储、放置策略或 S3 时，从 [values.example.yaml](https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/latest/values.example.yaml) 合并覆盖项：
 
 ```yaml
 logPipeline:
