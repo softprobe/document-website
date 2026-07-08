@@ -23,9 +23,9 @@ Configure **exactly one** mode in your values file. `helm install` fails if both
 
 **Shared external MongoDB:** multiple Helm releases can use one MongoDB host. Put a **unique database name** in each connection string (for example `acme_prod_sp_storage_db`).
 
-Download the example values file for your chart version:
+Download the example values file (always the current version):
 
-[values.example.yaml (v4.3.9)](https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.3.9/values.example.yaml)
+[values.example.yaml](https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/latest/values.example.yaml)
 
 ## Install
 
@@ -133,7 +133,7 @@ Use the same release name, namespace, and `values.yaml` you used at install. A S
 
 1. **Keep your existing `values.yaml`** — you do not need to replace it. Helm merges your file with the new chart defaults for any key you omitted.
 2. **Older file without `logPipeline`?** If you installed on v4.3.5 or earlier with only `image`, `mongodb`, and `encryption`, bump `--version` and `image.tag` only. Missing keys inherit chart defaults — **`logPipeline.enabled` is `true`**, so Vector, the Parquet PVC (local mode), compaction, and retention are added on upgrade. Use `--dry-run` first to preview new resources.
-3. **Review optional overrides** — download [values.example.yaml](https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.3.9/values.example.yaml) for the target version and merge only what you need (PVC `storageClass`, `placement`, S3 backend). Do **not** change `encryption.secretKey` — existing encrypted payloads depend on it.
+3. **Review optional overrides** — download the current [values.example.yaml](https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/latest/values.example.yaml) and merge only what you need (PVC `storageClass`, `placement`, S3 backend). Do **not** change `encryption.secretKey` — existing encrypted payloads depend on it.
 4. **Keep your MongoDB mode** — do not switch between bundled and external MongoDB on upgrade.
 5. **Confirm registry access** — the `softprobe-gcr-pull` secret must still be valid for the new `image.tag`.
 6. **Preview the diff** (optional):
@@ -230,7 +230,7 @@ Log export uses `{sp.api.url}/v1/logs`; sp-backend proxies to Vector internally.
 
 ### Customize or disable the log pipeline
 
-The pipeline is **on by default**. Merge overrides from [values.example.yaml](https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.3.9/values.example.yaml) only when you need non-default storage, placement, or S3:
+The pipeline is **on by default**. Merge overrides from [values.example.yaml](https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/latest/values.example.yaml) only when you need non-default storage, placement, or S3:
 
 ```yaml
 logPipeline:
@@ -270,10 +270,10 @@ When `logPipeline.enabled: true`, Helm adds:
 | Resource | Purpose |
 |----------|---------|
 | **Vector** (`{release}-log-vector`) | OTLP log ingest (gRPC/HTTP + agent JSON on `:4320`) |
-| **rclone sidecar** (local mode only) | S3-over-filesystem gateway so Vector writes Parquet via `aws_s3` sink |
-| **Parquet PVC** (local mode only) | Durable storage shared by Vector, sp-backend, compaction, and retention |
-| **Compaction CronJob** (local mode) | Merges closed-hour minute files → `part-hourly.parquet` (DuckDB) |
-| **Retention CronJob** (optional) | Prunes Parquet older than `ttlDays` |
+| **rclone gateway** (`{release}-log-rclone`, local + Azure Blob) | Shared S3 gateway Deployment + Service that Vector and sp-backend use to write/read Parquet |
+| **Parquet PVC** (local mode only) | Durable storage mounted only by the rclone gateway; all other pods reach it via the gateway's S3 endpoint |
+| **Compaction CronJob** (all backends) | Merges closed-hour minute files → `part-hourly.parquet` (DuckDB) |
+| **Retention CronJob** (optional, all backends) | Prunes Parquet older than `ttlDays` |
 
 sp-backend is wired for Parquet reads and exports its own diagnostic logs when the pipeline is enabled (`OTEL_ENABLED=true`, `OTEL_LOGS_EXPORTER=otlp-filtered`).
 
@@ -285,12 +285,12 @@ The chart enables the pipeline by default. Override in your values file (or `--s
 logPipeline:
   enabled: true   # default; set false to disable
   storage:
-    backend: local   # or s3
+    backend: local   # local | s3 | azure_blob — see "Choose where logs are stored"
   parquet:
     storageSize: 100Gi
     # storageClass: managed-csi   # optional — cluster default if omitted
   retention:
-    ttlDays: 30              # set "" to disable retention CronJob
+    ttlDays: 4               # set "" to disable retention CronJob
     cleanupSchedule: "0 3 * * *"
   compaction:
     enabled: true            # local storage only
@@ -367,76 +367,118 @@ Optional advanced override — direct Vector ingest (bypasses backend proxy):
 
 Legacy capture flags (`sp.record.user.log`, `sp-capture-log`, `sp.user.log.level`, etc.) are not used in v1.
 
-### Storage modes
+### Choose where logs are stored
 
-| Mode | `logPipeline.storage.backend` | Write path | Query path |
-|------|------------------------------|------------|------------|
-| **Local PVC** (default) | `local` | Vector → Parquet PVC | sp-backend reads mounted volume |
-| **S3-compatible** | `s3` | Vector → your bucket | sp-backend reads via S3 API |
+Set `logPipeline.storage.backend` to pick where Parquet log files live. Pick one:
 
-#### Local disk
+| Backend | `logPipeline.storage.backend` | Best for | Credentials you provide |
+|---------|-------------------------------|----------|-------------------------|
+| **Local disk** (default) | `local` | Single cluster, simplest setup | None (in-cluster volume) |
+| **S3-compatible** | `s3` | AWS S3, MinIO, GCS, any S3 API | `access-key-id` + `secret-access-key` |
+| **Azure Blob** | `azure_blob` | Azure Storage accounts | `account-key` |
 
-**Layout (fixed by chart — do not reconfigure paths):**
+Querying, compaction, and retention behave identically across all three — only the storage location and credentials differ.
 
-- PVC is mounted at `/data/parquet` on Vector, sp-backend, compaction, and retention pods.
-- Parquet hive partitions live under `/data/parquet/logs/`:
-  - Minute files: `year=YYYY/month=MM/day=DD/hour=HH/minute=mm/part-<epoch>-<uuid>.parquet`
-  - After compaction: `year=.../hour=HH/part-hourly.parquet` (minute dirs for that hour removed)
+#### Option 1 — Local disk (default)
 
-**Compaction:** the hourly CronJob (`logPipeline.compaction`) reads all `minute=*/part-*.parquet` for the **previous closed UTC hour**, writes `part-hourly.parquet`, then deletes the minute files. sp-backend prefers the hourly file when present for that hour.
-
-**Image:** `softprobe/duckdb:1.1.3` from Docker Hub (`linux/amd64`). For Apple Silicon dev clusters, build/load an `arm64` image locally (`make duckdb-image DUCKDB_PLATFORM=linux/arm64`) and override `logPipeline.compaction.image`.
-
-**Backup:** snapshot the `{release}-log-parquet` PVC or copy files under the PVC while Vector is quiesced.
-
-**Retention:** `logPipeline.retention.ttlDays` (default `30`) enables a prune CronJob. Set `ttlDays: ""` to disable.
-
-#### S3-compatible object storage
+Nothing to set up. The chart creates a PersistentVolumeClaim and stores Parquet there. Adjust size/class only if needed:
 
 ```yaml
 logPipeline:
-  enabled: true
+  storage:
+    backend: local
+  parquet:
+    storageSize: 100Gi
+    storageClass: ""      # cluster default; or e.g. managed-csi (AKS), gp3 (EKS)
+```
+
+Back up by snapshotting the `{release}-log-parquet` PVC.
+
+#### Option 2 — S3-compatible bucket
+
+**Step 1 — create the credentials secret.** It must contain exactly these two keys:
+
+```bash
+kubectl create secret generic softprobe-log-s3-credentials -n softprobe \
+  --from-literal=access-key-id='AKIA...' \
+  --from-literal=secret-access-key='...'
+```
+
+| Secret key | Value |
+|------------|-------|
+| `access-key-id` | Bucket access key ID |
+| `secret-access-key` | Bucket secret access key |
+
+**Step 2 — point the chart at your bucket and that secret:**
+
+```yaml
+logPipeline:
   storage:
     backend: s3
     s3:
       bucket: my-softprobe-logs
-      endpoint: https://s3.amazonaws.com          # or MinIO / GCS / Azure S3 endpoint
+      endpoint: https://s3.amazonaws.com   # or your MinIO / GCS / other S3 endpoint
       region: us-east-1
-      forcePathStyle: true                        # usually true for MinIO
-      prefix: ""                                  # optional key prefix
+      forcePathStyle: true                 # keep true for MinIO
+      prefix: ""                           # optional key prefix inside the bucket
       existingSecret: softprobe-log-s3-credentials
-      secretAccessKeyIdField: access-key-id
-      secretSecretAccessKeyField: secret-access-key
 ```
 
-Create the secret:
+The bucket must already exist. No Parquet PVC is created in this mode.
+
+#### Option 3 — Azure Blob container
+
+**Step 1 — create the credentials secret.** It must contain exactly one key, `account-key`, holding your storage account access key:
 
 ```bash
-kubectl create secret generic softprobe-log-s3-credentials \
-  --from-literal=access-key-id='AKIA...' \
-  --from-literal=secret-access-key='...' \
-  -n softprobe
+kubectl create secret generic softprobe-log-azure-credentials -n softprobe \
+  --from-literal=account-key='<storage account key>'
 ```
 
-- **No Parquet PVC** is created when `backend: s3`.
-- **Retention:** set `ttlDays` to enable S3 object prune (uses last-modified time).
-- **Compaction:** not automated for S3 in v1 — the local DuckDB CronJob is not deployed for `backend: s3`.
+| Secret key | Value |
+|------------|-------|
+| `account-key` | Storage account access key (Azure portal → **Storage account → Security + networking → Access keys**, or `az storage account keys list --account-name <account> --query '[0].value' -o tsv`) |
 
-End users and Agent Skills **must not** receive bucket credentials — query only through `sp logs` / `GET /api/recorder/logs`.
+**Step 2 — point the chart at your container and that secret:**
+
+```yaml
+logPipeline:
+  storage:
+    backend: azure_blob
+    azureBlob:
+      container: my-softprobe-logs
+      accountName: <account>
+      endpoint: https://<account>.blob.core.windows.net
+      prefix: ""                           # optional prefix inside the container
+      existingSecret: softprobe-log-azure-credentials
+```
+
+The container must already exist. Softprobe authenticates with the account name + access key (Azure Shared Key). No Parquet PVC is created in this mode.
+
+#### Compaction & retention (all backends)
+
+Both run automatically and identically for `local`, `s3`, and `azure_blob` — no cloud lifecycle rules required:
+
+- **Compaction** (`logPipeline.compaction`, hourly, on by default): merges each closed UTC hour's minute files into a single `part-hourly.parquet`.
+- **Retention** (`logPipeline.retention.ttlDays`, default `4`): deletes Parquet older than N days. Set `ttlDays: ""` to keep logs forever.
+
+> Compaction uses the `softprobe/duckdb:1.1.3` image (`linux/amd64`). On Apple Silicon dev clusters, build/load an `arm64` build (`make duckdb-image DUCKDB_PLATFORM=linux/arm64`) and override `logPipeline.compaction.image`.
+
+**Security:** end users and Agent Skills **must never** receive bucket or storage-account credentials — they query only through `sp logs` / `GET /api/recorder/logs`.
 
 ### Helm values reference
 
 | Value | Description |
 |-------|-------------|
 | `logPipeline.enabled` | Deploy Vector, storage, and query wiring (default `true`) |
-| `logPipeline.storage.backend` | `local` (PVC) or `s3` |
+| `logPipeline.storage.backend` | `local` (PVC), `s3`, or `azure_blob` |
 | `logPipeline.parquet.storageSize` / `storageClass` | Local Parquet PVC size and class |
 | `logPipeline.vector.image` | Vector image (default `timberio/vector:0.56.0-debian`) |
-| `logPipeline.vector.resources` | CPU/memory for Vector (+ rclone sidecar in local mode) |
+| `logPipeline.vector.resources` | CPU/memory for the log collector |
 | `logPipeline.otlp.httpPort` / `grpcPort` / `agentJsonPort` | OTLP ports (defaults `4318` / `4317` / `4320`) |
 | `logPipeline.retention.ttlDays` | Prune TTL in days; `""` disables retention CronJob |
 | `logPipeline.retention.cleanupSchedule` | Retention CronJob schedule (default `0 3 * * *`) |
-| `logPipeline.compaction.enabled` / `schedule` / `image` | Local hourly compaction (default on, `15 * * * *`, `softprobe/duckdb:1.1.3`) |
+| `logPipeline.compaction.enabled` / `schedule` / `image` | Hourly compaction for every backend (default on, `15 * * * *`, `softprobe/duckdb:1.1.3`) |
 | `logPipeline.placement` | `nodeSelector` / `tolerations` / `affinity` for Vector and maintenance CronJobs |
 | `logPipeline.agentLogEndpointProperty` | Documented JVM property: `sp.otel.exporter.otlp.log.endpoint` |
 
@@ -446,8 +488,8 @@ End users and Agent Skills **must not** receive bucket credentials — query onl
 
 | CronJob | When | What |
 |---------|------|------|
-| `{release}-log-vector-retention` | `ttlDays` set | Deletes Parquet files/objects older than TTL |
-| `{release}-log-vector-compaction` | `compaction.enabled` + `backend: local` | DuckDB merges previous hour's `part-*.parquet` → `part-hourly.parquet` |
+| `{release}-log-vector-retention` | `ttlDays` set (any backend) | AWS CLI deletes Parquet objects older than TTL over the S3 endpoint (native bucket, or the rclone gateway for local/Azure Blob) |
+| `{release}-log-vector-compaction` | `compaction.enabled` (any backend) | DuckDB merges previous hour's `part-*.parquet` → `part-hourly.parquet` over the S3 endpoint, then AWS CLI prunes the minute objects |
 
 Check last run:
 
@@ -458,7 +500,6 @@ kubectl logs -n softprobe job/<compaction-job-name>
 
 ### Out of scope (v1)
 
-- Native Azure Blob SDK (use S3-compatible endpoint).
 - Iceberg, ad hoc SQL, direct Parquet access for end users.
 - Dual-write to local PVC and S3.
 - Dedicated log-pipeline health/status API.

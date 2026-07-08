@@ -23,9 +23,9 @@ Chart **v4.3.x+** 默认启用[统一日志管道](#unified-log-pipeline)（Vect
 
 **共享外部 MongoDB：** 多个 Helm release 可共用同一 MongoDB 主机。请在各连接字符串中使用**唯一的数据库名**（例如 `acme_prod_sp_storage_db`）。
 
-下载对应 Chart 版本的示例 values 文件：
+下载示例 values 文件（始终为当前版本）：
 
-[values.example.yaml (v4.3.9)](https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.3.9/values.example.yaml)
+[values.example.yaml](https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/latest/values.example.yaml)
 
 ## 安装
 
@@ -133,7 +133,7 @@ curl -s http://127.0.0.1:8090/actuator/health
 
 1. **保留现有 `values.yaml`** — 无需整文件替换。Helm 会将您的文件与新 Chart 默认值合并（未设置的键使用默认值）。
 2. **旧文件没有 `logPipeline`？** 若在 v4.3.5 或更早版本安装且仅有 `image`、`mongodb`、`encryption`，只需提升 `--version` 与 `image.tag`。缺失键继承 Chart 默认值 — **`logPipeline.enabled` 为 `true`**，升级时会添加 Vector、Parquet PVC（本地模式）、压缩与保留策略。建议先用 `--dry-run` 预览新资源。
-3. **审阅可选覆盖项** — 下载目标版本的 [values.example.yaml](https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.3.9/values.example.yaml)，仅合并所需项（PVC `storageClass`、`placement`、S3 后端）。**不要**更改 `encryption.secretKey` — 已有加密载荷依赖该密钥。
+3. **审阅可选覆盖项** — 下载当前的 [values.example.yaml](https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/latest/values.example.yaml)，仅合并所需项（PVC `storageClass`、`placement`、S3 后端）。**不要**更改 `encryption.secretKey` — 已有加密载荷依赖该密钥。
 4. **保持 MongoDB 模式不变** — 升级时不要在内置与外部 MongoDB 之间切换。
 5. **确认镜像仓库访问** — `softprobe-gcr-pull` Secret 对新 `image.tag` 仍有效。
 6. **预览差异**（可选）：
@@ -230,7 +230,7 @@ v4.3.9+ 还应看到 `log-vector` 与 `log-parquet` PVC（本地存储）。为�
 
 ### 自定义或禁用日志管道
 
-管道**默认开启**。仅在需要非默认存储、放置策略或 S3 时，从 [values.example.yaml](https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.3.9/values.example.yaml) 合并覆盖项：
+管道**默认开启**。仅在需要非默认存储、放置策略或 S3 时，从 [values.example.yaml](https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/latest/values.example.yaml) 合并覆盖项：
 
 ```yaml
 logPipeline:
@@ -270,10 +270,10 @@ logPipeline:
 | 资源 | 用途 |
 |------|------|
 | **Vector**（`{release}-log-vector`） | OTLP 日志采集（gRPC/HTTP + Agent JSON，端口 `:4320`） |
-| **rclone sidecar**（仅本地模式） | 类 S3 文件系统网关，供 Vector 经 `aws_s3` sink 写入 Parquet |
-| **Parquet PVC**（仅本地模式） | Vector、sp-backend、压缩与保留任务共享的持久存储 |
-| **Compaction CronJob**（仅本地模式） | 合并已关闭小时的分钟文件 → `part-hourly.parquet`（DuckDB） |
-| **Retention CronJob**（可选） | 清理早于 `ttlDays` 的 Parquet |
+| **rclone 网关**（`{release}-log-rclone`，本地 + Azure Blob） | 共享 S3 网关（Deployment + Service），供 Vector 与 sp-backend 读写 Parquet |
+| **Parquet PVC**（仅本地模式） | 持久存储，仅由 rclone 网关挂载；其他 Pod 均经网关的 S3 端点访问 |
+| **Compaction CronJob**（所有后端） | 合并已关闭小时的分钟文件 → `part-hourly.parquet`（DuckDB） |
+| **Retention CronJob**（可选，所有后端） | 清理早于 `ttlDays` 的 Parquet |
 
 启用管道时 sp-backend 会配置 Parquet 读取，并导出自身诊断日志（`OTEL_ENABLED=true`，`OTEL_LOGS_EXPORTER=otlp-filtered`）。
 
@@ -285,12 +285,12 @@ Chart 默认启用管道。需要非默认存储、放置策略或禁用时，�
 logPipeline:
   enabled: true   # 默认；设为 false 可禁用
   storage:
-    backend: local   # 或 s3
+    backend: local   # local | s3 | azure_blob — 详见"选择日志存储位置"
   parquet:
     storageSize: 100Gi
     # storageClass: managed-csi   # 可选 — 省略时使用集群默认
   retention:
-    ttlDays: 30              # 设为 "" 可禁用 Retention CronJob
+    ttlDays: 4               # 设为 "" 可禁用 Retention CronJob
     cleanupSchedule: "0 3 * * *"
   compaction:
     enabled: true            # 仅本地存储
@@ -367,87 +367,129 @@ release 为 `softprobe`、命名空间为 `softprobe` 时：
 
 v1 不使用旧版采集标志（`sp.record.user.log`、`sp-capture-log`、`sp.user.log.level` 等）。
 
-### 存储模式
+### 选择日志存储位置
 
-| 模式 | `logPipeline.storage.backend` | 写入路径 | 查询路径 |
-|------|------------------------------|----------|----------|
-| **本地 PVC**（默认） | `local` | Vector → Parquet PVC | sp-backend 读取挂载卷 |
-| **S3 兼容** | `s3` | Vector → 您的 Bucket | sp-backend 经 S3 API 读取 |
+通过 `logPipeline.storage.backend` 选择 Parquet 日志文件的存储位置，三选一：
 
-#### 本地磁盘
+| 后端 | `logPipeline.storage.backend` | 适用场景 | 需要提供的凭证 |
+|------|-------------------------------|----------|----------------|
+| **本地磁盘**（默认） | `local` | 单集群、最简部署 | 无（集群内卷） |
+| **S3 兼容** | `s3` | AWS S3、MinIO、GCS 等任意 S3 API | `access-key-id` + `secret-access-key` |
+| **Azure Blob** | `azure_blob` | Azure 存储账户 | `account-key` |
 
-**目录布局（由 Chart 固定 — 请勿改路径）：**
+三种后端在查询、压缩与保留上的行为完全一致 — 仅存储位置与凭证不同。
 
-- PVC 挂载于 Vector、sp-backend、压缩与保留 Pod 的 `/data/parquet`。
-- Parquet 分区位于 `/data/parquet/logs/`：
-  - 分钟文件：`year=YYYY/month=MM/day=DD/hour=HH/minute=mm/part-<epoch>-<uuid>.parquet`
-  - 压缩后：`year=.../hour=HH/part-hourly.parquet`（该小时的 minute 目录被移除）
+#### 方式一 — 本地磁盘（默认）
 
-**压缩：**  hourly CronJob（`logPipeline.compaction`）读取**上一已关闭 UTC 小时**的全部 `minute=*/part-*.parquet`，写入 `part-hourly.parquet`，再删除分钟文件。该小时存在 hourly 文件时 sp-backend 优先使用。
-
-**镜像：** Docker Hub 上的 `softprobe/duckdb:1.1.3`（`linux/amd64`）。Apple Silicon 开发集群可在本地构建/加载 `arm64` 镜像（`make duckdb-image DUCKDB_PLATFORM=linux/arm64`）并覆盖 `logPipeline.compaction.image`。
-
-**备份：** 对 `{release}-log-parquet` PVC 做快照，或在 Vector 静止时复制 PVC 内文件。
-
-**保留：** `logPipeline.retention.ttlDays`（默认 `30`）启用清理 CronJob。设 `ttlDays: ""` 可禁用。
-
-#### S3 兼容对象存储
+无需配置。Chart 会创建 PersistentVolumeClaim 并将 Parquet 存于其中。仅在需要时调整大小/StorageClass：
 
 ```yaml
 logPipeline:
-  enabled: true
+  storage:
+    backend: local
+  parquet:
+    storageSize: 100Gi
+    storageClass: ""      # 集群默认；或如 managed-csi (AKS)、gp3 (EKS)
+```
+
+备份：对 `{release}-log-parquet` PVC 做快照。
+
+#### 方式二 — S3 兼容 Bucket
+
+**第 1 步 — 创建凭证 Secret。** 必须包含以下两个键：
+
+```bash
+kubectl create secret generic softprobe-log-s3-credentials -n softprobe \
+  --from-literal=access-key-id='AKIA...' \
+  --from-literal=secret-access-key='...'
+```
+
+| Secret 键 | 值 |
+|-----------|----|
+| `access-key-id` | Bucket 的 Access Key ID |
+| `secret-access-key` | Bucket 的 Secret Access Key |
+
+**第 2 步 — 让 Chart 指向您的 Bucket 与该 Secret：**
+
+```yaml
+logPipeline:
   storage:
     backend: s3
     s3:
       bucket: my-softprobe-logs
-      endpoint: https://s3.amazonaws.com          # 或 MinIO / GCS / Azure S3 端点
+      endpoint: https://s3.amazonaws.com   # 或您的 MinIO / GCS / 其他 S3 端点
       region: us-east-1
-      forcePathStyle: true                        # MinIO 通常设为 true
-      prefix: ""                                  # 可选 key 前缀
+      forcePathStyle: true                 # MinIO 保持 true
+      prefix: ""                           # Bucket 内可选 key 前缀
       existingSecret: softprobe-log-s3-credentials
-      secretAccessKeyIdField: access-key-id
-      secretSecretAccessKeyField: secret-access-key
 ```
 
-创建 Secret：
+Bucket 需已存在。此模式下**不会**创建 Parquet PVC。
+
+#### 方式三 — Azure Blob 容器
+
+**第 1 步 — 创建凭证 Secret。** 必须且仅包含一个键 `account-key`，即存储账户访问密钥：
 
 ```bash
-kubectl create secret generic softprobe-log-s3-credentials \
-  --from-literal=access-key-id='AKIA...' \
-  --from-literal=secret-access-key='...' \
-  -n softprobe
+kubectl create secret generic softprobe-log-azure-credentials -n softprobe \
+  --from-literal=account-key='<存储账户访问密钥>'
 ```
 
-- `backend: s3` 时**不会**创建 Parquet PVC。
-- **保留：** 设置 `ttlDays` 启用 S3 对象清理（按 last-modified）。
-- **压缩：** v1 对 S3 无自动化 — `backend: s3` 时不部署本地 DuckDB CronJob。
+| Secret 键 | 值 |
+|-----------|----|
+| `account-key` | 存储账户访问密钥（Azure 门户 → **存储账户 → 安全性 + 网络 → 访问密钥**，或 `az storage account keys list --account-name <account> --query '[0].value' -o tsv`） |
 
-终端用户与 Agent Skills **不得**获得 Bucket 凭证 — 仅通过 `sp logs` / `GET /api/recorder/logs` 查询。
+**第 2 步 — 让 Chart 指向您的容器与该 Secret：**
+
+```yaml
+logPipeline:
+  storage:
+    backend: azure_blob
+    azureBlob:
+      container: my-softprobe-logs
+      accountName: <account>
+      endpoint: https://<account>.blob.core.windows.net
+      prefix: ""                           # 容器内可选前缀
+      existingSecret: softprobe-log-azure-credentials
+```
+
+容器需已存在。Softprobe 使用账户名 + 访问密钥（Azure Shared Key）认证。此模式下**不会**创建 Parquet PVC。
+
+#### 压缩与保留（所有后端）
+
+两者均自动运行，且在 `local`、`s3`、`azure_blob` 上行为一致 — 无需云端生命周期规则：
+
+- **压缩**（`logPipeline.compaction`，每小时，默认开启）：将每个已关闭 UTC 小时的分钟文件合并为单个 `part-hourly.parquet`。
+- **保留**（`logPipeline.retention.ttlDays`，默认 `4`）：删除超过 N 天的 Parquet。设 `ttlDays: ""` 可永久保留。
+
+> 压缩使用 `softprobe/duckdb:1.1.3` 镜像（`linux/amd64`）。Apple Silicon 开发集群可本地构建/加载 `arm64` 镜像（`make duckdb-image DUCKDB_PLATFORM=linux/arm64`）并覆盖 `logPipeline.compaction.image`。
+
+**安全：** 终端用户与 Agent Skills **绝不得**获得 Bucket 或存储账户凭证 — 仅通过 `sp logs` / `GET /api/recorder/logs` 查询。
 
 ### Helm values 参考
 
 | 值 | 说明 |
 |----|------|
 | `logPipeline.enabled` | 部署 Vector、存储与查询 wiring（默认 `true`） |
-| `logPipeline.storage.backend` | `local`（PVC）或 `s3` |
+| `logPipeline.storage.backend` | `local`（PVC）、`s3` 或 `azure_blob` |
 | `logPipeline.parquet.storageSize` / `storageClass` | 本地 Parquet PVC 大小与 StorageClass |
 | `logPipeline.vector.image` | Vector 镜像（默认 `timberio/vector:0.56.0-debian`） |
-| `logPipeline.vector.resources` | Vector CPU/内存（本地模式含 rclone sidecar） |
+| `logPipeline.vector.resources` | 日志采集器 CPU/内存 |
 | `logPipeline.otlp.httpPort` / `grpcPort` / `agentJsonPort` | OTLP 端口（默认 `4318` / `4317` / `4320`） |
 | `logPipeline.retention.ttlDays` | 清理 TTL（天）；`""` 禁用 Retention CronJob |
 | `logPipeline.retention.cleanupSchedule` | Retention CronJob 调度（默认 `0 3 * * *`） |
-| `logPipeline.compaction.enabled` / `schedule` / `image` | 本地 hourly 压缩（默认开启，`15 * * * *`，`softprobe/duckdb:1.1.3`） |
+| `logPipeline.compaction.enabled` / `schedule` / `image` | 每小时压缩，适用于所有后端（默认开启，`15 * * * *`，`softprobe/duckdb:1.1.3`） |
 | `logPipeline.placement` | Vector 与维护 CronJob 的 `nodeSelector` / `tolerations` / `affinity` |
 | `logPipeline.agentLogEndpointProperty` | 文档化 JVM 属性：`sp.otel.exporter.otlp.log.endpoint` |
 
-Chart 默认值中的 `logPipeline.parquet.localRoot`（`/data/parquet/logs`）须与 rclone bucket 布局一致 — 运维通常**不要**覆盖。
+Chart 默认值中的 `logPipeline.parquet.localRoot`（`/data/parquet/logs`）须与内部存储布局一致 — 运维通常**不要**覆盖。
 
 ### 维护任务
 
 | CronJob | 条件 | 作用 |
 |---------|------|------|
-| `{release}-log-vector-retention` | 已设置 `ttlDays` | 删除早于 TTL 的 Parquet 文件/对象 |
-| `{release}-log-vector-compaction` | `compaction.enabled` + `backend: local` | DuckDB 合并上一小时的 `part-*.parquet` → `part-hourly.parquet` |
+| `{release}-log-vector-retention` | 已设置 `ttlDays`（任意后端） | 删除早于 TTL 的 Parquet 文件/对象 |
+| `{release}-log-vector-compaction` | `compaction.enabled`（任意后端） | DuckDB 合并上一小时的 `part-*.parquet` → `part-hourly.parquet` |
 
 查看最近运行：
 
@@ -458,7 +500,6 @@ kubectl logs -n softprobe job/<compaction-job-name>
 
 ### v1 范围外
 
-- 原生 Azure Blob SDK（请使用 S3 兼容端点）。
 - Iceberg、即席 SQL、终端用户直接访问 Parquet。
 - 本地 PVC 与 S3 双写。
 - 专用日志管道健康/状态 API。
