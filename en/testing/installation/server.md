@@ -63,7 +63,7 @@ Chart deploys MongoDB 7 and Redis 7 alongside sp-backend.
 
 ```yaml
 image:
-  tag: "v4.3.9"
+  tag: "v4.3.10"
   pullSecrets:
     - name: softprobe-gcr-pull
 
@@ -84,7 +84,7 @@ Use your existing MongoDB server. Do **not** set `mongodb.bundled.auth.password`
 
 ```yaml
 image:
-  tag: "v4.3.9"
+  tag: "v4.3.10"
   pullSecrets:
     - name: softprobe-gcr-pull
 
@@ -98,14 +98,14 @@ encryption:
 
 ### 4. Helm install
 
-Use the chart version and image tag from your Softprobe release (`v4.3.9` → chart `4.3.9`, image `v4.3.9`).
+Use the chart version and image tag from your Softprobe release (`v4.3.10` → chart `4.3.10`, image `v4.3.10`).
 
 ```bash
 helm install softprobe softprobe/sp-backend \
-  --version 4.3.9 \
+  --version 4.3.10 \
   --namespace softprobe \
   -f values.yaml \
-  --set image.tag=v4.3.9 \
+  --set image.tag=v4.3.10 \
   --set createNamespace=false
 ```
 
@@ -127,7 +127,7 @@ Use the same release name, namespace, and `values.yaml` you used at install. A S
 
 | Release tag | Chart `--version` | `image.tag` |
 |-------------|-------------------|-------------|
-| `v4.3.9` | `4.3.9` | `v4.3.9` |
+| `v4.3.10` | `4.3.10` | `v4.3.10` |
 
 ### Before you upgrade
 
@@ -141,10 +141,10 @@ Use the same release name, namespace, and `values.yaml` you used at install. A S
 ```bash
 helm repo update
 helm upgrade softprobe softprobe/sp-backend \
-  --version 4.3.9 \
+  --version 4.3.10 \
   -n softprobe \
   -f values.yaml \
-  --set image.tag=v4.3.9 \
+  --set image.tag=v4.3.10 \
   --set createNamespace=false \
   --dry-run
 ```
@@ -156,10 +156,10 @@ Typical upgrade — same `values.yaml` as install, new chart and image version:
 ```bash
 helm repo update
 helm upgrade softprobe softprobe/sp-backend \
-  --version 4.3.9 \
+  --version 4.3.10 \
   -n softprobe \
   -f values.yaml \
-  --set image.tag=v4.3.9 \
+  --set image.tag=v4.3.10 \
   --set createNamespace=false
 ```
 
@@ -185,10 +185,10 @@ Upgrade command (no edits required):
 
 ```bash
 helm upgrade softprobe softprobe/sp-backend \
-  --version 4.3.9 \
+  --version 4.3.10 \
   -n softprobe \
   -f values.yaml \
-  --set image.tag=v4.3.9 \
+  --set image.tag=v4.3.10 \
   --set createNamespace=false
 ```
 
@@ -199,12 +199,12 @@ Helm adds log-pipeline resources from chart defaults. After rollout, instrument 
 If you install offline or verify SHA-256 from GCS:
 
 ```bash
-curl -fLO "https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.3.9/sp-backend-4.3.9.tgz"
+curl -fLO "https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.3.10/sp-backend-4.3.10.tgz"
 
-helm upgrade softprobe ./sp-backend-4.3.9.tgz \
+helm upgrade softprobe ./sp-backend-4.3.10.tgz \
   -n softprobe \
   -f values.yaml \
-  --set image.tag=v4.3.9 \
+  --set image.tag=v4.3.10 \
   --set createNamespace=false
 ```
 
@@ -220,7 +220,7 @@ curl -s http://127.0.0.1:8090/actuator/health
 
 Expect a rolling restart of `sp-backend` (and Redis if the chart template changed). Bundled MongoDB data on the existing PVC is preserved. `sp-backend` may take up to ~2 minutes to become ready after the new pod starts (JVM warm-up).
 
-On v4.3.9+ you should also see `log-vector` and a `log-parquet` PVC (local storage). Instrument workloads with:
+On v4.3.10+ you should also see `log-vector` and a `log-parquet` PVC (local storage). Instrument workloads with:
 
 ```text
 -Dsp.api.url=http://<release>-sp-backend.<namespace>.svc.cluster.local:8090
@@ -312,14 +312,14 @@ Example upgrade with explicit overrides (optional):
 
 ```bash
 helm upgrade softprobe softprobe/sp-backend \
-  --version 4.3.9 \
+  --version 4.3.10 \
   -n softprobe \
   -f values.yaml \
-  --set image.tag=v4.3.9 \
+  --set image.tag=v4.3.10 \
   --set createNamespace=false
 ```
 
-Pin **`image.tag`** to a semver release (for example `v4.3.9`), not `latest`, so the backend matches your chart version.
+Pin **`image.tag`** to a semver release (for example `v4.3.10`), not `latest`, so the backend matches your chart version.
 
 ### Verify log pipeline
 

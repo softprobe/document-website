@@ -63,7 +63,7 @@ Chart 与 sp-backend 一同部署 MongoDB 7 与 Redis 7。
 
 ```yaml
 image:
-  tag: "v4.3.9"
+  tag: "v4.3.10"
   pullSecrets:
     - name: softprobe-gcr-pull
 
@@ -84,7 +84,7 @@ encryption:
 
 ```yaml
 image:
-  tag: "v4.3.9"
+  tag: "v4.3.10"
   pullSecrets:
     - name: softprobe-gcr-pull
 
@@ -98,14 +98,14 @@ encryption:
 
 ### 4. Helm 安装
 
-使用 Softprobe 发布版本对应的 Chart 版本与镜像 tag（`v4.3.9` → Chart `4.3.9`，镜像 `v4.3.9`）。
+使用 Softprobe 发布版本对应的 Chart 版本与镜像 tag（`v4.3.10` → Chart `4.3.10`，镜像 `v4.3.10`）。
 
 ```bash
 helm install softprobe softprobe/sp-backend \
-  --version 4.3.9 \
+  --version 4.3.10 \
   --namespace softprobe \
   -f values.yaml \
-  --set image.tag=v4.3.9 \
+  --set image.tag=v4.3.10 \
   --set createNamespace=false
 ```
 
@@ -127,7 +127,7 @@ curl -s http://127.0.0.1:8090/actuator/health
 
 | 发布 tag | Chart `--version` | `image.tag` |
 |----------|-------------------|-------------|
-| `v4.3.9` | `4.3.9` | `v4.3.9` |
+| `v4.3.10` | `4.3.10` | `v4.3.10` |
 
 ### 升级前
 
@@ -141,10 +141,10 @@ curl -s http://127.0.0.1:8090/actuator/health
 ```bash
 helm repo update
 helm upgrade softprobe softprobe/sp-backend \
-  --version 4.3.9 \
+  --version 4.3.10 \
   -n softprobe \
   -f values.yaml \
-  --set image.tag=v4.3.9 \
+  --set image.tag=v4.3.10 \
   --set createNamespace=false \
   --dry-run
 ```
@@ -156,10 +156,10 @@ helm upgrade softprobe softprobe/sp-backend \
 ```bash
 helm repo update
 helm upgrade softprobe softprobe/sp-backend \
-  --version 4.3.9 \
+  --version 4.3.10 \
   -n softprobe \
   -f values.yaml \
-  --set image.tag=v4.3.9 \
+  --set image.tag=v4.3.10 \
   --set createNamespace=false
 ```
 
@@ -185,10 +185,10 @@ encryption:
 
 ```bash
 helm upgrade softprobe softprobe/sp-backend \
-  --version 4.3.9 \
+  --version 4.3.10 \
   -n softprobe \
   -f values.yaml \
-  --set image.tag=v4.3.9 \
+  --set image.tag=v4.3.10 \
   --set createNamespace=false
 ```
 
@@ -199,12 +199,12 @@ Helm 会按 Chart 默认值添加日志管道资源。Rollout 完成后，为工
 离线安装或从 GCS 校验 SHA-256 时：
 
 ```bash
-curl -fLO "https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.3.9/sp-backend-4.3.9.tgz"
+curl -fLO "https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.3.10/sp-backend-4.3.10.tgz"
 
-helm upgrade softprobe ./sp-backend-4.3.9.tgz \
+helm upgrade softprobe ./sp-backend-4.3.10.tgz \
   -n softprobe \
   -f values.yaml \
-  --set image.tag=v4.3.9 \
+  --set image.tag=v4.3.10 \
   --set createNamespace=false
 ```
 
@@ -220,7 +220,7 @@ curl -s http://127.0.0.1:8090/actuator/health
 
 预期 sp-backend 滚动重启（若 Chart 模板变更，Redis 也可能重启）。内置 MongoDB 在现有 PVC 上的数据会保留。新 Pod 启动后 sp-backend 可能需要约 2 分钟就绪（JVM 预热）。
 
-v4.3.9+ 还应看到 `log-vector` 与 `log-parquet` PVC（本地存储）。为已插桩工作负载配置：
+v4.3.10+ 还应看到 `log-vector` 与 `log-parquet` PVC（本地存储）。为已插桩工作负载配置：
 
 ```text
 -Dsp.api.url=http://<release>-sp-backend.<namespace>.svc.cluster.local:8090
@@ -312,14 +312,14 @@ logPipeline:
 
 ```bash
 helm upgrade softprobe softprobe/sp-backend \
-  --version 4.3.9 \
+  --version 4.3.10 \
   -n softprobe \
   -f values.yaml \
-  --set image.tag=v4.3.9 \
+  --set image.tag=v4.3.10 \
   --set createNamespace=false
 ```
 
-**`image.tag`** 须固定为 semver 发布版本（例如 `v4.3.9`），不要用 `latest`，以保证后端与 Chart 版本一致。
+**`image.tag`** 须固定为 semver 发布版本（例如 `v4.3.10`），不要用 `latest`，以保证后端与 Chart 版本一致。
 
 ### 验证日志管道
 
