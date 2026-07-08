@@ -272,8 +272,8 @@ When `logPipeline.enabled: true`, Helm adds:
 | **Vector** (`{release}-log-vector`) | OTLP log ingest (gRPC/HTTP + agent JSON on `:4320`) |
 | **rclone gateway** (`{release}-log-rclone`, local + Azure Blob) | Shared S3 gateway Deployment + Service that Vector and sp-backend use to write/read Parquet |
 | **Parquet PVC** (local mode only) | Durable storage fronted by the rclone gateway, shared with compaction and retention |
-| **Compaction CronJob** (local mode) | Merges closed-hour minute files → `part-hourly.parquet` (DuckDB) |
-| **Retention CronJob** (optional) | Prunes Parquet older than `ttlDays` |
+| **Compaction CronJob** (all backends) | Merges closed-hour minute files → `part-hourly.parquet` (DuckDB) |
+| **Retention CronJob** (optional, all backends) | Prunes Parquet older than `ttlDays` |
 
 sp-backend is wired for Parquet reads and exports its own diagnostic logs when the pipeline is enabled (`OTEL_ENABLED=true`, `OTEL_LOGS_EXPORTER=otlp-filtered`).
 
@@ -384,9 +384,9 @@ Legacy capture flags (`sp.record.user.log`, `sp-capture-log`, `sp.user.log.level
   - Minute files: `year=YYYY/month=MM/day=DD/hour=HH/minute=mm/part-<epoch>-<uuid>.parquet`
   - After compaction: `year=.../hour=HH/part-hourly.parquet` (minute dirs for that hour removed)
 
-**Compaction:** the hourly CronJob (`logPipeline.compaction`) reads all `minute=*/part-*.parquet` for the **previous closed UTC hour**, writes `part-hourly.parquet`, then deletes the minute files. sp-backend prefers the hourly file when present for that hour.
+**Compaction (all backends):** the hourly CronJob (`logPipeline.compaction`) reads all `minute=*/part-*.parquet` for the **previous closed UTC hour**, writes `part-hourly.parquet`, then deletes the minute files. sp-backend prefers the hourly file when present for that hour. For `local` the job runs DuckDB directly on the PVC; for `s3` and `azure_blob` it merges with DuckDB over the shared S3 endpoint (the native bucket, or the rclone gateway that fronts Azure Blob) and prunes the merged minute objects with the AWS CLI. Availability does not depend on the backend.
 
-**Image:** `softprobe/duckdb:1.1.3` from Docker Hub (`linux/amd64`). For Apple Silicon dev clusters, build/load an `arm64` image locally (`make duckdb-image DUCKDB_PLATFORM=linux/arm64`) and override `logPipeline.compaction.image`.
+**Image:** `softprobe/duckdb:1.1.3` from Docker Hub (`linux/amd64`), bundling the DuckDB `parquet` + `httpfs` extensions so object-storage merges run offline. For Apple Silicon dev clusters, build/load an `arm64` image locally (`make duckdb-image DUCKDB_PLATFORM=linux/arm64`) and override `logPipeline.compaction.image`.
 
 **Backup:** snapshot the `{release}-log-parquet` PVC or copy files under the PVC while Vector is quiesced.
 
@@ -421,7 +421,7 @@ kubectl create secret generic softprobe-log-s3-credentials \
 
 - **No Parquet PVC** is created when `backend: s3`.
 - **Retention:** set `ttlDays` to enable S3 object prune (uses last-modified time).
-- **Compaction:** not automated for S3 in v1 — the local DuckDB CronJob is not deployed for `backend: s3`.
+- **Compaction:** automated — DuckDB merges the previous closed hour over the S3 endpoint into `part-hourly.parquet`, then the AWS CLI prunes the merged minute objects.
 
 End users and Agent Skills **must not** receive bucket credentials — query only through `sp logs` / `GET /api/recorder/logs`.
 
@@ -453,7 +453,7 @@ kubectl create secret generic softprobe-log-azure-credentials \
 
 - **No Parquet PVC** is created when `backend: azure_blob`.
 - A single shared **rclone gateway** (`{release}-log-rclone`) targets Azure Blob; both Vector and sp-backend connect to it — neither runs an rclone sidecar.
-- **Retention/compaction:** v1 maintenance CronJobs remain local/S3-focused.
+- **Retention/compaction:** run exactly as for `s3` — both maintenance CronJobs act through the rclone gateway's S3 endpoint, so `ttlDays` and hourly compaction apply to Azure Blob too (no cloud lifecycle policy required).
 
 ### Helm values reference
 
@@ -467,7 +467,7 @@ kubectl create secret generic softprobe-log-azure-credentials \
 | `logPipeline.otlp.httpPort` / `grpcPort` / `agentJsonPort` | OTLP ports (defaults `4318` / `4317` / `4320`) |
 | `logPipeline.retention.ttlDays` | Prune TTL in days; `""` disables retention CronJob |
 | `logPipeline.retention.cleanupSchedule` | Retention CronJob schedule (default `0 3 * * *`) |
-| `logPipeline.compaction.enabled` / `schedule` / `image` | Local hourly compaction (default on, `15 * * * *`, `softprobe/duckdb:1.1.3`) |
+| `logPipeline.compaction.enabled` / `schedule` / `image` | Hourly compaction for every backend (default on, `15 * * * *`, `softprobe/duckdb:1.1.3`) |
 | `logPipeline.placement` | `nodeSelector` / `tolerations` / `affinity` for Vector and maintenance CronJobs |
 | `logPipeline.agentLogEndpointProperty` | Documented JVM property: `sp.otel.exporter.otlp.log.endpoint` |
 
@@ -477,8 +477,8 @@ kubectl create secret generic softprobe-log-azure-credentials \
 
 | CronJob | When | What |
 |---------|------|------|
-| `{release}-log-vector-retention` | `ttlDays` set | Deletes Parquet files/objects older than TTL |
-| `{release}-log-vector-compaction` | `compaction.enabled` + `backend: local` | DuckDB merges previous hour's `part-*.parquet` → `part-hourly.parquet` |
+| `{release}-log-vector-retention` | `ttlDays` set (any backend) | Deletes Parquet files/objects older than TTL (filesystem `find` for local; AWS CLI over the S3 endpoint for `s3`/`azure_blob`) |
+| `{release}-log-vector-compaction` | `compaction.enabled` (any backend) | DuckDB merges previous hour's `part-*.parquet` → `part-hourly.parquet` (over the PVC for local; over the S3 endpoint for `s3`/`azure_blob`) |
 
 Check last run:
 
