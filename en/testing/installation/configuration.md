@@ -18,11 +18,15 @@ Use `sp setup` for the backend URL. Use `sp code` for coding-engine and model-pr
 
 ### Spcode Service (Linux systemd)
 
-When installed via [`sp setup --install-spcode-service`](./#spcode-service), the **service** reads backend URL from root's XDG — not the invoking admin's home:
+When installed via [`sp setup --install-spcode-service`](./#spcode-service), the **service** runs as root and uses **two** config namespaces:
 
-| Context | Config path |
-|---------|-------------|
-| Personal CLI / `sp code web` | `~/.config/softprobe/config.jsonc` |
-| Spcode Service (`spcode-web.service`, runs as root) | `/root/.config/softprobe/config.jsonc` |
+| Context | Path | Purpose |
+|---------|------|---------|
+| Personal CLI / `sp code web` | `~/.config/softprobe/config.jsonc` | Your Softprobe backend URL |
+| Spcode Service backend | `/root/.config/softprobe/config.jsonc` | Softprobe API URL for the shared workbench |
+| Spcode Service coding engine | `/root/.config/spcode/opencode.jsonc` | MCP servers and engine settings (optional; create after install) |
+| Spcode Service agent instructions | `/root/.config/spcode/AGENTS.md` | Global agent instructions (optional; create after install) |
 
 There is no sync between personal and service config after install. Change the service backend URL by uninstalling and reinstalling Spcode Service.
+
+How to add MCP and `AGENTS.md` for the shared workbench: [Spcode Service — MCP and agent instructions](./#spcode-service-mcp-agents).
