@@ -29,7 +29,7 @@ When installed via [`sp setup --install-spcode-service`](./#spcode-service), the
 
 There is no sync between personal and service config after install. Change the service backend URL by uninstalling and reinstalling Spcode Service.
 
-### Optional: MCP tools and agent instructions {#spcode-service-mcp-agents}
+## MCP tools and agent instructions {#spcode-service-mcp-agents}
 
 `sp setup` / `sp code` do **not** create coding-engine MCP settings or global agent instructions. Add them under the coding-engine config directory for the process you run:
 
@@ -50,7 +50,7 @@ sudo systemctl restart spcode-web.service
 
 For personal `sp code web`, restart the UI process after editing `$HOME/.config/spcode/` files.
 
-#### Example: Feishu / Lark MCP + `AGENTS.md`
+### Example: Feishu / Lark MCP + `AGENTS.md`
 
 Paths below use the **Linux Spcode Service** location. For personal use, replace `/root/.config/spcode/` with `$HOME/.config/spcode/`.
 
