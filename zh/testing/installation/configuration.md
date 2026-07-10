@@ -11,44 +11,33 @@ Softprobe 使用一个共享的 XDG 配置命名空间。
 | `~/.config/softprobe/config.jsonc` | 共享后端 URL 和凭证 |
 | `~/.config/softprobe/sp.jsonc` | CLI 配置和 profile |
 | `~/.config/softprobe/spcode.jsonc` | 内部编码引擎设置 |
+| `~/.local/share/softprobe/agent/sp-agent.jar` | 已安装的 Java agent |
+| `~/.local/share/softprobe/bin/spcode` | 内部编码引擎二进制 |
+
+后端 URL 用 `sp setup`。编码引擎与模型提供商就绪用 `sp code`。
 
 ## Spcode Service（Linux systemd）
 
-通过 [`sp setup --install-spcode-service`](./#spcode-service) 安装后，**服务**以 root 运行，并使用**两套**配置命名空间：
+通过 [`sp setup --install-spcode-service`](./#spcode-service) 安装后，共享工作台使用**执行安装的那个账号**的同一套 Softprobe 设置（后端 URL、MCP、Agent 说明、skills）。
 
-| 场景 | 路径 | 用途 |
-|------|------|------|
-| 个人 CLI / `sp code web` | `~/.config/softprobe/config.jsonc` | 个人 Softprobe 后端 URL |
-| Spcode Service 后端 | `/root/.config/softprobe/config.jsonc` | 共享工作台的 Softprobe API URL |
-| Spcode Service 编码引擎 | `/root/.config/spcode/opencode.jsonc` | MCP 等引擎设置（可选；安装后自行创建） |
-| Spcode Service Agent 说明 | `/root/.config/spcode/AGENTS.md` | 全局 Agent 说明（可选；安装后自行创建） |
-
-安装后个人配置与服务配置不会同步。更改服务后端 URL 需卸载后重装 Spcode Service。
-
-## MCP 工具与 Agent 说明 {#spcode-service-mcp-agents}
-
-`sp setup` / `sp code` **不会**自动创建编码引擎的 MCP 配置或全局 Agent 说明。请按你实际运行方式，写入对应目录：
-
-| 运行方式 | MCP / 引擎配置 | Agent 说明 |
-|----------|----------------|------------|
-| **Linux Spcode Service**（`spcode-web.service`，以 root 运行） | `/root/.config/spcode/opencode.jsonc` | `/root/.config/spcode/AGENTS.md` |
-| **个人** `sp code web` / 本机 `spcode`（非 Linux 服务） | `$HOME/.config/spcode/opencode.jsonc` | `$HOME/.config/spcode/AGENTS.md` |
-
-::: tip
-`/root/.config/spcode/...` **仅**用于 Linux Spcode Service。在笔记本或非服务安装场景，请使用当前用户家目录（`$HOME/.config/spcode/...` 或 `~/.config/spcode/...`）。个人配置与服务配置相互独立，不会同步。
-:::
-
-若是 Spcode Service，修改 root 下文件后请重启服务：
+请用该安装账号配置 Softprobe。修改后如需服务生效，重启：
 
 ```bash
 sudo systemctl restart spcode-web.service
 ```
 
-若是个人 `sp code web`，修改 `$HOME/.config/spcode/` 后请重启 UI 进程。
+## MCP 工具与 Agent 说明 {#spcode-service-mcp-agents}
+
+`sp setup` / `sp code` **不会**自动创建编码引擎的 MCP 配置或全局 Agent 说明。请写入：
+
+| 文件 | 用途 |
+|------|------|
+| `~/.config/spcode/opencode.jsonc` | MCP 与引擎设置 |
+| `~/.config/spcode/AGENTS.md` | 全局 Agent 说明 |
+
+个人 `sp code web` 与 Linux Spcode Service 都使用上述路径。修改后请重启 UI 进程（或 `spcode-web.service`）。
 
 ### 示例：飞书 / Lark MCP + `AGENTS.md`
-
-以下路径以 **Linux Spcode Service** 为例。个人使用时，请将 `/root/.config/spcode/` 替换为 `$HOME/.config/spcode/`。
 
 ::: warning 前置条件：Node.js
 本 MCP 示例通过 **`npx`** 启动 `@larksuiteoapi/lark-mcp`，因此主机必须已安装 **Node.js**（自带 `npx`）。Softprobe 安装**不会**自动安装 Node.js。
@@ -60,10 +49,10 @@ node -v
 npx -v
 ```
 
-若命令不存在，请从 [nodejs.org](https://nodejs.org/) 安装 Node.js（LTS），或使用系统包管理器安装（例如 Debian/Ubuntu：`apt install nodejs npm`；RHEL/Fedora：`dnf install nodejs`）。安装后确认运行 Spcode Service 的同一用户（Linux 服务为 `root`）下 `npx -v` 可用。
+若命令不存在，请从 [nodejs.org](https://nodejs.org/) 安装 Node.js（LTS），或使用系统包管理器安装（例如 Debian/Ubuntu：`apt install nodejs npm`；RHEL/Fedora：`dnf install nodejs`）。若使用 Spcode Service，请再确认 root 下可用：`sudo npx -v`（服务进程以 root 运行）。
 :::
 
-1. 创建 `opencode.jsonc`（将占位符替换为你的应用凭证；**不要**把真实密钥提交到仓库）：
+1. 创建 `~/.config/spcode/opencode.jsonc`（将占位符替换为你的应用凭证；**不要**把真实密钥提交到仓库）：
 
 ```jsonc
 {
@@ -95,7 +84,7 @@ npx -v
 
 主机还需能访问飞书开放平台（`https://open.feishu.cn`）。
 
-2. 在同一目录创建 `AGENTS.md`，告知 Agent 如何使用该 MCP。示例：
+2. 创建 `~/.config/spcode/AGENTS.md`，告知 Agent 如何使用该 MCP。示例：
 
 ```md
 # Softprobe 服务端 Agent 说明
@@ -111,4 +100,28 @@ https://example.feishu.cn/docx/YOUR_DOC_TOKEN
 
 请将飞书文档链接替换为你们自己的文档。`opencode.jsonc` 中配置的任意 MCP 均可使用，不限于飞书。
 
-卸载 Spcode Service 会移除 systemd 单元，但 `/root/.config/softprobe/` 与 `/root/.config/spcode/` 会保留在磁盘上，除非手动删除。
+## Skills {#skills}
+
+Skill 是包含 `SKILL.md` 的目录。Softprobe 会自动从以下位置加载：
+
+| 位置 | 路径 |
+|------|------|
+| 本机全局 | `~/.config/spcode/skill/<name>/SKILL.md` 或 `~/.config/spcode/skills/<name>/SKILL.md` |
+| 项目内 | 打开的仓库中 `.opencode/skill/<name>/SKILL.md` 或 `.opencode/skills/<name>/SKILL.md` |
+
+每个 `SKILL.md` 至少需要 frontmatter 中的 `name` 与 `description`。示例：
+
+```md
+---
+name: my-skill
+description: Use when the user asks about release checklists.
+---
+
+# My skill
+
+Steps the agent should follow…
+```
+
+若要从其他目录加载 skill，可在 `~/.config/spcode/opencode.jsonc` 中设置 `skills.paths`。
+
+没有单独的 “create skill” 命令——自行添加目录与文件即可（也可让编码 Agent 协助）。若 Spcode Service 使用了全局 skill，修改后请重启 `spcode-web.service`。

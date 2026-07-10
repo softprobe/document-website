@@ -46,7 +46,7 @@ For non-interactive or scripted setup:
 sp setup --api-url http://127.0.0.1:8090 --json
 ```
 
-The URL is stored in your **personal** Softprobe XDG config at `~/.config/softprobe/config.jsonc`.
+The URL is stored in Softprobe config at `~/.config/softprobe/config.jsonc`.
 
 ## Spcode Service (Linux only) {#spcode-service}
 
@@ -79,7 +79,7 @@ sp setup --api-url http://sp-backend.corp:8090 --install-spcode-service
 sudo sp setup --api-url http://sp-backend.corp:8090 --install-spcode-service
 ```
 
-Service config is written once at install to `/root/.config/softprobe/config.jsonc`. Changing your personal `sp setup --api-url` later does **not** update the service — uninstall and reinstall to change the service API URL.
+Install Softprobe and run `sp setup` as the account that should own the machine’s Softprobe settings. Spcode Service uses those same settings (backend URL, MCP, agent instructions, skills). After you change them, restart the service.
 
 ### Operations
 
@@ -88,12 +88,10 @@ Service config is written once at install to `/root/.config/softprobe/config.jso
 | Status | `systemctl status spcode-web.service` |
 | Stop / start | `systemctl stop spcode-web.service` / `systemctl start spcode-web.service` |
 | Logs | `journalctl -u spcode-web -n 50 --no-pager` |
-| Service data | `/root/.local/share/softprobe/` |
-| Service config | `/root/.config/softprobe/config.jsonc` |
 
 If start fails, inspect `journalctl -u spcode-web` before retrying.
 
-After install, add optional MCP tools and global agent instructions under `/root/.config/spcode/` (Linux Spcode Service only; for personal `sp code web` use `$HOME/.config/spcode/`) — see [Configuration — MCP and agent instructions](./configuration.md#spcode-service-mcp-agents).
+Optional MCP tools, agent instructions, and skills: [Configuration](./configuration.md).
 
 ### Uninstall
 
@@ -101,11 +99,11 @@ After install, add optional MCP tools and global agent instructions under `/root
 sp setup --uninstall-spcode-service
 ```
 
-Removes the systemd unit. Leaves `/root/.config/softprobe/` and `/root/.config/spcode/` on disk unless you delete them manually.
+Removes the systemd unit. Softprobe config files under your install account remain unless you delete them.
 
 ## Next
 
-- [Configuration](./configuration.md) — personal vs service XDG paths, MCP, and `AGENTS.md`
+- [Configuration](./configuration.md) — backend URL, MCP, `AGENTS.md`, and skills
 - [Launch Softprobe Web UI Manually](./code.md)
 - [Doctor](./doctor.md)
 - [Upgrade](./upgrade.md)

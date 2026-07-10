@@ -18,41 +18,26 @@ Use `sp setup` for the backend URL. Use `sp code` for coding-engine and model-pr
 
 ## Spcode Service (Linux systemd)
 
-When installed via [`sp setup --install-spcode-service`](./#spcode-service), the **service** runs as root and uses **two** config namespaces:
+When you install Spcode Service with [`sp setup --install-spcode-service`](./#spcode-service), the shared workbench uses **the same Softprobe settings as the account that ran install** (backend URL, MCP, agent instructions, skills).
 
-| Context | Path | Purpose |
-|---------|------|---------|
-| Personal CLI / `sp code web` | `~/.config/softprobe/config.jsonc` | Your Softprobe backend URL |
-| Spcode Service backend | `/root/.config/softprobe/config.jsonc` | Softprobe API URL for the shared workbench |
-| Spcode Service coding engine | `/root/.config/spcode/opencode.jsonc` | MCP servers and engine settings (optional; create after install) |
-| Spcode Service agent instructions | `/root/.config/spcode/AGENTS.md` | Global agent instructions (optional; create after install) |
-
-There is no sync between personal and service config after install. Change the service backend URL by uninstalling and reinstalling Spcode Service.
-
-## MCP tools and agent instructions {#spcode-service-mcp-agents}
-
-`sp setup` / `sp code` do **not** create coding-engine MCP settings or global agent instructions. Add them under the coding-engine config directory for the process you run:
-
-| How you run Softprobe UI | MCP / engine config | Agent instructions |
-|--------------------------|---------------------|--------------------|
-| **Linux Spcode Service** (`spcode-web.service`, runs as root) | `/root/.config/spcode/opencode.jsonc` | `/root/.config/spcode/AGENTS.md` |
-| **Personal** `sp code web` / local `spcode` (not the Linux service) | `$HOME/.config/spcode/opencode.jsonc` | `$HOME/.config/spcode/AGENTS.md` |
-
-::: tip
-`/root/.config/spcode/...` is **only** for Linux Spcode Service. On your laptop or any non-service install, use your own home directory (`$HOME/.config/spcode/...` or `~/.config/spcode/...`). Personal and service configs are separate and do not sync.
-:::
-
-For Spcode Service, after editing root files, restart the unit:
+Configure Softprobe as that install account. After you change settings the service should pick up, restart it:
 
 ```bash
 sudo systemctl restart spcode-web.service
 ```
 
-For personal `sp code web`, restart the UI process after editing `$HOME/.config/spcode/` files.
+## MCP tools and agent instructions {#spcode-service-mcp-agents}
+
+`sp setup` / `sp code` do **not** create coding-engine MCP settings or global agent instructions. Add them under:
+
+| File | Purpose |
+|------|---------|
+| `~/.config/spcode/opencode.jsonc` | MCP servers and engine settings |
+| `~/.config/spcode/AGENTS.md` | Global agent instructions |
+
+These paths apply to both personal `sp code web` and Linux Spcode Service. Restart the UI process (or `spcode-web.service`) after you edit them.
 
 ### Example: Feishu / Lark MCP + `AGENTS.md`
-
-Paths below use the **Linux Spcode Service** location. For personal use, replace `/root/.config/spcode/` with `$HOME/.config/spcode/`.
 
 ::: warning Prerequisite: Node.js
 This MCP example launches `@larksuiteoapi/lark-mcp` with **`npx`**, so the host must have **Node.js** installed (which provides `npx`). Softprobe install does **not** install Node.js for you.
@@ -64,10 +49,10 @@ node -v
 npx -v
 ```
 
-If those commands are missing, install Node.js (LTS) from [nodejs.org](https://nodejs.org/), or with your OS package manager (for example `apt install nodejs npm` on Debian/Ubuntu, or `dnf install nodejs` on RHEL/Fedora), then confirm `npx -v` works for the same user that runs Spcode Service (`root` for Linux service).
+If those commands are missing, install Node.js (LTS) from [nodejs.org](https://nodejs.org/), or with your OS package manager (for example `apt install nodejs npm` on Debian/Ubuntu, or `dnf install nodejs` on RHEL/Fedora). For Spcode Service, confirm `npx -v` also works when run as root (`sudo npx -v`), because the service process runs as root.
 :::
 
-1. Create `opencode.jsonc` (replace placeholders with your app credentials; never commit real secrets):
+1. Create `~/.config/spcode/opencode.jsonc` (replace placeholders with your app credentials; never commit real secrets):
 
 ```jsonc
 {
@@ -99,7 +84,7 @@ If those commands are missing, install Node.js (LTS) from [nodejs.org](https://n
 
 The host also needs network access to Feishu/Lark (`https://open.feishu.cn`).
 
-2. Create `AGENTS.md` in the same directory so agents know how to use that MCP. Example (Chinese customer):
+2. Create `~/.config/spcode/AGENTS.md` so agents know how to use that MCP. Example (Chinese customer):
 
 ```md
 # Softprobe 服务端 Agent 说明
@@ -115,4 +100,28 @@ https://example.feishu.cn/docx/YOUR_DOC_TOKEN
 
 Replace the Feishu doc URL with your own. You can point agents at any MCP you configure in `opencode.jsonc`, not only Feishu.
 
-Uninstalling Spcode Service removes the systemd unit but leaves `/root/.config/softprobe/` and `/root/.config/spcode/` on disk unless you delete them manually.
+## Skills {#skills}
+
+Skills are folders with a `SKILL.md` file. Softprobe loads them automatically from:
+
+| Location | Path |
+|----------|------|
+| Global (this machine) | `~/.config/spcode/skill/<name>/SKILL.md` or `~/.config/spcode/skills/<name>/SKILL.md` |
+| Project | `.opencode/skill/<name>/SKILL.md` or `.opencode/skills/<name>/SKILL.md` in the opened repo |
+
+Each `SKILL.md` needs frontmatter with at least `name` and `description`. Example:
+
+```md
+---
+name: my-skill
+description: Use when the user asks about release checklists.
+---
+
+# My skill
+
+Steps the agent should follow…
+```
+
+To load skills from another directory, set `skills.paths` in `~/.config/spcode/opencode.jsonc`.
+
+There is no separate “create skill” command — add the folder and file yourself (or ask the coding agent to help). After changing global skills used by Spcode Service, restart `spcode-web.service`.

@@ -13,4 +13,4 @@ sp doctor --json
 
 检查项包括后端可达性和内部编码引擎安装状态。
 
-若已通过 [`sp setup --install-spcode-service`](/zh/testing/installation/#spcode-service) 安装 **Spcode Service**（`spcode-web.service` 已注册），`sp doctor` 还会执行 **`spcode-service`** 检查（读取 `/root/.config/softprobe/config.jsonc` 与服务单元）。
+若已通过 [`sp setup --install-spcode-service`](/zh/testing/installation/#spcode-service) 安装 **Spcode Service**（`spcode-web.service` 已注册），`sp doctor` 还会检查服务是否健康，以及能否访问已配置的 Softprobe 后端。

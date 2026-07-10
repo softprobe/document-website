@@ -31,6 +31,6 @@ If Softprobe cannot start the web UI, run `sp doctor` and follow the remediation
 | **Who** | You, on your machine | Your organization, one URL for the team |
 | **Typical use** | Local testing while you develop | Colleagues in the same network open the same workbench |
 | **How** | `sp code web` in your shell | `sp setup --install-spcode-service` during install ([Spcode Service](./#spcode-service)) |
-| **Config** | Your personal settings from `sp setup` | Separate service settings, managed at install time |
+| **Config** | Your Softprobe settings from `sp setup` | Same Softprobe settings as the account that installed Spcode Service |
 
 Use the dev-box flow when you are the only person on that machine. Choose the shared workbench when several people need browser access without each running their own process.
