@@ -93,7 +93,7 @@ Service config is written once at install to `/root/.config/softprobe/config.jso
 
 If start fails, inspect `journalctl -u spcode-web` before retrying.
 
-After install, add optional MCP tools and global agent instructions under `/root/.config/spcode/` — see [Configuration — MCP and agent instructions](./configuration.md#spcode-service-mcp-agents).
+After install, add optional MCP tools and global agent instructions under `/root/.config/spcode/` (Linux Spcode Service only; for personal `sp code web` use `$HOME/.config/spcode/`) — see [Configuration — MCP and agent instructions](./configuration.md#spcode-service-mcp-agents).
 
 ### Uninstall
 

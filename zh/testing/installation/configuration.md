@@ -27,22 +27,30 @@ Softprobe 使用一个共享的 XDG 配置命名空间。
 
 ### 可选：MCP 工具与 Agent 说明 {#spcode-service-mcp-agents}
 
-`sp setup --install-spcode-service` **只**写入 Softprobe 后端 URL，**不会**创建编码引擎的 MCP 配置或全局 Agent 说明。请在服务使用的编码引擎配置目录下自行添加（服务以 root 运行）：
+`sp setup` / `sp code` **不会**自动创建编码引擎的 MCP 配置或全局 Agent 说明。请按你实际运行方式，写入对应目录：
 
-| 文件 | 用途 |
-|------|------|
-| `/root/.config/spcode/opencode.jsonc` | Spcode Service 的 MCP 及其他编码引擎设置 |
-| `/root/.config/spcode/AGENTS.md` | 共享工作台加载的全局 Agent 说明 |
+| 运行方式 | MCP / 引擎配置 | Agent 说明 |
+|----------|----------------|------------|
+| **Linux Spcode Service**（`spcode-web.service`，以 root 运行） | `/root/.config/spcode/opencode.jsonc` | `/root/.config/spcode/AGENTS.md` |
+| **个人** `sp code web` / 本机 `spcode`（非 Linux 服务） | `$HOME/.config/spcode/opencode.jsonc` | `$HOME/.config/spcode/AGENTS.md` |
 
-个人目录 `~/.config/spcode/` **不会**被 Spcode Service 使用。修改 root 下文件后请重启服务：
+::: tip
+`/root/.config/spcode/...` **仅**用于 Linux Spcode Service。在笔记本或非服务安装场景，请使用当前用户家目录（`$HOME/.config/spcode/...` 或 `~/.config/spcode/...`）。个人配置与服务配置相互独立，不会同步。
+:::
+
+若是 Spcode Service，修改 root 下文件后请重启服务：
 
 ```bash
 sudo systemctl restart spcode-web.service
 ```
 
+若是个人 `sp code web`，修改 `$HOME/.config/spcode/` 后请重启 UI 进程。
+
 #### 示例：飞书 / Lark MCP + `AGENTS.md`
 
-1. 创建 `/root/.config/spcode/opencode.jsonc`（将占位符替换为你的应用凭证；**不要**把真实密钥提交到仓库）：
+以下路径以 **Linux Spcode Service** 为例。个人使用时，请将 `/root/.config/spcode/` 替换为 `$HOME/.config/spcode/`。
+
+1. 创建 `opencode.jsonc`（将占位符替换为你的应用凭证；**不要**把真实密钥提交到仓库）：
 
 ```jsonc
 {
@@ -74,7 +82,7 @@ sudo systemctl restart spcode-web.service
 
 本示例需要主机可访问飞书开放平台，并已安装可用的 `npx`（Node.js）。
 
-2. 创建 `/root/.config/spcode/AGENTS.md`，告知 Agent 如何使用该 MCP。示例：
+2. 在同一目录创建 `AGENTS.md`，告知 Agent 如何使用该 MCP。示例：
 
 ```md
 # Softprobe 服务端 Agent 说明

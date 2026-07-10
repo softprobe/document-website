@@ -31,22 +31,30 @@ There is no sync between personal and service config after install. Change the s
 
 ### Optional: MCP tools and agent instructions {#spcode-service-mcp-agents}
 
-`sp setup --install-spcode-service` configures the Softprobe backend URL only. It does **not** create coding-engine MCP settings or global agent instructions. Add those yourself under the **service** coding-engine config directory (the service runs as root):
+`sp setup` / `sp code` do **not** create coding-engine MCP settings or global agent instructions. Add them under the coding-engine config directory for the process you run:
 
-| File | Purpose |
-|------|---------|
-| `/root/.config/spcode/opencode.jsonc` | MCP servers and other coding-engine settings for Spcode Service |
-| `/root/.config/spcode/AGENTS.md` | Global agent instructions loaded by the shared workbench |
+| How you run Softprobe UI | MCP / engine config | Agent instructions |
+|--------------------------|---------------------|--------------------|
+| **Linux Spcode Service** (`spcode-web.service`, runs as root) | `/root/.config/spcode/opencode.jsonc` | `/root/.config/spcode/AGENTS.md` |
+| **Personal** `sp code web` / local `spcode` (not the Linux service) | `$HOME/.config/spcode/opencode.jsonc` | `$HOME/.config/spcode/AGENTS.md` |
 
-Personal `~/.config/spcode/` files are **not** used by Spcode Service. After editing root files, restart the unit:
+::: tip
+`/root/.config/spcode/...` is **only** for Linux Spcode Service. On your laptop or any non-service install, use your own home directory (`$HOME/.config/spcode/...` or `~/.config/spcode/...`). Personal and service configs are separate and do not sync.
+:::
+
+For Spcode Service, after editing root files, restart the unit:
 
 ```bash
 sudo systemctl restart spcode-web.service
 ```
 
+For personal `sp code web`, restart the UI process after editing `$HOME/.config/spcode/` files.
+
 #### Example: Feishu / Lark MCP + `AGENTS.md`
 
-1. Create `/root/.config/spcode/opencode.jsonc` (replace placeholders with your app credentials; never commit real secrets):
+Paths below use the **Linux Spcode Service** location. For personal use, replace `/root/.config/spcode/` with `$HOME/.config/spcode/`.
+
+1. Create `opencode.jsonc` (replace placeholders with your app credentials; never commit real secrets):
 
 ```jsonc
 {
@@ -78,7 +86,7 @@ sudo systemctl restart spcode-web.service
 
 The host needs network access to Feishu/Lark and a working `npx` (Node.js) for this example.
 
-2. Create `/root/.config/spcode/AGENTS.md` so agents know how to use that MCP. Example (Chinese customer):
+2. Create `AGENTS.md` in the same directory so agents know how to use that MCP. Example (Chinese customer):
 
 ```md
 # Softprobe 服务端 Agent 说明

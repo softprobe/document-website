@@ -91,7 +91,7 @@ sudo sp setup --api-url http://sp-backend.corp:8090 --install-spcode-service
 | 服务数据 | `/root/.local/share/softprobe/` |
 | 服务配置 | `/root/.config/softprobe/config.jsonc` |
 
-安装后如需添加 MCP 工具与全局 Agent 说明，请写入 `/root/.config/spcode/`，详见 [配置 — MCP 与 Agent 说明](./configuration.md#spcode-service-mcp-agents)。
+安装后如需添加 MCP 工具与全局 Agent 说明，请写入 `/root/.config/spcode/`（仅 Linux Spcode Service；个人 `sp code web` 请用 `$HOME/.config/spcode/`），详见 [配置 — MCP 与 Agent 说明](./configuration.md#spcode-service-mcp-agents)。
 
 ### 卸载
 
