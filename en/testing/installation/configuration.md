@@ -54,6 +54,19 @@ For personal `sp code web`, restart the UI process after editing `$HOME/.config/
 
 Paths below use the **Linux Spcode Service** location. For personal use, replace `/root/.config/spcode/` with `$HOME/.config/spcode/`.
 
+::: warning Prerequisite: Node.js
+This MCP example launches `@larksuiteoapi/lark-mcp` with **`npx`**, so the host must have **Node.js** installed (which provides `npx`). Softprobe install does **not** install Node.js for you.
+
+Check:
+
+```bash
+node -v
+npx -v
+```
+
+If those commands are missing, install Node.js (LTS) from [nodejs.org](https://nodejs.org/), or with your OS package manager (for example `apt install nodejs npm` on Debian/Ubuntu, or `dnf install nodejs` on RHEL/Fedora), then confirm `npx -v` works for the same user that runs Spcode Service (`root` for Linux service).
+:::
+
 1. Create `opencode.jsonc` (replace placeholders with your app credentials; never commit real secrets):
 
 ```jsonc
@@ -84,7 +97,7 @@ Paths below use the **Linux Spcode Service** location. For personal use, replace
 }
 ```
 
-The host needs network access to Feishu/Lark and a working `npx` (Node.js) for this example.
+The host also needs network access to Feishu/Lark (`https://open.feishu.cn`).
 
 2. Create `AGENTS.md` in the same directory so agents know how to use that MCP. Example (Chinese customer):
 

@@ -50,6 +50,19 @@ sudo systemctl restart spcode-web.service
 
 以下路径以 **Linux Spcode Service** 为例。个人使用时，请将 `/root/.config/spcode/` 替换为 `$HOME/.config/spcode/`。
 
+::: warning 前置条件：Node.js
+本 MCP 示例通过 **`npx`** 启动 `@larksuiteoapi/lark-mcp`，因此主机必须已安装 **Node.js**（自带 `npx`）。Softprobe 安装**不会**自动安装 Node.js。
+
+检查：
+
+```bash
+node -v
+npx -v
+```
+
+若命令不存在，请从 [nodejs.org](https://nodejs.org/) 安装 Node.js（LTS），或使用系统包管理器安装（例如 Debian/Ubuntu：`apt install nodejs npm`；RHEL/Fedora：`dnf install nodejs`）。安装后确认运行 Spcode Service 的同一用户（Linux 服务为 `root`）下 `npx -v` 可用。
+:::
+
 1. 创建 `opencode.jsonc`（将占位符替换为你的应用凭证；**不要**把真实密钥提交到仓库）：
 
 ```jsonc
@@ -80,7 +93,7 @@ sudo systemctl restart spcode-web.service
 }
 ```
 
-本示例需要主机可访问飞书开放平台，并已安装可用的 `npx`（Node.js）。
+主机还需能访问飞书开放平台（`https://open.feishu.cn`）。
 
 2. 在同一目录创建 `AGENTS.md`，告知 Agent 如何使用该 MCP。示例：
 
