@@ -91,17 +91,19 @@ sudo sp setup --api-url http://sp-backend.corp:8090 --install-spcode-service
 | 服务数据 | `/root/.local/share/softprobe/` |
 | 服务配置 | `/root/.config/softprobe/config.jsonc` |
 
+安装后如需添加 MCP 工具与全局 Agent 说明，请写入 `/root/.config/spcode/`（仅 Linux Spcode Service；个人 `sp code web` 请用 `$HOME/.config/spcode/`），详见 [配置 — MCP 与 Agent 说明](./configuration.md#spcode-service-mcp-agents)。
+
 ### 卸载
 
 ```bash
 sp setup --uninstall-spcode-service
 ```
 
-移除 systemd 单元；`/root/.config/softprobe/` 保留在磁盘上。
+移除 systemd 单元；`/root/.config/softprobe/` 与 `/root/.config/spcode/` 会保留在磁盘上，除非手动删除。
 
 ## 下一步
 
-- [配置](./configuration.md) — 个人与服务 XDG 路径
+- [配置](./configuration.md) — 个人与服务 XDG 路径、MCP、`AGENTS.md`
 - [手动启动 Softprobe Web UI](./code.md)
 - [Doctor](./doctor.md)
 - [升级](./upgrade.md)

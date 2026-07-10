@@ -93,17 +93,19 @@ Service config is written once at install to `/root/.config/softprobe/config.jso
 
 If start fails, inspect `journalctl -u spcode-web` before retrying.
 
+After install, add optional MCP tools and global agent instructions under `/root/.config/spcode/` (Linux Spcode Service only; for personal `sp code web` use `$HOME/.config/spcode/`) — see [Configuration — MCP and agent instructions](./configuration.md#spcode-service-mcp-agents).
+
 ### Uninstall
 
 ```bash
 sp setup --uninstall-spcode-service
 ```
 
-Removes the systemd unit. Leaves `/root/.config/softprobe/` on disk.
+Removes the systemd unit. Leaves `/root/.config/softprobe/` and `/root/.config/spcode/` on disk unless you delete them manually.
 
 ## Next
 
-- [Configuration](./configuration.md) — personal vs service XDG paths
+- [Configuration](./configuration.md) — personal vs service XDG paths, MCP, and `AGENTS.md`
 - [Launch Softprobe Web UI Manually](./code.md)
 - [Doctor](./doctor.md)
 - [Upgrade](./upgrade.md)
