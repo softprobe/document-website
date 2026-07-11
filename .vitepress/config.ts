@@ -21,6 +21,7 @@ const testingSidebarEn = [
     text: 'Installation',
     items: [
       { text: 'Install Softprobe Server', link: '/en/testing/installation/server' },
+      { text: 'Metrics data plane', link: '/en/testing/installation/metrics-data-plane' },
       { text: 'Install Softprobe Client', link: '/en/testing/installation/' },
       { text: 'Configuration', link: '/en/testing/installation/configuration' },
       { text: 'Launch Web UI (manual)', link: '/en/testing/installation/code' },

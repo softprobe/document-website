@@ -31,6 +31,6 @@ sp code
 | **适用对象** | 你本人、本机 | 组织内多人共用同一入口 |
 | **典型场景** | 本地开发时自测 | 同事在同一网络用浏览器打开同一工作台 |
 | **启动方式** | 在 shell 中运行 `sp code web` | 安装时选择 `sp setup --install-spcode-service`（[Spcode Service](./#spcode-service)） |
-| **配置** | `sp setup` 写入的个人配置 | 安装时单独配置的服务设置 |
+| **配置** | `sp setup` 写入的 Softprobe 设置 | 与安装 Spcode Service 的账号相同的 Softprobe 设置 |
 
 只有你使用这台机器时，用开发机方式即可。需要多人通过浏览器共用同一工作台时，再考虑 Spcode Service。

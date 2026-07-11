@@ -343,6 +343,8 @@ curl -s "$SP_API_URL/api/recorder/logs?trace_id=<id>&since=2026-06-27T10:00:00Z&
 
 v1 has **no** dedicated pipeline health API — a successful trace-id lookup confirms ingest, storage, and query wiring.
 
+The same Vector Deployment also stores Softprobe **metrics** under a sibling `metrics/` Parquet dataset. See [Metrics data plane](./metrics-data-plane.md) for `POST /v1/metrics` and `GET /api/recorder/metrics`.
+
 ### Agent log export {#agent-log-export}
 
 Point the Java agent at sp-backend only:

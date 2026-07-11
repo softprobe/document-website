@@ -46,7 +46,7 @@ sp setup
 sp setup --api-url http://127.0.0.1:8090 --json
 ```
 
-URL 写入**个人** XDG 配置 `~/.config/softprobe/config.jsonc`。
+URL 写入 Softprobe 配置 `~/.config/softprobe/config.jsonc`。
 
 ## Spcode Service（仅 Linux） {#spcode-service}
 
@@ -79,7 +79,7 @@ sp setup --api-url http://sp-backend.corp:8090 --install-spcode-service
 sudo sp setup --api-url http://sp-backend.corp:8090 --install-spcode-service
 ```
 
-服务配置在安装时写入 `/root/.config/softprobe/config.jsonc`。之后仅修改个人 `sp setup --api-url` **不会**更新服务配置——需卸载后重装。
+请用将拥有本机 Softprobe 设置的账号安装 Softprobe 并运行 `sp setup`。Spcode Service 使用同一套设置（后端 URL、MCP、Agent 说明、skills）。修改后请重启服务。
 
 ### 运维
 
@@ -88,10 +88,10 @@ sudo sp setup --api-url http://sp-backend.corp:8090 --install-spcode-service
 | 状态 | `systemctl status spcode-web.service` |
 | 停止/启动 | `systemctl stop spcode-web.service` / `systemctl start spcode-web.service` |
 | 日志 | `journalctl -u spcode-web -n 50 --no-pager` |
-| 服务数据 | `/root/.local/share/softprobe/` |
-| 服务配置 | `/root/.config/softprobe/config.jsonc` |
 
-安装后如需添加 MCP 工具与全局 Agent 说明，请写入 `/root/.config/spcode/`（仅 Linux Spcode Service；个人 `sp code web` 请用 `$HOME/.config/spcode/`），详见 [配置 — MCP 与 Agent 说明](./configuration.md#spcode-service-mcp-agents)。
+若启动失败，先查看 `journalctl -u spcode-web` 再重试。
+
+可选 MCP、Agent 说明与 skills：见 [配置](./configuration.md)。
 
 ### 卸载
 
@@ -99,11 +99,11 @@ sudo sp setup --api-url http://sp-backend.corp:8090 --install-spcode-service
 sp setup --uninstall-spcode-service
 ```
 
-移除 systemd 单元；`/root/.config/softprobe/` 与 `/root/.config/spcode/` 会保留在磁盘上，除非手动删除。
+移除 systemd 单元；安装账号下的 Softprobe 配置文件会保留，除非手动删除。
 
 ## 下一步
 
-- [配置](./configuration.md) — 个人与服务 XDG 路径、MCP、`AGENTS.md`
+- [配置](./configuration.md) — 后端 URL、MCP、`AGENTS.md`、skills
 - [手动启动 Softprobe Web UI](./code.md)
 - [Doctor](./doctor.md)
 - [升级](./upgrade.md)
