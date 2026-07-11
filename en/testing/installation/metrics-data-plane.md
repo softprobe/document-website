@@ -1,6 +1,6 @@
 # Metrics data plane
 
-Softprobe metrics use the **same collector and Parquet store family as logs**: OTLP → Vector → one-minute aggregate → Parquet under a `metrics/` dataset → product HTTP query. This is for **ad-hoc diagnosis** (for example “are we receiving agent logs?”), not Prometheus/Grafana dashboards.
+Softprobe metrics use the **same collector and Parquet store family as logs**: OTLP → Vector → one-minute aggregate → Parquet under a `metrics/` dataset (labels in an **`attributes` map**) → **bounded HTTP query** backed by embedded DuckDB in sp-backend. This is for **ad-hoc diagnosis** (for example “are we receiving agent logs?”), not Prometheus/Grafana dashboards.
 
 Requires chart **v4.3.x+** with the [unified log pipeline](./server.md#unified-log-pipeline) enabled (default). Metrics reuse that Vector Deployment — no second time-series database and no extra pods.
 
@@ -32,7 +32,7 @@ Instrumented backends also **emit** catalog counters in-process to the same Vect
 
 ## Query — `GET /api/recorder/metrics`
 
-Bounded, read-only lookups over Softprobe Parquet under `metrics/`.
+Bounded, read-only lookups over Softprobe Parquet under `metrics/`. Softprobe runs **parameterized DuckDB SQL** server-side; callers never submit SQL or receive storage credentials.
 
 **Required query parameters:**
 
@@ -42,12 +42,12 @@ Bounded, read-only lookups over Softprobe Parquet under `metrics/`.
 | `since` | ISO-8601 UTC inclusive |
 | `until` | ISO-8601 UTC exclusive — window is `[since, until)` |
 
-Optional exact-match filters on promoted label columns only: `status`, `kind`, `source`, `result`, `content_type`. High-cardinality selectors (`trace_id`, full URL, exception message) and non-catalog keys such as `app_id` are rejected.
+Optional exact-match filters apply to keys in the `attributes` map (for example `status=ok`). High-cardinality selectors (`trace_id`, full URL, exception message) are rejected. Softprobe does **not** require filters to be a fixed Parquet column list.
 
 There is **no** product row `limit` and **no** max time-span beyond requiring valid bounds (same spirit as log query). Missing partitions return HTTP 200 with empty `rows`.
 
 ```bash
-curl -sS "$SP_API_URL/api/recorder/metrics?metric_name=sp.logs.ingest.requests&since=2026-07-10T18:00:00Z&until=2026-07-10T18:05:00Z"
+curl -sS "$SP_API_URL/api/recorder/metrics?metric_name=sp.logs.ingest.requests&since=2026-07-10T18:00:00Z&until=2026-07-10T18:05:00Z&status=ok"
 ```
 
 Example success shape:
@@ -57,7 +57,7 @@ Example success shape:
   "lookup": {
     "metric_name": "sp.logs.ingest.requests",
     "windows": [{ "since": "2026-07-10T18:00:00Z", "until": "2026-07-10T18:05:00Z" }],
-    "filters": {}
+    "filters": { "status": "ok" }
   },
   "rows": [
     {
@@ -65,20 +65,22 @@ Example success shape:
       "metric_name": "sp.logs.ingest.requests",
       "metric_type": "sum",
       "service_name": "sp-backend",
-      "value": 3,
-      "status": "ok",
-      "kind": "agent_json"
+      "attributes": {
+        "status": "ok",
+        "kind": "agent_json"
+      },
+      "value": 3
     }
   ],
   "warnings": []
 }
 ```
 
-Error bodies must not expose Parquet paths, bucket names, or storage credentials.
+Error bodies must not expose Parquet paths, bucket names, storage credentials, or raw SQL.
 
 ## Backend P0 catalog (R1)
 
-Softprobe emits these series from the log ingest/forward path:
+Softprobe emits these series from the log ingest/forward path (labels stored under `attributes`):
 
 | Name | Meaning |
 |------|---------|
@@ -91,7 +93,8 @@ After Vector’s one-minute aggregate, expect queryable rows within about a minu
 
 ## Out of scope
 
-- Prometheus scrape, Grafana, or PromQL as the Softprobe product path
+- Prometheus scrape, Grafana, Greptime, or PromQL as the Softprobe product path
+- Open client SQL / DuckDB as an ingest server
 - `sp metrics` CLI (HTTP API is the R1 contract)
 - Agent-side `sp.agent.logs.*` emitters (later round)
 - Direct Parquet or storage credentials for end users
