@@ -74,7 +74,7 @@ The same tab has an **Include paths (whitelist)** input at the top. When you add
 | Type | Yes | The dependency type. In an application, it autocompletes from your recordings. |
 | Name | No | A specific dependency under that type. Empty = the whole type. |
 
-In the trace view, a call ignored this way shows an **"Entire category ignored"** chip instead of per-field strikethroughs — the whole call is dropped at once.
+In a run, a call ignored this way shows an **"Entire category ignored"** chip instead of per-field strikethroughs — the whole call is dropped at once.
 
 ---
 
@@ -193,7 +193,7 @@ These are edited in the YAML view (or, for time tolerance, the diff quick action
 
 ## Where quick rules from the diff go
 
-When you [ignore a field in the trace view](/replay/trace-view#ignore-a-field), it writes into one of the rule types above:
+When you [ignore a field in a run](/replay/handle-failed-run#ignore-a-field), it writes into one of the rule types above:
 
 | Diff action | Becomes |
 | --- | --- |

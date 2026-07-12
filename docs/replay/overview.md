@@ -25,13 +25,13 @@ One line to choose: **just changing this run's result → fix the verdict; want 
 | **Scope** | Just this run | Every replay, from now on |
 | **Lifespan** | One-off — gone on the next replay | Permanent — saved in your config |
 | **Use it for** | A case you've reviewed and accepted | A field that always changes |
-| **Where you do it** | On the difference, in the trace view | In the trace view, or the Compare Rules page |
+| **Where you do it** |  On the difference, while reading a run |  While reading a run, or on the Compare Rules page |
 
 :::note They work together
-A compare rule doesn't touch runs that already finished — it only kicks in on the next replay. If you write a rule and want to see its effect on the run you're looking at now, use **[Recompare](/replay/trace-view#recompare-apply-rules-to-an-existing-run)**: it re-checks the current run against your latest rules, without replaying anything.
+A compare rule doesn't touch runs that already finished — it only kicks in on the next replay. If you write a rule and want to see its effect on the run you're looking at now, use **[Recompare](/replay/handle-failed-run#recompare-apply-rules-to-an-existing-run)**: it re-checks the current run against your latest rules, without replaying anything.
 :::
 
 ## Where to go next
 
-- **[Work through a failed run](/replay/trace-view)** — open a run, read the differences, and accept the ones that are fine.
+- **[Work through a failed run](/replay/handle-failed-run)** — open a run, read the differences, and accept the ones that are fine.
 - **[Compare rules reference](/replay/compare-rules)** — every kind of rule you can set, and how to set it.

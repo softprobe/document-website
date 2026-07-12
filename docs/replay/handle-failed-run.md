@@ -100,7 +100,7 @@ You don't need to remember how you ignored it — Softprobe removes whatever is 
 
 ## See what's already ignored {#reviewing-whats-ignored}
 
-To see everything ignored on a case without opening each span, click the **"N ignored"** chip in the trace header. A panel lists every ignored field, grouped by call, with the rule that caught it. Hover any row to **Un-ignore** it right there.
+To see everything ignored on a case without opening each span, click the **"N ignored"** chip at the top of the case. A panel lists every ignored field, grouped by call, with the rule that caught it. Hover any row to **Un-ignore** it right there.
 
 <div className="sp-img">
   <img src="/img/docs/replay/ignored-summary.png" alt="The ignored-summary panel" />

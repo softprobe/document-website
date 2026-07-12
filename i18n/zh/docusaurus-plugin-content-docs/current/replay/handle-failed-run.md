@@ -100,7 +100,7 @@ description: 打开失败的回放、找到差异、接受那些不是真 bug �
 
 ## 查看已经忽略的一切 {#reviewing-whats-ignored}
 
-不用逐个打开 span，就能看到一条用例上忽略了什么：点 trace 头部的 **「N 处已忽略」** chip。一个面板会按调用分组，列出每个被忽略字段和挡下它的规则。悬停任一行就能就地 **取消忽略**。
+不用逐个打开 span，就能看到一条用例上忽略了什么：点用例顶部的 **「N 处已忽略」** chip。一个面板会按调用分组，列出每个被忽略字段和挡下它的规则。悬停任一行就能就地 **取消忽略**。
 
 <div className="sp-img">
   <img src="/img/docs/replay/ignored-summary.png" alt="忽略总览面板" />
