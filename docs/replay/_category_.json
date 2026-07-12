@@ -1,0 +1,9 @@
+{
+  "label": "Replay & Compare Rules",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "title": "Replay & Compare Rules",
+    "description": "Read replay differences in the trace view, accept or ignore field-level differences, and configure compare rules down to every field."
+  }
+}

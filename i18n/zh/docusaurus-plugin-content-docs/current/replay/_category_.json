@@ -1,0 +1,9 @@
+{
+  "label": "回放与对比规则",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "title": "回放与对比规则",
+    "description": "在 trace 视图里读懂回放差异、接受或忽略字段级差异，并把对比规则细粒度配置到每一个字段。"
+  }
+}
