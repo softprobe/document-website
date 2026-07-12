@@ -36,10 +36,13 @@ Recorded data, traces, and replay failures.
 |---------|----------|
 | [record](./record.md) | Query recordings and completeness |
 | [trace](./trace.md) | Find traces by business attributes |
-| [logs](./logs.md) | Correlated logs by `trace_id` — see [Log correlation IDs](/en/testing/reference/log-correlation-ids.md) |
+| [logs](./logs.md) | Correlated logs by `trace_id` and/or `source`, plus `-f` filters and `schema` — see [Log correlation IDs](/en/testing/reference/log-correlation-ids.md) |
+| [metrics](./metrics.md) | Product metrics by `metric_name`, same `-f`/`schema` grammar as `logs` |
 | [replay case](./replay-case.md) | List cases, metadata, mock tree |
 | [replay diff](./replay-diff.md) | Diff artifacts, replay logs |
 | [extraction-rule](./extraction-rule.md) | Business attribute extraction rules |
+
+For filters beyond exact-match `-f key=value` (OR, aggregates, joins, body search), see [Gated SQL](/en/testing/reference/gated-sql.md) — HTTP only, not a CLI flag.
 
 Investigation commands support `--out-dir`, `--page`, and `--limit` unless noted.
 
@@ -81,6 +84,8 @@ sp record case list --app <appId> --since -1h --json
 sp replay run --app <appId> --env http://your-service:8080 --from -24h --json
 sp replay status <planId> --watch --json
 sp diagnose replay <planId> --failed-only --out-dir .sp-work --json
+sp logs --source agent --since 2026-06-27T10:00:00Z --until 2026-06-27T10:05:00Z -f severity=ERROR --json
+sp metrics --metric-name sp.agent.logs.export --since 2026-06-27T10:00:00Z --until 2026-06-27T10:05:00Z --json
 ```
 
 ## Related

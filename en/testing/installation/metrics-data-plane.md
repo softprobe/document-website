@@ -1,6 +1,6 @@
 # Metrics data plane
 
-Softprobe metrics use the **same collector and Parquet store family as logs**: OTLP → Vector → one-minute aggregate → Parquet under a `metrics/` dataset (labels in an **`attributes` map**) → **bounded HTTP query** backed by embedded DuckDB in sp-backend. This is for **ad-hoc diagnosis** (for example “are we receiving agent logs?”), not Prometheus/Grafana dashboards.
+Softprobe metrics use the **same collector and Parquet store family as logs**: OTLP → Vector → one-minute aggregate → Parquet under a `metrics/` dataset (labels in an **`attributes` map**) → **bounded HTTP query and `sp metrics` CLI** backed by embedded DuckDB in sp-backend. This is for **ad-hoc diagnosis** (for example “are we receiving agent logs?”), not Prometheus/Grafana dashboards.
 
 Requires chart **v4.3.x+** with the [unified log pipeline](./server.md#unified-log-pipeline) enabled (default). Metrics reuse that Vector Deployment — no second time-series database and no extra pods.
 
@@ -30,24 +30,27 @@ curl -sS -X POST "$SP_API_URL/v1/metrics" \
 
 Instrumented backends also **emit** catalog counters in-process to the same Vector metrics path (no HTTP self-POST).
 
-## Query — `GET /api/recorder/metrics`
+## Query — `GET /api/recorder/metrics` / `sp metrics`
 
-Bounded, read-only lookups over Softprobe Parquet under `metrics/`. Softprobe runs **parameterized DuckDB SQL** server-side; callers never submit SQL or receive storage credentials.
+Bounded, read-only lookups over Softprobe Parquet under `metrics/`. Softprobe runs **parameterized DuckDB SQL** server-side; callers never submit SQL or receive storage credentials for this simple API. **`sp metrics`** is the CLI form and uses the **same** `--since`/`--until`/`-f`/`schema` grammar as [`sp logs`](/en/testing/commands/logs.md) — see [sp metrics](/en/testing/commands/metrics.md) for the full command reference.
 
 **Required query parameters:**
 
 | Parameter | Description |
 |-----------|-------------|
-| `metric_name` | Metric name to select |
+| `metric_name` (or `f.metric_name`) | Metric name to select — identity |
 | `since` | ISO-8601 UTC inclusive |
 | `until` | ISO-8601 UTC exclusive — window is `[since, until)` |
 
-Optional exact-match filters apply to keys in the `attributes` map (for example `status=ok`). High-cardinality selectors (`trace_id`, full URL, exception message) are rejected. Softprobe does **not** require filters to be a fixed Parquet column list.
+Optional `-f key=value` (HTTP `f.<key>=value`) filters resolve **promoted columns first** (`service_name`, `metric_type` — exact match), then fall back to the `attributes` map (for example `result`, `status`, `kind`). High-cardinality selectors (`trace_id`, full URL, exception message) are rejected. Softprobe does **not** require filters to be a fixed Parquet column list. Run `sp metrics schema` (or `GET /api/recorder/metrics/schema`) for the live filterable-field list.
 
-There is **no** product row `limit` and **no** max time-span beyond requiring valid bounds (same spirit as log query). Missing partitions return HTTP 200 with empty `rows`.
+There is **no** product row `limit` and **no** max time-span beyond requiring valid bounds (same spirit as log query). Missing partitions return HTTP 200 with empty `rows`. For OR/aggregate queries beyond exact-match `-f` filters, see [gated SQL](/en/testing/reference/gated-sql.md) (`POST /api/recorder/query`, HTTP only).
 
 ```bash
-curl -sS "$SP_API_URL/api/recorder/metrics?metric_name=sp.logs.ingest.requests&since=2026-07-10T18:00:00Z&until=2026-07-10T18:05:00Z&status=ok"
+sp metrics --metric-name sp.logs.ingest.requests \
+  --since 2026-07-10T18:00:00Z --until 2026-07-10T18:05:00Z -f status=ok --json
+
+curl -sS "$SP_API_URL/api/recorder/metrics?metric_name=sp.logs.ingest.requests&since=2026-07-10T18:00:00Z&until=2026-07-10T18:05:00Z&f.status=ok"
 ```
 
 Example success shape:
@@ -106,12 +109,14 @@ The Softprobe Java agent emits log-export health metrics to `{sp.api.url}/v1/met
 **Diagnosing “no agent logs”:** compare agent `sp.agent.logs.export` with backend `sp.logs.ingest.*` for the same time window. If init is `disabled`, set `sp.api.url` (or the logs OTLP override). If enqueue shows `dropped_*`, the agent is dropping before the wire. If export shows `http_error` / `5xx`, Softprobe or the pipeline is not ready. If export is `success` but ingest is empty, check URL/path mismatch. See [Java agent](/en/testing/java-agent#log-export-health-metrics).
 
 ```bash
-curl -sS "$SP_API_URL/api/recorder/metrics?metric_name=sp.agent.logs.export&since=2026-07-10T18:00:00Z&until=2026-07-10T18:05:00Z&result=success"
+sp metrics --metric-name sp.agent.logs.export \
+  --since 2026-07-10T18:00:00Z --until 2026-07-10T18:05:00Z -f result=success --json
+
+curl -sS "$SP_API_URL/api/recorder/metrics?metric_name=sp.agent.logs.export&since=2026-07-10T18:00:00Z&until=2026-07-10T18:05:00Z&f.result=success"
 ```
 
 ## Out of scope
 
 - Prometheus scrape, Grafana, Greptime, or PromQL as the Softprobe product path
-- Open client SQL / DuckDB as an ingest server
-- `sp metrics` CLI (HTTP API is the product contract)
+- Open client SQL / DuckDB as an ingest server — bounded ad-hoc SQL is available only via [gated SQL](/en/testing/reference/gated-sql.md) (`POST /api/recorder/query`), not as an ingest path or CLI SQL shell
 - Direct Parquet or storage credentials for end users

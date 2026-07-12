@@ -4,7 +4,7 @@
 
 This reference describes **CLI and API query output** only. It does not document Parquet file paths, partition layout, or how to query storage directly. Use [`sp logs`](./logs.md) or the canonical HTTP API for all lookups.
 
-**Lookup key:** v1 accepts **`trace_id` only**. Optional correlation labels may appear on rows when ingested — they are not filter keys.
+**Lookup key:** at least one of **`trace_id`** or **`source`** (identity). Additional open `-f key=value` filters narrow further — see [Filterable fields](#filterable-fields) below and [`sp logs schema`](./logs.md#examples). Optional correlation labels (`replay_id`, `plan_id`, `plan_item_id`, …) may appear on rows when ingested — they are display-only, not filter keys (reject-as-filter).
 
 **Naming:** API and Parquet rows use **unprefixed** column names (`source`, `replay_id`, …). OTLP on the wire may use `sp.source`, `sp.replay_id`, etc. before Vector maps them into storage.
 
@@ -16,7 +16,7 @@ Each successful lookup returns one **chronological stream** of rows in `data.row
 
 Human-readable CLI output prints the same logical fields as API JSON.
 
-See [sp logs](./logs.md) for the `--trace-id` lookup key, triage workflow, and required time bounds.
+See [sp logs](./logs.md) for the `--trace-id`/`--source` identity, triage workflow, and required time bounds.
 
 ---
 
@@ -28,16 +28,36 @@ Every row includes the core fields below. Correlation fields are included **when
 |-------|----------------|-------------|
 | `timestamp` | yes | Event time of the log line. ISO-8601 UTC in JSON (for example `2026-06-27T10:00:10.123Z`). Used for chronological ordering and for caller `[since, until)` filtering. |
 | `severity` | yes | Normalized severity text from the emitting logger (for example `DEBUG`, `INFO`, `WARN`, `ERROR`). Each component controls which severities it emits through **its own native logging configuration** — Softprobe does not impose a product-wide severity filter. |
-| `body` | yes | Full log message text. v1 returns the complete `body`; query results do not truncate message content. |
-| `service_name` | yes | Runtime service identity for the line (for example `travel-ota`, `sp-backend`). Identifies which process produced the row. |
-| `source` | yes | Which v1 pipeline source produced the row. Fixed values: `agent`, `app`, or `backend` (see [source values](#source-values)). |
-| `trace_id` | when known | W3C OpenTelemetry trace id for the request or work unit that was active when the line was emitted. **The only v1 lookup key.** |
-| `span_id` | when known | OpenTelemetry span id for the active span when the line was emitted. |
+| `body` | yes | Full log message text. Query results do not truncate message content. Not filterable via `-f` (default-deny) — use [gated SQL](/en/testing/reference/gated-sql.md) for body search. |
+| `service_name` | yes | Runtime service identity for the line (for example `travel-ota`, `sp-backend`). Identifies which process produced the row. Filterable via `-f service_name=`. |
+| `source` | yes | Which pipeline source produced the row. Fixed values: `agent`, `app`, or `backend` (see [source values](#source-values)). Identity key — filterable via `--source` / `-f source=`. |
+| `logger_name` | when known | Logger/class name from the emitting runtime. The `title` filter operator (`--title` / `-f title=`) does a case-insensitive **substring** match against this column; `-f logger_name=` (if used directly) is exact. |
+| `trace_id` | when known | W3C OpenTelemetry trace id for the request or work unit that was active when the line was emitted. Identity key — filterable via `--trace-id` / `-f trace_id=`. |
+| `span_id` | when known | OpenTelemetry span id for the active span when the line was emitted. Not filterable (high-cardinality). |
 | `replay_id` | when known | One replay **attempt** id when replay context was active at emit time. Optional label — not a query key. |
 | `plan_id` | when known | Replay **plan** id when plan context was active at emit time. Optional label — not a query key. |
 | `plan_item_id` | when known | One case or operation inside a replay plan. Optional label — not a query key. |
+| `attributes` | yes (map; may be empty) | Extensible `MAP<VARCHAR, VARCHAR>` of non-promoted labels ingested from OTLP log attributes. Empty or absent on legacy Parquet written before this column shipped — a `-f` predicate against a missing key simply does not match, it does not fail the request. |
 
-**Not in v1 query results:** `session_id` / `sp.session_id`.
+**Not in query results:** `session_id` / `sp.session_id`.
+
+---
+
+## Filterable fields
+
+`sp logs` / `GET /api/recorder/logs` accept repeatable `-f key=value` (HTTP `f.<key>=value`), AND'd with identity and each other. Run [`sp logs schema`](./logs.md#examples) for the live, authoritative list — this table summarizes the R3 default:
+
+| Key | Resolution | Notes |
+|-----|-----------|-------|
+| `trace_id` | Promoted column, exact match | Identity; may also be set via `--trace-id` |
+| `source` | Promoted column, exact match | Identity; closed set `agent\|app\|backend` |
+| `severity` | Promoted column, exact, case-insensitive | Closed set `TRACE\|DEBUG\|INFO\|WARN\|ERROR\|FATAL` — not a threshold |
+| `title` | **Reserved operator** — case-insensitive **substring** on `logger_name` | Response field stays `logger_name`; there is no separate `title` Parquet column |
+| `service_name` | Promoted column, exact match | |
+| `logger_name` | Promoted column, exact match | Use `title` for substring matching instead |
+| any other key | `attributes[key]` exact match | Legacy rows without `attributes` never match; the request still succeeds |
+
+**Rejected as filters** (fail fast, even though some may appear as display fields on rows): `replay_id`, `plan_id`, `plan_item_id`, `mode`, `include_recording_log`, and the shared high-cardinality catalog (`span_id`, full URLs, exception messages/types, SQL text, …) unless the key is one of the identity/filterable keys above. **Default-deny** promoted columns that are display-only, not filterable: `body`, `timestamp` — use [gated SQL](/en/testing/reference/gated-sql.md) for body search or time expressions beyond the request window.
 
 ---
 
@@ -104,7 +124,8 @@ From [`sp logs --json`](./logs.md) or `GET /api/recorder/logs`:
   "span_id": "8d10c94a2a6f4e11",
   "replay_id": "6891fd300c676b31",
   "plan_id": "6a3f2aad59f0c4655b0f99da",
-  "plan_item_id": "6a3f2aad59f0c4655b0f99da:1"
+  "plan_item_id": "6a3f2aad59f0c4655b0f99da:1",
+  "attributes": {}
 }
 ```
 
@@ -122,9 +143,9 @@ A startup line from the same service might omit correlation fields entirely:
 
 ---
 
-## Out of scope (v1)
+## Out of scope
 
-This reference covers unified pipeline **query output** only. Not part of v1 unless separately specified:
+This reference covers unified pipeline **query output** only. Not part of this contract unless separately specified:
 
 - Record trace tables, metrics tables, replay read migration, historical backfill
 - Non-replay-path service logs (dashboard, auth, and other Helm/workspace services)
@@ -135,5 +156,7 @@ This reference covers unified pipeline **query output** only. Not part of v1 unl
 ## Related
 
 - [sp logs](./logs.md) — command reference, flags, triage, and API mapping
+- [sp metrics](./metrics.md) — same `-f`/`schema` grammar for metrics
+- [Gated SQL](/en/testing/reference/gated-sql.md) — bounded ad-hoc SQL when `-f` exact-match isn't enough
 - [Log correlation IDs — find and use ids](/en/testing/reference/log-correlation-ids.md)
 - [Diagnose replay failure example](/en/testing/examples/agent-diagnose-replay.md)

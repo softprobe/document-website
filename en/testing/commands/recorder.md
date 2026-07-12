@@ -1,6 +1,6 @@
 # sp recorder logs (retired)
 
-**This page is retired.** v1 unified log lookup is **trace-id-only** via [sp logs](./logs.md) and `GET /api/recorder/logs?trace_id=…`.
+**This page is retired.** Unified log lookup is via [sp logs](./logs.md) and `GET /api/recorder/logs` — identity by `trace_id` and/or `source`, plus open `-f` filters. For ad-hoc SQL beyond exact-match filters, see [gated SQL](/en/testing/reference/gated-sql.md) (`POST /api/recorder/query`, HTTP only — not the `sp query` / `sp recorder query --sql` shapes shown below, which were never shipped).
 
 | Retired | Replacement |
 |---------|-------------|
