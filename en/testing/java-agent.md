@@ -49,6 +49,25 @@ This JVM property wins over `{sp.api.url}/v1/logs`.
 
 Without `sp.api.url` (and without the override above), record and replay still work, but application logs are not exported and `sp logs` will be empty for that trace.
 
+## Log-export health metrics
+
+When Softprobe API URL is set, the agent posts **log-export health metrics** to `{sp.api.url}/v1/metrics` as OTLP JSON (even if logs use the optional Vector agent-JSON override on `:4320`). Use these with backend ingest metrics to localize “no agent logs” — see [Metrics data plane](/en/testing/installation/metrics-data-plane#agent-log-export-health-r2).
+
+| Metric | What it tells you |
+|--------|-------------------|
+| `sp.agent.logs.exporter.init` | Was the exporter configured? (`ok` / `disabled` / `error`) |
+| `sp.agent.logs.enqueue` | Were logs accepted or dropped before send? |
+| `sp.agent.logs.export` | Did send-batch reach Softprobe? (`success` / `http_error` / …) |
+| `sp.agent.logs.circuit_open` | Did the agent pause export after repeated failures? |
+
+Query example after traffic (wait about one minute for aggregate):
+
+```bash
+curl -sS "$SP_API_URL/api/recorder/metrics?metric_name=sp.agent.logs.export&since=<ISO>&until=<ISO>&result=success"
+```
+
+Compare with `sp.logs.ingest.requests` for the same window. There is no separate Prometheus product path for these counters.
+
 ## Environment tags
 
 Tag recorded traffic for filtering and replay scope:
@@ -136,3 +155,4 @@ The **same** agent JAR must be attached on the instance that receives replay tra
 - [Getting started](/en/testing/getting-started)
 - [Supported frameworks](/en/testing/supported-frameworks)
 - [Configuration (JVM)](/en/testing/installation/configuration)
+- [Metrics data plane](/en/testing/installation/metrics-data-plane)
