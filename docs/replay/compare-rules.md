@@ -2,339 +2,239 @@
 sidebar_label: Compare Rules Reference
 sidebar_position: 3
 title: Compare Rules Reference
-description: Every compare-rule type — exclude paths, include paths, ignore categories, CEL rules, decompress, transforms, arrays, defaults, and per-endpoint overlays — documented field by field, for both the visual and YAML editors.
+description: Configure which replay differences don't count — set every rule type from the visual editor, field by field, with screenshots.
 ---
 
 # Compare Rules Reference
 
-Compare rules decide which replay differences **do not count**. The guiding principle: *what you configure is not compared; everything else is compared strictly.* This page documents every rule type down to each field.
+Compare rules decide which replay differences **don't count**. The principle is simple: *what you configure is skipped; everything else is compared strictly.*
 
-## Two places to edit rules
+You configure them in the **visual editor** — pick a rule type, fill in a field or two, click add. This page walks through every rule type the way you set it up in the UI. (There is also a YAML view for automation; it's summarized at the end.)
+
+## Where to configure rules
+
+There are two places, for two scopes:
 
 | | Global default rules | Application rules |
 | --- | --- | --- |
-| **Where** | Settings → Compare Rules (`/sp/settings/compare-rules`) | Workbench → Configuration → Compare Rules |
-| **Scope** | All applications | The current application only |
-| **Editors** | Visual only | **Visual and YAML** (toggle at the top right) |
-| **Covers** | All rule types, in six tabs | Exclude paths, CEL rules, ignore categories, and per-endpoint overlays visually; everything else in YAML |
+| **Open it from** | Settings → Compare Rules | Workbench → Configuration → Compare Rules |
+| **Applies to** | Every application | The current application only |
+| **Rule types** | All types, in six tabs | The three common types plus per-endpoint overlays; the rest via the YAML view |
 
-Every application shows a link to the global defaults at the top of its panel (*"N global default rules apply to all applications"*), so you always know what else is in effect.
+Whichever you open, an application panel shows a link to the global defaults at the top, so you always see what else is in effect.
 
 <div className="sp-img">
   <img src="/img/docs/replay/compare-rules-panel.png" alt="The application compare-rules panel" />
-  <p className="sp-caption">The application compare-rules panel: the header links to the global defaults, the application-level section lists rules that apply to every endpoint, and the per-endpoint section holds overlays.</p>
+  <p className="sp-caption">An application's Compare Rules panel: the header links to the global defaults; the application-level section lists rules that apply to every endpoint; the per-endpoint section holds overlays.</p>
 </div>
 
+The global page groups the rule types into six tabs — one per type below:
 
-:::info Visual vs YAML coverage
-The application **visual** editor covers the three most common rule types — exclude paths, CEL rules, and ignore categories — plus per-endpoint overlays. The other types (include paths, decompress, transforms, arrays, defaults) are edited in **YAML** mode. The global defaults page exposes all types across its six tabs. Everything on this page is available in YAML.
+<div className="sp-img">
+  <img src="/img/docs/replay/rules-global-tabs.png" alt="The six rule-type tabs on the global compare-rules page" />
+  <p className="sp-caption">The six rule-type tabs on the global compare-rules page.</p>
+</div>
+
+---
+
+## Ignore a field by path
+
+**The most common rule — stop comparing a field.** Ideal for volatile fields: timestamps, trace IDs, random tokens. The field, and everything under it, is removed from the comparison.
+
+**How to add it:** open the **Ignore by path** tab, type the field path in **Ignore fields (not compared on replay)**, and click **Add**.
+
+<div className="sp-img">
+  <img src="/img/docs/replay/rule-exclude-path.png" alt="The path tab with the include (whitelist) and ignore (exclude) inputs" />
+  <p className="sp-caption">The path tab. The bottom input, "Ignore fields", is the common one; the top input is the whitelist (see below).</p>
+</div>
+
+**What to type:** a field path. Both `data.traceId` (dot form) and `/data/traceId` (JSON Pointer) work — dot form is normalized for you. Use `*` for one level and `**` for any depth, e.g. `/data/*/updatedAt` or `/response/body/data/**/timestamp`.
+
+:::note The whitelist input (rarely needed)
+The same tab has an **Include paths (whitelist)** input at the top. When you add anything here, **only** those paths are compared and everything else is ignored — the opposite of the ignore list. Leave it empty (the normal case) to compare everything. Reach for it only when you care about a small, fixed set of fields.
 :::
 
-## The policy structure
+---
 
-Rules live in a single `CompareRulePolicy` document per application. Its `spec` holds every rule dimension:
+## Ignore an entire dependency type {#ignore-categories-by-dependency-type}
 
-```yaml
-apiVersion: softprobe.ai/v1
-kind: CompareRulePolicy
-metadata:
-  name: my-app-compare
-  description: Compare rules for my-app
-  priority: 100
-selector:
-  appIds: ["my-app"]        # global default policy uses matchAll: true instead
-spec:
-  excludePaths: []          # ignore by path
-  includePaths: []          # whitelist paths
-  ignoreCategories: []      # ignore by dependency type
-  validations: []           # CEL rules (required key, may be empty)
-  decompress: []            # decode before comparing
-  transforms: []            # normalize values before comparing
-  arrays: []                # array matching strategy
-  defaults: {}              # time tolerance, ignored headers
-  operationSpecs: []        # per-endpoint overlays
-```
+**A coarse switch — drop all differences from one kind of downstream call.** For example, ignore every Redis difference, or every difference from one database query. Independent of the field-level rules.
 
-The top-level `spec` applies to **all** endpoints in the application. `operationSpecs` layer extra rules onto **specific** endpoints — see [Per-endpoint overlays](#per-endpoint-overlays-operationspecs).
+**How to add it:** open the **Dependency types** tab. Enter the **type** (e.g. `Redis`, `Database`, `Dubbo`, `HttpClient`) and, optionally, a specific dependency **name**. Leave the name empty to ignore the whole type. Adds and removes take effect immediately.
+
+<div className="sp-img">
+  <img src="/img/docs/replay/rule-ignore-category.png" alt="The dependency types tab" />
+  <p className="sp-caption">The Dependency types tab. In an application panel, the type and name fields autocomplete from the dependencies actually seen in your recordings.</p>
+</div>
+
+**What to fill:**
+
+| Field | Required | What to enter |
+| --- | --- | --- |
+| Type | Yes | The dependency type. In an application, it autocompletes from your recordings. |
+| Name | No | A specific dependency under that type. Empty = the whole type. |
+
+In the trace view, a call ignored this way shows an **"Entire category ignored"** chip instead of per-field strikethroughs — the whole call is dropped at once.
 
 ---
 
-## Exclude paths
+## Ignore by a condition (CEL)
 
-**Ignore a field, and everything under it, by path.** The most common rule. Anything listed here is removed from the comparison before it runs — ideal for volatile fields like timestamps, trace IDs, and random tokens.
+**The most flexible rule — ignore a difference when a condition is true.** Use it when matching by path or field name isn't enough, for example "ignore any field whose recorded and replayed values are both timestamps." After the comparison runs, each difference is tested against your condition; if it matches, the difference is dropped.
 
-| Field | Type | Required | Description |
-| --- | --- | --- | --- |
-| *(each element)* | string | — | A JSON Pointer path, e.g. `/data/traceId`. Supports `*` (single level) and `**` (any depth). Dot form typed in the UI (`data.traceId`) is normalized to `/data/traceId`. |
+**How to add it:** open the **Ignore by condition (CEL)** tab, click **Add rule**, optionally name it, and write the condition. A **template picker** offers ready-made conditions, and **Available functions** lists the helpers you can call.
 
-**Visual:** In the global page, the **Ignore by path (quick)** tab. In an application, add a **path** row in the rule table. **YAML:**
+<div className="sp-img">
+  <img src="/img/docs/replay/rule-cel.png" alt="The CEL rules tab with example rules" />
+  <p className="sp-caption">The CEL tab, with built-in example rules (ignore UUID-shaped values, IP addresses, timestamps within tolerance). Each rule has a toggle to enable/disable it and can be deleted.</p>
+</div>
 
-```yaml
-spec:
-  excludePaths:
-    - /data/traceId
-    - /data/*/updatedAt
-    - /response/body/data/**/timestamp
-```
+**Variables you can use in the condition:**
 
----
+| Variable | Meaning |
+| --- | --- |
+| `left` / `right` | The recorded value / the replayed value |
+| `path` / `pointer` | The full field path (dot form / JSON Pointer form) |
+| `fieldName` | The leaf field name |
+| `category` | The dependency type |
+| `time_tolerance_ms` | The configured time tolerance (default `60000`) |
 
-## Include paths
+**Helper functions:** `isUUID`, `isIP`, `isTimestamp`, `toTimestamp`, `toNumber`, plus the standard CEL, strings, and math libraries.
 
-**A whitelist.** When non-empty, **only** the listed paths are compared; everything else is ignored. Leave empty to compare everything (the normal case). Rarely needed — reach for it only when you care about a small, fixed set of fields.
+Examples (all available as templates):
 
-| Field | Type | Required | Description |
-| --- | --- | --- | --- |
-| *(each element)* | string | — | A JSON Pointer path. `*` matches one level, `**` any depth. |
-
-**Visual:** Global page only (the **Include paths (whitelist)** section). In an application, YAML only. **YAML:**
-
-```yaml
-spec:
-  includePaths:
-    - /response/body/data/**
-```
+- Ignore values that are both timestamps: `isTimestamp(left) && isTimestamp(right)`
+- Ignore a generated ID: `fieldName == "requestId" && isUUID(right)`
+- Skip the raw SQL body on database calls: `category == "DATABASE" && fieldName == "body"`
 
 ---
 
-## Ignore categories (by dependency type) {#ignore-categories-by-dependency-type}
+## Normalize a value before comparing
 
-**Ignore an entire downstream dependency type.** A coarse switch at *dependency granularity* — independent of field-path or value rules. Use it to drop all differences from, say, Redis or a specific database call.
+**Round or reshape a value so noise doesn't register.** For example, round a float so precision differences don't count as a difference. The value is transformed before the comparison sees it.
 
-| Field | Type | Required | Description |
-| --- | --- | --- | --- |
-| `operationType` | string | Yes | The dependency type, e.g. `Database`, `Redis`, `Dubbo`, `HttpClient`. Values are not a fixed enum — the picker is populated from the dependency types actually seen in your recordings. |
-| `operationName` | string | No | A specific dependency under that type. Leave empty to ignore the whole type. |
+**How to add it:** open the **Value transform** tab, enter the field **path** and a CEL **expression** on the value (the variable `value` is the field's original value), then click **Add transform**.
 
-**Visual:** In the global page, the **Dependency types** tab (adds and removes take effect immediately). In an application, add a **category** row — the type and name fields autocomplete from the recorded dependencies. **YAML:**
+<div className="sp-img">
+  <img src="/img/docs/replay/rule-transform.png" alt="The value transform tab" />
+  <p className="sp-caption">The Value transform tab: a path input and a CEL expression input, where <code>value</code> is the field's original value.</p>
+</div>
+
+Example — round to two decimals: path `/response/body/data/orders/*/total`, expression `math.round(value * 100) / 100`.
+
+---
+
+## Decode an encoded field before comparing
+
+**Decode base64/gzip JSON so the comparison sees real data.** When a field holds an encoded blob, decode it first — otherwise the comparison just reports "these two encoded strings differ" instead of the meaningful difference inside.
+
+**How to add it:** open the **Decompress** tab, enter the field **path**, and pick the **codec**.
+
+<div className="sp-img">
+  <img src="/img/docs/replay/rule-decompress.png" alt="The decompress tab" />
+  <p className="sp-caption">The Decompress tab: a path input and a codec dropdown.</p>
+</div>
+
+**Codec options:** `Base64 + JSON`, `Gzip + Base64 + JSON`, or `Plain JSON`.
+
+---
+
+## Match array elements when order varies
+
+**Compare an unordered array as a set, not by position.** By default arrays are compared by index — when element order changes between recording and replay, that produces false "missing / new element" differences. Configure a matching strategy instead.
+
+**How to add it:** open the **Array matching** tab, enter the array **path**, pick a **strategy**, and (for `By key`) enter the **key field(s)**. Click **Add array config**.
+
+<div className="sp-img">
+  <img src="/img/docs/replay/rule-arrays.png" alt="The array matching tab" />
+  <p className="sp-caption">The Array matching tab: a path input, a strategy dropdown, and (for By key) a comma-separated key-fields input.</p>
+</div>
+
+**Strategy options:**
+
+| Strategy | When to use |
+| --- | --- |
+| By index | Default — compare position by position. |
+| By key | Pair elements by a key field (enter the key, e.g. `orderId`). |
+| By LCS | Longest common subsequence — best-effort alignment without a key. |
+
+:::note Foreign keys
+Arrays can also declare a **foreign key** to another array (so nested references line up). This is set via the "declare foreign key" quick action in the diff, or in the YAML view — there's no dedicated visual control for it.
+:::
+
+---
+
+## Apply rules to specific endpoints only
+
+**Layer extra rules onto certain endpoints.** The rules above apply to every endpoint in the application. When you need rules for just some endpoints, add a **per-endpoint** group — the top-level rules stay the base, and the group's rules are added on top for the endpoints it matches.
+
+**How to add it:** in an application panel, the **Per-endpoint** section. Click **Add endpoint rules**, enter the endpoints to match — **exact names** (comma- or newline-separated) and/or **glob patterns** like `/api/order/*` — then fill in that group's own rule table (path, CEL, and category rules, just like the top level).
+
+**What to fill:**
+
+| Field | What to enter |
+| --- | --- |
+| Exact match | Endpoint names, e.g. `/api/order/list, /api/order/detail` |
+| Glob match | Endpoint patterns, e.g. `/api/order/*` |
+| Rules | The rules to apply only to those endpoints |
+
+---
+
+## Time tolerance and ignored headers
+
+Two settings live on the policy defaults rather than in a tab:
+
+- **Time tolerance** — two time values within this many milliseconds don't count as a difference (default `60000`). You can also set it via the quick action in the diff.
+- **Ignored headers** — header **names** (by name, not value) to skip, as glob patterns. New applications default to `sp-*` and `x-sp-*` to mask SoftProbe's own headers.
+
+These are edited in the YAML view (or, for time tolerance, the diff quick action).
+
+---
+
+## Where quick rules from the diff go
+
+When you [ignore a field in the trace view](/replay/trace-view#ignoring-a-field), it writes into one of the rule types above:
+
+| Diff action | Becomes |
+| --- | --- |
+| Ignore this field's differences | An **ignore-by-path** rule |
+| Ignore all "`{name}`" fields | A **CEL** rule matching that field name |
+| Set as array key | An **array** rule (By key) |
+| Declare foreign key | An array **foreign key** |
+
+Scoped to an endpoint, it lands in a per-endpoint group; scoped to the whole app, at the top level.
+
+---
+
+## The YAML view (for automation)
+
+Every rule above maps to a field in a `CompareRulePolicy` document, which the application panel can show and edit as YAML. This is mainly for automation and for generating rules with AI — the visual editor is the friendlier path for day-to-day use. The mapping:
+
+| Rule type | YAML key under `spec` | Key fields |
+| --- | --- | --- |
+| Ignore by path | `excludePaths` | list of path strings |
+| Whitelist | `includePaths` | list of path strings |
+| Dependency type | `ignoreCategories` | `operationType`, `operationName` |
+| CEL | `validations` | `expression`, `action: DROP`, `enabled` |
+| Value transform | `transforms` | `path`, `expression` |
+| Decompress | `decompress` | `path`, `codec` |
+| Array matching | `arrays` | `path`, `strategy`, `keys`, `references` |
+| Time tolerance / headers | `defaults` | `timeToleranceMs`, `ignoreHeaderPatterns` |
+| Per-endpoint | `operationSpecs` | `operationNames`, `operationNamePatterns`, `spec` |
+
+A compact example:
 
 ```yaml
 spec:
+  excludePaths: ["/data/traceId", "/data/*/updatedAt"]
   ignoreCategories:
-    - operationType: Redis                       # ignore all Redis differences
-    - operationType: Database
-      operationName: userDao.selectById          # ignore only this one DB call
-```
-
-In the trace view, a category-ignored call shows an **"Entire category ignored"** chip rather than per-field strikethroughs, because the whole call is dropped at once.
-
----
-
-## CEL rules (validations)
-
-**Ignore a difference by evaluating a condition.** After the comparison runs, each difference is tested against a [CEL](https://github.com/google/cel-spec) expression; if it matches, the difference is dropped. The most flexible rule type — use it when a path or field-name match is not enough (for example "ignore any field whose recorded and replayed values are both timestamps").
-
-| Field | Type | Required | Description |
-| --- | --- | --- | --- |
-| `expression` | string | Yes | A CEL expression returning a boolean. When it evaluates true for a difference, the difference is dropped. |
-| `action` | string | Yes | Currently always `DROP` (drop the matched difference). |
-| `enabled` | boolean | Yes | Whether the rule is active. |
-| `name` | string | No | A human label for the rule. |
-| `priority` | number | No | Evaluation priority. |
-| `message` | string | No | A note explaining the rule. |
-
-**Variables available in the expression:**
-
-| Variable | Type | Meaning |
-| --- | --- | --- |
-| `path` | string | Full field path in dot form. |
-| `pointer` | string | Field path in JSON Pointer form. |
-| `fieldName` | string | The leaf field name. |
-| `category` | string | The dependency type. |
-| `left` | string | The recorded value. |
-| `right` | string | The replayed value. |
-| `time_tolerance_ms` | int64 | The configured [time tolerance](#defaults), default `60000`. |
-
-**Helper functions:** `isUUID`, `isIP`, `isTimestamp`, `toTimestamp`, `toNumber`, plus the CEL standard, strings, and math libraries.
-
-**Visual:** In the global page, the **Ignore by condition (CEL)** tab (with a template picker and an "available functions" reference). In an application, add a **CEL** row. Both submit with `action: DROP` and `enabled: true`. **YAML:**
-
-```yaml
-spec:
+    - operationType: Redis
   validations:
-    - name: ignore-timestamps
-      expression: 'isTimestamp(left) && isTimestamp(right)'
+    - expression: 'isTimestamp(left) && isTimestamp(right)'
       action: DROP
       enabled: true
-    - name: ignore-generated-ids
-      expression: 'fieldName == "requestId" && isUUID(right)'
-      action: DROP
-      enabled: true
-```
-
----
-
-## Decompress
-
-**Decode encoded fields before comparing.** When a field holds base64- or gzip-encoded JSON, decode it first so the comparison sees structured data instead of an opaque blob (and reports meaningful differences instead of "these two encoded strings differ").
-
-| Field | Type | Required | Description |
-| --- | --- | --- | --- |
-| `path` | string | Yes | The field path to decode. |
-| `codec` | string | Yes | One of `base64+json`, `gzip+base64+json`, or `json`. |
-
-**Visual:** Global page only (**Decompress** tab). In an application, YAML only. **YAML:**
-
-```yaml
-spec:
-  decompress:
-    - path: /response/body/data/payload
-      codec: gzip+base64+json
-```
-
----
-
-## Transforms
-
-**Normalize a value before comparing.** Runs a CEL expression on a field's value to remove noise — for example rounding a float so precision differences do not register.
-
-| Field | Type | Required | Description |
-| --- | --- | --- | --- |
-| `path` | string | Yes | The target field path. |
-| `expression` | string | Yes | A CEL expression; the variable `value` is the field's original value. |
-
-**Visual:** Global page only (**Value transform** tab). In an application, YAML only. **YAML:**
-
-```yaml
-spec:
-  transforms:
-    - path: /response/body/data/orders/*/total
-      expression: math.round(value * 100) / 100
-```
-
----
-
-## Arrays
-
-**Match array elements when order is not stable.** By default arrays are compared by index. When element order varies between recording and replay, comparing by index produces false "missing / new element" differences. Configure a matching strategy to compare the array as a set.
-
-| Field | Type | Required | Description |
-| --- | --- | --- | --- |
-| `path` | string | Yes | The array path. |
-| `strategy` | string | No | `BY_INDEX` (default), `BY_KEY` (pair elements by a key field), or `BY_LCS` (longest common subsequence). |
-| `keys` | string[] | No | The key field(s) used by `BY_KEY`. In the UI, entered comma-separated. |
-| `references` | object[] | No | Foreign-key pairings — see below. |
-
-Each entry in `references` links an element field to another array:
-
-| Field | Type | Description |
-| --- | --- | --- |
-| `field` | string | The field in this array's elements that acts as a foreign key. |
-| `target` | string | The path of the target array. |
-| `targetKey` | string | The key field in the target array to pair against. |
-
-**Visual:** Global page only (**Array matching** tab); `keys` is enabled only when the strategy is `BY_KEY`. The `references` field is not exposed in either visual editor — configure it in YAML or via the quick "declare foreign key" action in the diff. In an application, YAML only. **YAML:**
-
-```yaml
-spec:
-  arrays:
-    - path: /response/body/data/orders
-      strategy: BY_KEY
-      keys: [orderId]
-    - path: /data/items
-      strategy: BY_KEY
-      references:
-        - field: orderId          # items[].orderId is the foreign key
-          target: /data/orders     # points to the orders array
-          targetKey: id            # paired against orders[].id
-```
-
----
-
-## Defaults {#defaults}
-
-**Global defaults for the comparison.**
-
-| Field | Type | Required | Description |
-| --- | --- | --- | --- |
-| `timeToleranceMs` | number | No | Time tolerance in milliseconds. Two time values within this window are not counted as a difference. Exposed to CEL rules as `time_tolerance_ms` (default `60000`). |
-| `ignoreHeaderPatterns` | string[] | Yes | Glob patterns for header **names** to ignore (by name, not value). New application policies default to `["sp-*", "x-sp-*"]` to mask SoftProbe's own injected headers. |
-
-**Visual:** Not exposed in either visual editor — edit in YAML, or set time tolerance via the quick action in the diff. **YAML:**
-
-```yaml
-spec:
-  defaults:
-    timeToleranceMs: 60000
-    ignoreHeaderPatterns: ["sp-*", "x-sp-*", "date", "request-id"]
-```
-
----
-
-## Per-endpoint overlays (operationSpecs) {#per-endpoint-overlays-operationspecs}
-
-**Apply extra rules to specific endpoints only.** The top-level `spec` applies to every endpoint; an overlay layers additional rules onto the endpoints it matches. When a request hits a matched endpoint, the top-level spec is the base and the matching overlay's rules are added on top (list fields are merged, scalar fields overridden).
-
-| Field | Type | Required | Description |
-| --- | --- | --- | --- |
-| `operationNames` | string[] | No | Exact endpoint names to match. |
-| `operationNamePatterns` | string[] | No | Glob patterns to match endpoint names. |
-| `spec` | object | Yes | The rules that apply only to matched endpoints. Same shape as the top-level `spec`, **except** it cannot contain further `operationSpecs` (overlays are one level deep). |
-
-**Visual:** Application panel only, in the **Per-endpoint** section — each group has its own copy of the rule table (exclude paths, CEL rules, ignore categories). Enter exact names and/or glob patterns (comma- or newline-separated). **YAML:**
-
-```yaml
-spec:
-  excludePaths: ["/data/serverIp"]          # applies to every endpoint
   operationSpecs:
     - operationNames: ["/api/order/list"]
       spec:
         excludePaths: ["/data/recommendList"]
-    - operationNamePatterns: ["/api/report/**"]
-      spec:
-        validations:
-          - expression: 'fieldName == "cost"'
-            action: DROP
-            enabled: true
 ```
-
-:::note Endpoint scope goes in operationSpecs, not selector
-The `selector` also has `operationNames` / `operationNamePatterns` fields, but they are **not allowed** on a compare-rule policy — endpoint scoping always goes through `operationSpecs`. See [Scope](#scope-selector).
-:::
-
----
-
-## Scope (selector) {#scope-selector}
-
-The `selector` decides which applications a policy applies to. You normally do not edit it directly — the entry point sets it (the global page uses `matchAll: true`; an application panel fixes `appIds` to the current app).
-
-| Field | Type | Description |
-| --- | --- | --- |
-| `matchAll` | boolean | `true` = the global default policy, applies to all applications. |
-| `appIds` | string[] | The application IDs this policy applies to. |
-| `appIdPattern` | string | Glob for application IDs. |
-| `excludeAppIds` | string[] | Application IDs to exclude. |
-| `envTags` | object | Tag key → allowed values; fail-closed. |
-| `operationNames` / `operationNamePatterns` | string[] | **Not allowed** on compare-rule policies — use `operationSpecs`. |
-
-`metadata.priority` orders overlapping policies (application policies default to `100`, the global default to `0`).
-
----
-
-## Quick rules from the diff
-
-The ignore actions in the [trace view](/replay/trace-view#ignoring-a-field) write into these same dimensions. Knowing the mapping helps when you later find a rule in the reference and want to know where it came from:
-
-| Diff action | Writes into |
-| --- | --- |
-| Ignore this field's differences | `excludePaths` (by full path) |
-| Ignore all "`{name}`" fields | `validations` (a CEL rule matching that leaf name) |
-| Set as array key | `arrays` with `strategy: BY_KEY` |
-| Declare foreign key | `arrays[].references` |
-| (Quick time tolerance) | `defaults.timeToleranceMs` |
-
-When the action is scoped to an endpoint, the rule lands in the matching `operationSpecs` overlay; scoped to the whole app, it lands in the top-level `spec`.
-
-## Field summary
-
-| Dimension | `spec` key | Element fields | Visual editor |
-| --- | --- | --- | --- |
-| Exclude paths | `excludePaths` | JSON Pointer strings | Global + application |
-| Include paths (whitelist) | `includePaths` | JSON Pointer strings | Global only |
-| Ignore categories | `ignoreCategories` | `operationType` (req), `operationName` | Global + application |
-| CEL rules | `validations` | `expression` (req), `action` (req), `enabled` (req), `name`, `priority`, `message` | Global + application |
-| Decompress | `decompress` | `path` (req), `codec` (req) | Global only |
-| Transforms | `transforms` | `path` (req), `expression` (req) | Global only |
-| Arrays | `arrays` | `path` (req), `strategy`, `keys`, `references` | Global only (no `references`) |
-| Defaults | `defaults` | `timeToleranceMs`, `ignoreHeaderPatterns` (req) | YAML / quick action only |
-| Per-endpoint overlays | `operationSpecs` | `operationNames`, `operationNamePatterns`, `spec` (req) | Application only |

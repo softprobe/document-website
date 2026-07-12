@@ -11,6 +11,27 @@ description: 完整走一遍回放 trace 视图——读 diff、忽略字段、�
 
 如果你还没弄清 **修正判定** 和 **配置对比规则** 的区别，先看 [总览](/replay/overview#the-two-things-you-can-do-with-a-difference)——本页假设你已经理解它。
 
+## 进入一处差异
+
+1. 从回放列表打开一次**回放**。
+2. 选一个**失败用例**。左侧面板按**失败 / 无效 / 通过**筛选——失败用例带红点列出。
+3. **调用树**在右边出现：入口 span 加它的下游调用（数据库、HTTP 客户端等）。
+
+<div className="sp-img">
+  <img src="/img/docs/replay/trace-caselist.png" alt="失败用例列表和调用树" />
+  <p className="sp-caption">第 1–3 步：失败用例列表（左，可筛选）和选中用例的调用树（右）。</p>
+</div>
+
+4. **点树里的一个 span**。**diff 抽屉**在右边打开，把录制响应和回放响应并排展示。
+
+<div className="sp-img">
+  <img src="/img/docs/replay/trace-diff-open.png" alt="diff 抽屉在调用树旁打开" />
+  <p className="sp-caption">第 4 步：点 span 打开 diff 抽屉——录制响应（基准）在左，回放响应（本次）在右。</p>
+</div>
+
+从这里你读 diff、决定每处差异怎么处理。本指南余下部分覆盖每个动作。
+
+
 ## 读 diff
 
 选中每个 span 都会打开一个两栏 diff：
@@ -24,6 +45,12 @@ description: 完整走一遍回放 trace 视图——读 diff、忽略字段、�
 - **`N 处已忽略`**——有差异但命中了忽略规则、因而不计入的字段。点它会打开一个小面板，列出每个被忽略字段以及挡下它的规则。见 [查看已忽略的内容](#reviewing-whats-ignored)。
 
 被忽略的字段在**两栏都会画上删除线**——录制侧和回放侧——用灰色删除线。两侧都划，是为了清楚表明这个字段完全退出了对比，而不只是某一侧。悬停删除线会显示 **「已被规则忽略：`{规则名}`」**。
+
+<div className="sp-img">
+  <img src="/img/docs/replay/diff-ignored.png" alt="被忽略字段在两栏都画删除线的 diff" />
+  <p className="sp-caption">被忽略的字段在录制侧和回放侧两栏都画上删除线，头部同时显示差异数和已忽略数。</p>
+</div>
+
 
 <div className="sp-img">
   <img src="/img/docs/replay/diff-ignored.png" alt="被忽略字段在两栏都画了删除线的 diff" />
@@ -66,14 +93,13 @@ description: 完整走一遍回放 trace 视图——读 diff、忽略字段、�
 - **仅此用例**——字段立即在这条用例上被接受：画删除线、差异数下降、用例状态和回放通过率更新。toast 确认 *「已忽略字段 `{path}`（仅此用例）」*，并带一个 8 秒的 **撤销** 动作。
 - **仅此接口 / 所有接口**——规则写进你的配置，但**当前这次回放不变**——字段在这里*不*画删除线，因为规则下次回放才生效。toast 确认 *「已添加规则：忽略 `{path}`（`{scope}`）· 下次回放生效」*，并带一个 **立即重新比对** 动作。点它（或头部按钮）把规则应用到本次回放——见 [重新比对](#recompare-apply-rules-to-an-existing-run)。
 
-:::tip 接口/应用档忽略为什么不改变你正在看的内容
-这是有意的。对比规则是给*下次*回放用的配置，所以它不动当前这次回放、保持自洽。要看它对当前回放的效果，就重新比对。
-
 <div className="sp-img">
   <img src="/img/docs/replay/rule-added-toast.png" alt="已添加规则 toast 和头部的重新比对按钮" />
   <p className="sp-caption">接口/应用档忽略后：toast 确认规则下次回放生效（带「立即重新比对」快捷入口），回放通过率不变，头部出现「规则已变更 · 重新比对」按钮。</p>
 </div>
 
+:::tip 接口/应用档忽略为什么不改变你正在看的内容
+这是有意的。对比规则是给*下次*回放用的配置，所以它不动当前这次回放、保持自洽。要看它对当前回放的效果，就重新比对。
 :::
 
 ## 标记整个用例通过
@@ -88,6 +114,12 @@ description: 完整走一遍回放 trace 视图——读 diff、忽略字段、�
 - **备注**（可选）——自由文本，留档以备查。
 
 确认后，用例从失败桶移入通过桶，通过率立即更新。这是单用例的判定（不写任何规则，也不影响其他用例），原因和备注会存下来供日后查看。
+
+<div className="sp-img">
+  <img src="/img/docs/replay/mark-passed.png" alt="标记通过表单" />
+  <p className="sp-caption">标记通过表单：选一个原因（设计如此，或 SoftProbe 问题）并加可选备注。</p>
+</div>
+
 
 ## 重新比对——把规则应用到一次已有的回放 {#recompare-apply-rules-to-an-existing-run}
 
@@ -137,6 +169,12 @@ description: 完整走一遍回放 trace 视图——读 diff、忽略字段、�
 
 - 字段 **路径**，
 - 挡下它的**规则**——对单用例判定修正显示为 **「仅此用例」**，对配置的规则显示规则名（兜底为「对比规则」）。
+
+<div className="sp-img">
+  <img src="/img/docs/replay/ignored-summary.png" alt="case 级忽略总览面板" />
+  <p className="sp-caption">忽略总览面板：这条 case 上每个被忽略字段，按调用分组，带挡下它的规则和逐行「取消忽略」动作。</p>
+</div>
+
 
 悬停任一行会出现 **取消忽略** 动作，让你直接从汇总里把字段恢复对比——无需打开它所在 span 的 diff。因为那个 span 的抽屉通常是关着的，从这里取消会就地重算那一行，让汇总保持准确。
 

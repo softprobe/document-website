@@ -11,6 +11,26 @@ Open a replay run, click a failed case, and you land in the trace view: a call t
 
 If you have not yet read the difference between **fixing a verdict** and **writing a compare rule**, start with the [Overview](/replay/overview#the-two-things-you-can-do-with-a-difference) — the rest of this page assumes it.
 
+## Getting to a difference
+
+1. Open a **replay run** from the Replay list.
+2. Pick a **failed case**. The left panel filters by **Failed / Invalid / Passed** — the failed cases are listed with red dots.
+3. The **call tree** appears on the right: the entry span plus its downstream calls (database, HTTP client, and so on).
+
+<div className="sp-img">
+  <img src="/img/docs/replay/trace-caselist.png" alt="The failed case list and the call tree" />
+  <p className="sp-caption">Step 1–3: the failed case list (left, filterable) and the call tree of the selected case (right).</p>
+</div>
+
+4. **Click a span** in the tree. The **diff drawer** opens on the right, showing the recorded response next to the replayed response.
+
+<div className="sp-img">
+  <img src="/img/docs/replay/trace-diff-open.png" alt="The diff drawer open next to the call tree" />
+  <p className="sp-caption">Step 4: clicking a span opens the diff drawer — recorded response (baseline) on the left, replayed response (this run) on the right.</p>
+</div>
+
+From here you read the diff and decide what to do with each difference. The rest of this guide covers each action.
+
 ## Reading the diff
 
 Each selected span opens a two-pane diff:
@@ -66,14 +86,13 @@ Each action opens a **scope submenu** grouped into two sections that spell out w
 - **This case only** — the field is accepted on this case right away: it is struck through, the difference count drops, and the case's status and the run's pass rate update. A toast confirms *"Ignored field `{path}` (This case only)"* with an **Undo** action for 8 seconds.
 - **This endpoint only / All endpoints** — a rule is written to your configuration, but **the current run is not changed** — the field is *not* struck through here, because the rule only takes effect on the next replay. A toast confirms *"Rule added: ignore `{path}` (`{scope}`) · takes effect next replay"* with a **Recompare now** action. Click it (or the header button) to apply the rule to this run — see [Recompare](#recompare-apply-rules-to-an-existing-run).
 
-:::tip Why the endpoint/app ignore doesn't change what you're looking at
-This is intentional. A compare rule is configuration for the *next* replay, so it leaves the current run untouched and internally consistent. To see its effect on the current run, recompare.
-
 <div className="sp-img">
   <img src="/img/docs/replay/rule-added-toast.png" alt="Rule-added toast and the Recompare button in the header" />
   <p className="sp-caption">After an endpoint/application ignore: the toast confirms the rule takes effect next replay (with a Recompare now shortcut), the run's pass rate is unchanged, and a "Rules changed · recompare" button appears in the header.</p>
 </div>
 
+:::tip Why the endpoint/app ignore doesn't change what you're looking at
+This is intentional. A compare rule is configuration for the *next* replay, so it leaves the current run untouched and internally consistent. To see its effect on the current run, recompare.
 :::
 
 ## Marking a whole case as passed
@@ -88,6 +107,12 @@ On a failed case, click **Mark as passed**. A small form asks for:
 - **Note** (optional) — free text, kept on the record for audit.
 
 Confirm, and the case moves from the failed bucket into the passed bucket; the pass rate updates immediately. This is a per-case verdict (it does not write any rule and does not affect other cases), and the reason and note are stored for later review.
+
+<div className="sp-img">
+  <img src="/img/docs/replay/mark-passed.png" alt="The mark-as-passed form" />
+  <p className="sp-caption">The Mark as passed form: pick a reason (by design, or a SoftProbe issue) and add an optional note.</p>
+</div>
+
 
 ## Recompare — apply rules to an existing run {#recompare-apply-rules-to-an-existing-run}
 
@@ -137,6 +162,12 @@ You do not have to open every span to find out what has been ignored on a case. 
 
 - the field **path**,
 - the **rule** that caught it — shown as **"This case only"** for a per-case verdict fix, or the rule name (falling back to "compare rule") for a configured rule.
+
+<div className="sp-img">
+  <img src="/img/docs/replay/ignored-summary.png" alt="The case-level ignored summary panel" />
+  <p className="sp-caption">The ignored summary panel: every ignored field on the case, grouped by call, with the rule that caught it and a per-row Un-ignore action.</p>
+</div>
+
 
 Hover any row and a **Un-ignore** action appears, so you can restore a field to comparison straight from the summary — without opening its span's diff. Because that span's drawer is usually closed, cancelling from here recomputes that row on the spot so the summary stays accurate.
 

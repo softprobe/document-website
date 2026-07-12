@@ -2,339 +2,239 @@
 sidebar_label: 对比规则参考
 sidebar_position: 3
 title: 对比规则参考
-description: 每一种对比规则——按路径忽略、白名单路径、依赖类型整类忽略、CEL 规则、解压、值转换、数组匹配、默认值、接口专属 overlay——逐字段说明，覆盖可视化与 YAML 两种编辑器。
+description: 配置哪些回放差异不算数——在可视化编辑器里逐字段设置每一种规则，配截图。
 ---
 
 # 对比规则参考
 
-对比规则决定哪些回放差异**不算数**。指导原则：*配了的不比，没配的严格对比。* 本页把每一种规则细到每个字段。
+对比规则决定哪些回放差异**不算数**。原则很简单：*配了的就跳过，没配的严格对比。*
 
-## 编辑规则的两个位置
+你在**可视化编辑器**里配置它们——选一种规则、填一两个字段、点添加。本页按你在 UI 里配置的方式，走一遍每一种规则。（另有 YAML 视图供自动化使用，在文末汇总。）
+
+## 在哪里配置规则
+
+有两个位置，对应两种作用范围：
 
 | | 全局默认规则 | 应用规则 |
 | --- | --- | --- |
-| **位置** | 设置 → 对比规则（`/sp/settings/compare-rules`） | 工作台 → 配置 → 对比规则 |
-| **作用范围** | 所有应用 | 仅当前应用 |
-| **编辑器** | 仅可视化 | **可视化和 YAML**（右上角切换） |
-| **覆盖** | 全部规则类型，分六个 tab | 可视化覆盖按路径忽略、CEL 规则、依赖类型整类忽略、接口专属 overlay；其余走 YAML |
+| **从哪打开** | 设置 → 对比规则 | 工作台 → 配置 → 对比规则 |
+| **作用于** | 每个应用 | 仅当前应用 |
+| **规则类型** | 全部类型，分六个 tab | 三种常用类型加接口专属 overlay；其余走 YAML 视图 |
 
-每个应用的面板顶部都会显示一个到全局默认的链接（*「N 条全局默认规则，对所有应用生效」*），所以你随时知道还有什么在生效。
+不管你打开哪个，应用面板顶部都有一个到全局默认的链接，所以你随时看得到还有什么在生效。
 
 <div className="sp-img">
   <img src="/img/docs/replay/compare-rules-panel.png" alt="应用对比规则面板" />
-  <p className="sp-caption">应用对比规则面板：头部链接到全局默认，应用级区列出对每个接口生效的规则，接口专属区放 overlay。</p>
+  <p className="sp-caption">应用的对比规则面板：头部链接到全局默认；应用级区列出对每个接口生效的规则；接口专属区放 overlay。</p>
 </div>
 
+全局页把规则类型分成六个 tab——每种一个，对应下面各节：
 
-:::info 可视化 vs YAML 覆盖差异
-应用**可视化**编辑器覆盖三种最常用的规则——按路径忽略、CEL 规则、依赖类型整类忽略——加上接口专属 overlay。其余类型（白名单路径、解压、值转换、数组匹配、默认值）在 **YAML** 模式里编辑。全局默认页在六个 tab 里暴露全部类型。本页所有内容在 YAML 里都可配。
+<div className="sp-img">
+  <img src="/img/docs/replay/rules-global-tabs.png" alt="全局对比规则页的六个规则 tab" />
+  <p className="sp-caption">全局对比规则页的六个规则 tab。</p>
+</div>
+
+---
+
+## 按路径忽略一个字段
+
+**最常用的规则——不再对比某个字段。** 适合易变字段：时间戳、traceId、随机 token。这个字段及其下面的一切都会从对比里剔除。
+
+**怎么加：** 打开 **按路径忽略** tab，在 **忽略字段（回放时不比对）** 里填字段路径，点 **添加**。
+
+<div className="sp-img">
+  <img src="/img/docs/replay/rule-exclude-path.png" alt="路径 tab，含白名单和忽略两个输入框" />
+  <p className="sp-caption">路径 tab。下面的「忽略字段」是常用的；上面的输入框是白名单（见下）。</p>
+</div>
+
+**填什么：** 一个字段路径。`data.traceId`（点号形态）和 `/data/traceId`（JSON Pointer）都行——点号形态会自动归一化。用 `*` 匹配一层、`**` 匹配任意深度，如 `/data/*/updatedAt` 或 `/response/body/data/**/timestamp`。
+
+:::note 白名单输入框（极少用）
+同一个 tab 上面有一个 **包含路径（白名单）** 输入框。往这里加东西后，**只**对比这些路径、其余全忽略——和忽略列表相反。留空（常态）=对比一切。只在你关心一小组固定字段时才用它。
 :::
 
-## 策略结构
+---
 
-每个应用只有一份 `CompareRulePolicy` 文档。它的 `spec` 承载每一个规则维度：
+## 整类忽略某种依赖 {#ignore-categories-by-dependency-type}
 
-```yaml
-apiVersion: softprobe.ai/v1
-kind: CompareRulePolicy
-metadata:
-  name: my-app-compare
-  description: my-app 的对比规则
-  priority: 100
-selector:
-  appIds: ["my-app"]        # 全局默认策略改用 matchAll: true
-spec:
-  excludePaths: []          # 按路径忽略
-  includePaths: []          # 白名单路径
-  ignoreCategories: []      # 按依赖类型整类忽略
-  validations: []           # CEL 规则（必填 key，可为空）
-  decompress: []            # 对比前解码
-  transforms: []            # 对比前归一化值
-  arrays: []                # 数组匹配策略
-  defaults: {}              # 时间容忍、忽略的 header
-  operationSpecs: []        # 接口专属 overlay
-```
+**一个粗开关——丢掉某种下游调用的全部差异。** 例如忽略所有 Redis 差异，或某个数据库查询的全部差异。与字段级规则相互独立。
 
-顶层 `spec` 对应用里**所有**接口生效。`operationSpecs` 把额外规则叠加到**特定**接口上——见 [接口专属 overlay](#per-endpoint-overlays-operationspecs)。
+**怎么加：** 打开 **依赖类型** tab。填 **类型**（如 `Redis`、`Database`、`Dubbo`、`HttpClient`），可选再填某个具体依赖 **名字**。名字留空=忽略整类。增删即改即存。
+
+<div className="sp-img">
+  <img src="/img/docs/replay/rule-ignore-category.png" alt="依赖类型 tab" />
+  <p className="sp-caption">依赖类型 tab。在应用面板里，类型和名字输入框从你录制里实际出现的依赖自动补全。</p>
+</div>
+
+**填什么：**
+
+| 字段 | 必填 | 填什么 |
+| --- | --- | --- |
+| 类型 | 是 | 依赖类型。在应用里从你的录制自动补全。 |
+| 名字 | 否 | 该类型下的某个具体依赖。留空=整类。 |
+
+在 trace 视图里，被这样忽略的调用显示一个 **「本类已整类忽略」** chip，而不是逐字段删除线——整个调用被一次性挡下了。
 
 ---
 
-## 按路径忽略（excludePaths）
+## 按条件忽略（CEL）
 
-**按路径忽略一个字段及其下面的一切。** 最常用的规则。列在这里的任何内容，在对比运行前就被剔除——适合时间戳、traceId、随机 token 等易变字段。
+**最灵活的规则——条件成立时忽略一处差异。** 当按路径或字段名匹配不够用时用它，例如「忽略任何录制值和回放值都是时间戳的字段」。对比跑完后，每一处差异都用你的条件检验；命中就丢弃。
 
-| 字段 | 类型 | 必填 | 说明 |
-| --- | --- | --- | --- |
-| *（每个元素）* | string | — | 一个 JSON Pointer 路径，如 `/data/traceId`。支持 `*`（单层）和 `**`（任意深度）。UI 里输入的点号形态（`data.traceId`）会被归一化为 `/data/traceId`。 |
+**怎么加：** 打开 **按条件忽略（CEL）** tab，点 **添加规则**，可选起个名字，写条件。**模板选择** 提供现成条件，**可用函数** 列出你能调用的辅助函数。
 
-**可视化：** 全局页的 **按路径忽略（快）** tab。在应用里，往规则表加一条 **path** 行。**YAML：**
+<div className="sp-img">
+  <img src="/img/docs/replay/rule-cel.png" alt="CEL 规则 tab，含示例规则" />
+  <p className="sp-caption">CEL tab，含内置示例规则（忽略 UUID 形态、IP 地址、容忍范围内的时间戳）。每条规则有启停开关，可删除。</p>
+</div>
 
-```yaml
-spec:
-  excludePaths:
-    - /data/traceId
-    - /data/*/updatedAt
-    - /response/body/data/**/timestamp
-```
+**条件里可用的变量：**
 
----
+| 变量 | 含义 |
+| --- | --- |
+| `left` / `right` | 录制值 / 回放值 |
+| `path` / `pointer` | 完整字段路径（点号形态 / JSON Pointer 形态） |
+| `fieldName` | 叶子字段名 |
+| `category` | 依赖类型 |
+| `time_tolerance_ms` | 配置的时间容忍度（默认 `60000`） |
 
-## 白名单路径（includePaths）
+**辅助函数：** `isUUID`、`isIP`、`isTimestamp`、`toTimestamp`、`toNumber`，以及标准 CEL、strings、math 库。
 
-**一个白名单。** 非空时，**只**对比列出的路径，其余全部忽略。留空=对比一切（常态）。极少用——只在你关心一小组固定字段时才用它。
+示例（都有对应模板）：
 
-| 字段 | 类型 | 必填 | 说明 |
-| --- | --- | --- | --- |
-| *（每个元素）* | string | — | 一个 JSON Pointer 路径。`*` 匹配一层，`**` 匹配任意深度。 |
-
-**可视化：** 仅全局页（**包含路径（白名单）** 区）。在应用里，仅 YAML。**YAML：**
-
-```yaml
-spec:
-  includePaths:
-    - /response/body/data/**
-```
+- 忽略两侧都是时间戳的值：`isTimestamp(left) && isTimestamp(right)`
+- 忽略生成的 ID：`fieldName == "requestId" && isUUID(right)`
+- 跳过数据库调用的原始 SQL body：`category == "DATABASE" && fieldName == "body"`
 
 ---
 
-## 依赖类型整类忽略（ignoreCategories） {#ignore-categories-by-dependency-type}
+## 对比前归一化一个值
 
-**整类忽略某种下游依赖类型。** 一个*依赖粒度*的粗开关——与字段路径/值规则相互独立。用它一次性丢掉某种依赖（比如 Redis 或某个数据库调用）产生的全部差异。
+**四舍五入或重塑一个值，让噪声不登记。** 例如给浮点四舍五入，让精度差异不算差异。值在对比看到之前先被转换。
 
-| 字段 | 类型 | 必填 | 说明 |
-| --- | --- | --- | --- |
-| `operationType` | string | 是 | 依赖类型，如 `Database`、`Redis`、`Dubbo`、`HttpClient`。取值不是固定枚举——下拉由你录制里实际出现的依赖类型动态填充。 |
-| `operationName` | string | 否 | 该类型下某个具体依赖。留空=忽略整类。 |
+**怎么加：** 打开 **值转换** tab，填字段 **路径** 和一个作用于值的 CEL **表达式**（变量 `value` 是该字段原始值），点 **添加转换规则**。
 
-**可视化：** 全局页的 **依赖类型** tab（增删即改即存）。在应用里，加一条 **category** 行——类型和名字输入框从录制到的依赖里自动补全。**YAML：**
+<div className="sp-img">
+  <img src="/img/docs/replay/rule-transform.png" alt="值转换 tab" />
+  <p className="sp-caption">值转换 tab：一个路径输入框和一个 CEL 表达式输入框，<code>value</code> 是该字段的原始值。</p>
+</div>
+
+示例——四舍五入到两位小数：路径 `/response/body/data/orders/*/total`，表达式 `math.round(value * 100) / 100`。
+
+---
+
+## 对比前解码一个编码字段
+
+**解码 base64/gzip 的 JSON，让对比看到真实数据。** 当一个字段存的是一坨编码 blob 时，先解码——否则对比只会报「这两个编码串不一样」，而不是里面真正的差异。
+
+**怎么加：** 打开 **解压配置** tab，填字段 **路径**，选 **编码格式**。
+
+<div className="sp-img">
+  <img src="/img/docs/replay/rule-decompress.png" alt="解压配置 tab" />
+  <p className="sp-caption">解压配置 tab：一个路径输入框和一个编码格式下拉。</p>
+</div>
+
+**编码格式选项：** `Base64 + JSON`、`Gzip + Base64 + JSON`、`Plain JSON`。
+
+---
+
+## 顺序会变时匹配数组元素
+
+**把无序数组当集合比，而不是按位置比。** 默认数组按索引比——当元素顺序在录制和回放之间会变时，会产生假的「缺失/新增元素」差异。改配一个匹配策略。
+
+**怎么加：** 打开 **数组匹配** tab，填数组 **路径**，选 **策略**，（对「按主键」）填 **主键字段**。点 **添加数组配置**。
+
+<div className="sp-img">
+  <img src="/img/docs/replay/rule-arrays.png" alt="数组匹配 tab" />
+  <p className="sp-caption">数组匹配 tab：一个路径输入框、一个策略下拉，以及（对「按主键」）一个逗号分隔的主键字段输入框。</p>
+</div>
+
+**策略选项：**
+
+| 策略 | 什么时候用 |
+| --- | --- |
+| 按索引 | 默认——逐位置对比。 |
+| 按主键 | 按一个主键字段配对元素（填主键，如 `orderId`）。 |
+| LCS 算法 | 最长公共子序列——没有主键时的尽力对齐。 |
+
+:::note 外键
+数组还能声明一个到另一个数组的 **外键**（让嵌套引用对齐）。这个通过 diff 里的「声明外键」快捷动作、或在 YAML 视图里配——没有专门的可视化控件。
+:::
+
+---
+
+## 只对特定接口叠加规则
+
+**给某些接口叠加额外规则。** 上面的规则对应用里每个接口生效。当你只需要对某些接口的规则时，加一个 **接口专属** 组——顶层规则仍作基底，这个组的规则叠加在它匹配的接口上。
+
+**怎么加：** 在应用面板的 **接口专属** 区，点 **添加接口规则**，填要匹配的接口——**精确名**（逗号或换行分隔）和/或像 `/api/order/*` 的 **glob 模式**——然后填这个组自己的规则表（路径、CEL、依赖类型规则，和顶层一样）。
+
+**填什么：**
+
+| 字段 | 填什么 |
+| --- | --- |
+| 精确匹配 | 接口名，如 `/api/order/list, /api/order/detail` |
+| Glob 匹配 | 接口模式，如 `/api/order/*` |
+| 规则 | 只对这些接口生效的规则 |
+
+---
+
+## 时间容忍度和忽略的 header
+
+有两项设置在策略默认里，不在 tab 里：
+
+- **时间容忍度**——两个时间值在这么多毫秒内不算差异（默认 `60000`）。也可以用 diff 里的快捷动作设。
+- **忽略的 header**——要跳过的 header **名字**（按名字不按值），glob 模式。新应用默认 `sp-*` 和 `x-sp-*`，用于屏蔽 SoftProbe 自己的 header。
+
+这两项在 YAML 视图里编（时间容忍度也可用 diff 快捷动作）。
+
+---
+
+## diff 里的快捷规则去了哪
+
+当你[在 trace 视图里忽略一个字段](/replay/trace-view#ignoring-a-field)时，它会写进上面某种规则：
+
+| diff 动作 | 变成 |
+| --- | --- |
+| 忽略此字段的差异 | 一条 **按路径忽略** 规则 |
+| 忽略所有 "`{name}`" 字段 | 一条匹配该字段名的 **CEL** 规则 |
+| 设为数组主键 | 一条 **数组** 规则（按主键） |
+| 声明外键 | 一个数组 **外键** |
+
+作用于某接口时落进接口专属组，作用于整个应用时落进顶层。
+
+---
+
+## YAML 视图（给自动化）
+
+上面每种规则都对应 `CompareRulePolicy` 文档里的一个字段，应用面板能把它展示和编辑成 YAML。这主要给自动化、以及用 AI 生成规则用——日常还是可视化编辑器更友好。映射关系：
+
+| 规则类型 | `spec` 下的 YAML key | 关键字段 |
+| --- | --- | --- |
+| 按路径忽略 | `excludePaths` | 路径字符串列表 |
+| 白名单 | `includePaths` | 路径字符串列表 |
+| 依赖类型 | `ignoreCategories` | `operationType`、`operationName` |
+| CEL | `validations` | `expression`、`action: DROP`、`enabled` |
+| 值转换 | `transforms` | `path`、`expression` |
+| 解压 | `decompress` | `path`、`codec` |
+| 数组匹配 | `arrays` | `path`、`strategy`、`keys`、`references` |
+| 时间容忍度 / header | `defaults` | `timeToleranceMs`、`ignoreHeaderPatterns` |
+| 接口专属 | `operationSpecs` | `operationNames`、`operationNamePatterns`、`spec` |
+
+一个精简示例：
 
 ```yaml
 spec:
+  excludePaths: ["/data/traceId", "/data/*/updatedAt"]
   ignoreCategories:
-    - operationType: Redis                       # 忽略所有 Redis 差异
-    - operationType: Database
-      operationName: userDao.selectById          # 只忽略这一个 DB 调用
-```
-
-在 trace 视图里，被整类忽略的调用显示一个 **「本类已整类忽略」** chip，而不是逐字段删除线，因为整个调用被一次性挡下了。
-
----
-
-## CEL 规则（validations）
-
-**用一个条件判定来忽略差异。** 对比跑完后，每一处差异都用一个 [CEL](https://github.com/google/cel-spec) 表达式检验；命中就丢弃该差异。最灵活的规则类型——当路径或字段名匹配不够用时用它（例如「忽略任何录制值和回放值都是时间戳的字段」）。
-
-| 字段 | 类型 | 必填 | 说明 |
-| --- | --- | --- | --- |
-| `expression` | string | 是 | 一个返回布尔的 CEL 表达式。对某处差异求值为 true 时，该差异被丢弃。 |
-| `action` | string | 是 | 目前恒为 `DROP`（丢弃命中的差异）。 |
-| `enabled` | boolean | 是 | 规则是否启用。 |
-| `name` | string | 否 | 规则的可读名字。 |
-| `priority` | number | 否 | 求值优先级。 |
-| `message` | string | 否 | 说明该规则的备注。 |
-
-**表达式里可用的变量：**
-
-| 变量 | 类型 | 含义 |
-| --- | --- | --- |
-| `path` | string | 点号形态的完整字段路径。 |
-| `pointer` | string | JSON Pointer 形态的字段路径。 |
-| `fieldName` | string | 叶子字段名。 |
-| `category` | string | 依赖类型。 |
-| `left` | string | 录制值。 |
-| `right` | string | 回放值。 |
-| `time_tolerance_ms` | int64 | 配置的 [时间容忍度](#defaults)，默认 `60000`。 |
-
-**辅助函数：** `isUUID`、`isIP`、`isTimestamp`、`toTimestamp`、`toNumber`，以及 CEL 标准库、strings、math。
-
-**可视化：** 全局页的 **按条件忽略（CEL）** tab（带模板选择和「可用函数」参考）。在应用里，加一条 **CEL** 行。两处都以 `action: DROP`、`enabled: true` 提交。**YAML：**
-
-```yaml
-spec:
+    - operationType: Redis
   validations:
-    - name: ignore-timestamps
-      expression: 'isTimestamp(left) && isTimestamp(right)'
+    - expression: 'isTimestamp(left) && isTimestamp(right)'
       action: DROP
       enabled: true
-    - name: ignore-generated-ids
-      expression: 'fieldName == "requestId" && isUUID(right)'
-      action: DROP
-      enabled: true
-```
-
----
-
-## 解压（decompress）
-
-**对比前解码编码字段。** 当一个字段存的是 base64 或 gzip 编码的 JSON 时，先解码，让对比看到结构化数据而不是一坨看不懂的编码串（并报出有意义的差异，而不是「这两个编码串不一样」）。
-
-| 字段 | 类型 | 必填 | 说明 |
-| --- | --- | --- | --- |
-| `path` | string | 是 | 要解码的字段路径。 |
-| `codec` | string | 是 | `base64+json`、`gzip+base64+json`、`json` 三者之一。 |
-
-**可视化：** 仅全局页（**解压配置** tab）。在应用里，仅 YAML。**YAML：**
-
-```yaml
-spec:
-  decompress:
-    - path: /response/body/data/payload
-      codec: gzip+base64+json
-```
-
----
-
-## 值转换（transforms）
-
-**对比前归一化一个值。** 对字段值跑一个 CEL 表达式来消除噪声——例如给浮点四舍五入，让精度差异不再登记。
-
-| 字段 | 类型 | 必填 | 说明 |
-| --- | --- | --- | --- |
-| `path` | string | 是 | 目标字段路径。 |
-| `expression` | string | 是 | 一个 CEL 表达式；变量 `value` 是该字段的原始值。 |
-
-**可视化：** 仅全局页（**值转换** tab）。在应用里，仅 YAML。**YAML：**
-
-```yaml
-spec:
-  transforms:
-    - path: /response/body/data/orders/*/total
-      expression: math.round(value * 100) / 100
-```
-
----
-
-## 数组匹配（arrays）
-
-**顺序不稳定时匹配数组元素。** 默认数组按索引比。当元素顺序在录制和回放之间会变时，按索引比会产生假的「缺失/新增元素」差异。配一个匹配策略，把数组当集合来比。
-
-| 字段 | 类型 | 必填 | 说明 |
-| --- | --- | --- | --- |
-| `path` | string | 是 | 数组路径。 |
-| `strategy` | string | 否 | `BY_INDEX`（默认）、`BY_KEY`（按主键字段配对）、`BY_LCS`（最长公共子序列）。 |
-| `keys` | string[] | 否 | `BY_KEY` 用的主键字段。UI 里逗号分隔输入。 |
-| `references` | object[] | 否 | 外键配对——见下。 |
-
-`references` 里每个条目把一个元素字段关联到另一个数组：
-
-| 字段 | 类型 | 说明 |
-| --- | --- | --- |
-| `field` | string | 本数组元素里当外键的字段。 |
-| `target` | string | 目标数组的路径。 |
-| `targetKey` | string | 目标数组里用来配对的主键字段。 |
-
-**可视化：** 仅全局页（**数组匹配** tab）；`keys` 仅在策略为 `BY_KEY` 时可用。`references` 字段在两个可视化编辑器里都不暴露——在 YAML 或用 diff 里的「声明外键」快捷动作配。在应用里，仅 YAML。**YAML：**
-
-```yaml
-spec:
-  arrays:
-    - path: /response/body/data/orders
-      strategy: BY_KEY
-      keys: [orderId]
-    - path: /data/items
-      strategy: BY_KEY
-      references:
-        - field: orderId          # items[].orderId 是外键
-          target: /data/orders     # 指向 orders 数组
-          targetKey: id            # 用 orders[].id 配对
-```
-
----
-
-## 默认值（defaults） {#defaults}
-
-**对比的全局默认。**
-
-| 字段 | 类型 | 必填 | 说明 |
-| --- | --- | --- | --- |
-| `timeToleranceMs` | number | 否 | 时间容忍度（毫秒）。两个时间值差异在此窗口内不算差异。以 `time_tolerance_ms` 暴露给 CEL 规则（默认 `60000`）。 |
-| `ignoreHeaderPatterns` | string[] | 是 | 要忽略的 header **名字** 的 glob 模式（按名字不按值）。新建应用策略默认 `["sp-*", "x-sp-*"]`，用于屏蔽 SoftProbe 自己注入的 header。 |
-
-**可视化：** 两个可视化编辑器都不暴露——在 YAML 里编，或用 diff 里的快捷动作设时间容忍度。**YAML：**
-
-```yaml
-spec:
-  defaults:
-    timeToleranceMs: 60000
-    ignoreHeaderPatterns: ["sp-*", "x-sp-*", "date", "request-id"]
-```
-
----
-
-## 接口专属 overlay（operationSpecs） {#per-endpoint-overlays-operationspecs}
-
-**只对特定接口叠加额外规则。** 顶层 `spec` 对每个接口生效；overlay 把额外规则叠加到它匹配的接口上。当请求命中一个被匹配的接口时，顶层 spec 作基底，命中的 overlay 规则叠加在上（list 字段合并，标量字段覆盖）。
-
-| 字段 | 类型 | 必填 | 说明 |
-| --- | --- | --- | --- |
-| `operationNames` | string[] | 否 | 精确匹配的接口名。 |
-| `operationNamePatterns` | string[] | 否 | glob 匹配接口名。 |
-| `spec` | object | 是 | 只对匹配接口生效的规则。结构与顶层 `spec` 相同，**但**不能再嵌套 `operationSpecs`（overlay 只有一层深）。 |
-
-**可视化：** 仅应用面板，在 **接口专属** 区——每组有自己的一份规则表（按路径忽略、CEL 规则、依赖类型整类忽略）。填精确名和/或 glob 模式（逗号或换行分隔）。**YAML：**
-
-```yaml
-spec:
-  excludePaths: ["/data/serverIp"]          # 对每个接口生效
   operationSpecs:
     - operationNames: ["/api/order/list"]
       spec:
         excludePaths: ["/data/recommendList"]
-    - operationNamePatterns: ["/api/report/**"]
-      spec:
-        validations:
-          - expression: 'fieldName == "cost"'
-            action: DROP
-            enabled: true
 ```
-
-:::note 接口作用域放 operationSpecs，不放 selector
-`selector` 也有 `operationNames` / `operationNamePatterns` 字段，但它们在对比规则策略上**不允许填**——接口作用域一律走 `operationSpecs`。见 [作用域](#scope-selector)。
-:::
-
----
-
-## 作用域（selector） {#scope-selector}
-
-`selector` 决定策略作用于哪些应用。你通常不直接编辑它——入口会替你设好（全局页用 `matchAll: true`；应用面板把 `appIds` 固定为当前应用）。
-
-| 字段 | 类型 | 说明 |
-| --- | --- | --- |
-| `matchAll` | boolean | `true` = 全局默认策略，对所有应用生效。 |
-| `appIds` | string[] | 本策略作用的应用 ID。 |
-| `appIdPattern` | string | 应用 ID 的 glob。 |
-| `excludeAppIds` | string[] | 要排除的应用 ID。 |
-| `envTags` | object | tag key → 允许值；fail-closed。 |
-| `operationNames` / `operationNamePatterns` | string[] | 对比规则策略上**不允许**——用 `operationSpecs`。 |
-
-`metadata.priority` 给重叠的策略排序（应用策略默认 `100`，全局默认为 `0`）。
-
----
-
-## diff 里来的快捷规则
-
-[trace 视图](/replay/trace-view#ignoring-a-field) 里的忽略动作写进的正是这些维度。知道这个映射，日后你在参考里看到一条规则、想知道它从哪来时会有帮助：
-
-| diff 动作 | 写进 |
-| --- | --- |
-| 忽略此字段的差异 | `excludePaths`（按完整路径） |
-| 忽略所有 "`{name}`" 字段 | `validations`（一条匹配该叶子名的 CEL 规则） |
-| 设为数组主键 | `arrays` 且 `strategy: BY_KEY` |
-| 声明外键 | `arrays[].references` |
-| （快捷时间容忍度） | `defaults.timeToleranceMs` |
-
-当动作作用于某接口时，规则落进匹配的 `operationSpecs` overlay；作用于整个应用时，落进顶层 `spec`。
-
-## 字段总表
-
-| 维度 | `spec` key | 元素字段 | 可视化编辑器 |
-| --- | --- | --- | --- |
-| 按路径忽略 | `excludePaths` | JSON Pointer 字符串 | 全局 + 应用 |
-| 白名单路径 | `includePaths` | JSON Pointer 字符串 | 仅全局 |
-| 依赖类型整类忽略 | `ignoreCategories` | `operationType`（必）、`operationName` | 全局 + 应用 |
-| CEL 规则 | `validations` | `expression`（必）、`action`（必）、`enabled`（必）、`name`、`priority`、`message` | 全局 + 应用 |
-| 解压 | `decompress` | `path`（必）、`codec`（必） | 仅全局 |
-| 值转换 | `transforms` | `path`（必）、`expression`（必） | 仅全局 |
-| 数组匹配 | `arrays` | `path`（必）、`strategy`、`keys`、`references` | 仅全局（不含 `references`） |
-| 默认值 | `defaults` | `timeToleranceMs`、`ignoreHeaderPatterns`（必） | 仅 YAML / 快捷动作 |
-| 接口专属 overlay | `operationSpecs` | `operationNames`、`operationNamePatterns`、`spec`（必） | 仅应用 |
