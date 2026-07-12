@@ -93,7 +93,7 @@ After Vector’s one-minute aggregate, expect queryable rows within about a minu
 
 ## Agent log-export health (R2)
 
-The Softprobe Java agent emits log-export health metrics to `{sp.api.url}/v1/metrics` (same Softprobe API base as log export; an optional direct logs OTLP override uses the sibling `/v1/metrics` path). Labels are stored under the same `attributes` map — query them with the filters above (for example `result=success`).
+The Softprobe Java agent emits log-export health metrics to `{sp.api.url}/v1/metrics` (Softprobe API product path). If logs use the optional direct Vector **agent JSON** override (`…:4320/v1/logs`), health metrics still go to Softprobe `{sp.api.url}/v1/metrics` — port `4320` does not accept metrics. Only a true OTLP HTTP logs override (for example `…:4318/v1/logs`) may use a sibling `/v1/metrics` when `sp.api.url` is unset. Labels are stored under the same `attributes` map — query them with the filters above (for example `result=success`).
 
 | Name | Meaning |
 |------|---------|

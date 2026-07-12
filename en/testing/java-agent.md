@@ -51,7 +51,7 @@ Without `sp.api.url` (and without the override above), record and replay still w
 
 ## Log-export health metrics
 
-When Softprobe API URL (or the logs OTLP override) is set, the agent also posts **log-export health metrics** to `{sp.api.url}/v1/metrics` as OTLP JSON. Use these with backend ingest metrics to localize “no agent logs” — see [Metrics data plane](/en/testing/installation/metrics-data-plane#agent-log-export-health-r2).
+When Softprobe API URL is set, the agent posts **log-export health metrics** to `{sp.api.url}/v1/metrics` as OTLP JSON (even if logs use the optional Vector agent-JSON override on `:4320`). Use these with backend ingest metrics to localize “no agent logs” — see [Metrics data plane](/en/testing/installation/metrics-data-plane#agent-log-export-health-r2).
 
 | Metric | What it tells you |
 |--------|-------------------|
