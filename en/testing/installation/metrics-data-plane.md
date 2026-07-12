@@ -91,10 +91,27 @@ Softprobe emits these series from the log ingest/forward path (labels stored und
 
 After Vector’s one-minute aggregate, expect queryable rows within about a minute (CI polls up to **70 seconds**).
 
+## Agent log-export health (R2)
+
+The Softprobe Java agent emits log-export health metrics to `{sp.api.url}/v1/metrics` (same Softprobe API base as log export; an optional direct logs OTLP override uses the sibling `/v1/metrics` path). Labels are stored under the same `attributes` map — query them with the filters above (for example `result=success`).
+
+| Name | Meaning |
+|------|---------|
+| `sp.agent.logs.exporter.init` | Once at exporter init (`result` = `ok` / `disabled` / `error`) |
+| `sp.agent.logs.enqueue` | Each enqueue attempt (`result`, `log_source`) |
+| `sp.agent.logs.export` | Each send-batch attempt (`result`, `http_status_class`) |
+| `sp.agent.logs.export.batch_size` | Batch size histogram |
+| `sp.agent.logs.circuit_open` | Circuit breaker opened |
+
+**Diagnosing “no agent logs”:** compare agent `sp.agent.logs.export` with backend `sp.logs.ingest.*` for the same time window. If init is `disabled`, set `sp.api.url` (or the logs OTLP override). If enqueue shows `dropped_*`, the agent is dropping before the wire. If export shows `http_error` / `5xx`, Softprobe or the pipeline is not ready. If export is `success` but ingest is empty, check URL/path mismatch. See [Java agent](/en/testing/java-agent#log-export-health-metrics).
+
+```bash
+curl -sS "$SP_API_URL/api/recorder/metrics?metric_name=sp.agent.logs.export&since=2026-07-10T18:00:00Z&until=2026-07-10T18:05:00Z&result=success"
+```
+
 ## Out of scope
 
 - Prometheus scrape, Grafana, Greptime, or PromQL as the Softprobe product path
 - Open client SQL / DuckDB as an ingest server
-- `sp metrics` CLI (HTTP API is the R1 contract)
-- Agent-side `sp.agent.logs.*` emitters (later round)
+- `sp metrics` CLI (HTTP API is the product contract)
 - Direct Parquet or storage credentials for end users
