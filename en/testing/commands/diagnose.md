@@ -67,7 +67,7 @@ Writes JSON under `{outDir}/trace-{traceId}/` and returns a summary plus `nextAc
 
 `diagnose replay` returns diff artifacts but not runtime log lines. For each failed case:
 
-1. Copy **`traceId`** from `sp replay case list --plan <planId> --failed --json` (v1 log lookup key — not `replayId`).
+1. Copy **`traceId`** from `sp replay case list --plan <planId> --failed --json` (log lookup key — not `replayId`).
 2. Query unified logs:
 
 ```bash
@@ -79,6 +79,13 @@ jq '[.rows[].source] | group_by(.) | map({source: .[0], n: length})' .sp-work/un
 ```
 
 3. Triage: empty rows + `warnings` → reader/schema issue; empty + no warnings → wrong window or ingest lag; rows from `agent`, `app`, and `backend` → pipeline OK, read `body` and diff artifacts together.
+
+**No `traceId` available (agent init/lifecycle failure before any replay dispatched):** query by `source` instead, with a **narrow** window around the failure — see [Log correlation IDs — Source-mode diagnosis and window cost](/en/testing/reference/log-correlation-ids.md#source-mode-diagnosis-and-window-cost):
+
+```bash
+curl -s "${SP_API_URL}/api/recorder/logs?source=agent&since=${SINCE}&until=${UNTIL}&f.severity=ERROR" \
+  -H "Accept: application/json" -o .sp-work/unified-logs-agent.json
+```
 
 On **`make e2e`** failures, pytest prints **Softprobe correlation** (`trace_id`) and **Unified logs** summaries — use those before widening the investigation.
 
