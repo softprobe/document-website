@@ -185,7 +185,7 @@ description: 配置哪些回放差异不算数——在可视化编辑器里逐�
 有两项设置在策略默认里，不在 tab 里：
 
 - **时间容忍度**——两个时间值在这么多毫秒内不算差异（默认 `60000`）。也可以用 diff 里的快捷动作设。
-- **忽略的 header**——要跳过的 header **名字**（按名字不按值），glob 模式。新应用默认 `sp-*` 和 `x-sp-*`，用于屏蔽 SoftProbe 自己的 header。
+- **忽略的 header**——要跳过的 header **名字**（按名字不按值），glob 模式。新应用默认 `sp-*` 和 `x-sp-*`，用于屏蔽 Softprobe 自己的 header。
 
 这两项在 YAML 视图里编（时间容忍度也可用 diff 快捷动作）。
 
@@ -193,7 +193,7 @@ description: 配置哪些回放差异不算数——在可视化编辑器里逐�
 
 ## diff 里的快捷规则去了哪
 
-当你[在 trace 视图里忽略一个字段](/replay/trace-view#ignoring-a-field)时，它会写进上面某种规则：
+当你[在 trace 视图里忽略一个字段](/replay/trace-view#ignore-a-field)时，它会写进上面某种规则：
 
 | diff 动作 | 变成 |
 | --- | --- |

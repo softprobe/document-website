@@ -1,183 +1,108 @@
 ---
-sidebar_label: Trace View Guide
+sidebar_label: Work through a failed run
 sidebar_position: 2
-title: Reading and Resolving Differences in the Trace View
-description: A complete walkthrough of the replay trace view — reading the diff, ignoring fields, fixing a case verdict, recomparing a run, cancelling an ignore, and reviewing what's already ignored.
+title: Work Through a Failed Replay Run
+description: Open a failed run, find the differences, and accept the ones that aren't real bugs.
 ---
 
-# Reading and Resolving Differences in the Trace View
+# Work Through a Failed Replay Run
 
-Open a replay run, click a failed case, and you land in the trace view: a call tree on the left and, when you select a span, a **diff drawer** on the right showing the recorded response (baseline) next to the replayed response (this run). This guide covers everything you can do there.
+A run failed. Most of the differences are probably noise — timestamps, random tokens — and you want to clear them so the real problems stand out. This page shows you how, starting with the one thing you'll do most often.
 
-If you have not yet read the difference between **fixing a verdict** and **writing a compare rule**, start with the [Overview](/replay/overview#the-two-things-you-can-do-with-a-difference) — the rest of this page assumes it.
+You can:
 
-## Getting to a difference
+- [Ignore a field that always differs](#ignore-a-field) — the common case
+- [Accept a whole case that's fine](#mark-a-case-passed)
+- [Apply a new rule to this run](#recompare-apply-rules-to-an-existing-run) without replaying
+- [Undo an ignore](#un-ignore-a-field)
+- [See everything already ignored](#reviewing-whats-ignored)
 
-1. Open a **replay run** from the Replay list.
-2. Pick a **failed case**. The left panel filters by **Failed / Invalid / Passed** — the failed cases are listed with red dots.
-3. The **call tree** appears on the right: the entry span plus its downstream calls (database, HTTP client, and so on).
+First, get to the differences.
 
-<div className="sp-img">
-  <img src="/img/docs/replay/trace-caselist.png" alt="The failed case list and the call tree" />
-  <p className="sp-caption">Step 1–3: the failed case list (left, filterable) and the call tree of the selected case (right).</p>
-</div>
+## Open a case and read its differences
 
-4. **Click a span** in the tree. The **diff drawer** opens on the right, showing the recorded response next to the replayed response.
+1. Open a **replay run** and pick a **failed case** — the left panel lists them with red dots.
+2. **Click a span** in the call tree on the right.
+
+The **diff drawer** opens: the recorded response on the left, the replayed response on the right. Fields that differ are highlighted; the header shows how many differences the case has.
 
 <div className="sp-img">
   <img src="/img/docs/replay/trace-diff-open.png" alt="The diff drawer open next to the call tree" />
-  <p className="sp-caption">Step 4: clicking a span opens the diff drawer — recorded response (baseline) on the left, replayed response (this run) on the right.</p>
+  <p className="sp-caption">Click a span to open the diff — recorded response (left) next to the replayed response (right).</p>
 </div>
 
-From here you read the diff and decide what to do with each difference. The rest of this guide covers each action.
+## Ignore a field {#ignore-a-field}
 
-## Reading the diff
+**This is the one you'll reach for most.** A field like a timestamp differs on every replay and you never want to compare it.
 
-Each selected span opens a two-pane diff:
+1. In the diff, **hover the line** that differs. An **eye-off icon** appears at the left edge — click it. (Or right-click the line, or use the **Ignore rules** button at the top.)
+2. Choose **Ignore this field's differences**.
+3. Pick **This case only**.
 
-- **Left — Recorded response (baseline)**: what was captured during recording.
-- **Right — Replayed response (this run)**: what the service returned during replay.
-
-The header on the right pane summarizes the comparison:
-
-- **`N differences`** — fields whose values differ and still count. Click the **↑ / ↓** arrows next to it to jump between differences one at a time.
-- **`N ignored`** — fields that differ but matched an ignore rule, so they do not count. Click it to open a small panel listing each ignored field and the rule that caught it. See [Reviewing what's ignored](#reviewing-whats-ignored).
-
-Ignored fields are shown **struck through on both panes** — recorded and replayed — with a grey strikethrough. Both sides are struck so it is clear the field is fully out of the comparison, not just on one side. Hovering a struck-through line shows **"Ignored by rule: `{rule name}`"**.
+The field is struck through, the difference is gone, and the case's pass rate updates. That's it.
 
 <div className="sp-img">
-  <img src="/img/docs/replay/diff-ignored.png" alt="Diff with an ignored field struck through on both panes" />
-  <p className="sp-caption">An ignored field is struck through on both the recorded and replayed panes, and the header shows both the difference count and the ignored count.</p>
+  <img src="/img/docs/replay/ignore-menu.png" alt="The ignore menu" />
+  <p className="sp-caption">Hover a differing line, click the eye-off icon, and choose what to ignore and how widely.</p>
 </div>
 
+### Ignore it more widely
 
-:::note Category-ignored calls
-If an entire downstream dependency type is ignored (for example all Redis or all Database calls, via an [ignore category](/replay/compare-rules#ignore-categories-by-dependency-type)), the drawer shows a grey chip **"Entire category ignored"** instead of per-field strikethroughs. Category ignores are resolved whole, so there are no individual field differences to strike through.
-:::
+**This case only** fixes just the case in front of you — good when you've reviewed it and it's fine. But a timestamp will differ on *every* case, so ignoring it one case at a time is tedious. To stop comparing a field everywhere, pick a wider scope in the same menu:
 
-## Ignoring a field {#ignoring-a-field}
-
-You ignore a field's difference from inside the diff. There are two ways to open the ignore menu:
-
-1. **Hover the differing line.** An **eye-off icon** appears in the gutter. Click it.
-2. **Right-click the line**, or click the **Ignore rules** button at the top of the right pane (it acts on the line your cursor is on — if you have not clicked a field line yet, it prompts *"Click the field line you want to ignore in the diff first"*).
-
-The menu shows the field's path at the top, then two ignore actions:
-
-- **Ignore this field's differences** — ignores exactly this path (for example `/data/downstreamToken`).
-- **Ignore all "`{name}`" fields** — ignores every field with that leaf name anywhere in the response (there may be several).
-
-<div className="sp-img">
-  <img src="/img/docs/replay/ignore-menu.png" alt="Ignore menu with scope submenu" />
-  <p className="sp-caption">The ignore menu, with the scope submenu grouped into "Applies now" (This case only) and "Compare rule · next replay" (This endpoint only / All endpoints).</p>
-</div>
-
-
-Each action opens a **scope submenu** grouped into two sections that spell out when the ignore takes effect:
-
-| Group | Scope | What it does |
+| Pick | Ignores the field for | Takes effect |
 | --- | --- | --- |
-| **Applies now** | **This case only** | Fixes this one case's verdict immediately. Expires when you replay the case again. Does not touch configuration. |
-| **Compare rule · next replay** | **This endpoint only** | Writes a rule scoped to this endpoint. Takes effect on the next replay. |
-| | **All endpoints** | Writes a rule scoped to the whole application. Takes effect on the next replay. |
+| **This case only** | Just this one case | Now |
+| **This endpoint only** | Every case of this endpoint | Next replay |
+| **All endpoints** | The whole application | Next replay |
 
-### What happens after you pick a scope
+The two wider scopes write a **compare rule** (see [Fix a verdict vs write a rule](/replay/overview#fix-a-verdict-or-write-a-rule)). A rule takes effect on the *next* replay, so the run you're looking at doesn't change yet — Softprobe shows a **Recompare** button so you can apply it now. See [Recompare](#recompare-apply-rules-to-an-existing-run).
 
-- **This case only** — the field is accepted on this case right away: it is struck through, the difference count drops, and the case's status and the run's pass rate update. A toast confirms *"Ignored field `{path}` (This case only)"* with an **Undo** action for 8 seconds.
-- **This endpoint only / All endpoints** — a rule is written to your configuration, but **the current run is not changed** — the field is *not* struck through here, because the rule only takes effect on the next replay. A toast confirms *"Rule added: ignore `{path}` (`{scope}`) · takes effect next replay"* with a **Recompare now** action. Click it (or the header button) to apply the rule to this run — see [Recompare](#recompare-apply-rules-to-an-existing-run).
-
-<div className="sp-img">
-  <img src="/img/docs/replay/rule-added-toast.png" alt="Rule-added toast and the Recompare button in the header" />
-  <p className="sp-caption">After an endpoint/application ignore: the toast confirms the rule takes effect next replay (with a Recompare now shortcut), the run's pass rate is unchanged, and a "Rules changed · recompare" button appears in the header.</p>
-</div>
-
-:::tip Why the endpoint/app ignore doesn't change what you're looking at
-This is intentional. A compare rule is configuration for the *next* replay, so it leaves the current run untouched and internally consistent. To see its effect on the current run, recompare.
+:::tip Ignore every field with the same name
+The menu also offers **Ignore all "…" fields** — handy when the same field name (say, `updatedAt`) appears in several places and you want them all gone at once.
 :::
 
-## Marking a whole case as passed
+## Mark a case passed {#mark-a-case-passed}
 
-Sometimes a case's difference is real but acceptable — a deliberate behavior change, or a SoftProbe collection artifact. Rather than ignore individual fields, you can accept the **entire case**.
+Sometimes a difference is real but you're OK with it — an intentional change, or a Softprobe artifact. Instead of ignoring fields one by one, accept the **whole case**.
 
-On a failed case, click **Mark as passed**. A small form asks for:
+1. On the failed case, click **Mark as passed**.
+2. Pick a reason: **Difference is expected (by design)**, or **Softprobe collection/comparison issue**.
+3. Optionally add a note, then confirm.
 
-- **Reason** (required, pick one):
-  - **Difference is expected (by design)** — the change is intentional.
-  - **SoftProbe collection/comparison issue** — the difference is a tooling artifact, not a real change.
-- **Note** (optional) — free text, kept on the record for audit.
-
-Confirm, and the case moves from the failed bucket into the passed bucket; the pass rate updates immediately. This is a per-case verdict (it does not write any rule and does not affect other cases), and the reason and note are stored for later review.
+The case moves to passed and the pass rate updates. Your reason and note are kept for later review.
 
 <div className="sp-img">
   <img src="/img/docs/replay/mark-passed.png" alt="The mark-as-passed form" />
-  <p className="sp-caption">The Mark as passed form: pick a reason (by design, or a SoftProbe issue) and add an optional note.</p>
+  <p className="sp-caption">Pick a reason and add an optional note.</p>
 </div>
 
+## Recompare: apply rules to this run {#recompare-apply-rules-to-an-existing-run}
 
-## Recompare — apply rules to an existing run {#recompare-apply-rules-to-an-existing-run}
+A rule you just wrote only kicks in on the **next** replay — it doesn't change a run that already finished. **Recompare** applies your latest rules to the run you're looking at now, re-checking its stored responses. It does **not** replay any traffic.
 
-A run's results are computed and stored when the replay finishes. Endpoint and application compare rules take effect on the **next** replay — they do not retroactively change a finished run. **Recompare** bridges that gap: it re-judges the run's already-stored responses against the **current** rules and rewrites the run's statistics. It does **not** replay any traffic.
-
-When you add or remove an endpoint/application rule from the diff, a **Recompare** control appears in the run header. It has four states:
-
-| State | Appearance | Meaning |
-| --- | --- | --- |
-| Rules changed | **Rules changed · recompare** (clickable) | You changed a rule; click to apply it to this run. |
-| In progress | **Recomparing `{done}` / `{total}`** (spinner) | Re-judging the run's rows. |
-| Done | **Recompare done: `{passed}` now passing, `{failed}` now failing** | Finished; the list, counts, and pass rate have synced. |
-| Failed | **Recompare failed, click to retry** | Something went wrong; hover for details, click to retry. |
-
-When there is nothing to recompare, the control is hidden — it never nags you while you are just reading results.
-
-Clicking it re-judges every non-exception row in the run against the current rules, then rewrites the per-endpoint pass/fail counts. When it finishes, the case list, counts, and pass rate all update together, and any diff drawer you have open re-draws its strikethroughs to match.
+When you add or remove a rule from the diff, a **Recompare** button appears in the run header. Click it. Softprobe re-checks the run and updates the case list, counts, and pass rate together.
 
 <div className="sp-img">
-  <img src="/img/docs/replay/recompare-done.png" alt="Recompare done state in the run header" />
-  <p className="sp-caption">When recompare finishes, the header shows how many cases turned passing or failing, and the pass rate updates.</p>
+  <img src="/img/docs/replay/recompare-done.png" alt="Recompare done, showing how many cases changed" />
+  <p className="sp-caption">After recompare: how many cases turned passing or failing, and the updated pass rate.</p>
 </div>
 
-
-:::info The Recompare now shortcut
-Every "rule added / removed" toast includes a **Recompare now** action — a shortcut to the same operation, so you can apply a rule immediately without hunting for the header button.
+:::note Recompare is not replay
+Replay re-sends traffic to your service. Recompare only re-judges responses that are already stored, against your current rules — nothing hits your service.
 :::
 
-## Cancelling an ignore
+## Un-ignore a field {#un-ignore-a-field}
 
-To restore comparison for a field you previously ignored, right-click its struck-through line and pick **Un-ignore (restore comparison)** — the rule name that caught it is shown as a subtitle.
+Changed your mind? **Right-click the struck-through line** and choose **Un-ignore (restore comparison)**. The field goes back to being compared.
 
-You do not need to remember how the field was ignored. SoftProbe tries the narrowest scope first and widens automatically:
+You don't need to remember how you ignored it — Softprobe removes whatever is hiding the difference (the case fix, or the rule), and tells you what it removed. If the rule lives in your global defaults, it points you to the [Compare Rules](/replay/compare-rules) page instead of leaving you stuck.
 
-1. **This case** — if the field was fixed on this case, that mark is removed and the difference returns immediately.
-2. **The rule** — otherwise the quick rule that caught it is deleted (by path first, then by field name). The narrowest matching rule (endpoint before application) is removed, and a toast tells you which scope was affected: *"Rule removed: `{target}` (`{scope}`) · takes effect next replay"*, again with a **Recompare now** action.
+## See what's already ignored {#reviewing-whats-ignored}
 
-If no quick rule is found (it may have been removed elsewhere, or it lives in the global default policy), SoftProbe tells you so and points you to the **[Compare rules](/replay/compare-rules)** page — it never leaves you stuck clicking a strikethrough that will not clear.
-
-:::note Un-ignore deletes the original rule
-Cancelling an ignore removes the rule that created it — it does not stack a counter-rule on top. This keeps your configuration clean and reversible.
-:::
-
-## Reviewing what's ignored {#reviewing-whats-ignored}
-
-You do not have to open every span to find out what has been ignored on a case. The trace header shows a **"N ignored"** chip whenever the case has any ignored fields. Click it to open a summary panel titled **"N ignored in this case"** that lists, grouped by call, every ignored field with:
-
-- the field **path**,
-- the **rule** that caught it — shown as **"This case only"** for a per-case verdict fix, or the rule name (falling back to "compare rule") for a configured rule.
+To see everything ignored on a case without opening each span, click the **"N ignored"** chip in the trace header. A panel lists every ignored field, grouped by call, with the rule that caught it. Hover any row to **Un-ignore** it right there.
 
 <div className="sp-img">
-  <img src="/img/docs/replay/ignored-summary.png" alt="The case-level ignored summary panel" />
-  <p className="sp-caption">The ignored summary panel: every ignored field on the case, grouped by call, with the rule that caught it and a per-row Un-ignore action.</p>
+  <img src="/img/docs/replay/ignored-summary.png" alt="The ignored-summary panel" />
+  <p className="sp-caption">Every ignored field on the case, with an Un-ignore action on each row.</p>
 </div>
-
-
-Hover any row and a **Un-ignore** action appears, so you can restore a field to comparison straight from the summary — without opening its span's diff. Because that span's drawer is usually closed, cancelling from here recomputes that row on the spot so the summary stays accurate.
-
-## Quick reference — every action
-
-| Action | Where | What it changes | When it applies |
-| --- | --- | --- | --- |
-| Ignore this field's differences → This case only | Diff line menu | This case's verdict | Immediately (expires on re-replay) |
-| Ignore this field's differences → This endpoint / All endpoints | Diff line menu | A compare rule | Next replay (or recompare) |
-| Ignore all "`{name}`" fields → *(any scope)* | Diff line menu | Same as above, for every same-named field | Same as above |
-| Mark as passed | Case header (failed cases) | The whole case's verdict | Immediately |
-| Recompare | Run header | Re-judges the run vs current rules | Immediately (no replay) |
-| Un-ignore | Struck-through line / summary panel | Removes the case mark or the rule | Immediately (case) / next replay (rule) |

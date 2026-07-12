@@ -185,7 +185,7 @@ Arrays can also declare a **foreign key** to another array (so nested references
 Two settings live on the policy defaults rather than in a tab:
 
 - **Time tolerance** — two time values within this many milliseconds don't count as a difference (default `60000`). You can also set it via the quick action in the diff.
-- **Ignored headers** — header **names** (by name, not value) to skip, as glob patterns. New applications default to `sp-*` and `x-sp-*` to mask SoftProbe's own headers.
+- **Ignored headers** — header **names** (by name, not value) to skip, as glob patterns. New applications default to `sp-*` and `x-sp-*` to mask Softprobe's own headers.
 
 These are edited in the YAML view (or, for time tolerance, the diff quick action).
 
@@ -193,7 +193,7 @@ These are edited in the YAML view (or, for time tolerance, the diff quick action
 
 ## Where quick rules from the diff go
 
-When you [ignore a field in the trace view](/replay/trace-view#ignoring-a-field), it writes into one of the rule types above:
+When you [ignore a field in the trace view](/replay/trace-view#ignore-a-field), it writes into one of the rule types above:
 
 | Diff action | Becomes |
 | --- | --- |
