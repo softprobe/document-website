@@ -48,6 +48,8 @@ const testingSidebarEn = [
     text: 'Replay',
     items: [
       { text: 'Replay and diff', link: '/en/testing/replay-and-diff' },
+      { text: 'Review diffs in the Web UI', link: '/en/testing/review-diffs-in-the-web-ui' },
+      { text: 'Compare rules in the Web UI', link: '/en/testing/compare-rules-web-ui' },
       { text: 'Mock and compare policies', link: '/en/testing/policies#mock-policy' },
       { text: 'Policy YAML guide', link: '/en/testing/policy-yaml-guide' },
     ],
@@ -111,6 +113,8 @@ const testingSidebarZh = [
     text: '回放',
     items: [
       { text: '回放与对比', link: '/zh/testing/replay-and-diff' },
+      { text: '在 Web UI 里查看差异', link: '/zh/testing/review-diffs-in-the-web-ui' },
+      { text: '在 Web UI 里配对比规则', link: '/zh/testing/compare-rules-web-ui' },
       { text: 'Mock 与对比策略', link: '/zh/testing/policies#mock-policy' },
       { text: '策略 YAML 指南', link: '/zh/testing/policy-yaml-guide' },
     ],
