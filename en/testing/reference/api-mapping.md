@@ -76,7 +76,7 @@ Authoritative **REST ↔ CLI** reference for sp-boot (default port **8090**). He
 | * | `/api/storage/replay/query/*` | `sp replay case list` (partial) | investigation |
 | GET | `/api/storage/replay-mock-tree/{replayId}` | `sp replay mock-tree` | investigation |
 
-## Logs
+## Logs (legacy record/replay files)
 
 | Method | Path | CLI | Category |
 |--------|------|-----|-------|
@@ -84,6 +84,18 @@ Authoritative **REST ↔ CLI** reference for sp-boot (default port **8090**). He
 | GET | `/api/record-logs/download` | `sp record logs download` | investigation |
 | GET | `/api/replay-logs/overview` | `sp replay logs overview` | investigation |
 | GET | `/api/replay-logs/download` | `sp replay logs download` | investigation |
+
+## Telemetry recorder (unified logs / metrics)
+
+Product DuckDB-backed lookups over the unified Parquet plane (not the legacy record/replay log file APIs above). See [`sp logs`](/en/testing/commands/logs.md), [`sp metrics`](/en/testing/commands/metrics.md), and [gated SQL](/en/testing/reference/gated-sql.md).
+
+| Method | Path | CLI | Category |
+|--------|------|-----|-------|
+| GET | `/api/recorder/logs` | `sp logs` | investigation |
+| GET | `/api/recorder/logs/schema` | `sp logs schema` | investigation |
+| GET | `/api/recorder/metrics` | `sp metrics` | investigation |
+| GET | `/api/recorder/metrics/schema` | `sp metrics schema` | investigation |
+| POST | `/api/recorder/query` | — (HTTP only; no `sp logs --sql` in R3) | investigation |
 
 ## Reports (subset)
 
