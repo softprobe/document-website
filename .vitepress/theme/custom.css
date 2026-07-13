@@ -105,6 +105,18 @@
   }
 }
 
+/* Widen the content column on wide screens. VitePress caps it at 688px when a
+   right-hand outline is present, which on ≥1440px viewports leaves a ~100px gap
+   between the prose and the outline and makes the page read left-heavy. 848px
+   fills that gap (outline sits ~32px away) while keeping line length readable,
+   and gives wide diff screenshots more room. The doubled class outranks
+   VitePress's own unconditional `.VPDoc.has-aside .content-container` rule. */
+@media (min-width: 1280px) {
+  .VPDoc.has-aside.has-aside .content-container {
+    max-width: 848px;
+  }
+}
+
 .VPNavBarMenuLink.active::after {
   background-color: var(--sp-brand);
 }
