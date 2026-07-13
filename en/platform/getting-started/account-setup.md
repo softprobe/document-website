@@ -66,7 +66,7 @@ Once your tenant group is created:
 4. Click **"Generate Key"**
 
 :::caution Important
-Softprobe uses **public key authentication** instead of traditional Public keys. This means:
+Softprobe uses **public key authentication** instead of traditional API keys. This means:
 
 - Your configuration contains only a public identifier, not a secret
 - No sensitive credentials are stored in your Kubernetes configuration

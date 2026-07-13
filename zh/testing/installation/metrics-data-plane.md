@@ -1,7 +1,5 @@
 # 指标数据平面
 
-> 本页翻译可能滞后于英文版，如有出入以[英文版](/en/testing/installation/metrics-data-plane)为准。
-
 Softprobe 指标复用**与日志相同的采集器和 Parquet 存储体系**：OTLP → Vector → 一分钟聚合 → `metrics/` 数据集下的 Parquet → 产品 HTTP 查询。它面向的是**临时诊断**场景（例如“我们是否收到了 agent 日志？”），而非 Prometheus/Grafana 仪表盘。
 
 需要 chart **v4.3.x+** 并启用[统一日志管道](./server#unified-log-pipeline)（默认启用）。指标会复用该 Vector Deployment —— 无需第二个时序数据库，也无需额外的 pod。

@@ -2,9 +2,9 @@
 
 **When agents use this:** Interpret sp-backend schedule logs around each replay HTTP dispatch — the critical entry and exit boundary between replay scheduling and your application.
 
-These structured lines are emitted by **sp-schedule** (`DefaultHttpReplaySender`) immediately before and after each entry HTTP call. They appear in correlated log lookups (`sp recorder logs`, unified trace log downloads) when `sp.source` is **`backend`** and `service_name` is typically **`sp-backend`**.
+These structured lines are emitted by **sp-schedule** (`DefaultHttpReplaySender`) immediately before and after each entry HTTP call. They appear in correlated log lookups (`sp logs --trace-id …`, unified trace log downloads) when `sp.source` is **`backend`** and `service_name` is typically **`sp-backend`**.
 
-Query logs with the case **`traceId`** (same value as `recordedTraceId` in the message when correlation succeeded). See [recorder commands](../commands/recorder.md).
+Query logs with the case **`traceId`** (same value as `recordedTraceId` in the message when correlation succeeded). See [sp logs command](../commands/logs.md).
 
 ---
 
@@ -79,4 +79,4 @@ These are **not** the entry/exit markers but often appear on the same failed sen
 
 - [2. Replay and diff](/en/testing/replay-and-diff)
 - [Diagnose replay failure example](../examples/agent-diagnose-replay.md)
-- [Recorder commands](../commands/recorder.md)
+- [sp logs command](../commands/logs.md)

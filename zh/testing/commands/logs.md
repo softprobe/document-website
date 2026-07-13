@@ -135,7 +135,7 @@ SoftProbe 工作台的 **View case logs** 操作会自动使用相同的双窗�
 
 ---
 
-## 排查回放失败
+## 排查回放失败 {#troubleshooting-failed-replays}
 
 在 `sp diagnose replay` 或 pytest 失败之后使用。id 来源参见[日志关联 ID](/zh/testing/reference/log-correlation-ids)。
 

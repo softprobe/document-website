@@ -15,8 +15,8 @@ Read-only access to stored recordings (not agent write APIs).
 | `trace <traceId>` | Trace tree and children |
 | `completeness <traceId>` | Full-link recording completeness |
 | `view` | Visualization query/view |
-| `logs overview` | Record-phase log summary |
-| `logs download` | Download record logs to `--out-dir` |
+
+> **日志查询（v1）：** 使用顶层 [`sp logs`](./logs) 加 `--trace-id` —— 不再使用 `sp record logs *`（已在统一日志管线中移除）。
 
 ## Examples
 
@@ -25,8 +25,7 @@ sp record case list --app a1b2c3d4e5f67890 --since -1h --json
 sp record query --trace-id abc --out-dir .sp-work --json
 sp record trace abc --json
 sp record completeness abc --json
-sp record logs overview --trace-id abc --json
-sp record logs download --trace-id abc --out-dir .sp-work --json
+sp logs --trace-id abc --since 2026-06-27T10:00:00Z --until 2026-06-27T10:05:00Z --json
 ```
 
 ## `case list`
@@ -75,16 +74,14 @@ Example JSON shape:
 | `trace children` | GET | `/api/storage/record/trace/{traceId}/children` |
 | `completeness` | GET | `/api/storage/record/completeness` |
 | `view` | POST | `/api/storage/visualization/query` |
-| `logs overview` | GET | `/api/record-logs/overview` |
-| `logs download` | GET | `/api/record-logs/download` |
 
 ## Replaces `sp_api`
 
 | sp_api | sp |
 |--------|-----|
 | `record_data` | `sp record query` |
-| `record_log_overview` | `sp record logs overview` |
-| `download_record_logs` | `sp record logs download` |
+| `record_log_overview` | `sp logs --trace-id …`（见 [logs](./logs)） |
+| `download_record_logs` | `sp logs --trace-id …` → 重定向或用 `jq` |
 
 ## Non-goals
 

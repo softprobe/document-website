@@ -32,14 +32,22 @@ access-token: <JWT>
 
 ### CI / agent hosts
 
-Set a long-lived token from your secret store:
+**CLI**（录制、回放、应用管理）使用你的用户 JWT：
 
 ```bash
 export SP_TOKEN="eyJ..."
 sp app list --json
 ```
 
-Never commit tokens to git. Rotate on leak.
+**Java agent** 在 Softprobe Cloud 上使用**租户 API key**（长期有效，作用域为该组织）：
+
+```bash
+export SP_TENANT_API_KEY="…"   # 来自 sp tenant key ensure 或仪表盘 Settings
+export SP_TENANT_ID="35"
+sp agent command --app <appId> --json
+```
+
+切勿将 token 或 API key 提交到 git。泄露后立即轮换。
 
 ### Token refresh
 

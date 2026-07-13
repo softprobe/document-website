@@ -93,5 +93,5 @@ Softprobe 测试通过 Agent 模块插件织入常见 Java 技术栈。下列为
 ## 相关文档
 
 - [Java Agent](/zh/testing/java-agent)
-- [Mock 策略](/zh/testing/policies)
+- [Mock 策略](/zh/testing/policies#mock-policy)
 - [工作原理](/zh/testing/how-it-works)

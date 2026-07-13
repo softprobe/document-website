@@ -82,17 +82,29 @@ A batch replay job with a `planId`. Created by `sp replay run`, tracked with `sp
 
 Schedule service endpoints: `/api/createPlan`, `/api/progress`, `/api/stopPlan`.
 
-## Trace and replay IDs {#trace-replay-and-plan-ids}
+## Trace、replay 与 plan ID {#trace-replay-and-plan-ids}
 
-| ID | Meaning |
-|----|---------|
-| `traceId` | W3C trace id for a recorded request |
-| `replayId` | Identifier for one replay execution of a case |
-| `planId` | Replay plan container |
-| `planItemId` | Operation-level item within a plan |
-| `diffId` | Comparison result row for deep diff fetch |
+平台 ID 把录制、回放、diff 与**关联日志检索**串联起来。完整参考——每个 ID 的含义、在哪里获取、以及如何分诊统一日志——见 **[日志关联 ID](/zh/testing/reference/log-correlation-ids)**。
 
-Agents should obtain `traceId` via `sp trace find` when users supply business attributes (orderId, caseId) instead of trace IDs.
+| ID | 含义 | 日志查询（v1） |
+|----|------|----------------|
+| `traceId` | 一次录制或回放请求流的 W3C trace id | **`sp logs --trace-id …`** 或 `GET /api/recorder/logs?trace_id=…` —— **唯一的 v1 键** |
+| `replayId` | 一个 case 的一次回放**尝试** | 仅用于 diff/diagnose —— 查日志请从同一 case 行复制 **`traceId`** |
+| `planId` | `sp replay run` 产生的回放计划容器 | case 列表 / diagnose —— 查日志用每个 case 的 **`traceId`** |
+| `planItemId` | 计划内的操作级条目 | 同上 —— 不是日志查询键 |
+| `diffId` | 用于深度 diff 拉取的比对结果行 | 用 `sp replay diff get` —— 不是日志查询键 |
+
+**ID 在 CLI 输出中的位置**
+
+| 命令 | 字段 |
+|------|------|
+| `sp replay run --json` | `planId` |
+| `sp replay case list --plan … --json` | `replayId`、`traceId`、plan item id |
+| `sp replay metadata <replayId> --json` | `traceId`、关联的录制元数据 |
+| `sp trace find … --json` | 解析业务属性时的 `traceId` |
+| `sp diagnose replay <planId> --json` | 带 id 的失败 case，供后续跟进 |
+
+当用户提供业务属性（orderId、caseId）而非 trace id 时，Agent 应通过 `sp trace find` 获取 `traceId`。回放失败后做日志诊断时，使用失败回放 case 中的 **`traceId`** 或 e2e **Softprobe correlation** 块（`trace_id` 字段）——而不是把 `replayId` 当作日志查询键。
 
 ## Historical coupling: schedule ↔ recording
 

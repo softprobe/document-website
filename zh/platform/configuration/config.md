@@ -57,7 +57,7 @@ spec:
 
 | 字段             | 类型   | 描述                    | 默认值                   |
 | ---------------- | ------ | ----------------------- | ------------------------ |
-| `api_key`        | string | 您的 Softprobe API 密钥 | 必填                     |
+| `public_key`     | string | 您的 Softprobe API 密钥 | 必填                     |
 | `sp_backend_url` | string | Softprobe 采集端点      | `https://o.softprobe.ai` |
 | `service_name`   | string | 覆盖服务名称检测        | 自动检测                 |
 
@@ -65,7 +65,7 @@ spec:
 
 ```yaml
 pluginConfig:
-  api_key: "您的 API 密钥"
+  public_key: "您的 API 密钥"
   sp_backend_url: "https://o.softprobe.ai"
   traffic_direction: "server"
   collectionRules:

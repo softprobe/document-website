@@ -34,7 +34,7 @@ This page explains the server-side collection component of Softprobe â€” the SPâ
 ## Security
 
 - Transport encryption: TLS, with egress restricted to approved backend domains
-- Authentication: public key or Public Key validates tenant identity
+- Authentication: a public key validates tenant identity
 - Privacy & compliance: field masking/redaction and configurable capture scope
 
 ## Working with OTLP

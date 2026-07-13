@@ -166,6 +166,8 @@ In all collection rules, the values of the `path`, `host`, and `paths` fields ar
 - For an exact match, write the string directly, for example, `"/api/users"`.
 - To match a specific pattern, use regex syntax, for example, `"/api/v[0-9]+/items"` can match `/api/v1/items` and `/api/v2/items`.
 
+**Note:** If an invalid regular expression is provided, the system automatically falls back to **exact string matching**.
+
 
 ## Service Discovery: Automatically Identifying Your Services
 
