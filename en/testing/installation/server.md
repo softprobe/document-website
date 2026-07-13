@@ -343,7 +343,7 @@ curl -s "$SP_API_URL/api/recorder/logs?trace_id=<id>&since=2026-06-27T10:00:00Z&
 
 v1 has **no** dedicated pipeline health API — a successful trace-id lookup confirms ingest, storage, and query wiring.
 
-The same Vector Deployment also stores Softprobe **metrics** under a sibling `metrics/` Parquet dataset. See [Metrics data plane](./metrics-data-plane.md) for `POST /v1/metrics` and `GET /api/recorder/metrics`.
+The same Vector Deployment also stores Softprobe **metrics** under a sibling `metrics/` Parquet dataset. See [Metrics data plane](./metrics-data-plane) for `POST /v1/metrics` and `GET /api/recorder/metrics`.
 
 ### Agent log export {#agent-log-export}
 
@@ -546,6 +546,6 @@ Point instrumented applications at the in-cluster service:
 
 After sp-backend is healthy, install Softprobe on developer machines: [Install Softprobe Client](./).
 
-For a shared team web workbench on Linux, see [Spcode Service](./index.md#spcode-service) on the client install page.
+For a shared team web workbench on Linux, see [Spcode Service](./index#spcode-service) on the client install page.
 
 Related: [`sp logs`](/en/testing/commands/logs) · [Log correlation IDs](/en/testing/reference/log-correlation-ids)

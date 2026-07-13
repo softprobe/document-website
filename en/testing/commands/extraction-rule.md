@@ -21,4 +21,4 @@
 
 ## Related
 
-- [trace](./trace.md)
+- [trace](./trace)

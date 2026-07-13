@@ -40,7 +40,7 @@ sp replay case list --plan-item item-abc --json
 | `case list` | `/api/report/queryReplayCase`, storage `viewRecord`, schedule report |
 | `case get` | Report query by planItemId |
 
-Exact paths vary by deployment; see [API mapping](/en/testing/reference/api-mapping.md).
+Exact paths vary by deployment; see [API mapping](/zh/testing/reference/api-mapping).
 
 ## Replaces `sp_api`
 
@@ -52,5 +52,5 @@ Exact paths vary by deployment; see [API mapping](/en/testing/reference/api-mapp
 
 ## Related
 
-- [replay-diff](./replay-diff.md)
-- [Diagnose replay failure](/en/testing/examples/agent-diagnose-replay.md)
+- [replay-diff](./replay-diff)
+- [Diagnose replay failure](/zh/testing/examples/agent-diagnose-replay)

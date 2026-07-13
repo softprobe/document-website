@@ -13,7 +13,7 @@ Softprobe 测试用**声明式 YAML 策略**（`apiVersion: softprobe.ai/v1`）�
 | **1 · 录制** | [如何录制](/zh/testing/recording) | 本节 [RecordingPolicy](#recording-policy) |
 | **2 · 回放** | [回放与对比](/zh/testing/replay-and-diff) | 本节 [MockPolicy](#mock-policy)、[CompareRulePolicy](#compare-policy) |
 
-逐字段说明与完整 YAML 示例：[策略 YAML 指南](/zh/testing/policy-yaml-guide) · [CLI 策略索引](/zh/testing/policies/)
+逐字段说明与完整 YAML 示例：[策略 YAML 指南](/zh/testing/policy-yaml-guide) · [sp policy 命令](/zh/testing/commands/policy)
 
 ## CLI 速查
 
@@ -104,6 +104,39 @@ sp policy recording validate -f my-recording.yaml --json
 ## 动态类（非 RecordingPolicy）
 
 本地缓存等方法在**动态类配置**（控制台/API）登记，不在 `RecordingPolicy` 中。回放 Mock 通过 **MockPolicy** 的 `UserDynamic` / `DynamicClass` 规则控制。见 [策略 YAML 指南 · 相关配置](/zh/testing/policy-yaml-guide#related-configuration)。
+
+## 策略类型与服务端模块
+
+| Kind | CLI | 服务端模块 |
+|------|-----|-----------|
+| `RecordingPolicy` | `sp policy recording` | `RecordingPolicyService` |
+| `MockPolicy` | `sp policy mock` | `MockPolicyService` |
+| `CompareRulePolicy` | `sp policy compare` | `CompareRulesService` |
+
+示例文件位于 `sp-policy-rules/src/main/resources/examples/`。
+
+## Agent 工作流
+
+```bash
+# apply 前务必先 validate
+sp policy recording validate -f recording.yaml --json
+sp policy recording apply -f recording.yaml --json
+```
+
+CI 应在 `valid: false` 或非零退出码时失败。
+
+## GitOps
+
+```bash
+sp policy recording export prod-policy-id -o policies/recording-prod.yaml
+git commit -m "chore: sync recording policy"
+```
+
+见 [GitOps 策略](/zh/testing/examples/gitops-policies)。
+
+## 与旧版配置的关系
+
+policy-rules 迁移后，`sp config legacy schedule` 与 Mongo 的 `ServiceCollectConfiguration` **不再**是配置的唯一来源。用 `sp policy recording` 管理同时影响 agent 与回放范围的 operation include/exclude。
 
 ## 相关文档
 

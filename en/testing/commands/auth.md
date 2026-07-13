@@ -59,4 +59,4 @@ None (new). CI uses `SP_TOKEN` directly.
 
 ## Related
 
-- [Authentication guide](/en/testing/agents/authentication.md)
+- [Authentication guide](/en/testing/agents/authentication)

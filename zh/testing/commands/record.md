@@ -92,5 +92,5 @@ Example JSON shape:
 
 ## Related
 
-- [trace](./trace.md)
-- [replay-diff](./replay-diff.md)
+- [trace](./trace)
+- [replay-diff](./replay-diff)

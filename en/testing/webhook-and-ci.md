@@ -274,4 +274,4 @@ Use `curl -G …/api/createPlan` in a post-deploy step; wait and gate in a later
 - [Getting started](/en/testing/getting-started)
 - [CLI: replay](/en/testing/commands/replay)
 - [API mapping](/en/testing/reference/api-mapping)
-- [CLI quickstart](/en/cli/guide/quickstart)
+- [CLI quickstart](/en/testing/getting-started)

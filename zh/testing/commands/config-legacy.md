@@ -43,5 +43,5 @@ Replaces `sp_api` `app_config`.
 
 ## Related
 
-- [policy](/en/testing/commands/policy.md)
-- [concepts](/en/testing/guide/concepts.md)
+- [policy](/zh/testing/commands/policy)
+- [concepts](/zh/testing/agents/concepts)

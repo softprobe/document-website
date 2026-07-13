@@ -2,6 +2,18 @@
 
 This page is the primary entry point for authors of **OpenCode / spcode**, **Claude Code**, **Codex**, **Cursor**, and other agent hosts that invoke SoftProbe through shell tools.
 
+## 把文档喂给你的 Agent
+
+整套文档以 [llmstxt.org](https://llmstxt.org/) 格式发布，Agent 无需抓取 HTML 即可直接消费：
+
+| URL | 内容 |
+|-----|------|
+| [`/llms.txt`](/llms.txt) | 带描述的全站页面索引 —— 体积小的入口 |
+| [`/llms-full.txt`](/llms-full.txt) | 整套文档正文合并为单个纯文本文件 |
+| `‹任意页面›.md` | 单个页面的 Markdown 源（在 URL 后追加 `.md`） |
+
+先让 Agent 读 `/llms.txt`，它会按需跟进到全文或单页 `.md`。
+
 ## Design goals
 
 1. **One process, one job** — each tool call runs a single `sp` command with explicit flags. Do not rely on shell aliases or interactive prompts.
@@ -64,7 +76,7 @@ sequenceDiagram
   Agent->>Agent: Read artifact file locally
 ```
 
-Commands: see [Diagnose replay failure](/en/testing/examples/agent-diagnose-replay.md).
+Commands: see [Diagnose replay failure](/zh/testing/examples/agent-diagnose-replay).
 
 ### Change policy and re-run
 
@@ -94,7 +106,7 @@ Skills should be updated to call `sp` so behavior is consistent outside OpenCode
 | `2` | Usage / missing config / auth | Fix argv or run `sp auth login` / set `SP_TOKEN` |
 | `3` | Auth required | Refresh token |
 
-See [Output contract](./output-contract.md) and [Exit codes](/en/testing/reference/exit-codes.md).
+See [Output contract](./output-contract) and [Exit codes](/zh/testing/reference/exit-codes).
 
 ## What not to call
 
@@ -104,6 +116,6 @@ See [Output contract](./output-contract.md) and [Exit codes](/en/testing/referen
 
 ## Related pages
 
-- [Output contract](./output-contract.md)
-- [Versioning](./versioning.md)
-- [Commands](/en/testing/commands/)
+- [Output contract](./output-contract)
+- [Versioning](./versioning)
+- [Commands](/zh/testing/commands/)

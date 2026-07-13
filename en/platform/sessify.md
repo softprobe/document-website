@@ -8,8 +8,8 @@ SESSIFY is Softprobe's session lifecycle management and distributed tracing SDK,
 Key benefits include automated session management, distributed tracing across microservices, security with Web Crypto API, and zero dependencies for minimal bundle size.
 
 <div class="sp-hero-buttons">
-  <a class="button button--primary" href="/getting-started/quick-start/">Quick Start</a>
-  <a class="button button--secondary" href="/getting-started/account-setup/">Account Setup</a>
+  <a class="button button--primary" href="/en/platform/getting-started/quick-start">Quick Start</a>
+  <a class="button button--secondary" href="/en/platform/getting-started/account-setup">Account Setup</a>
 </div>
 
 ::: info
@@ -169,6 +169,6 @@ Resulting Header: tracestate: x-sp-session-id=...,x-sp-env=production,x-sp-ver=1
 - Append your siteName or customTraceState and the current session_id.
 
 <div class="sp-link-buttons">
-  <a class="button button--primary" href="/getting-started/quick-start/">Quick Start</a>
-  <a class="button button--secondary" href="/getting-started/account-setup/">Account Setup</a>
+  <a class="button button--primary" href="/en/platform/getting-started/quick-start">Quick Start</a>
+  <a class="button button--secondary" href="/en/platform/getting-started/account-setup">Account Setup</a>
 </div>

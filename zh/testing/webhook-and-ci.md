@@ -276,4 +276,4 @@ Webhook 触发可放在 **Post-deployment** 步骤：`curl -G …/api/createPlan
 - [快速开始](/zh/testing/getting-started)
 - [CLI：replay](/zh/testing/commands/replay)
 - [REST API 映射](/zh/testing/reference/api-mapping)
-- [CLI 快速入门](/zh/cli/guide/quickstart)
+- [CLI 快速入门](/zh/testing/getting-started)

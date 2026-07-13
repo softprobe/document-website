@@ -19,7 +19,7 @@ Softprobe captures every user journey as a session graph—making interactions a
 
 ## Record and replay (Java)
 
-For Java traffic capture, replay, and diff, see [Softprobe Testing](/en/testing/getting-started). Automate with the [CLI quickstart](/en/cli/guide/quickstart).
+For Java traffic capture, replay, and diff, see [Softprobe Testing](/en/testing/getting-started). Automate with the [CLI quickstart](/en/testing/getting-started).
 
 ## How it works
 

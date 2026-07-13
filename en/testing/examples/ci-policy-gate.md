@@ -47,5 +47,5 @@ When an agent edits policy YAML in a repo, it should:
 
 ## Related
 
-- [policy](/en/testing/commands/policy.md)
-- [GitOps policies](./gitops-policies.md)
+- [policy](/en/testing/commands/policy)
+- [GitOps policies](./gitops-policies)

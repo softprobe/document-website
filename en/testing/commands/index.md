@@ -8,11 +8,11 @@ Job-oriented commands that follow record-and-replay order:
 
 | Command | Synopsis |
 |---------|----------|
-| [setup](./setup.md) | Configure self-hosted backend URL; optional Spcode Service (Linux) |
-| [demo](./demo.md) | `start`, `traffic`, `replay`, `status`, `stop` — [Travel OTA demo](https://github.com/softprobe/demo-ota) stack |
-| [agent](./agent.md) | `download`, `command` — install jar and JVM flags |
-| [record](./record.md) | `case list` — recorded entry cases before replay |
-| [diagnose](./diagnose.md) | `replay`, `trace` — bundled investigation workflows |
+| [setup](./setup) | Configure self-hosted backend URL; optional Spcode Service (Linux) |
+| [demo](./demo) | `start`, `traffic`, `replay`, `status`, `stop` — [Travel OTA demo](https://github.com/softprobe/demo-ota) stack |
+| [agent](./agent) | `download`, `command` — install jar and JVM flags |
+| [record](./record) | `case list` — recorded entry cases before replay |
+| [diagnose](./diagnose) | `replay`, `trace` — bundled investigation workflows |
 
 ## Platform
 
@@ -20,12 +20,12 @@ Connect, authenticate, manage apps and policies, run replay plans.
 
 | Command | Synopsis |
 |---------|----------|
-| [config](./config.md) | Profiles, URL, init |
-| [auth](./auth.md) | Login, whoami, refresh |
-| [app](./app.md) | List, create, agent status, recent replays |
-| [policy](./policy.md) | Recording, mock, compare YAML policies |
-| [replay](./replay.md) | Run, status, stop, rerun plans |
-| [health](./health.md) | Cluster health |
+| [config](./config) | Profiles, URL, init |
+| [auth](./auth) | Login, whoami, refresh |
+| [app](./app) | List, create, agent status, recent replays |
+| [policy](./policy) | Recording, mock, compare YAML policies |
+| [replay](./replay) | Run, status, stop, rerun plans |
+| [health](./health) | Cluster health |
 | `version` | CLI version string |
 
 ## Investigation
@@ -34,12 +34,12 @@ Recorded data, traces, and replay failures.
 
 | Command | Synopsis |
 |---------|----------|
-| [record](./record.md) | Query recordings and completeness |
-| [trace](./trace.md) | Find traces by business attributes |
-| [logs](./logs.md) | Correlated logs by `trace_id` — see [Log correlation IDs](/en/testing/reference/log-correlation-ids.md) |
-| [replay case](./replay-case.md) | List cases, metadata, mock tree |
-| [replay diff](./replay-diff.md) | Diff artifacts, replay logs |
-| [extraction-rule](./extraction-rule.md) | Business attribute extraction rules |
+| [record](./record) | Query recordings and completeness |
+| [trace](./trace) | Find traces by business attributes |
+| [logs](./logs) | Correlated logs by `trace_id` — see [Log correlation IDs](/en/testing/reference/log-correlation-ids) |
+| [replay case](./replay-case) | List cases, metadata, mock tree |
+| [replay diff](./replay-diff) | Diff artifacts, replay logs |
+| [extraction-rule](./extraction-rule) | Business attribute extraction rules |
 
 Investigation commands support `--out-dir`, `--page`, and `--limit` unless noted.
 
@@ -49,11 +49,11 @@ Groups, system config, diagnostics, legacy APIs.
 
 | Command | Synopsis |
 |---------|----------|
-| [group](./group.md) | User groups and app grants |
-| [grant](./group.md) | App grant listing (`grant list`) |
-| [system](./system.md) | System config keys |
-| [ops](./ops.md) | Storage and schedule diagnostics |
-| [config legacy](./config-legacy.md) | Legacy `/api/config/*` (deprecated) |
+| [group](./group) | User groups and app grants |
+| [grant](./group) | App grant listing (`grant list`) |
+| [system](./system) | System config keys |
+| [ops](./ops) | Storage and schedule diagnostics |
+| [config legacy](./config-legacy) | Legacy `/api/config/*` (deprecated) |
 
 ## Global flags
 
@@ -85,7 +85,7 @@ sp diagnose replay <planId> --failed-only --out-dir .sp-work --json
 
 ## Related
 
-- [Quickstart](/en/testing/getting-started.md)
-- [For AI agents](/en/testing/agents/overview.md)
-- [Examples](/en/testing/examples/agent-diagnose-replay.md)
-- [API mapping](/en/testing/reference/api-mapping.md)
+- [Quickstart](/en/testing/getting-started)
+- [For AI agents](/en/testing/agents/overview)
+- [Examples](/en/testing/examples/agent-diagnose-replay)
+- [API mapping](/en/testing/reference/api-mapping)

@@ -17,7 +17,7 @@ After registration, save `data.appId` from the create response. Attach the SoftP
 
 **Agent status** (`online`, `offline`, `never`) is derived from instance heartbeats, not from the app document alone. The server marks an app `offline` when the freshest heartbeat is older than the configured threshold (default 60 seconds).
 
-**CLI reference:** [sp app](/en/testing/commands/app.md)
+**CLI reference:** [sp app](/zh/testing/commands/app)
 
 ## Java agent
 
@@ -53,7 +53,7 @@ Requirements:
 
 Optional **`sourceEnv`** on the same request is a separate URI used only when you need a non-default source deployment; the demo stack often leaves it as `pro`.
 
-**CLI reference:** [sp replay](/en/testing/commands/replay.md) (`--env` → `targetEnv`)
+**CLI reference:** [sp replay](/zh/testing/commands/replay) (`--env` → `targetEnv`)
 
 ## Recording policy
 
@@ -109,5 +109,5 @@ Test cases are created only via **recording** (instrumented app traffic). Manual
 
 ## Related
 
-- [For agents](./overview.md)
-- [Commands](/en/testing/commands/)
+- [For agents](./overview)
+- [Commands](/zh/testing/commands/)

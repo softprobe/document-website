@@ -16,7 +16,7 @@ All public `sp` commands follow this contract when `--json` is set.
 |-------|------|-------------|
 | `ok` | boolean | Always `true` on exit 0 |
 | `command` | string | Normalized command name for logging |
-| `data` | object | Command-specific payload (see [JSON types](/en/testing/reference/json-types.md)) |
+| `data` | object | Command-specific payload (see [JSON types](/en/testing/reference/json-types)) |
 
 ## CLI envelope (stderr on failure, exit 1)
 

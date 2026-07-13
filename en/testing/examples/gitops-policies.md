@@ -56,5 +56,5 @@ sp --profile prod policy recording apply -f policies/recording-prod.yaml --json
 
 ## Related
 
-- [Policy YAML](/en/testing/policies/)
-- [CI policy gate](./ci-policy-gate.md)
+- [Policy YAML](/en/testing/policies)
+- [CI policy gate](./ci-policy-gate)

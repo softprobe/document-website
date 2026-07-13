@@ -17,7 +17,7 @@ export SP_TOKEN=<jwt>
 sp diagnose replay plan-xyz --failed-only --out-dir .sp-work --json
 ```
 
-Read `data.artifacts[]` paths locally. See [diagnose](/en/testing/commands/diagnose.md).
+Read `data.artifacts[]` paths locally. See [diagnose](/en/testing/commands/diagnose).
 
 ## Manual steps
 
@@ -89,7 +89,7 @@ sp logs --trace-id "$TRACE_ID" --since "$SINCE" --until "$UNTIL" --json > .sp-wo
 
 **Triage:** empty rows + `warnings` → backend/schema skew; empty + no warnings → wrong window or ingest lag; all three `source` values → pipeline OK, focus on diff + log bodies.
 
-See [Log correlation IDs](/en/testing/reference/log-correlation-ids.md) and [sp logs](/en/testing/commands/logs.md).
+See [Log correlation IDs](/en/testing/reference/log-correlation-ids) and [sp logs](/en/testing/commands/logs).
 
 Do **not** use `sp recorder logs --replay-id`, `sp record logs`, `sp replay logs`, or legacy `/api/record-logs/*` / `/api/replay-logs/*`.
 
@@ -116,6 +116,6 @@ When diagnosing SoftProbe replay failures:
 ## Related
 
 - [Replay send log markers](/en/testing/reference/replay-send-log-markers)
-- [replay-diff](/en/testing/commands/replay-diff.md)
-- [sp logs](/en/testing/commands/logs.md)
-- [Log correlation IDs](/en/testing/reference/log-correlation-ids.md)
+- [replay-diff](/en/testing/commands/replay-diff)
+- [sp logs](/en/testing/commands/logs)
+- [Log correlation IDs](/en/testing/reference/log-correlation-ids)

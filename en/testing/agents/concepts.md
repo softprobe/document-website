@@ -17,7 +17,7 @@ After registration, save `data.appId` from the create response. Attach the SoftP
 
 **Agent status** (`online`, `offline`, `never`) is derived from instance heartbeats, not from the app document alone. The server marks an app `offline` when the freshest heartbeat is older than the configured threshold (default 60 seconds).
 
-**CLI reference:** [sp app](/en/testing/commands/app.md)
+**CLI reference:** [sp app](/en/testing/commands/app)
 
 ## Java agent
 
@@ -53,7 +53,7 @@ Requirements:
 
 Optional **`sourceEnv`** on the same request is a separate URI used only when you need a non-default source deployment; the demo stack often leaves it as `pro`.
 
-**CLI reference:** [sp replay](/en/testing/commands/replay.md) (`--env` → `targetEnv`)
+**CLI reference:** [sp replay](/en/testing/commands/replay) (`--env` → `targetEnv`)
 
 ## Recording policy
 
@@ -84,7 +84,7 @@ Schedule service endpoints: `/api/createPlan`, `/api/progress`, `/api/stopPlan`.
 
 ## Trace, replay, and plan ids {#trace-replay-and-plan-ids}
 
-Platform ids tie together recording, replay, diff, and **correlated log search**. For a full reference — what each id means, where to find it, and how to triage unified logs — see **[Log correlation IDs](/en/testing/reference/log-correlation-ids.md)**.
+Platform ids tie together recording, replay, diff, and **correlated log search**. For a full reference — what each id means, where to find it, and how to triage unified logs — see **[Log correlation IDs](/en/testing/reference/log-correlation-ids)**.
 
 | ID | Meaning | Log lookup (v1) |
 |----|---------|-----------------|
@@ -121,5 +121,5 @@ Test cases are created only via **recording** (instrumented app traffic). Manual
 
 ## Related
 
-- [For agents](./overview.md)
+- [For agents](./overview)
 - [Commands](/en/testing/commands/)

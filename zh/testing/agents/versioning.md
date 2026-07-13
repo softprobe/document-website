@@ -29,4 +29,4 @@ Recommended: include `"schemaVersion": 1` in the CLI envelope in a future releas
 
 The CLI targets **sp-boot** unified deployment. Backend URL is configurable; the CLI does not pin to separate storage/schedule hostnames (those are internal to sp-boot).
 
-When backend APIs change, update [API mapping](/en/testing/reference/api-mapping.md) in the same PR as the CLI implementation.
+When backend APIs change, update [API mapping](/zh/testing/reference/api-mapping) in the same PR as the CLI implementation.

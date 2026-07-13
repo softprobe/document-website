@@ -68,6 +68,6 @@ The web UI remains available for visual inspection and manual review; the CLI co
 ## Documentation map
 
 - [Softprobe Testing](/en/testing/) — product overview (Java agent, record/replay, policies)
-- [For AI agents](./overview.md) — start here if you write skills or tools
-- [spcode CLI](./spcode.md) — local autonomous AI engine and interactive terminal workspace
+- [For AI agents](./overview) — start here if you write skills or tools
+- [spcode CLI](/en/testing/installation/code) — local autonomous AI engine and interactive terminal workspace
 - [Commands](/en/testing/commands/) — platform, investigation, and administration

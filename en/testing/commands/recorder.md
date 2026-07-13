@@ -1,6 +1,6 @@
 # sp recorder logs (retired)
 
-**This page is retired.** v1 unified log lookup is **trace-id-only** via [sp logs](./logs.md) and `GET /api/recorder/logs?trace_id=…`.
+**This page is retired.** v1 unified log lookup is **trace-id-only** via [sp logs](./logs) and `GET /api/recorder/logs?trace_id=…`.
 
 | Retired | Replacement |
 |---------|-------------|
@@ -9,7 +9,7 @@
 | `--include-recording-log` | **Removed** — record and replay share the same `trace_id` on replay |
 | `source_summary` in responses | **Removed** — use `jq` to group rows by `source` |
 
-Obtain **`traceId`** from replay case JSON, pytest **Softprobe correlation** output, or [Log correlation IDs](/en/testing/reference/log-correlation-ids.md).
+Obtain **`traceId`** from replay case JSON, pytest **Softprobe correlation** output, or [Log correlation IDs](/en/testing/reference/log-correlation-ids).
 
 Show Recorder product health without exposing catalog or object-store credentials.
 
@@ -80,4 +80,4 @@ sp recorder query \
 - Mutating SQL, unsupported tables, missing bounds, and broad scans fail closed.
 - CLI users and spcode never configure catalog URLs, object-store keys, or standalone query tools.
 - On-prem deployment is enabled through the existing Softprobe Helm chart; production/SaaS manifests are not part of phase one.
-See [sp logs](./logs.md) for flags, examples, triage workflow, and API mapping.
+See [sp logs](./logs) for flags, examples, triage workflow, and API mapping.

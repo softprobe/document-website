@@ -31,4 +31,4 @@ sp grant list --app my-app --json
 
 ## Related
 
-- [app](/en/testing/commands/app.md)
+- [app](/en/testing/commands/app)

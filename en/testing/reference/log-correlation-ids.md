@@ -4,7 +4,7 @@ When a replay fails, you need a **`trace_id`** and a bounded time window to pull
 
 Requires the unified log pipeline (Vector → Parquet) enabled in your deployment or local compose stack. If the pipeline is disabled, log lookups fail fast with a clear error — they do not fall back to other log stores.
 
-**Command reference:** [sp logs](/en/testing/commands/logs.md) · **API:** `GET /api/recorder/logs?trace_id=…&since=…&until=…`
+**Command reference:** [sp logs](/en/testing/commands/logs) · **API:** `GET /api/recorder/logs?trace_id=…&since=…&until=…`
 
 ---
 
@@ -68,7 +68,7 @@ curl -s "${SP_API_URL}/api/recorder/logs?trace_id=${TRACE_ID}&since=${SINCE}&unt
 
 ### Picking `since` / `until`
 
-**When you have case timestamps (`recordTime` and `replayTime`):** run **two** ±2 minute lookups — one around each anchor — and merge rows. Never bridge record time to replay time in a single query. See [sp logs — Case-scoped lookup](/en/testing/commands/logs.md#case-scoped-lookup-dual-windows).
+**When you have case timestamps (`recordTime` and `replayTime`):** run **two** ±2 minute lookups — one around each anchor — and merge rows. Never bridge record time to replay time in a single query. See [sp logs — Case-scoped lookup](/en/testing/commands/logs#case-scoped-lookup-dual-windows).
 
 **Otherwise:**
 
@@ -131,7 +131,7 @@ Recording-phase and replay-phase lines for the **same business request** share o
 
 v1 responses do **not** include `source_summary`. Compute per-source counts locally with `jq` (see above).
 
-See [Log query fields](/en/testing/commands/log-query-fields.md) for the full field reference.
+See [Log query fields](/en/testing/commands/log-query-fields) for the full field reference.
 
 ---
 
@@ -172,13 +172,13 @@ GET /api/recorder/logs?trace_id=<id>&since=<ts>&until=<ts>
 
 Unsupported query parameters (`replay_id`, `plan_id`, `plan_item_id`, `include_recording_log`, …) are rejected before Parquet reads.
 
-See [sp logs](/en/testing/commands/logs.md) for validation rules and JSON shape.
+See [sp logs](/en/testing/commands/logs) for validation rules and JSON shape.
 
 ---
 
 ## Related
 
-- [Concepts — replay plans and ids](./concepts.md#trace-replay-and-plan-ids)
-- [Diagnose replay failure example](/en/testing/examples/agent-diagnose-replay.md)
-- [sp replay case](/en/testing/commands/replay-case.md)
-- [sp trace](/en/testing/commands/trace.md)
+- [Concepts — replay plans and ids](/en/testing/agents/concepts#trace-replay-and-plan-ids)
+- [Diagnose replay failure example](/en/testing/examples/agent-diagnose-replay)
+- [sp replay case](/en/testing/commands/replay-case)
+- [sp trace](/en/testing/commands/trace)
