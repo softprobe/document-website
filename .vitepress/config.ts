@@ -38,10 +38,10 @@ const testingSidebarEn = [
     text: 'Core workflow',
     collapsed: false,
     items: [
-      { text: '1. Record traffic', link: '/en/testing/recording' },
-      { text: '2. Replay & diff', link: '/en/testing/replay-and-diff' },
-      { text: '3. Review diffs', link: '/en/testing/review-diffs-in-the-web-ui' },
-      { text: '4. Configure compare rules', link: '/en/testing/compare-rules-web-ui' },
+      { text: 'Record traffic', link: '/en/testing/recording' },
+      { text: 'Replay & diff', link: '/en/testing/replay-and-diff' },
+      { text: 'Review diffs', link: '/en/testing/review-diffs-in-the-web-ui' },
+      { text: 'Configure compare rules', link: '/en/testing/compare-rules-web-ui' },
     ],
   },
   {
@@ -114,10 +114,10 @@ const testingSidebarZh = [
     text: '核心流程',
     collapsed: false,
     items: [
-      { text: '① 录制流量', link: '/zh/testing/recording' },
-      { text: '② 回放与对比', link: '/zh/testing/replay-and-diff' },
-      { text: '③ 审查差异', link: '/zh/testing/review-diffs-in-the-web-ui' },
-      { text: '④ 配置对比规则', link: '/zh/testing/compare-rules-web-ui' },
+      { text: '录制流量', link: '/zh/testing/recording' },
+      { text: '回放与对比', link: '/zh/testing/replay-and-diff' },
+      { text: '审查差异', link: '/zh/testing/review-diffs-in-the-web-ui' },
+      { text: '配置对比规则', link: '/zh/testing/compare-rules-web-ui' },
     ],
   },
   {

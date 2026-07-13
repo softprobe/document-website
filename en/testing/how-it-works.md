@@ -49,7 +49,7 @@ When recording is enabled, the agent intercepts:
 
 Each interaction is a **mocker** row keyed by `appId`, trace/case identifiers, category, and operation name.
 
-**How to produce cases:** [1. Record traffic](/en/testing/recording) · **Recording scope config:** [Recording policy](/en/testing/policies#recording-policy)
+**How to produce cases:** [Record traffic](/en/testing/recording) · **Recording scope config:** [Recording policy](/en/testing/policies#recording-policy)
 
 ::: tip
 Cases are created only from **instrumented traffic**. There is no supported workflow to hand-author cases in the CLI; send real or synthetic traffic through the app while the agent is recording.
@@ -81,7 +81,7 @@ Typical diff patterns:
 - **Missing call** — replay did not invoke a dependency that was recorded
 - **Extra call** — replay invoked something not present in the recording
 
-Use [compare policy](/en/testing/policies) and [2. Replay and diff](/en/testing/replay-and-diff) to ignore noisy fields (timestamps, tokens, IPs).
+Use [compare policy](/en/testing/policies) and [Replay and diff](/en/testing/replay-and-diff) to ignore noisy fields (timestamps, tokens, IPs).
 
 ## Pedagogical example
 

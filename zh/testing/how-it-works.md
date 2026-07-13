@@ -49,7 +49,7 @@ sequenceDiagram
 
 每次交互是一条 **mocker** 记录，按 `appId`、trace/用例标识、分类与操作名索引。
 
-**如何产生用例：** [① 录制流量](/zh/testing/recording) · **录制范围配置：** [录制策略](/zh/testing/policies#recording-policy)
+**如何产生用例：** [录制流量](/zh/testing/recording) · **录制范围配置：** [录制策略](/zh/testing/policies#recording-policy)
 
 ::: tip
 用例**仅由**已织入 Agent 的流量产生。CLI 不支持手写用例；请在 Agent 录制期间向应用发送真实或合成流量。
@@ -81,7 +81,7 @@ sequenceDiagram
 - **缺调用** — 回放未调用录制时存在的依赖
 - **多调用** — 回放调用了录制中不存在的依赖
 
-通过[对比策略](/zh/testing/policies)与[② 回放与对比](/zh/testing/replay-and-diff)忽略噪声字段（时间戳、令牌、IP 等）。
+通过[对比策略](/zh/testing/policies)与[回放与对比](/zh/testing/replay-and-diff)忽略噪声字段（时间戳、令牌、IP 等）。
 
 ## 示例说明
 

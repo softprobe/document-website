@@ -2,11 +2,11 @@
 title: 审查回放差异
 ---
 
-# ③ 审查回放差异
+# 审查回放差异
 
-**主线 · 第 3 步（共 4 步）**　[① 录制](/zh/testing/recording) → [② 回放](/zh/testing/replay-and-diff) → **③ 审查差异** → [④ 配置对比规则](/zh/testing/compare-rules-web-ui)
+**主线 · 第 3 步（共 4 步）**　[录制](/zh/testing/recording) → [回放](/zh/testing/replay-and-diff) → **审查差异** → [配置对比规则](/zh/testing/compare-rules-web-ui)
 
-[② 回放](/zh/testing/replay-and-diff) 跑完后，工作台会显示哪些用例失败了、为什么失败。本页讲在**网页控制台**里人工审查的流程——读一处 diff，接受那些不是真 bug 的差异。更喜欢命令行？`sp replay case list --plan <planId>` 和 `sp diagnose replay <planId>` 给出同样的失败数据（见 [② 回放与对比](/zh/testing/replay-and-diff)）。
+[回放](/zh/testing/replay-and-diff) 跑完后，工作台会显示哪些用例失败了、为什么失败。本页讲在**网页控制台**里人工审查的流程——读一处 diff，接受那些不是真 bug 的差异。更喜欢命令行？`sp replay case list --plan <planId>` 和 `sp diagnose replay <planId>` 给出同样的失败数据（见 [回放与对比](/zh/testing/replay-and-diff)）。
 
 大多数差异不是 bug。时间戳、随机 token、ID 每次调用都在变——它们永远会「不一样」，但并没有出错。你要做的，是接受它们，让真正的失败露出来。
 
@@ -104,4 +104,4 @@ diff 打开：左边是录制响应，右边是回放响应。不一致的字段
 
 ## 下一步
 
-同一个字段在每条用例上都要忽略一遍？该把它沉淀成规则了 → **[④ 配置对比规则](/zh/testing/compare-rules-web-ui)**：一次配置，以后每次回放都不再误报。
+同一个字段在每条用例上都要忽略一遍？该把它沉淀成规则了 → **[配置对比规则](/zh/testing/compare-rules-web-ui)**：一次配置，以后每次回放都不再误报。

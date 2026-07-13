@@ -37,4 +37,4 @@ sp code
 
 ## 下一步
 
-UI 能打开后，接入流程就齐了。还没跑过完整流程的话从 [快速开始](/zh/testing/getting-started) 走一遍；已有录制用例的话，回放后在这里 [③ 审查差异](/zh/testing/review-diffs-in-the-web-ui)。
+UI 能打开后，接入流程就齐了。还没跑过完整流程的话从 [快速开始](/zh/testing/getting-started) 走一遍；已有录制用例的话，回放后在这里 [审查差异](/zh/testing/review-diffs-in-the-web-ui)。

@@ -2,9 +2,9 @@
 title: Record traffic
 ---
 
-# 1. Record traffic
+# Record traffic
 
-**Core workflow · step 1 of 4**　**1. Record** → [2. Replay](/en/testing/replay-and-diff) → [3. Review diffs](/en/testing/review-diffs-in-the-web-ui) → [4. Configure compare rules](/en/testing/compare-rules-web-ui)
+**Core workflow · step 1 of 4**　**Record** → [Replay](/en/testing/replay-and-diff) → [Review diffs](/en/testing/review-diffs-in-the-web-ui) → [Configure compare rules](/en/testing/compare-rules-web-ui)
 
 Recording means letting your agent-attached application **handle real requests as usual** — every request that flows through, together with the dependency calls it triggers (database, HTTP, Redis, …), is automatically stored as a **case**: the raw material for replay.
 
@@ -47,7 +47,7 @@ The CLI cannot author cases manually. Want more cases? Send more traffic through
 sp record case list --app <your appId> --since -1h --json
 ```
 
-Cases showing up in the list means step 1 of the workflow is done — move on to [2. Replay](/en/testing/replay-and-diff).
+Cases showing up in the list means step 1 of the workflow is done — move on to [Replay](/en/testing/replay-and-diff).
 
 To check completeness per trace, use `sp record completeness <traceId> --json`.
 
@@ -91,4 +91,4 @@ This caps how many instances may record concurrently in an env group. With `1`, 
 
 ## Next
 
-Your cases are in the corpus → **[2. Replay & diff](/en/testing/replay-and-diff)**: turn them into a regression run.
+Your cases are in the corpus → **[Replay & diff](/en/testing/replay-and-diff)**: turn them into a regression run.

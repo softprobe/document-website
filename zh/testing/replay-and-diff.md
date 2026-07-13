@@ -2,11 +2,11 @@
 title: 回放与对比
 ---
 
-# ② 回放与对比
+# 回放与对比
 
-**主线 · 第 2 步（共 4 步）**　[① 录制](/zh/testing/recording) → **② 回放** → [③ 审查差异](/zh/testing/review-diffs-in-the-web-ui) → [④ 配置对比规则](/zh/testing/compare-rules-web-ui)
+**主线 · 第 2 步（共 4 步）**　[录制](/zh/testing/recording) → **回放** → [审查差异](/zh/testing/review-diffs-in-the-web-ui) → [配置对比规则](/zh/testing/compare-rules-web-ui)
 
-回放把 [① 录制](/zh/testing/recording) 攒下的用例变成一次**回归运行**：把当初的入口请求原样打到你的**测试实例**上，依赖调用（数据库、外部 HTTP…）由录制数据自动 Mock，跑完自动对比录制响应和回放响应，给出通过/失败。
+回放把 [录制](/zh/testing/recording) 攒下的用例变成一次**回归运行**：把当初的入口请求原样打到你的**测试实例**上，依赖调用（数据库、外部 HTTP…）由录制数据自动 Mock，跑完自动对比录制响应和回放响应，给出通过/失败。
 
 继续用 `order-service` 的例子：生产流量已经录了一批用例，现在要在测试环境验证新版本代码有没有回归。
 
@@ -68,8 +68,8 @@ sp diagnose replay <planId> --failed-only --out-dir .sp-work --json   # 失败�
 
 **大多数失败不是 bug。** 时间戳、随机 ID、Pod IP、会话令牌每次运行都会变——它们永远会"不一样"，但并没有出错。主线的后两步就是干这个的：
 
-- **[③ 审查差异](/zh/testing/review-diffs-in-the-web-ui)** — 在工作台里逐条看 diff，接受不是 bug 的差异，让真失败露出来
-- **[④ 配置对比规则](/zh/testing/compare-rules-web-ui)** — 把"永远会变"的字段配成规则，以后每次回放都不再误报
+- **[审查差异](/zh/testing/review-diffs-in-the-web-ui)** — 在工作台里逐条看 diff，接受不是 bug 的差异，让真失败露出来
+- **[配置对比规则](/zh/testing/compare-rules-web-ui)** — 把"永远会变"的字段配成规则，以后每次回放都不再误报
 
 规则也能用 YAML 声明（`sp policy compare`），方便进 CI 和 GitOps——见 [策略 YAML 指南 · CompareRulePolicy](/zh/testing/policy-yaml-guide#comparerulepolicy)。
 
@@ -85,7 +85,7 @@ sp diagnose replay <planId> --failed-only --out-dir .sp-work --json   # 失败�
 
 ## 回放范围
 
-回放哪些用例由计划请求的时间范围、操作过滤，以及录制策略的 `operations` 包含/排除决定。想扩大覆盖，回到 [① 录制](/zh/testing/recording) 录更多流量。
+回放哪些用例由计划请求的时间范围、操作过滤，以及录制策略的 `operations` 包含/排除决定。想扩大覆盖，回到 [录制](/zh/testing/recording) 录更多流量。
 
 ## 自动化
 
@@ -93,4 +93,4 @@ sp diagnose replay <planId> --failed-only --out-dir .sp-work --json   # 失败�
 
 ## 下一步
 
-回放跑完有失败的用例 → **[③ 审查差异](/zh/testing/review-diffs-in-the-web-ui)**：看懂它们，把噪声清掉。
+回放跑完有失败的用例 → **[审查差异](/zh/testing/review-diffs-in-the-web-ui)**：看懂它们，把噪声清掉。

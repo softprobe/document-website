@@ -2,9 +2,9 @@
 title: 录制流量
 ---
 
-# ① 录制流量
+# 录制流量
 
-**主线 · 第 1 步（共 4 步）**　**① 录制** → [② 回放](/zh/testing/replay-and-diff) → [③ 审查差异](/zh/testing/review-diffs-in-the-web-ui) → [④ 配置对比规则](/zh/testing/compare-rules-web-ui)
+**主线 · 第 1 步（共 4 步）**　**录制** → [回放](/zh/testing/replay-and-diff) → [审查差异](/zh/testing/review-diffs-in-the-web-ui) → [配置对比规则](/zh/testing/compare-rules-web-ui)
 
 录制就是让挂了 Agent 的应用**正常处理真实请求**——每条经过的请求连同它触发的依赖调用（数据库、HTTP、Redis…）会自动存成一条**用例**，成为后面回放的素材。
 
@@ -47,7 +47,7 @@ CLI 不支持手工构造用例。想要更多用例，就让更多流量流过�
 sp record case list --app <你的 appId> --since -1h --json
 ```
 
-列表里出现用例，第 1 步就完成了——直接进入 [② 回放](/zh/testing/replay-and-diff)。
+列表里出现用例，第 1 步就完成了——直接进入 [回放](/zh/testing/replay-and-diff)。
 
 需要按链路核对完整性时用 `sp record completeness <traceId> --json`。
 
@@ -91,4 +91,4 @@ sp policy recording apply -f recording.yaml --json
 
 ## 下一步
 
-用例已经躺在库里了 → **[② 回放与对比](/zh/testing/replay-and-diff)**：把它们变成一次回归运行。
+用例已经躺在库里了 → **[回放与对比](/zh/testing/replay-and-diff)**：把它们变成一次回归运行。

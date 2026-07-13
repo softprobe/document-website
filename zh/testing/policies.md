@@ -14,8 +14,8 @@ Softprobe 测试用**声明式 YAML 策略**（`apiVersion: softprobe.ai/v1`）�
 
 | 阶段 | 操作文档 | 策略配置 |
 |------|----------|----------|
-| **1 · 录制** | [① 录制流量](/zh/testing/recording) | 本节 [RecordingPolicy](#recording-policy) |
-| **2 · 回放** | [② 回放与对比](/zh/testing/replay-and-diff) | 本节 [MockPolicy](#mock-policy)、[CompareRulePolicy](#compare-policy) |
+| **1 · 录制** | [录制流量](/zh/testing/recording) | 本节 [RecordingPolicy](#recording-policy) |
+| **2 · 回放** | [回放与对比](/zh/testing/replay-and-diff) | 本节 [MockPolicy](#mock-policy)、[CompareRulePolicy](#compare-policy) |
 
 逐字段说明与完整 YAML 示例：[策略 YAML 指南](/zh/testing/policy-yaml-guide) · [sp policy 命令](/zh/testing/commands/policy)
 
@@ -44,7 +44,7 @@ sp policy compare apply -f compare.yaml --json
 
 ## RecordingPolicy {#recording-policy}
 
-**用于主线 [① 录制](/zh/testing/recording) · 产生流量之前应用**
+**用于主线 [录制](/zh/testing/recording) · 产生流量之前应用**
 
 控制 Agent **录什么**：采样、时间窗口、操作包含/排除、序列化跳过、录制时时间 Mock。
 
@@ -54,7 +54,7 @@ sp policy compare apply -f compare.yaml --json
 - **序列化跳过** — `serializeSkip` 按类名与字段名
 - **`timeMock`** — 录制时固定 `java.time.*`
 
-**操作步骤：** [① 录制流量](/zh/testing/recording)
+**操作步骤：** [录制流量](/zh/testing/recording)
 
 **YAML 字段与示例：** [策略 YAML 指南 · RecordingPolicy](/zh/testing/policy-yaml-guide#recordingpolicy)
 
@@ -71,7 +71,7 @@ sp policy recording validate -f my-recording.yaml --json
 
 ## MockPolicy {#mock-policy}
 
-**用于主线 [② 回放](/zh/testing/replay-and-diff) · 执行 `sp replay run` 之前应用**
+**用于主线 [回放](/zh/testing/replay-and-diff) · 执行 `sp replay run` 之前应用**
 
 控制回放时**依赖是否 Mock**、Mock 键容差、跨应用依赖与无匹配 Mock 时的回退。
 
@@ -91,7 +91,7 @@ sp policy recording validate -f my-recording.yaml --json
 
 ## CompareRulePolicy {#compare-policy}
 
-**用于主线 [② 回放](/zh/testing/replay-and-diff) · 执行 `sp replay run` 之前应用**
+**用于主线 [回放](/zh/testing/replay-and-diff) · 执行 `sp replay run` 之前应用**
 
 控制回放**差异对比**中的噪声（非 Mock 行为）。
 
@@ -144,7 +144,7 @@ policy-rules 迁移后，`sp config legacy schedule` 与 Mongo 的 `ServiceColle
 
 ## 相关文档
 
-- [① 录制流量](/zh/testing/recording)
+- [录制流量](/zh/testing/recording)
 - [回放与对比](/zh/testing/replay-and-diff)
 - [策略 YAML 指南](/zh/testing/policy-yaml-guide)
 - [CLI：policy 命令](/zh/testing/commands/policy)

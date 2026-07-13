@@ -37,4 +37,4 @@ Use the dev-box flow when you are the only person on that machine. Choose the sh
 
 ## Next
 
-With the UI opening, your onboarding toolkit is complete. Haven't run the full loop yet? Walk through [Getting started](/en/testing/getting-started); if you already have recorded cases, this UI is where you'll [3. Review diffs](/en/testing/review-diffs-in-the-web-ui) after a replay.
+With the UI opening, your onboarding toolkit is complete. Haven't run the full loop yet? Walk through [Getting started](/en/testing/getting-started); if you already have recorded cases, this UI is where you'll [Review diffs](/en/testing/review-diffs-in-the-web-ui) after a replay.

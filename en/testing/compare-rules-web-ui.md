@@ -2,11 +2,11 @@
 title: Configure compare rules
 ---
 
-# 4. Configure compare rules
+# Configure compare rules
 
-**Core workflow · step 4 of 4**　[1. Record](/en/testing/recording) → [2. Replay](/en/testing/replay-and-diff) → [3. Review diffs](/en/testing/review-diffs-in-the-web-ui) → **4. Configure compare rules**
+**Core workflow · step 4 of 4**　[Record](/en/testing/recording) → [Replay](/en/testing/replay-and-diff) → [Review diffs](/en/testing/review-diffs-in-the-web-ui) → **Configure compare rules**
 
-Compare rules decide which replay differences **don't count**. The principle: *what you configure is skipped; everything else is compared strictly.* Accepting diffs one by one in [3. Review diffs](/en/testing/review-diffs-in-the-web-ui) only covers one run; turning always-changing fields (timestamps, random IDs) into rules stops the false alarms on every future replay — this step closes the loop.
+Compare rules decide which replay differences **don't count**. The principle: *what you configure is skipped; everything else is compared strictly.* Accepting diffs one by one in [Review diffs](/en/testing/review-diffs-in-the-web-ui) only covers one run; turning always-changing fields (timestamps, random IDs) into rules stops the false alarms on every future replay — this step closes the loop.
 
 This page covers setting rules in the **Web console's visual editor** — pick a rule type, fill in a field or two, click add. The visual editor is the friendlier path for day-to-day use; the exact same rules can be written declaratively in the [Policy YAML guide](/en/testing/policy-yaml-guide) for GitOps and CI.
 
@@ -117,6 +117,6 @@ Scoped to an endpoint, it lands in a per-endpoint group; scoped to the whole app
 
 ## Next
 
-With rules in place, go back to [2. Replay](/en/testing/replay-and-diff) and run again (or use **Recompare** in [3. Review diffs](/en/testing/review-diffs-in-the-web-ui) to verify immediately) — whatever remains in the failure list is now worth looking at.
+With rules in place, go back to [Replay](/en/testing/replay-and-diff) and run again (or use **Recompare** in [Review diffs](/en/testing/review-diffs-in-the-web-ui) to verify immediately) — whatever remains in the failure list is now worth looking at.
 
 To automate the whole workflow — deploy-triggered replays and pipeline gates — see [Webhook and CI/CD](/en/testing/webhook-and-ci); for rules in GitOps, see the [Policy YAML guide](/en/testing/policy-yaml-guide).

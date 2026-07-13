@@ -161,9 +161,9 @@ sp replay status <回放计划ID> --watch
 
 跑通演示只是开始。接下来沿**核心流程**四步，把你自己的应用真正管起来：
 
-1. **[① 录制流量](/zh/testing/recording)** — 在生产/预发采集真实用例，建起回归用例库
-2. **[② 回放与对比](/zh/testing/replay-and-diff)** — 每次发版前跑一次回归
-3. **[③ 审查差异](/zh/testing/review-diffs-in-the-web-ui)** — 看懂失败用例，接受不是 bug 的差异
-4. **[④ 配置对比规则](/zh/testing/compare-rules-web-ui)** — 把总在变的字段沉淀成规则，不再误报
+1. **[录制流量](/zh/testing/recording)** — 在生产/预发采集真实用例，建起回归用例库
+2. **[回放与对比](/zh/testing/replay-and-diff)** — 每次发版前跑一次回归
+3. **[审查差异](/zh/testing/review-diffs-in-the-web-ui)** — 看懂失败用例，接受不是 bug 的差异
+4. **[配置对比规则](/zh/testing/compare-rules-web-ui)** — 把总在变的字段沉淀成规则，不再误报
 
 更深入的配置见 [Java Agent 配置](/zh/testing/java-agent)（JVM 参数、Tomcat/Docker）与 [策略概览](/zh/testing/policies)（声明式 YAML，进 CI/GitOps）。

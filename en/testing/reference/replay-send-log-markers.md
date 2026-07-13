@@ -77,6 +77,6 @@ These are **not** the entry/exit markers but often appear on the same failed sen
 
 ## Related
 
-- [2. Replay and diff](/en/testing/replay-and-diff)
+- [Replay and diff](/en/testing/replay-and-diff)
 - [Diagnose replay failure example](../examples/agent-diagnose-replay.md)
 - [sp logs command](../commands/logs.md)

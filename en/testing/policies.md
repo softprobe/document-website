@@ -14,8 +14,8 @@ Separate **how to run each phase** from **policy configuration**:
 
 | Phase | Operations | Policy config |
 |-------|------------|---------------|
-| **1 · Record** | [1. Record traffic](/en/testing/recording) | [RecordingPolicy](#recording-policy) below |
-| **2 · Replay** | [2. Replay and diff](/en/testing/replay-and-diff) | [MockPolicy](#mock-policy), [CompareRulePolicy](#compare-policy) below |
+| **1 · Record** | [Record traffic](/en/testing/recording) | [RecordingPolicy](#recording-policy) below |
+| **2 · Replay** | [Replay and diff](/en/testing/replay-and-diff) | [MockPolicy](#mock-policy), [CompareRulePolicy](#compare-policy) below |
 
 Field reference and full examples: [Policy YAML guide](/en/testing/policy-yaml-guide) · [sp policy command](/en/testing/commands/policy)
 
@@ -44,7 +44,7 @@ Full lifecycle: [Getting started](/en/testing/getting-started)
 
 ## RecordingPolicy {#recording-policy}
 
-**For main-line [1. Record](/en/testing/recording) · apply before traffic**
+**For main-line [Record](/en/testing/recording) · apply before traffic**
 
 Controls **what the agent records**: sampling, time window, operation include/exclude, serialize skip, record-time time mock.
 
@@ -54,7 +54,7 @@ Controls **what the agent records**: sampling, time window, operation include/ex
 - **Serialize skip** — `serializeSkip` by class and field names
 - **`timeMock`** — fix `java.time.*` at record time
 
-**Operational steps:** [1. Record traffic](/en/testing/recording)
+**Operational steps:** [Record traffic](/en/testing/recording)
 
 **YAML fields and examples:** [Policy YAML guide · RecordingPolicy](/en/testing/policy-yaml-guide#recordingpolicy)
 
@@ -71,7 +71,7 @@ sp policy recording validate -f my-recording.yaml --json
 
 ## MockPolicy {#mock-policy}
 
-**For main-line [2. Replay](/en/testing/replay-and-diff) · apply before `sp replay run`**
+**For main-line [Replay](/en/testing/replay-and-diff) · apply before `sp replay run`**
 
 Controls **whether dependencies are mocked** at replay, mock-key tolerance, cross-app dependencies, and fallback when no mock matches.
 
@@ -91,7 +91,7 @@ Global defaults **force-mock** `DynamicClass:SystemTime.**` and `RandomSource.**
 
 ## CompareRulePolicy {#compare-policy}
 
-**For main-line [2. Replay](/en/testing/replay-and-diff) · apply before `sp replay run`**
+**For main-line [Replay](/en/testing/replay-and-diff) · apply before `sp replay run`**
 
 Controls **diff noise** during replay comparison (not mock behavior).
 
@@ -144,7 +144,7 @@ See [GitOps policies](/en/testing/examples/gitops-policies).
 
 ## Related
 
-- [1. Record traffic](/en/testing/recording)
+- [Record traffic](/en/testing/recording)
 - [Replay and diff](/en/testing/replay-and-diff)
 - [Policy YAML guide](/en/testing/policy-yaml-guide)
 - [CLI: policy command](/en/testing/commands/policy)

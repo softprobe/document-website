@@ -2,11 +2,11 @@
 title: Replay and diff
 ---
 
-# 2. Replay and diff
+# Replay and diff
 
-**Core workflow · step 2 of 4**　[1. Record](/en/testing/recording) → **2. Replay** → [3. Review diffs](/en/testing/review-diffs-in-the-web-ui) → [4. Configure compare rules](/en/testing/compare-rules-web-ui)
+**Core workflow · step 2 of 4**　[Record](/en/testing/recording) → **Replay** → [Review diffs](/en/testing/review-diffs-in-the-web-ui) → [Configure compare rules](/en/testing/compare-rules-web-ui)
 
-Replay turns the cases you collected in [1. Record](/en/testing/recording) into a **regression run**: the original entry requests are sent to your **test instance** as-is, dependency calls (database, external HTTP, …) are automatically mocked from recorded data, and when the run finishes each case gets an automatic pass/fail from comparing recorded vs replayed responses.
+Replay turns the cases you collected in [Record](/en/testing/recording) into a **regression run**: the original entry requests are sent to your **test instance** as-is, dependency calls (database, external HTTP, …) are automatically mocked from recorded data, and when the run finishes each case gets an automatic pass/fail from comparing recorded vs replayed responses.
 
 Continuing the `order-service` example: production traffic has built a corpus of cases, and now you want to verify a new build in the test environment for regressions.
 
@@ -68,8 +68,8 @@ Once you have a difference's `diffId`, inspect the full single diff: `sp replay 
 
 **Most failures are not bugs.** Timestamps, random IDs, pod IPs, and session tokens change on every run — they will always "differ" without anything being wrong. The last two workflow steps exist for exactly this:
 
-- **[3. Review diffs](/en/testing/review-diffs-in-the-web-ui)** — read each diff in the workbench, accept the ones that aren't real bugs, and let true failures stand out
-- **[4. Configure compare rules](/en/testing/compare-rules-web-ui)** — turn always-changing fields into rules so future replays stop false-alarming
+- **[Review diffs](/en/testing/review-diffs-in-the-web-ui)** — read each diff in the workbench, accept the ones that aren't real bugs, and let true failures stand out
+- **[Configure compare rules](/en/testing/compare-rules-web-ui)** — turn always-changing fields into rules so future replays stop false-alarming
 
 Rules can also be declared in YAML (`sp policy compare`) for CI and GitOps — see [Policy YAML guide · CompareRulePolicy](/en/testing/policy-yaml-guide#comparerulepolicy).
 
@@ -85,7 +85,7 @@ Rules can also be declared in YAML (`sp policy compare`) for CI and GitOps — s
 
 ## Replay scope
 
-Which cases replay is determined by the plan request's time range and operation filters, plus the recording policy's `operations` include/exclude. To expand coverage, go back to [1. Record](/en/testing/recording) and record more traffic.
+Which cases replay is determined by the plan request's time range and operation filters, plus the recording policy's `operations` include/exclude. To expand coverage, go back to [Record](/en/testing/recording) and record more traffic.
 
 ## Automation
 
@@ -93,4 +93,4 @@ Humans review diffs in the workbench; CI and AI agents should use `sp diagnose r
 
 ## Next
 
-The run finished with failing cases → **[3. Review diffs](/en/testing/review-diffs-in-the-web-ui)**: understand them and clear the noise.
+The run finished with failing cases → **[Review diffs](/en/testing/review-diffs-in-the-web-ui)**: understand them and clear the noise.

@@ -2,11 +2,11 @@
 title: 配置对比规则
 ---
 
-# ④ 配置对比规则
+# 配置对比规则
 
-**主线 · 第 4 步（共 4 步）**　[① 录制](/zh/testing/recording) → [② 回放](/zh/testing/replay-and-diff) → [③ 审查差异](/zh/testing/review-diffs-in-the-web-ui) → **④ 配置对比规则**
+**主线 · 第 4 步（共 4 步）**　[录制](/zh/testing/recording) → [回放](/zh/testing/replay-and-diff) → [审查差异](/zh/testing/review-diffs-in-the-web-ui) → **配置对比规则**
 
-对比规则决定哪些回放差异**不算数**。原则：*配了的就跳过，没配的严格对比。* [③ 审查差异](/zh/testing/review-diffs-in-the-web-ui) 里逐条接受只管一次；把总在变的字段（时间戳、随机 ID）沉淀成规则，以后每次回放都不再误报——主线到这一步就闭环了。
+对比规则决定哪些回放差异**不算数**。原则：*配了的就跳过，没配的严格对比。* [审查差异](/zh/testing/review-diffs-in-the-web-ui) 里逐条接受只管一次；把总在变的字段（时间戳、随机 ID）沉淀成规则，以后每次回放都不再误报——主线到这一步就闭环了。
 
 本页讲在**网页控制台的可视化编辑器**里配规则——选一种规则、填一两个字段、点添加。日常用可视化编辑器最友好；同样的规则也能声明式地写进 [策略 YAML 指南](/zh/testing/policy-yaml-guide)，用于 GitOps 与 CI。
 
@@ -117,6 +117,6 @@ title: 配置对比规则
 
 ## 下一步
 
-规则配好后，回到 [② 回放](/zh/testing/replay-and-diff) 再跑一次（或在 [③ 审查差异](/zh/testing/review-diffs-in-the-web-ui) 里用**重新比对**立即验证），失败列表里剩下的就都是值得看的真差异了。
+规则配好后，回到 [回放](/zh/testing/replay-and-diff) 再跑一次（或在 [审查差异](/zh/testing/review-diffs-in-the-web-ui) 里用**重新比对**立即验证），失败列表里剩下的就都是值得看的真差异了。
 
 想把整条主线自动化——部署后自动回放、流水线门禁——见 [Webhook 与 CI/CD](/zh/testing/webhook-and-ci)；规则进 GitOps 见 [策略 YAML 指南](/zh/testing/policy-yaml-guide)。

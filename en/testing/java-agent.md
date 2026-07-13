@@ -112,7 +112,7 @@ To limit impact on live traffic, the agent implements **backpressure** when over
 
 ### Queue overflow
 
-1. Recording tasks enter an in-memory queue (default capacity **1024**).
+Recording tasks enter an in-memory queue (default capacity **1024**).
 2. If the queue is full, recording stops immediately.
 3. After ~30s, a health task lowers sampling (~20%) and retries.
 4. If still full after ~5 minutes, frequency drops again until a minimum (~once per hour).
@@ -132,6 +132,6 @@ The **same** agent JAR must be attached on the instance that receives replay tra
 
 ## Next
 
-Agent attached and `sp app status` shows online? Onboarding is done → head into the core workflow with **[1. Record traffic](/en/testing/recording)**.
+Agent attached and `sp app status` shows online? Onboarding is done → head into the core workflow with **[Record traffic](/en/testing/recording)**.
 
 Related: [Download Java agent](/en/testing/download-java-agent) · [Supported frameworks](/en/testing/supported-frameworks) · [Getting started](/en/testing/getting-started)
