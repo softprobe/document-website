@@ -41,11 +41,10 @@ const testingSidebarEn = [
     text: 'Replay & compare',
     collapsed: false,
     items: [
-      { text: 'Replay comparison overview', link: '/en/testing/replay/overview' },
       { text: 'Replay and diff', link: '/en/testing/replay-and-diff' },
-      { text: 'Work through a failed run', link: '/en/testing/replay/handle-failed-run' },
-      { text: 'Compare rules reference', link: '/en/testing/replay/compare-rules' },
-      { text: 'Mock & compare policies', link: '/en/testing/policies#mock-policy' },
+      { text: 'Review diffs in the Web UI', link: '/en/testing/review-diffs-in-the-web-ui' },
+      { text: 'Compare rules in the Web UI', link: '/en/testing/compare-rules-web-ui' },
+      { text: 'Mock and compare policies', link: '/en/testing/policies#mock-policy' },
     ],
   },
   {
@@ -122,10 +121,9 @@ const testingSidebarZh = [
     text: '回放与对比',
     collapsed: false,
     items: [
-      { text: '回放对比概览', link: '/zh/testing/replay/overview' },
       { text: '回放与差异', link: '/zh/testing/replay-and-diff' },
-      { text: '处理失败的运行', link: '/zh/testing/replay/handle-failed-run' },
-      { text: '对比规则参考', link: '/zh/testing/replay/compare-rules' },
+      { text: '在 Web UI 里查看差异', link: '/zh/testing/review-diffs-in-the-web-ui' },
+      { text: '在 Web UI 里配对比规则', link: '/zh/testing/compare-rules-web-ui' },
       { text: 'Mock 与对比策略', link: '/zh/testing/policies#mock-policy' },
     ],
   },
