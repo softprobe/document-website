@@ -1,37 +1,36 @@
 ---
 layout: home
-title: Softprobe 文档
+title: Softprobe
 titleTemplate: false
 hero:
-  name: Softprobe 文档
-  text: 平台可观测性、Java 录制回放测试与 sp 自动化
+  name: Softprobe
+  text: 录制真实流量，用自动 Mock 回放，无需编写测试即可对比
   tagline: 零代码改动 · 全上下文可见性 · 成本优化
   actions:
     - theme: brand
-      text: 平台 — 快速开始
+      text: 从测试开始
+      link: /zh/testing/getting-started
+    - theme: alt
+      text: 工作原理
+      link: /zh/testing/how-it-works
+    - theme: alt
+      text: 业务观测
       link: /zh/platform/getting-started/quick-start
-    - theme: alt
-      text: 测试 — 概览
-      link: /zh/testing/
-    - theme: alt
-      text: 安装 Softprobe
-      link: /zh/testing/installation/
 features:
-  - title: 平台
-    details: Istio Wasm 代理、SESSIFY 会话上下文、仪表盘与 GKE 部署指南。
+  - title: 我是开发者
+    details: 给服务挂上 Java Agent，录制真实流量，把它作为回归测试回放，依赖自动 Mock。
+    link: /zh/testing/getting-started
+    linkText: 接入你的应用
+  - title: 我负责平台 / CI
+    details: 用 Helm 安装 Softprobe 服务端，在 CI 中对回放做卡点，用 sp CLI 让 AI 编码 Agent 驱动整个流程。
+    link: /zh/testing/webhook-and-ci
+    linkText: 自动化与 AI 代理
+  - title: 我需要可观测性
+    details: Istio Wasm 代理与 SESSIFY 会话上下文汇入业务流仪表盘 —— 按平台指南部署到 GKE。
     link: /zh/platform/getting-started/quick-start
-  - title: 测试
-    details: Java 录制回放 — sp-agent.jar 采集流量、Mock 依赖、自动对比。
-    link: /zh/testing/
-  - title: 命令与自动化
-    details: sp 命令规范 — 安装、编码、诊断、升级、录制、回放、策略与 --json 输出。
-    link: /zh/testing/commands/
+    linkText: 业务观测
 ---
 
 ::: info
-同一站点包含 **平台**（可观测性）与 **测试**（Java 录制/回放和 `sp` 自动化）两类产品区域。
+同一站点包含 **测试**（Java 录制/回放和 `sp` 自动化）与 **业务观测**（Istio/SESSIFY）两类产品区域，请按上方角色选择路径。
 :::
-
-了解录制回放？从 [测试概览](/zh/testing/) 开始。
-
-需要自动化？参见 [测试命令](/zh/testing/commands/)。

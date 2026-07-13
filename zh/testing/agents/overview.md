@@ -2,6 +2,18 @@
 
 This page is the primary entry point for authors of **OpenCode / spcode**, **Claude Code**, **Codex**, **Cursor**, and other agent hosts that invoke SoftProbe through shell tools.
 
+## 把文档喂给你的 Agent
+
+整套文档以 [llmstxt.org](https://llmstxt.org/) 格式发布，Agent 无需抓取 HTML 即可直接消费：
+
+| URL | 内容 |
+|-----|------|
+| [`/llms.txt`](/llms.txt) | 带描述的全站页面索引 —— 体积小的入口 |
+| [`/llms-full.txt`](/llms-full.txt) | 整套文档正文合并为单个纯文本文件 |
+| `‹任意页面›.md` | 单个页面的 Markdown 源（在 URL 后追加 `.md`） |
+
+先让 Agent 读 `/llms.txt`，它会按需跟进到全文或单页 `.md`。
+
 ## Design goals
 
 1. **One process, one job** — each tool call runs a single `sp` command with explicit flags. Do not rely on shell aliases or interactive prompts.

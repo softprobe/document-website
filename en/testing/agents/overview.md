@@ -2,6 +2,18 @@
 
 This page is the primary entry point for authors of **OpenCode / spcode**, **Claude Code**, **Codex**, **Cursor**, and other agent hosts that invoke SoftProbe through shell tools.
 
+## Feed these docs to your agent
+
+The whole documentation set is published in [llmstxt.org](https://llmstxt.org/) format so an agent can ingest it without scraping HTML:
+
+| URL | Contents |
+|-----|----------|
+| [`/llms.txt`](/llms.txt) | Curated index of every page with descriptions — a small entry point |
+| [`/llms-full.txt`](/llms-full.txt) | The entire docs corpus in one plain-text file |
+| `‹any page›.md` | The Markdown source of a single page (append `.md` to its URL) |
+
+Point your agent at `/llms.txt` first; it will follow links into the full text or per-page `.md` as needed.
+
 ## Design goals
 
 1. **One process, one job** — each tool call runs a single `sp` command with explicit flags. Do not rely on shell aliases or interactive prompts.

@@ -1,5 +1,6 @@
 import { defineConfig } from 'vitepress'
 import { withMermaid } from 'vitepress-plugin-mermaid'
+import llmstxt from 'vitepress-plugin-llms'
 import { themeConfigForLocale, type DocLocale } from './theme/shared'
 
 // Testing sidebar, organised by Diátaxis (explanation → how-to → reference).
@@ -272,6 +273,15 @@ export default withMermaid(
     optimizeDeps: {
       include: ['mermaid', 'vitepress-plugin-mermaid'],
     },
+    plugins: [
+      // Generate /llms.txt (index) and /llms-full.txt (all docs) plus a .md
+      // endpoint per page, so AI coding agents can consume the docs directly.
+      llmstxt({
+        ignoreFiles: ['**/implementer/**'],
+        description:
+          'Softprobe — business observability (Istio/SESSIFY) and Java record-replay testing driven by the sp CLI and AI agents.',
+      }),
+    ],
   },
   head: [
     ['link', { rel: 'icon', href: '/img/sp-logo-trans.ico' }],
