@@ -17,6 +17,12 @@
      buttons) keeps the brand purple. */
   --sp-brand-link: #7a2eff;
 
+  /* Narrower sidebar than the 272px default — the longest label
+     ("Softprobe 服务端（Helm）") renders at 175px, so a ~200px text column
+     (240px track − paddings) fits every item on one line and gives the
+     content area 32px more room. */
+  --vp-sidebar-width: 240px;
+
   --vp-c-brand-1: var(--sp-brand);
   --vp-c-brand-2: var(--sp-brand-dark);
   --vp-c-brand-3: var(--sp-brand-darker);
