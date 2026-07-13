@@ -13,7 +13,7 @@ A registered service under test. Recording, replay, policies, and extraction rul
 | `appName` | Unique label supplied at registration (`sp app create <appName>`). |
 | `appId` | System-generated id (16-character hex). Configure the Java agent and CLI with this value. |
 
-After registration, save `data.appId` from the create response. Attach the SoftProbe Java agent to your JVM with that id and your sp-boot URL, then confirm connectivity with `sp app status <appId>` or `sp app list --json`.
+After registration, save `data.appId` from the create response. Attach the SoftProbe Java agent to your JVM with that id and your sp-backend URL, then confirm connectivity with `sp app status <appId>` or `sp app list --json`.
 
 **Agent status** (`online`, `offline`, `never`) is derived from instance heartbeats, not from the app document alone. The server marks an app `offline` when the freshest heartbeat is older than the configured threshold (default 60 seconds).
 
@@ -33,7 +33,7 @@ Minimum startup flags:
 java \
   -javaagent:/opt/softprobe/sp-agent.jar \
   -Dsp.app.id=<appId> \
-  -Dsp.api.url=http://<sp-boot-host>:8090 \
+  -Dsp.api.url=http://<sp-backend-host>:8090 \
   -jar app.jar
 ```
 
@@ -49,7 +49,7 @@ Requirements:
 
 - Use a reachable base URL for the app under test, including scheme and host (and port when not default), for example `http://travel-ota:8080` or `https://order-service.internal:8443`.
 - The URL must parse as a URI with a non-empty host; otherwise plan validation fails with *requested target env unable load active instance*.
-- This is independent of **`SP_API_URL`** / `api_url` in CLI config, which points at sp-boot (storage, report, schedule APIs), not at the service being replayed.
+- This is independent of **`SP_API_URL`** / `api_url` in CLI config, which points at sp-backend (storage, report, schedule APIs), not at the service being replayed.
 
 Optional **`sourceEnv`** on the same request is a separate URI used only when you need a non-default source deployment; the demo stack often leaves it as `pro`.
 

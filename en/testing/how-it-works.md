@@ -12,7 +12,7 @@ Softprobe Testing captures a **transaction**: one inbound request plus every dep
 sequenceDiagram
   participant App as App under test
   participant Agent as Java agent
-  participant Storage as sp-boot storage
+  participant Storage as sp-backend storage
   participant Redis as Redis mock cache
   participant Mongo as MongoDB
   participant Schedule as Replay schedule
@@ -57,7 +57,7 @@ Cases are created only from **instrumented traffic**. There is no supported work
 
 ## Replay phase
 
-A **replay plan** selects recorded cases and drives entry HTTP traffic to **`targetEnv`** — the base URL of the service under test (for example `http://order-service.test:8080`). This is **not** the same as `SP_API_URL`, which points at sp-boot.
+A **replay plan** selects recorded cases and drives entry HTTP traffic to **`targetEnv`** — the base URL of the service under test (for example `http://order-service.test:8080`). This is **not** the same as `SP_API_URL`, which points at sp-backend.
 
 During replay:
 
@@ -114,7 +114,7 @@ Dynamic classes (local cache, encryption helpers, system time) use the same mode
 | **MongoDB** | Durable recordings, replay plans, compare results |
 | **Redis** | Hot mock cache during replay (`record:{category}:{recordId}:…`) |
 
-Operators running self-hosted sp-boot use a single **`sp-backend`** process on port **8090** for API, storage, and schedule.
+When self-hosted, `sp-backend` is typically a single process on port **8090** serving API, storage, and schedule.
 
 ## Related
 

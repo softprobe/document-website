@@ -13,7 +13,7 @@ Mesh capture is documented under [Platform agent architecture](/en/platform/adva
 ## Prerequisites
 
 - Java service you can restart with JVM flags
-- **sp-boot** reachable from the agent host (default `http://127.0.0.1:8090` locally)
+- **sp-backend** reachable from the agent host (default `http://127.0.0.1:8090` locally)
 - Registered **`appId`** — create with `sp app create` and pin the same id on every instance
 
 ## Startup command
@@ -33,7 +33,7 @@ The agent may also resolve an app id automatically from jar name or environment;
 | Property | Points to | Purpose |
 |----------|-----------|---------|
 | `-Dsp.app.id` | — | Registered application id (16-char hex from `sp app create`). **Pin this** in every environment that shares recordings. |
-| `-Dsp.api.url` | **sp-backend** (e.g. `:8090`) | **Required** — sp-boot base URL (must include `http://` or `https://`). Env fallback: `SP_API_URL`. Record, replay, mock, compare, **and correlated log export** (`{sp.api.url}/v1/logs`). |
+| `-Dsp.api.url` | **sp-backend** (e.g. `:8090`) | **Required** — sp-backend base URL (must include `http://` or `https://`). Env fallback: `SP_API_URL`. Record, replay, mock, compare, **and correlated log export** (`{sp.api.url}/v1/logs`). |
 
 When `sp.api.url` is set and the server [unified log pipeline](./installation/server.md#unified-log-pipeline) is enabled, logs are proxied to Vector internally — you do **not** need a separate Vector URL on the agent.
 

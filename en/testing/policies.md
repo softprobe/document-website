@@ -4,7 +4,7 @@ title: Policies
 
 # Policies overview
 
-Softprobe Testing uses **declarative YAML policies** (`apiVersion: softprobe.ai/v1`), merged by `metadata.priority` and applied by sp-boot at runtime.
+Softprobe Testing uses **declarative YAML policies** (`apiVersion: softprobe.ai/v1`), merged by `metadata.priority` and applied by sp-backend at runtime.
 
 ::: tip Policies are optional tuning, not a prerequisite
 Built-in global defaults (priority 0) make recording and replay work out of the box. You only write your own policy when you want to **change** the default behavior — control sampling, narrow operation scope, ignore noisy fields (`priority > 0` overrides). Get the core workflow running first, then come back to tighten.

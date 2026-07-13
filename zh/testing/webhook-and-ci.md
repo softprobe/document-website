@@ -27,7 +27,7 @@ CLI 细节见 [replay 命令](/zh/testing/commands/replay)、[认证](/zh/testin
 ```mermaid
 sequenceDiagram
   participant CI as CI/CD 或 Webhook
-  participant API as sp-boot（调度 + 报告）
+  participant API as sp-backend（调度 + 报告）
   participant SUT as 测试环境服务 targetEnv
   CI->>API: 创建回放计划 createPlan
   API->>SUT: 发送录制的入口 HTTP
@@ -35,7 +35,7 @@ sequenceDiagram
   CI->>API: 轮询 progress / 查询失败用例
 ```
 
-- **`SP_API_URL`**：sp-boot 地址（存储、调度、报告），**不是**被测服务 URL。
+- **`SP_API_URL`**：sp-backend 地址（存储、调度、报告），**不是**被测服务 URL。
 - **`targetEnv`**：被测服务基础 URL（如 `http://order-service.test.svc:8080`），与 `SP_API_URL` 不可混淆 — 见 [CLI 概念：targetEnv](/zh/testing/agents/concepts#replay-target-url-targetenv)。
 
 ## 方式一：Webhook（GET）触发回放
@@ -95,7 +95,7 @@ GET Webhook **只创建计划**，不会等待回放结束。请在 CI 后续步
 与 [② 回放与对比](/zh/testing/replay-and-diff) 相同，CI 中常用：
 
 ```bash
-export SP_API_URL=https://your-tenant.softprobe.ai   # 或内网 sp-boot :8090
+export SP_API_URL=https://your-tenant.softprobe.ai   # 或内网 sp-backend :8090
 export SP_TOKEN="${SP_TOKEN}"                         # 来自密钥库，勿写入仓库
 
 sp replay run \

@@ -40,7 +40,7 @@ sp replay status <planId> --watch
 ```
 
 ::: tip 两个 URL 别混
-`--env`（`targetEnv`）是**被测服务**的地址；`SP_API_URL` 是 **sp-boot 后端**的地址。混淆二者是最常见的集成错误——见 [CLI 概念](/zh/testing/agents/concepts#replay-target-url-targetenv)。
+`--env`（`targetEnv`）是**被测服务**的地址；`SP_API_URL` 是 **sp-backend 后端服务**的地址。混淆二者是最常见的集成错误——见 [CLI 概念](/zh/testing/agents/concepts#replay-target-url-targetenv)。
 :::
 
 回放期间发生的事：调度服务把用例的 Mock 预加载进 Redis，逐条向 `targetEnv` 重发录制的入口请求；你的服务真实执行业务代码，但每次调依赖时 Agent 返回**录制的响应**，不碰真实数据库和外部系统；回放侧流量被存下来，与录制侧自动对比。

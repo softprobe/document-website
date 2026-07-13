@@ -43,7 +43,7 @@ Softprobe 测试面向 **Java** 服务的**录制回放**回归。以 `-javaagen
 flowchart LR
   App[JVM 被测应用]
   Agent[Java Agent]
-  Backend[sp-boot]
+  Backend[sp-backend]
   App --> Agent
   Agent --> Backend
 ```
@@ -65,7 +65,7 @@ flowchart LR
 
 - 首次接触录制回放的 **Java 开发者**
 - 无需完整下游栈即可做回归的 **QA / 发布工程师**
-- 在 K8s 或镜像中配置 `sp-boot` 与 Agent 启动的 **平台工程师**
+- 在 K8s 或镜像中配置 `sp-backend` 与 Agent 启动的 **平台工程师**
 - **自动化作者** — 先理解概念，再看 [命令](/zh/testing/commands/) 中的 `sp` 自动化约定
 
 ## 快速链接

@@ -40,7 +40,7 @@ sp replay status <planId> --watch
 ```
 
 ::: tip Don't mix up the two URLs
-`--env` (`targetEnv`) is the address of the **service under test**; `SP_API_URL` is the address of the **sp-boot backend**. Confusing them is the most common integration mistake — see [CLI concepts](/en/testing/agents/concepts#replay-target-url-targetenv).
+`--env` (`targetEnv`) is the address of the **service under test**; `SP_API_URL` is the address of the **sp-backend service**. Confusing them is the most common integration mistake — see [CLI concepts](/en/testing/agents/concepts#replay-target-url-targetenv).
 :::
 
 What happens during the run: the schedule service preloads the cases' mocks into Redis, then re-sends each recorded entry request to `targetEnv`; your service executes its real business code, but on every dependency call the agent returns the **recorded** response — no real database or external system is touched; replay-side traffic is stored and automatically compared against the recorded side.

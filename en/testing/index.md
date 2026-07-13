@@ -43,7 +43,7 @@ Traditional integration tests require maintaining environments, seed data, and h
 flowchart LR
   App[JVM app under test]
   Agent[Java agent]
-  Backend[sp-boot]
+  Backend[sp-backend]
   App --> Agent
   Agent --> Backend
 ```
@@ -65,7 +65,7 @@ The [Platform](/en/platform/advanced-guides/agent-architecture) **SP-Istio agent
 
 - **Java developers** adopting record/replay for the first time
 - **QA / release engineers** running regression without full downstream stacks
-- **Platform engineers** wiring `sp-boot` and agent startup in K8s or VM images
+- **Platform engineers** wiring `sp-backend` and agent startup in K8s or VM images
 - **Automation authors** — start here for concepts, then [Commands](/en/testing/commands/) for `sp` automation
 
 ## Quick links

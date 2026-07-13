@@ -65,7 +65,7 @@ Use these job-oriented commands before low-level building blocks:
 sequenceDiagram
   participant Agent
   participant SP as sp CLI
-  participant API as sp-boot
+  participant API as sp-backend
 
   Agent->>SP: app list --json
   SP->>API: GET /api/applications/list

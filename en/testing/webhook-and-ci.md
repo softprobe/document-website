@@ -27,7 +27,7 @@ See [replay command](/en/testing/commands/replay) and [authentication](/en/testi
 ```mermaid
 sequenceDiagram
   participant CI as CI/CD or webhook
-  participant API as sp-boot schedule + report
+  participant API as sp-backend schedule + report
   participant SUT as Service under test targetEnv
   CI->>API: createPlan
   API->>SUT: replay recorded entry HTTP
@@ -35,7 +35,7 @@ sequenceDiagram
   CI->>API: poll progress / query failed cases
 ```
 
-- **`SP_API_URL`**: sp-boot (storage, schedule, report) — **not** the service under test.
+- **`SP_API_URL`**: sp-backend (storage, schedule, report) — **not** the service under test.
 - **`targetEnv`**: base URL of the test instance (e.g. `http://order-service.test:8080`). Do not confuse with `SP_API_URL` — [CLI concepts: targetEnv](/en/testing/agents/concepts#replay-target-url-targetenv).
 
 ## Option 1: Webhook (GET) trigger

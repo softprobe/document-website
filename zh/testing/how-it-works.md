@@ -12,7 +12,7 @@ Softprobe 测试采集的是一次**事务**：一条入口请求，以及该调
 sequenceDiagram
   participant App as 被测应用
   participant Agent as Java Agent
-  participant Storage as sp-boot 存储
+  participant Storage as sp-backend 存储
   participant Redis as Redis Mock 缓存
   participant Mongo as MongoDB
   participant Schedule as 回放调度
@@ -57,7 +57,7 @@ sequenceDiagram
 
 ## 回放阶段
 
-**回放计划**选择已录制用例，并将入口 HTTP 流量驱动到 **`targetEnv`** — 被测服务的基础 URL（例如 `http://order-service.test:8080`）。这与指向 sp-boot 的 `SP_API_URL` **不是**同一个地址。
+**回放计划**选择已录制用例，并将入口 HTTP 流量驱动到 **`targetEnv`** — 被测服务的基础 URL（例如 `http://order-service.test:8080`）。这与指向 sp-backend 的 `SP_API_URL` **不是**同一个地址。
 
 回放过程中：
 
@@ -114,7 +114,7 @@ public Integer parseIp(String ip) {
 | **MongoDB** | 持久化录制、回放计划、对比结果 |
 | **Redis** | 回放热路径 Mock 缓存（`record:{category}:{recordId}:…`） |
 
-自托管 sp-boot 时，通常由单一 **`sp-backend`** 进程在 **8090** 端口同时提供 API、存储与调度。
+自托管时，`sp-backend` 通常是单一进程，在 **8090** 端口同时提供 API、存储与调度。
 
 ## 相关文档
 

@@ -4,7 +4,7 @@ title: Policy YAML guide
 
 # Policy YAML guide
 
-Softprobe Testing uses **declarative YAML policies** (`apiVersion: softprobe.ai/v1`) for recording, replay mocking, and diff comparison. Policies are versioned resources scoped to apps (and optionally environments and operations), merged by priority, and applied by sp-boot at runtime.
+Softprobe Testing uses **declarative YAML policies** (`apiVersion: softprobe.ai/v1`) for recording, replay mocking, and diff comparison. Policies are versioned resources scoped to apps (and optionally environments and operations), merged by priority, and applied by sp-backend at runtime.
 
 Manage the three CLI-supported kinds with:
 
@@ -75,7 +75,7 @@ Multiple policies matching the same app are merged in **priority ascending** (hi
 | **Recording** | Scalars overridden; lists unioned; `timeMock` sticky-true (any policy sets true → true); `serializeSkip` merged by `className` + field name union |
 | **Mock** | Scalars overridden; `skipMock`/`forceMock` unioned; `matchTolerance` and `multiServiceDependencies` keyed by pattern/app with last-write-wins |
 
-Priority-0 `default-global-*-policy.yaml` files ship inside sp-boot; set `priority > 0` on your policies to override.
+Priority-0 `default-global-*-policy.yaml` files ship inside sp-backend; set `priority > 0` on your policies to override.
 
 ### Runtime pipeline
 

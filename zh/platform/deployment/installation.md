@@ -75,6 +75,34 @@ kubectl get wasmplugin -A
 - 打开新的标签页或窗口会生成新的 sessionId；关闭标签页或重新初始化后，会话也会随之重置。
 - 所有上报的前端事件、性能指标与网络请求都会携带该 sessionId，便于与后端链路数据进行关联，形成端到端视图。
 
+安装并在应用入口初始化：
+
+```bash
+npm install @softprobe/sessify
+```
+
+```jsx
+// app/layout.tsx 或你的应用入口文件
+'use client'
+import { useEffect } from 'react';
+import { initSessify } from '@softprobe/sessify';
+
+export default function RootLayout({ children }) {
+  useEffect(() => {
+    // 使用默认配置初始化会话管理
+    initSessify({});
+  }, []);
+
+  return (
+    <html lang="zh">
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+框架专属示例（React/Vue/Next.js）与进阶用法见完整的 [SESSIFY 集成](/zh/platform/sessify)。
+
 最佳实践：
 - 在前端将 sessionId 通过请求头（例如 `X-Session-Id`）或 Tracing Context 传递到后端；
 - 在后端采集与日志中记录该标识，或在可观测性系统中进行关联，以提升排障与定位效率。

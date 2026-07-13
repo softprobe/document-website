@@ -1,6 +1,6 @@
 # API mapping
 
-Authoritative **REST ↔ CLI** reference for sp-boot (default port **8090**). Header `access-token` required on console APIs unless noted.
+Authoritative **REST ↔ CLI** reference for sp-backend (default port **8090**). Header `access-token` required on console APIs unless noted.
 
 **Legend:** Category `platform` | `investigation` | `admin` | `—` (not exposed)
 

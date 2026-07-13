@@ -4,7 +4,7 @@
 
 ## Synopsis
 
-Check sp-boot availability.
+Check sp-backend availability.
 
 ## Usage
 
