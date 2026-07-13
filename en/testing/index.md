@@ -55,7 +55,7 @@ flowchart LR
 3. **Replay** — Schedule service sends recorded entry requests to your **test instance** (`targetEnv` URL). The agent returns recorded dependency responses instead of calling real downstreams.
 4. **Compare** — Engine diffs recorded vs replay traffic; policies define what to ignore or how strictly to match.
 
-Details: [How to record](/en/testing/recording) · [How it works](/en/testing/how-it-works) · [Replay and diff](/en/testing/replay-and-diff)
+Details: [1. Record traffic](/en/testing/recording) · [How it works](/en/testing/how-it-works) · [2. Replay and diff](/en/testing/replay-and-diff)
 
 ## Platform agent ≠ Java agent
 
@@ -72,9 +72,9 @@ The [Platform](/en/platform/advanced-guides/agent-architecture) **SP-Istio agent
 
 - [Getting Started](/en/testing/getting-started) — Try the 5-minute [Travel OTA](https://github.com/softprobe/demo-ota) demo and onboard your application.
 - [Install Softprobe](/en/testing/installation/) — Install, set up, launch coding, diagnose, and upgrade with `sp`.
-- [How to record](/en/testing/recording) — Phase 1: build the case corpus.
+- [1. Record traffic](/en/testing/recording) — Core workflow step 1: build the case corpus.
 - [Java agent](/en/testing/java-agent) — Attach, JVM flags, and production safety.
 - [Policies overview](/en/testing/policies) — YAML by lifecycle phase.
-- [Replay and diff](/en/testing/replay-and-diff) — Phase 2: regression run.
+- [2. Replay and diff](/en/testing/replay-and-diff) — Core workflow step 2: regression run.
 - [Webhook and CI/CD](/en/testing/webhook-and-ci) — Post-deploy replay and pipeline gates.
 - [Supported frameworks](/en/testing/supported-frameworks)

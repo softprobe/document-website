@@ -2,16 +2,13 @@
 title: Getting Started
 ---
 
-<script setup>
-import { ref } from 'vue'
-const dAppTab = ref('ui')
-const dViewTab = ref('ui')
-const dReplayTab = ref('cli')
-</script>
-
 # Getting Started with Softprobe Testing
 
 Welcome to Softprobe Testing! This guide provides a single, cohesive path to get you started with record-and-replay in minutes using our pre-built Travel OTA demo application, followed by a quick wrapup on how to connect your own Java service.
+
+::: tip Pick your interface
+The steps below for registering an app, viewing recordings, and replaying can all be done in the **Web console** or with the **`sp` command**. Use the switch at the top of each card to choose one — your choice is remembered and stays consistent across the whole docs site.
+:::
 
 ---
 
@@ -45,28 +42,28 @@ See [Download Java agent](/en/testing/download-java-agent) for immutable release
 ## 4. Register the Application
 Register the demo application in Softprobe to receive a unique `appId` (a 16-character hex identifier):
 
-<div class="tabs-container">
-  <div class="tabs-nav">
-    <button :class="{ active: dAppTab === 'ui' }" @click="dAppTab = 'ui'">Web UI</button>
-    <button :class="{ active: dAppTab === 'cli' }" @click="dAppTab = 'cli'">sp command</button>
-  </div>
-  <div class="tabs-content">
-    <div v-if="dAppTab === 'ui'">
-      <ol>
-        <li>Open your Softprobe Dashboard.</li>
-        <li>Navigate to <strong>Apps</strong> and click <strong>Create App</strong>.</li>
-        <li>Enter <code>travel-ota</code> as the name and click <strong>Save</strong>.</li>
-        <li>Copy the generated <strong>App ID</strong>.</li>
-      </ol>
-    </div>
-    <div v-if="dAppTab === 'cli'">
-      <p>Run the following command to register the app with <code>sp</code>:</p>
-      <pre><code>export SP_API_URL=http://localhost:8090   # Point to your Helm/local backend
-sp app create travel-ota</code></pre>
-      <p>Save the <code>appId</code> returned in the JSON response.</p>
-    </div>
-  </div>
-</div>
+<InterfaceTabs :tabs="['ui','cli']">
+<Interface id="ui">
+
+1. Open your Softprobe Dashboard.
+2. Navigate to **Apps** and click **Create App**.
+3. Enter `travel-ota` as the name and click **Save**.
+4. Copy the generated **App ID**.
+
+</Interface>
+<Interface id="cli">
+
+Run the following command to register the app with `sp`:
+
+```bash
+export SP_API_URL=http://localhost:8090   # Point to your Helm/local backend
+sp app create travel-ota
+```
+
+Save the `appId` returned in the JSON response.
+
+</Interface>
+</InterfaceTabs>
 
 ## 5. Start the Application with the Agent
 Start the demo app with the `-javaagent` flag, passing your `appId`:
@@ -90,52 +87,54 @@ The Softprobe agent automatically intercepts and captures this entire transactio
 
 ## 7. View Recorded Data
 
-<div class="tabs-container">
-  <div class="tabs-nav">
-    <button :class="{ active: dViewTab === 'ui' }" @click="dViewTab = 'ui'">Web UI</button>
-    <button :class="{ active: dViewTab === 'cli' }" @click="dViewTab = 'cli'">sp command</button>
-  </div>
-  <div class="tabs-content">
-    <div v-if="dViewTab === 'ui'">
-      <ol>
-        <li>Log in to your Softprobe Dashboard.</li>
-        <li>Go to the <strong>Workbench</strong> or <strong>Recordings</strong> tab.</li>
-        <li>Select <code>travel-ota</code> from the app dropdown.</li>
-        <li>Browse the recorded traces and inspect the deep dependency graphs.</li>
-      </ol>
-    </div>
-    <div v-if="dViewTab === 'cli'">
-      <p>List cases recorded for the app in the last 10 minutes:</p>
-      <pre><code>sp record case list --app &lt;your-app-id&gt; --since -10m</code></pre>
-    </div>
-  </div>
-</div>
+<InterfaceTabs :tabs="['ui','cli']">
+<Interface id="ui">
+
+1. Log in to your Softprobe Dashboard.
+2. Go to the **Workbench** or **Recordings** tab.
+3. Select `travel-ota` from the app dropdown.
+4. Browse the recorded traces and inspect the deep dependency graphs.
+
+</Interface>
+<Interface id="cli">
+
+List cases recorded for the app in the last 10 minutes:
+
+```bash
+sp record case list --app <your-app-id> --since -10m
+```
+
+</Interface>
+</InterfaceTabs>
 
 ## 8. Replay the Recordings
 Replay executes recorded transactions against a target environment with automated dependency mocking (your database and downstreams do not need to be set up).
 
-<div class="tabs-container">
-  <div class="tabs-nav">
-    <button :class="{ active: dReplayTab === 'ui' }" @click="dReplayTab = 'ui'">Web UI</button>
-    <button :class="{ active: dReplayTab === 'cli' }" @click="dReplayTab = 'cli'">sp command</button>
-  </div>
-  <div class="tabs-content">
-    <div v-if="dReplayTab === 'ui'">
-      <ol>
-        <li>Navigate to the <strong>Replays</strong> tab and click <strong>New Replay Plan</strong>.</li>
-        <li>Select <code>travel-ota</code>.</li>
-        <li>Choose the cases to replay.</li>
-        <li>Set the target environment to <code>http://localhost:8080</code> and click <strong>Run</strong>.</li>
-      </ol>
-    </div>
-    <div v-if="dReplayTab === 'cli'">
-      <p>Trigger the replay plan pointing to your local running instance:</p>
-      <pre><code>sp replay run --app &lt;your-app-id&gt; --env http://localhost:8080</code></pre>
-      <p>Watch the replay status until it reaches a terminal state:</p>
-      <pre><code>sp replay status &lt;replay-plan-id&gt; --watch</code></pre>
-    </div>
-  </div>
-</div>
+<InterfaceTabs :tabs="['ui','cli']">
+<Interface id="ui">
+
+1. Navigate to the **Replays** tab and click **New Replay Plan**.
+2. Select `travel-ota`.
+3. Choose the cases to replay.
+4. Set the target environment to `http://localhost:8080` and click **Run**.
+
+</Interface>
+<Interface id="cli">
+
+Trigger the replay plan pointing to your local running instance:
+
+```bash
+sp replay run --app <your-app-id> --env http://localhost:8080
+```
+
+Watch the replay status until it reaches a terminal state:
+
+```bash
+sp replay status <replay-plan-id> --watch
+```
+
+</Interface>
+</InterfaceTabs>
 
 ---
 
@@ -158,60 +157,13 @@ To connect your own application:
    ```
 3. **Verify and Replay**: Record traffic, list cases, and trigger replays exactly as you did with the demo app.
 
-For deeper configuration, policy YAML schema (recording, mocking, compare rules), and production deployment patterns, see our in-depth guides:
-* [Java Agent Configuration](/en/testing/java-agent) — JVM properties and Tomcat/Docker setups
-* [How to Record Traffic](/en/testing/recording) — Creating robust test case corpora
-* [Replay and Diff](/en/testing/replay-and-diff) — Custom comparison rules and ignore parameters
-* [Policies Overview](/en/testing/policies) — Declarative YAML policies for DevOps
+## Next: the core workflow
 
-<style scoped>
-.tabs-container {
-  margin: 1.5rem 0;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 8px;
-  overflow: hidden;
-  background: var(--vp-c-bg-soft);
-}
-.tabs-nav {
-  display: flex;
-  background: var(--vp-c-bg-mute);
-  border-bottom: 1px solid var(--vp-c-divider);
-  padding: 0 4px;
-}
-.tabs-nav button {
-  padding: 10px 20px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: var(--vp-c-text-2);
-  border: none;
-  background: none;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: all 0.2s ease;
-  outline: none;
-}
-.tabs-nav button:hover {
-  color: var(--vp-c-text-1);
-}
-.tabs-nav button.active {
-  color: var(--sp-brand);
-  border-bottom-color: var(--sp-brand);
-}
-.tabs-content {
-  padding: 20px;
-  background: var(--vp-c-bg);
-}
-.tabs-content ol, .tabs-content ul {
-  margin-top: 0 !important;
-  margin-bottom: 0 !important;
-  padding-left: 20px;
-}
-.tabs-content p {
-  margin-top: 0 !important;
-  margin-bottom: 8px !important;
-}
-.tabs-content pre {
-  margin-top: 4px !important;
-  margin-bottom: 12px !important;
-}
-</style>
+The demo is just the start. Take your own application through the **core workflow**:
+
+1. **[1. Record traffic](/en/testing/recording)** — capture real cases from production/staging and build your regression corpus
+2. **[2. Replay & diff](/en/testing/replay-and-diff)** — run a regression before every release
+3. **[3. Review diffs](/en/testing/review-diffs-in-the-web-ui)** — understand failing cases and accept the differences that aren't bugs
+4. **[4. Tune compare rules](/en/testing/compare-rules-web-ui)** — turn always-changing fields into rules so they stop false-alarming
+
+For deeper configuration, see [Java Agent Configuration](/en/testing/java-agent) (JVM properties, Tomcat/Docker) and the [Policies Overview](/en/testing/policies) (declarative YAML for CI/GitOps).

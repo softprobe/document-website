@@ -7,7 +7,7 @@ title: Webhook and CI/CD replay
 Run record-and-replay regression automatically after a deploy or merge against a **test** instance, then gate the pipeline on compare results. This page covers two trigger styles, how to collect results, and GitHub Actions / Jenkins patterns.
 
 ::: tip Record first, then automate replay
-Webhooks and CI do not create cases for you. Complete [How to record](/en/testing/recording) and [replay prerequisites](/en/testing/replay-and-diff#prerequisites) (`appId`, policies, reachable `targetEnv`) first.
+Webhooks and CI do not create cases for you. Walk the core workflow first — [1. Record](/en/testing/recording) and [2. Replay](/en/testing/replay-and-diff) (`appId`, policies, reachable `targetEnv`) — then hand it to automation.
 :::
 
 ## Should you use the `sp` CLI or REST APIs?
@@ -92,7 +92,7 @@ GET webhook **only creates** a plan; it does not wait for completion. Poll progr
 
 ## Option 2: CLI / REST create (recommended for CI)
 
-Same as [Replay and diff](/en/testing/replay-and-diff#replay-plan):
+Same as [2. Replay and diff](/en/testing/replay-and-diff):
 
 ```bash
 export SP_API_URL=https://your-tenant.softprobe.ai
@@ -265,7 +265,7 @@ Use `curl -G …/api/createPlan` in a post-deploy step; wait and gate in a later
 
 - Store **`SP_TOKEN` in CI secrets** only — [authentication](/en/testing/agents/authentication).
 - If webhook URLs are reachable from the internet, restrict access and always send **`access-token`**.
-- Replay sends **real HTTP** to `targetEnv`; point webhooks at test/staging instances — [replay prerequisites](/en/testing/replay-and-diff#prerequisites).
+- Replay sends **real HTTP** to `targetEnv`; point webhooks at test/staging instances — [2. Replay and diff](/en/testing/replay-and-diff).
 - Lower or disable recording on replay hosts during runs.
 
 ## Related

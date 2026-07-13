@@ -1,10 +1,12 @@
 ---
-title: Review diffs in the Web UI
+title: Review replay diffs
 ---
 
-# Review diffs in the Web UI
+# 3. Review replay diffs
 
-After a replay run, the workbench shows which cases failed and why. This page covers the human review workflow — reading a diff, and accepting the differences that aren't real bugs. For the CLI equivalent, see [Replay and diff](/en/testing/replay-and-diff).
+**Core workflow · step 3 of 4**　[1. Record](/en/testing/recording) → [2. Replay](/en/testing/replay-and-diff) → **3. Review diffs** → [4. Tune compare rules](/en/testing/compare-rules-web-ui)
+
+After a replay run from [2. Replay](/en/testing/replay-and-diff), the workbench shows which cases failed and why. This page covers the human review workflow in the **Web console** — reading a diff, and accepting the differences that aren't real bugs. Prefer the command line? `sp replay diff --json` yields the same diff data (see [2. Replay and diff](/en/testing/replay-and-diff)).
 
 Most differences aren't bugs. Timestamps, random tokens, and IDs change on every call — they'll always "differ" without anything being wrong. Your job is to accept those, so the real failures stand out.
 
@@ -100,8 +102,6 @@ To see everything ignored on a case without opening each span, click the **"N ig
 
 ![The ignored-summary panel](/img/docs/replay/ignored-summary.png)
 
-## Related
+## Next
 
-- [Replay and diff](/en/testing/replay-and-diff) — the CLI replay workflow
-- [Compare rules in the Web UI](/en/testing/compare-rules-web-ui) — configure which fields are ignored
-- [Policy YAML guide](/en/testing/policy-yaml-guide) — the same rules, in YAML
+Ignoring the same field on every single case? Time to turn it into a rule → **[4. Tune compare rules](/en/testing/compare-rules-web-ui)**: configure once, and every future replay stops false-alarming.

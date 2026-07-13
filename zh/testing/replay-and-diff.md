@@ -2,67 +2,60 @@
 title: 回放与对比
 ---
 
-# 回放计划与对比
+# ② 回放与对比
 
-回放是**第二阶段**：将已录制用例变成一次**回归运行**（相同入口请求、Mock 依赖、自动差异判定）。
+**主线 · 第 2 步（共 4 步）**　[① 录制](/zh/testing/recording) → **② 回放** → [③ 审查差异](/zh/testing/review-diffs-in-the-web-ui) → [④ 配置对比规则](/zh/testing/compare-rules-web-ui)
 
-::: tip 先录制，再回放
-1. 完成 [如何录制](/zh/testing/recording)，确认 `sp record case list` 有用例  
-2. 配置 [Mock 与对比策略](/zh/testing/policies#mock-policy)  
-3. 再执行本页的 `sp replay run`
-:::
+回放把 [① 录制](/zh/testing/recording) 攒下的用例变成一次**回归运行**：把当初的入口请求原样打到你的**测试实例**上，依赖调用（数据库、外部 HTTP…）由录制数据自动 Mock，跑完自动对比录制响应和回放响应，给出通过/失败。
 
-## 前置条件
+继续用 `order-service` 的例子：生产流量已经录了一批用例，现在要在测试环境验证新版本代码有没有回归。
 
-- 该 `appId` 下**已有录制用例**（见 [如何录制](/zh/testing/recording)）
-- **测试环境**中的被测应用已挂载 Agent 并运行
-- 已应用 Mock 与对比策略
-- **`targetEnv` 可达** — 该测试实例的基础 URL
+## 第 1 步 · 准备测试实例
 
-::: warning 在生产录制，在测试环境回放
-可在生产或预发录制流量，但除非明确接受风险，否则**应在非生产实例上回放**。回放驱动会向 `targetEnv` 发送真实 HTTP；仅下游调用被 Mock。
-:::
-
-回放主机上请将**录制频率调低或关闭**，避免在回放过程中再录一套数据。
-
-## 回放计划
-
-**计划**是带 `planId` 的批处理任务：
+在测试环境把**新版本**的应用跑起来，同样挂 Agent、用同一个 `appId`：
 
 ```bash
-sp replay run --app <appId> --env http://order-service.test:8080 --json
-sp replay status --plan <planId> --json
+java -javaagent:sp-agent.jar \
+     -Dsp.app.id=<你的 appId> \
+     -Dsp.api.url=http://<后端主机>:8090 \
+     -jar order-service-new.jar
 ```
 
-| 概念 | 含义 |
-|------|------|
-| `targetEnv` / `--env` | 接收回放入口流量的服务基础 URL（协议 + 主机 + 端口） |
-| `planId` | 整次运行的容器 |
-| `planItemId` | 计划内的一个操作（API 路径） |
-| `replayId` | 单个用例的一次回放执行 |
-| Case | 一条录制的入口请求及其依赖 mocker |
+记下它的访问地址，比如 `http://order-service.test:8080`——这就是 **`targetEnv`**，回放流量的目的地。
 
-`SP_API_URL` 指向 **sp-boot**，不是 `targetEnv`。混淆二者是常见集成错误 — 见 [CLI 概念](/zh/testing/agents/concepts#replay-target-url-targetenv)。
+::: warning 在生产录制，在测试环境回放
+回放会向 `targetEnv` 发送**真实 HTTP 请求**（只有下游依赖被 Mock），所以除非明确接受风险，回放目标应该是非生产实例。同时把回放机上的录制关掉或调到极低，避免回放流量又被录一遍污染用例库。
+:::
 
-## 回放时发生什么
+## 第 2 步 · 发起回放
 
-1. 调度服务加载选定用例并将 Mock **预加载**到 Redis。
-2. 对每个用例，向 `targetEnv` 发送录制的入口 HTTP 请求。
-3. 服务处理请求；每次依赖调用时 Agent 向存储查询**录制响应**。
-4. 存储记录回放侧 mocker 供对比。
-5. 对比引擎运行；结果写入回放报告与差异 API。
+```bash
+sp replay run --app <你的 appId> --env http://order-service.test:8080 --json
+```
 
-**入口流量是真实的；依赖不是。** 主 API 在测试 JVM 上真实执行；在 Mock 策略生效时，数据库与外部 HTTP 客户端收到的是 Mock 响应体。
+命令返回一个 `planId`。盯着它跑完：
 
-## 通过、失败与无效
+```bash
+sp replay status --plan <planId> --watch
+```
 
-当对比在配置范围内未发现实质差异时，用例**通过**。**失败**用例会展示差异场景，例如：
+::: tip 两个 URL 别混
+`--env`（`targetEnv`）是**被测服务**的地址；`SP_API_URL` 是 **sp-boot 后端**的地址。混淆二者是最常见的集成错误——见 [CLI 概念](/zh/testing/agents/concepts#replay-target-url-targetenv)。
+:::
 
-- **缺依赖调用** — 回放时 `HttpClient` 未调用录制时访问过的 `/api/foo`
-- **值差异** — 调用了依赖但响应体不同
-- **主响应差异** — 入口 `Servlet` 响应与录制不一致
+回放期间发生的事：调度服务把用例的 Mock 预加载进 Redis，逐条向 `targetEnv` 重发录制的入口请求；你的服务真实执行业务代码，但每次调依赖时 Agent 返回**录制的响应**，不碰真实数据库和外部系统；回放侧流量被存下来，与录制侧自动对比。
 
-排查命令：
+sp-backend 在每次入口请求发出前记录 **`Replay send start`**，发出后记录 **`Replay send done`** / **`Replay send failed`**——这是回放 HTTP 派发的进入/退出边界，日志排查见 [Replay send / 日志标记](/zh/testing/reference/replay-send-log-markers)。
+
+## 第 3 步 · 读结果
+
+对比没有发现实质差异的用例**通过**。**失败**的用例会给出差异场景：
+
+- **值差异** — 依赖调了，但响应体不同
+- **缺调用** — 录制时调过的依赖，回放时没调
+- **主响应差异** — 入口响应与录制不一致
+
+命令行快速排查：
 
 ```bash
 sp replay case list --plan <planId> --json
@@ -70,46 +63,33 @@ sp replay diff --plan <planId> --json
 sp diagnose replay --plan <planId> --json
 ```
 
-## 降低噪声
+## 有失败？先别当 bug
 
-跨环境必然不同的字段 — 时间戳、随机 ID、Pod IP、会话令牌 — 若不忽略会导致误报。
+**大多数失败不是 bug。** 时间戳、随机 ID、Pod IP、会话令牌每次运行都会变——它们永远会"不一样"，但并没有出错。主线的后两步就是干这个的：
 
-常用做法：
+- **[③ 审查差异](/zh/testing/review-diffs-in-the-web-ui)** — 在工作台里逐条看 diff，接受不是 bug 的差异，让真失败露出来
+- **[④ 配置对比规则](/zh/testing/compare-rules-web-ui)** — 把"永远会变"的字段配成规则，以后每次回放都不再误报
 
-1. **CompareRulePolicy** — 在重新回放前声明忽略的 JSON 路径或分类
-2. **重复回放** — 部分团队在同一环境跑两次以发现不稳定字段（旧版「智能推荐」会从配对运行建议忽略列表）
-3. **时间与随机** — 默认 Mock 策略会强制 Mock `DynamicClass` 中的时间/随机源
+规则也能用 YAML 声明（`sp policy compare`），方便进 CI 和 GitOps——见 [策略 YAML 指南 · CompareRulePolicy](/zh/testing/policy-yaml-guide#comparerulepolicy)。
 
-尽量通过 `sp policy compare` 配置，而非仅改界面开关，以便 CI 与 Agent 共用同一套规则。
+## 术语速查
 
-### 常见忽略模式
+| 概念 | 含义 |
+|------|------|
+| `targetEnv` / `--env` | 接收回放入口流量的服务基础 URL |
+| `planId` | 整次运行的容器 |
+| `planItemId` | 计划内的一个操作（API 路径） |
+| `replayId` | 单个用例的一次回放执行 |
+| Case | 一条录制的入口请求及其依赖 mocker |
 
-| 噪声来源 | 处理方式 |
-|----------|----------|
-| `createdAt`、`updatedAt` | 在对比策略中忽略节点 |
-| UUID / trace id | 忽略或正则转换 |
-| Base64 包裹的载荷 | 在对比策略中配置解压/解码 |
-| DB `SELECT` 元数据 | 全局默认常排除低信号操作 |
+## 回放范围
 
-## 用例选择
+回放哪些用例由计划请求的时间范围、操作过滤，以及录制策略的 `operations` 包含/排除决定。想扩大覆盖，回到 [① 录制](/zh/testing/recording) 录更多流量。
 
-回放范围来自：
+## 自动化
 
-- 计划请求中的时间范围与操作过滤
-- 录制策略的操作包含/排除（与调度配置读取时耦合）
+人工看差异用工作台；CI 与 AI 代理用 `sp replay diff --json` 和 [输出约定](/zh/testing/agents/output-contract) 的 `--out-dir` 产物。部署后自动触发回放、流水线门禁的完整示例见 [Webhook 与 CI/CD](/zh/testing/webhook-and-ci)。
 
-CLI 不支持手写用例；扩大覆盖请录制更多流量或调整录制策略。
+## 下一步
 
-## 仪表盘与 CLI
-
-人工常在 workbench 或仪表盘中查看差异树；Agent 与 CI 应使用 **`sp replay diff`** 及 [输出约定](/zh/testing/agents/output-contract) 中的 `--out-dir` 产物路径。
-
-部署 Webhook 或 GitHub Actions / Jenkins 门禁的完整示例见 [Webhook 与 CI/CD](/zh/testing/webhook-and-ci)。
-
-## 相关文档
-
-- [工作原理](/zh/testing/how-it-works)
-- [策略](/zh/testing/policies)
-- [CLI：replay 命令](/zh/testing/commands/replay)
-- [Webhook 与 CI/CD](/zh/testing/webhook-and-ci)
-- [示例：诊断回放失败](/zh/testing/examples/agent-diagnose-replay)
+回放跑完有失败的用例 → **[③ 审查差异](/zh/testing/review-diffs-in-the-web-ui)**：看懂它们，把噪声清掉。

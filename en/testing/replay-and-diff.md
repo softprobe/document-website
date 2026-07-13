@@ -2,67 +2,60 @@
 title: Replay and diff
 ---
 
-# Replay plans and comparison
+# 2. Replay and diff
 
-Replay is **phase 2**: turn recorded cases into a **regression run** (same entry requests, mocked dependencies, automatic pass/fail from diffs).
+**Core workflow · step 2 of 4**　[1. Record](/en/testing/recording) → **2. Replay** → [3. Review diffs](/en/testing/review-diffs-in-the-web-ui) → [4. Tune compare rules](/en/testing/compare-rules-web-ui)
 
-::: tip Record before replay
-1. Complete [How to record](/en/testing/recording) and confirm `sp record case list` shows cases  
-2. Apply [mock and compare policies](/en/testing/policies#mock-policy)  
-3. Then run `sp replay run` on this page
-:::
+Replay turns the cases you collected in [1. Record](/en/testing/recording) into a **regression run**: the original entry requests are sent to your **test instance** as-is, dependency calls (database, external HTTP, …) are automatically mocked from recorded data, and when the run finishes each case gets an automatic pass/fail from comparing recorded vs replayed responses.
 
-## Prerequisites
+Continuing the `order-service` example: production traffic has built a corpus of cases, and now you want to verify a new build in the test environment for regressions.
 
-- **Recorded cases** exist for the `appId` — see [How to record](/en/testing/recording)
-- App under test running in the **test environment** with the agent attached
-- Mock and compare policies applied
-- Reachable **`targetEnv`** — base URL of that test instance
+## Step 1 · Prepare the test instance
 
-::: warning Record in prod, replay in test
-Record against production or staging traffic when appropriate, but **run replay against a non-production instance** unless you explicitly accept the risk. The replay driver sends real HTTP to `targetEnv`; only downstream calls are mocked.
-:::
-
-On the replay host, turn **recording frequency down or off** so the run does not capture a second corpus on top of the replay.
-
-## Replay plan
-
-A **plan** is a batch job with a `planId`:
+Run the **new build** in the test environment, same agent, same `appId`:
 
 ```bash
-sp replay run --app <appId> --env http://order-service.test:8080 --json
-sp replay status --plan <planId> --json
+java -javaagent:sp-agent.jar \
+     -Dsp.app.id=<your appId> \
+     -Dsp.api.url=http://<backend-host>:8090 \
+     -jar order-service-new.jar
 ```
 
-| Concept | Meaning |
-|---------|---------|
-| `targetEnv` / `--env` | Base URL of the service receiving replayed entry traffic (scheme + host + port) |
-| `planId` | Container for the whole run |
-| `planItemId` | One operation (API path) within the plan |
-| `replayId` | One replay execution of a single case |
-| Case | One recorded entry request + its dependency mockers |
+Note its base URL, e.g. `http://order-service.test:8080` — this is **`targetEnv`**, the destination for replayed traffic.
 
-`SP_API_URL` points at **sp-boot**, not at `targetEnv`. Mixing them up is a common integration mistake — see [CLI concepts](/en/testing/agents/concepts#replay-target-url-targetenv).
+::: warning Record in prod, replay in test
+Replay sends **real HTTP requests** to `targetEnv` (only downstream dependencies are mocked), so the replay target should be a non-production instance unless you explicitly accept the risk. Also turn recording off (or near zero) on the replay host so the run doesn't capture a second corpus on top of the replay.
+:::
 
-## What happens during replay
+## Step 2 · Start the replay
 
-1. Schedule loads selected cases and **preloads** mocks into Redis.
-2. For each case, schedule issues the recorded entry HTTP call to `targetEnv`. sp-backend logs **`Replay send start`** before the call and **`Replay send done`** or **`Replay send failed`** after — the entry/exit boundary for replay HTTP dispatch. See [Replay send log markers](/en/testing/reference/replay-send-log-markers).
-3. Your service handles the request; on each dependency, the agent queries storage and returns the **recorded** response.
-4. Storage logs replay-side mockers for comparison.
-5. Compare engine runs; results land in replay reports and diff APIs.
+```bash
+sp replay run --app <your appId> --env http://order-service.test:8080 --json
+```
 
-**Entry traffic is real; dependencies are not.** The main API executes on the test JVM; databases and external HTTP clients receive mocked bodies when mock policy applies.
+The command returns a `planId`. Watch it to completion:
 
-## Pass, fail, and invalid
+```bash
+sp replay status --plan <planId> --watch
+```
 
-A case **passes** when compare finds no material differences between recorded and replay traffic for configured scopes. **Failed** cases show diff scenes — for example:
+::: tip Don't mix up the two URLs
+`--env` (`targetEnv`) is the address of the **service under test**; `SP_API_URL` is the address of the **sp-boot backend**. Confusing them is the most common integration mistake — see [CLI concepts](/en/testing/agents/concepts#replay-target-url-targetenv).
+:::
 
-- **Missing dependency call** — e.g. `HttpClient` did not call `/api/foo` during replay but did during record
-- **Value diff** — call happened but response body differs
-- **Main response diff** — entry `Servlet` response unlike recording
+What happens during the run: the schedule service preloads the cases' mocks into Redis, then re-sends each recorded entry request to `targetEnv`; your service executes its real business code, but on every dependency call the agent returns the **recorded** response — no real database or external system is touched; replay-side traffic is stored and automatically compared against the recorded side.
 
-Investigate with:
+sp-backend logs **`Replay send start`** before each dispatched entry call and **`Replay send done`** / **`Replay send failed`** after — the entry/exit boundary for replay HTTP dispatch. See [Replay send log markers](/en/testing/reference/replay-send-log-markers).
+
+## Step 3 · Read the results
+
+A case **passes** when compare finds no material differences. **Failed** cases show a diff scene:
+
+- **Value diff** — the dependency was called, but the response body differs
+- **Missing call** — a dependency called during record was not called during replay
+- **Main response diff** — the entry response differs from the recording
+
+Quick triage from the command line:
 
 ```bash
 sp replay case list --plan <planId> --json
@@ -70,46 +63,33 @@ sp replay diff --plan <planId> --json
 sp diagnose replay --plan <planId> --json
 ```
 
-## Reducing noise
+## Failures? Don't call them bugs yet
 
-Fields that legitimately differ across environments — timestamps, random IDs, pod IPs, session tokens — cause false failures unless ignored.
+**Most failures are not bugs.** Timestamps, random IDs, pod IPs, and session tokens change on every run — they will always "differ" without anything being wrong. The last two workflow steps exist for exactly this:
 
-Approaches:
+- **[3. Review diffs](/en/testing/review-diffs-in-the-web-ui)** — read each diff in the workbench, accept the ones that aren't real bugs, and let true failures stand out
+- **[4. Tune compare rules](/en/testing/compare-rules-web-ui)** — turn always-changing fields into rules so future replays stop false-alarming
 
-1. **CompareRulePolicy** — declare ignored JSON paths or categories before re-running replay
-2. **Repeat replay** — some teams run twice in the same environment to detect unstable fields (legacy “intelligent recommendation” flows suggested ignore lists from paired runs)
-3. **Time and random** — default mock policy force-mocks `DynamicClass` time/random sources
+Rules can also be declared in YAML (`sp policy compare`) for CI and GitOps — see [Policy YAML guide · CompareRulePolicy](/en/testing/policy-yaml-guide#comparerulepolicy).
 
-Configure via `sp policy compare` rather than one-off UI toggles where possible so CI and agents share the same rules.
+## Terminology
 
-### Common ignore patterns
+| Concept | Meaning |
+|---------|---------|
+| `targetEnv` / `--env` | Base URL of the service receiving replayed entry traffic |
+| `planId` | Container for the whole run |
+| `planItemId` | One operation (API path) within the plan |
+| `replayId` | One replay execution of a single case |
+| Case | One recorded entry request + its dependency mockers |
 
-| Noise source | Mitigation |
-|--------------|------------|
-| `createdAt`, `updatedAt` | Ignore node in compare policy |
-| UUID / trace ids | Ignore or regex transform |
-| Base64-wrapped payloads | Decompress / decode in compare policy when configured |
-| DB `SELECT` metadata | Global defaults often exclude low-signal operations |
+## Replay scope
 
-## Case selection
+Which cases replay is determined by the plan request's time range and operation filters, plus the recording policy's `operations` include/exclude. To expand coverage, go back to [1. Record](/en/testing/recording) and record more traffic.
 
-Replay scope comes from:
+## Automation
 
-- Time range and operation filters on the plan request
-- Recording policy operation include/exclude (coupled at read time in schedule config)
+Humans review diffs in the workbench; CI and AI agents should use `sp replay diff --json` and the `--out-dir` artifacts from the [output contract](/en/testing/agents/output-contract). For deploy-triggered replays and pipeline gates, see [Webhook and CI/CD](/en/testing/webhook-and-ci).
 
-There is no CLI workflow to manually author cases; expand coverage by recording more traffic or adjusting recording policy.
+## Next
 
-## Dashboard and CLI
-
-Humans often review diff trees in the workbench or dashboard; agents and CI should use **`sp replay diff`** and artifact `--out-dir` paths from [output contract](/en/testing/agents/output-contract).
-
-For deploy webhooks and GitHub Actions / Jenkins gates, see [Webhook and CI/CD](/en/testing/webhook-and-ci).
-
-## Related
-
-- [How it works](/en/testing/how-it-works)
-- [Policies](/en/testing/policies)
-- [CLI: replay command](/en/testing/commands/replay)
-- [Webhook and CI/CD](/en/testing/webhook-and-ci)
-- [Example: diagnose replay failure](/en/testing/examples/agent-diagnose-replay)
+The run finished with failing cases → **[3. Review diffs](/en/testing/review-diffs-in-the-web-ui)**: understand them and clear the noise.

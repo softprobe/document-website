@@ -79,6 +79,6 @@ Replay send failed: planId=6a3f2aad59f0c4655b0f99da, targetEnv=true, method=POST
 
 ## 相关
 
-- [回放与 diff — 回放期间发生了什么](/zh/testing/replay-and-diff#what-happens-during-replay)
+- [② 回放与对比](/zh/testing/replay-and-diff)
 - [诊断回放失败示例](../examples/agent-diagnose-replay.md)
 - [Recorder 命令](../commands/recorder.md)

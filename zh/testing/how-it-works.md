@@ -49,7 +49,7 @@ sequenceDiagram
 
 每次交互是一条 **mocker** 记录，按 `appId`、trace/用例标识、分类与操作名索引。
 
-**如何产生用例：** [如何录制](/zh/testing/recording) · **录制范围配置：** [录制策略](/zh/testing/policies#recording-policy)
+**如何产生用例：** [① 录制流量](/zh/testing/recording) · **录制范围配置：** [录制策略](/zh/testing/policies#recording-policy)
 
 ::: tip
 用例**仅由**已织入 Agent 的流量产生。CLI 不支持手写用例；请在 Agent 录制期间向应用发送真实或合成流量。

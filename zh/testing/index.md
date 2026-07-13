@@ -55,7 +55,7 @@ flowchart LR
 3. **回放** — 调度服务将录制的入口请求发到**测试实例**（`targetEnv` URL）；Agent 返回录制的依赖响应，不访问真实下游。
 4. **对比** — 引擎对比录制与回放流量；策略定义忽略项与匹配严格度。
 
-详情：[如何录制](/zh/testing/recording) · [工作原理](/zh/testing/how-it-works) · [回放与对比](/zh/testing/replay-and-diff)
+详情：[① 录制流量](/zh/testing/recording) · [工作原理](/zh/testing/how-it-works) · [回放与对比](/zh/testing/replay-and-diff)
 
 ## 平台 Agent ≠ Java Agent
 
@@ -72,9 +72,9 @@ flowchart LR
 
 - [快速开始](/zh/testing/getting-started) — 5分钟内体验 [Travel OTA](https://github.com/softprobe/demo-ota) 演示并快速接入您自己的应用。
 - [安装 Softprobe](/zh/testing/installation/) — 使用 `sp` 安装、设置、启动编码、诊断与升级。
-- [如何录制](/zh/testing/recording) — 阶段 1：产生用例。
+- [① 录制流量](/zh/testing/recording) — 核心流程第 1 步：产生用例。
 - [Java Agent](/zh/testing/java-agent) — 挂载、JVM 参数与生产安全。
 - [策略概览](/zh/testing/policies) — 按阶段配置 YAML。
-- [回放与对比](/zh/testing/replay-and-diff) — 阶段 2：回归运行。
+- [② 回放与对比](/zh/testing/replay-and-diff) — 核心流程第 2 步：回归运行。
 - [Webhook 与 CI/CD](/zh/testing/webhook-and-ci) — 部署后触发回放与流水线门禁。
 - [支持的框架](/zh/testing/supported-frameworks)

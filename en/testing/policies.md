@@ -10,7 +10,7 @@ Separate **how to run each phase** from **policy configuration**:
 
 | Phase | Operations | Policy config |
 |-------|------------|---------------|
-| **1 · Record** | [How to record](/en/testing/recording) | [RecordingPolicy](#recording-policy) below |
+| **1 · Record** | [1. Record traffic](/en/testing/recording) | [RecordingPolicy](#recording-policy) below |
 | **2 · Replay** | [Replay and diff](/en/testing/replay-and-diff) | [MockPolicy](#mock-policy), [CompareRulePolicy](#compare-policy) below |
 
 Field reference and full examples: [Policy YAML guide](/en/testing/policy-yaml-guide) · [sp policy command](/en/testing/commands/policy)
@@ -50,7 +50,7 @@ Controls **what the agent records**: sampling, time window, operation include/ex
 - **Serialize skip** — `serializeSkip` by class and field names
 - **`timeMock`** — fix `java.time.*` at record time
 
-**Operational steps:** [How to record](/en/testing/recording)
+**Operational steps:** [1. Record traffic](/en/testing/recording)
 
 **YAML fields and examples:** [Policy YAML guide · RecordingPolicy](/en/testing/policy-yaml-guide#recordingpolicy)
 
@@ -140,7 +140,7 @@ See [GitOps policies](/en/testing/examples/gitops-policies).
 
 ## Related
 
-- [How to record](/en/testing/recording)
+- [1. Record traffic](/en/testing/recording)
 - [Replay and diff](/en/testing/replay-and-diff)
 - [Policy YAML guide](/en/testing/policy-yaml-guide)
 - [CLI: policy command](/en/testing/commands/policy)

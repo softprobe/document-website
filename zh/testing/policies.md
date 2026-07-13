@@ -10,7 +10,7 @@ Softprobe 测试用**声明式 YAML 策略**（`apiVersion: softprobe.ai/v1`）�
 
 | 阶段 | 操作文档 | 策略配置 |
 |------|----------|----------|
-| **1 · 录制** | [如何录制](/zh/testing/recording) | 本节 [RecordingPolicy](#recording-policy) |
+| **1 · 录制** | [① 录制流量](/zh/testing/recording) | 本节 [RecordingPolicy](#recording-policy) |
 | **2 · 回放** | [回放与对比](/zh/testing/replay-and-diff) | 本节 [MockPolicy](#mock-policy)、[CompareRulePolicy](#compare-policy) |
 
 逐字段说明与完整 YAML 示例：[策略 YAML 指南](/zh/testing/policy-yaml-guide) · [sp policy 命令](/zh/testing/commands/policy)
@@ -50,7 +50,7 @@ sp policy compare apply -f compare.yaml --json
 - **序列化跳过** — `serializeSkip` 按类名与字段名
 - **`timeMock`** — 录制时固定 `java.time.*`
 
-**如何录制（操作步骤）：** [如何录制](/zh/testing/recording)
+**如何录制（操作步骤）：** [① 录制流量](/zh/testing/recording)
 
 **YAML 字段与示例：** [策略 YAML 指南 · RecordingPolicy](/zh/testing/policy-yaml-guide#recordingpolicy)
 
@@ -140,7 +140,7 @@ policy-rules 迁移后，`sp config legacy schedule` 与 Mongo 的 `ServiceColle
 
 ## 相关文档
 
-- [如何录制](/zh/testing/recording)
+- [① 录制流量](/zh/testing/recording)
 - [回放与对比](/zh/testing/replay-and-diff)
 - [策略 YAML 指南](/zh/testing/policy-yaml-guide)
 - [CLI：policy 命令](/zh/testing/commands/policy)

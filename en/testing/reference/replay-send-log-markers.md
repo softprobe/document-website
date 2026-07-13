@@ -77,6 +77,6 @@ These are **not** the entry/exit markers but often appear on the same failed sen
 
 ## Related
 
-- [Replay and diff — what happens during replay](/en/testing/replay-and-diff#what-happens-during-replay)
+- [2. Replay and diff](/en/testing/replay-and-diff)
 - [Diagnose replay failure example](../examples/agent-diagnose-replay.md)
 - [Recorder commands](../commands/recorder.md)
