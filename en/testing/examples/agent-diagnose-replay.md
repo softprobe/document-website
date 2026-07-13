@@ -56,11 +56,10 @@ Parse `data.artifact` and read the JSON file in a follow-up tool call. Inspect `
 
 ### 5. Optional: correlated runtime logs
 
-Pull agent, application, and sp-backend logs for a failed case. Start with **backend replay send markers** — they show whether schedule reached your app:
+Pull agent, application, and sp-backend logs for a failed case with `sp logs`, keyed by the failed case's `traceId`. Start with **backend replay send markers** — they show whether schedule reached your app:
 
 ```bash
-sp recorder logs --replay-id <replayId> --since <start> --until <end> --json
-# or: sp recorder logs --trace-id <traceId> --since <start> --until <end> --json
+sp logs --trace-id <traceId> --since <start> --until <end> --json
 ```
 
 Filter `backend` rows for `Replay send start`, `Replay send done`, and `Replay send failed`. See [Replay send log markers](/en/testing/reference/replay-send-log-markers).
@@ -81,7 +80,7 @@ jq '.warnings' .sp-work/unified-logs.json
 jq -r '.rows[] | select(.source=="backend" and .severity=="ERROR") | .body' .sp-work/unified-logs.json | head -20
 ```
 
-When `sp logs` CLI ships:
+The `curl` above hits the unified-log API directly; the `sp logs` CLI wraps the same endpoint:
 
 ```bash
 sp logs --trace-id "$TRACE_ID" --since "$SINCE" --until "$UNTIL" --json > .sp-work/unified-logs.json

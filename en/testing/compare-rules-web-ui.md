@@ -2,9 +2,9 @@
 title: Configure compare rules
 ---
 
-# 4. Tune compare rules
+# 4. Configure compare rules
 
-**Core workflow · step 4 of 4**　[1. Record](/en/testing/recording) → [2. Replay](/en/testing/replay-and-diff) → [3. Review diffs](/en/testing/review-diffs-in-the-web-ui) → **4. Tune compare rules**
+**Core workflow · step 4 of 4**　[1. Record](/en/testing/recording) → [2. Replay](/en/testing/replay-and-diff) → [3. Review diffs](/en/testing/review-diffs-in-the-web-ui) → **4. Configure compare rules**
 
 Compare rules decide which replay differences **don't count**. The principle: *what you configure is skipped; everything else is compared strictly.* Accepting diffs one by one in [3. Review diffs](/en/testing/review-diffs-in-the-web-ui) only covers one run; turning always-changing fields (timestamps, random IDs) into rules stops the false alarms on every future replay — this step closes the loop.
 

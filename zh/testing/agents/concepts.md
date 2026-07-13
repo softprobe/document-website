@@ -82,7 +82,7 @@ A batch replay job with a `planId`. Created by `sp replay run`, tracked with `sp
 
 Schedule service endpoints: `/api/createPlan`, `/api/progress`, `/api/stopPlan`.
 
-## Trace and replay IDs
+## Trace and replay IDs {#trace-replay-and-plan-ids}
 
 | ID | Meaning |
 |----|---------|

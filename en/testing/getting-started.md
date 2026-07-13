@@ -164,6 +164,6 @@ The demo is just the start. Take your own application through the **core workflo
 1. **[1. Record traffic](/en/testing/recording)** — capture real cases from production/staging and build your regression corpus
 2. **[2. Replay & diff](/en/testing/replay-and-diff)** — run a regression before every release
 3. **[3. Review diffs](/en/testing/review-diffs-in-the-web-ui)** — understand failing cases and accept the differences that aren't bugs
-4. **[4. Tune compare rules](/en/testing/compare-rules-web-ui)** — turn always-changing fields into rules so they stop false-alarming
+4. **[4. Configure compare rules](/en/testing/compare-rules-web-ui)** — turn always-changing fields into rules so they stop false-alarming
 
 For deeper configuration, see [Java Agent Configuration](/en/testing/java-agent) (JVM properties, Tomcat/Docker) and the [Policies Overview](/en/testing/policies) (declarative YAML for CI/GitOps).

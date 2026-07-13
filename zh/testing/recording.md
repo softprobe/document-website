@@ -49,7 +49,7 @@ sp record case list --app <你的 appId> --since -1h --json
 
 列表里出现用例，第 1 步就完成了——直接进入 [② 回放](/zh/testing/replay-and-diff)。
 
-需要按链路核对完整性时用 `sp record completeness --trace-id <id> --json`。
+需要按链路核对完整性时用 `sp record completeness <traceId> --json`。
 
 ## 没录到？按这张表排查
 

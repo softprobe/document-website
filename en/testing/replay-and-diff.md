@@ -4,7 +4,7 @@ title: Replay and diff
 
 # 2. Replay and diff
 
-**Core workflow · step 2 of 4**　[1. Record](/en/testing/recording) → **2. Replay** → [3. Review diffs](/en/testing/review-diffs-in-the-web-ui) → [4. Tune compare rules](/en/testing/compare-rules-web-ui)
+**Core workflow · step 2 of 4**　[1. Record](/en/testing/recording) → **2. Replay** → [3. Review diffs](/en/testing/review-diffs-in-the-web-ui) → [4. Configure compare rules](/en/testing/compare-rules-web-ui)
 
 Replay turns the cases you collected in [1. Record](/en/testing/recording) into a **regression run**: the original entry requests are sent to your **test instance** as-is, dependency calls (database, external HTTP, …) are automatically mocked from recorded data, and when the run finishes each case gets an automatic pass/fail from comparing recorded vs replayed responses.
 
@@ -69,7 +69,7 @@ Once you have a difference's `diffId`, inspect the full single diff: `sp replay 
 **Most failures are not bugs.** Timestamps, random IDs, pod IPs, and session tokens change on every run — they will always "differ" without anything being wrong. The last two workflow steps exist for exactly this:
 
 - **[3. Review diffs](/en/testing/review-diffs-in-the-web-ui)** — read each diff in the workbench, accept the ones that aren't real bugs, and let true failures stand out
-- **[4. Tune compare rules](/en/testing/compare-rules-web-ui)** — turn always-changing fields into rules so future replays stop false-alarming
+- **[4. Configure compare rules](/en/testing/compare-rules-web-ui)** — turn always-changing fields into rules so future replays stop false-alarming
 
 Rules can also be declared in YAML (`sp policy compare`) for CI and GitOps — see [Policy YAML guide · CompareRulePolicy](/en/testing/policy-yaml-guide#comparerulepolicy).
 
@@ -89,7 +89,7 @@ Which cases replay is determined by the plan request's time range and operation 
 
 ## Automation
 
-Humans review diffs in the workbench; CI and AI agents should use `sp replay diff --json` and the `--out-dir` artifacts from the [output contract](/en/testing/agents/output-contract). For deploy-triggered replays and pipeline gates, see [Webhook and CI/CD](/en/testing/webhook-and-ci).
+Humans review diffs in the workbench; CI and AI agents should use `sp diagnose replay <planId> --json` and the `--out-dir` artifacts from the [output contract](/en/testing/agents/output-contract). For deploy-triggered replays and pipeline gates, see [Webhook and CI/CD](/en/testing/webhook-and-ci).
 
 ## Next
 

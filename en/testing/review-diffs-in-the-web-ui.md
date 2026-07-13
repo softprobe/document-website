@@ -4,7 +4,7 @@ title: Review replay diffs
 
 # 3. Review replay diffs
 
-**Core workflow · step 3 of 4**　[1. Record](/en/testing/recording) → [2. Replay](/en/testing/replay-and-diff) → **3. Review diffs** → [4. Tune compare rules](/en/testing/compare-rules-web-ui)
+**Core workflow · step 3 of 4**　[1. Record](/en/testing/recording) → [2. Replay](/en/testing/replay-and-diff) → **3. Review diffs** → [4. Configure compare rules](/en/testing/compare-rules-web-ui)
 
 After a replay run from [2. Replay](/en/testing/replay-and-diff), the workbench shows which cases failed and why. This page covers the human review workflow in the **Web console** — reading a diff, and accepting the differences that aren't real bugs. Prefer the command line? `sp replay case list --plan <planId>` and `sp diagnose replay <planId>` yield the same failure data (see [2. Replay and diff](/en/testing/replay-and-diff)).
 
@@ -104,4 +104,4 @@ To see everything ignored on a case without opening each span, click the **"N ig
 
 ## Next
 
-Ignoring the same field on every single case? Time to turn it into a rule → **[4. Tune compare rules](/en/testing/compare-rules-web-ui)**: configure once, and every future replay stops false-alarming.
+Ignoring the same field on every single case? Time to turn it into a rule → **[4. Configure compare rules](/en/testing/compare-rules-web-ui)**: configure once, and every future replay stops false-alarming.

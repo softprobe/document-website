@@ -44,7 +44,7 @@ sp policy compare apply -f compare.yaml --json
 
 ## RecordingPolicy {#recording-policy}
 
-**阶段 1 · 产生流量之前**
+**用于主线 [① 录制](/zh/testing/recording) · 产生流量之前应用**
 
 控制 Agent **录什么**：采样、时间窗口、操作包含/排除、序列化跳过、录制时时间 Mock。
 
@@ -71,7 +71,7 @@ sp policy recording validate -f my-recording.yaml --json
 
 ## MockPolicy {#mock-policy}
 
-**阶段 2 · 回放之前**
+**用于主线 [② 回放](/zh/testing/replay-and-diff) · 执行 `sp replay run` 之前应用**
 
 控制回放时**依赖是否 Mock**、Mock 键容差、跨应用依赖与无匹配 Mock 时的回退。
 
@@ -91,7 +91,7 @@ sp policy recording validate -f my-recording.yaml --json
 
 ## CompareRulePolicy {#compare-policy}
 
-**阶段 2 · 回放之前**
+**用于主线 [② 回放](/zh/testing/replay-and-diff) · 执行 `sp replay run` 之前应用**
 
 控制回放**差异对比**中的噪声（非 Mock 行为）。
 

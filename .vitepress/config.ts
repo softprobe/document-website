@@ -41,7 +41,7 @@ const testingSidebarEn = [
       { text: '1. Record traffic', link: '/en/testing/recording' },
       { text: '2. Replay & diff', link: '/en/testing/replay-and-diff' },
       { text: '3. Review diffs', link: '/en/testing/review-diffs-in-the-web-ui' },
-      { text: '4. Tune compare rules', link: '/en/testing/compare-rules-web-ui' },
+      { text: '4. Configure compare rules', link: '/en/testing/compare-rules-web-ui' },
     ],
   },
   {

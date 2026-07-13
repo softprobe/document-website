@@ -89,7 +89,7 @@ sp diagnose replay <planId> --failed-only --out-dir .sp-work --json   # 失败�
 
 ## 自动化
 
-人工看差异用工作台；CI 与 AI 代理用 `sp replay diff --json` 和 [输出约定](/zh/testing/agents/output-contract) 的 `--out-dir` 产物。部署后自动触发回放、流水线门禁的完整示例见 [Webhook 与 CI/CD](/zh/testing/webhook-and-ci)。
+人工看差异用工作台；CI 与 AI 代理用 `sp diagnose replay <planId> --json` 和 [输出约定](/zh/testing/agents/output-contract) 的 `--out-dir` 产物。部署后自动触发回放、流水线门禁的完整示例见 [Webhook 与 CI/CD](/zh/testing/webhook-and-ci)。
 
 ## 下一步
 

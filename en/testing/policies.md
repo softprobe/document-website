@@ -44,7 +44,7 @@ Full lifecycle: [Getting started](/en/testing/getting-started)
 
 ## RecordingPolicy {#recording-policy}
 
-**Phase 1 · Before traffic**
+**For main-line [1. Record](/en/testing/recording) · apply before traffic**
 
 Controls **what the agent records**: sampling, time window, operation include/exclude, serialize skip, record-time time mock.
 
@@ -71,7 +71,7 @@ sp policy recording validate -f my-recording.yaml --json
 
 ## MockPolicy {#mock-policy}
 
-**Phase 2 · Before replay**
+**For main-line [2. Replay](/en/testing/replay-and-diff) · apply before `sp replay run`**
 
 Controls **whether dependencies are mocked** at replay, mock-key tolerance, cross-app dependencies, and fallback when no mock matches.
 
@@ -91,7 +91,7 @@ Global defaults **force-mock** `DynamicClass:SystemTime.**` and `RandomSource.**
 
 ## CompareRulePolicy {#compare-policy}
 
-**Phase 2 · Before replay**
+**For main-line [2. Replay](/en/testing/replay-and-diff) · apply before `sp replay run`**
 
 Controls **diff noise** during replay comparison (not mock behavior).
 

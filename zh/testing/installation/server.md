@@ -524,7 +524,7 @@ kubectl delete pvc -n softprobe -l app.kubernetes.io/instance=softprobe
 -Dsp.api.url=http://softprobe-sp-backend.softprobe.svc.cluster.local:8090
 ```
 
-## 故障排查
+## 故障排查 {#troubleshooting}
 
 | 现象 | 检查项 |
 |------|--------|

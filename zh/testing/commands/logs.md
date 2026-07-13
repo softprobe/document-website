@@ -93,7 +93,7 @@ v1 响应**不**包含 `source_summary`，也不做按来源的行数分桶统�
 
 ---
 
-## 按 case 范围查询（双窗口）
+## 按 case 范围查询（双窗口） {#case-scoped-lookup-dual-windows}
 
 在诊断某个**回放 case** 时，你通常会有两个时间戳：
 
