@@ -129,6 +129,15 @@
     padding-left: var(--vp-sidebar-width);
   }
 
+  /* Nav logo/title block uses the SAME centering formula as the sidebar by
+     default — override it in lockstep so the logo stays aligned flush-left with
+     the sidebar instead of floating out to ~181px. Doubled class raises
+     specificity above VitePress's own equal-specificity rule. */
+  .VPNavBar.has-sidebar.has-sidebar .title {
+    width: var(--vp-sidebar-width);
+    padding-left: 20px;
+  }
+
   .VPDoc.has-aside .container {
     max-width: 1180px;
     margin: 0 auto;
