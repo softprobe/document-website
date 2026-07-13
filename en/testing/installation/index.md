@@ -91,7 +91,7 @@ Install Softprobe and run `sp setup` as the account that should own the machine�
 
 If start fails, inspect `journalctl -u spcode-web` before retrying.
 
-Optional MCP tools, agent instructions, and skills: [Configuration](./configuration).
+Optional MCP tools, agent instructions, and skills: [Client configuration](./configuration).
 
 ### Uninstall
 
@@ -103,7 +103,10 @@ Removes the systemd unit. Softprobe config files under your install account rema
 
 ## Next
 
-- [Configuration](./configuration) — backend URL, MCP, `AGENTS.md`, and skills
-- [Launch Softprobe Web UI Manually](./code)
-- [Doctor](./doctor)
-- [Upgrade](./upgrade)
+The CLI is ready — now bring your Java application in:
+
+1. [Supported frameworks](/en/testing/supported-frameworks) — confirm your stack can be instrumented
+2. [Attach the Java agent](/en/testing/java-agent) — attach the agent and register your app
+3. [Launch the Web UI](./code) — view recordings and replays in the browser
+
+Tools and advanced: [Doctor](./doctor) (troubleshooting) · [Upgrade](./upgrade) · [Client configuration](./configuration) (MCP, `AGENTS.md`, skills)

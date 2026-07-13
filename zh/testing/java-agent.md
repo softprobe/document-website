@@ -130,9 +130,8 @@ sp.api.url=http://127.0.0.1:8090
 
 接收回放流量的实例也必须挂载**同一** Agent JAR。专用回放机上请将录制设为关闭或极低，避免在回放过程中误录大量新流量。
 
-## 相关文档
+## 下一步
 
-- [下载 Java Agent](/zh/testing/download-java-agent)
-- [快速开始](/zh/testing/getting-started)
-- [支持的框架](/zh/testing/supported-frameworks)
-- [配置（JVM）](/zh/testing/installation/configuration)
+Agent 挂上、`sp app status` 显示 online 之后，接入就完成了 → 进入核心流程 **[① 录制流量](/zh/testing/recording)**。
+
+相关：[下载 Java Agent](/zh/testing/download-java-agent) · [支持的框架](/zh/testing/supported-frameworks) · [快速开始](/zh/testing/getting-started)

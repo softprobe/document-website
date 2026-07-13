@@ -130,9 +130,8 @@ Combined with [recording policy](/en/testing/policies) sampling and desensitizat
 
 The **same** agent JAR must be attached on the instance that receives replay traffic. Set recording to minimal or zero on dedicated replay hosts so you only mock, not capture new production-like volume unintentionally.
 
-## Related
+## Next
 
-- [Download Java agent](/en/testing/download-java-agent)
-- [Getting started](/en/testing/getting-started)
-- [Supported frameworks](/en/testing/supported-frameworks)
-- [Configuration (JVM)](/en/testing/installation/configuration)
+Agent attached and `sp app status` shows online? Onboarding is done → head into the core workflow with **[1. Record traffic](/en/testing/recording)**.
+
+Related: [Download Java agent](/en/testing/download-java-agent) · [Supported frameworks](/en/testing/supported-frameworks) · [Getting started](/en/testing/getting-started)

@@ -19,8 +19,6 @@ const testingSidebarEn = [
     items: [
       { text: 'Server (Helm)', link: '/en/testing/installation/server' },
       { text: 'Metrics data plane', link: '/en/testing/installation/metrics-data-plane' },
-      { text: 'Launch Web UI (manual)', link: '/en/testing/installation/code' },
-      { text: 'Upgrade', link: '/en/testing/installation/upgrade' },
     ],
   },
   {
@@ -28,11 +26,12 @@ const testingSidebarEn = [
     collapsed: false,
     items: [
       { text: 'Install the CLI', link: '/en/testing/installation/' },
-      { text: 'Configuration', link: '/en/testing/installation/configuration' },
+      { text: 'Supported frameworks', link: '/en/testing/supported-frameworks' },
       { text: 'Download Java agent', link: '/en/testing/download-java-agent' },
       { text: 'Attach the Java agent', link: '/en/testing/java-agent' },
-      { text: 'Supported frameworks', link: '/en/testing/supported-frameworks' },
+      { text: 'Launch the Web UI', link: '/en/testing/installation/code' },
       { text: 'Doctor', link: '/en/testing/installation/doctor' },
+      { text: 'Upgrade', link: '/en/testing/installation/upgrade' },
     ],
   },
   {
@@ -70,6 +69,7 @@ const testingSidebarEn = [
     items: [
       { text: 'Commands', link: '/en/testing/commands/' },
       { text: 'Policy YAML guide', link: '/en/testing/policy-yaml-guide' },
+      { text: 'Client configuration', link: '/en/testing/installation/configuration' },
       { text: 'Exit codes', link: '/en/testing/reference/exit-codes' },
       { text: 'JSON types', link: '/en/testing/reference/json-types' },
       { text: 'API mapping', link: '/en/testing/reference/api-mapping' },
@@ -95,8 +95,6 @@ const testingSidebarZh = [
     items: [
       { text: '服务端（Helm）', link: '/zh/testing/installation/server' },
       { text: 'Metrics 数据面', link: '/zh/testing/installation/metrics-data-plane' },
-      { text: '手动启动 Web UI', link: '/zh/testing/installation/code' },
-      { text: '升级', link: '/zh/testing/installation/upgrade' },
     ],
   },
   {
@@ -104,11 +102,12 @@ const testingSidebarZh = [
     collapsed: false,
     items: [
       { text: '安装 CLI', link: '/zh/testing/installation/' },
-      { text: '配置', link: '/zh/testing/installation/configuration' },
+      { text: '支持的框架', link: '/zh/testing/supported-frameworks' },
       { text: '下载 Java Agent', link: '/zh/testing/download-java-agent' },
       { text: '接入 Java Agent', link: '/zh/testing/java-agent' },
-      { text: '支持的框架', link: '/zh/testing/supported-frameworks' },
+      { text: '启动 Web UI', link: '/zh/testing/installation/code' },
       { text: 'Doctor', link: '/zh/testing/installation/doctor' },
+      { text: '升级', link: '/zh/testing/installation/upgrade' },
     ],
   },
   {
@@ -146,6 +145,7 @@ const testingSidebarZh = [
     items: [
       { text: '命令', link: '/zh/testing/commands/' },
       { text: '策略 YAML 指南', link: '/zh/testing/policy-yaml-guide' },
+      { text: '客户端配置', link: '/zh/testing/installation/configuration' },
       { text: '退出码', link: '/zh/testing/reference/exit-codes' },
       { text: 'JSON 类型', link: '/zh/testing/reference/json-types' },
       { text: 'API 映射', link: '/zh/testing/reference/api-mapping' },

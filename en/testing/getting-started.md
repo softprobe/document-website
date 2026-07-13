@@ -15,8 +15,8 @@ The steps below for registering an app, viewing recordings, and replaying can al
 ## Prerequisites
 
 - **Java 8 or higher** (Java 17/21 recommended) installed and on your `PATH`.
-- **`sp` command** installed (`curl -fsSL https://install.softprobe.ai/install.sh | bash`).
-- Your **Softprobe Helm chart** is deployed and running (with the Softprobe backend available, e.g. at `http://<your-backend-host>:8090`).
+- **`sp` command** installed (`curl -fsSL https://install.softprobe.ai/install.sh | bash`) — see [Install the CLI](/en/testing/installation/).
+- Your **Softprobe Helm chart** is deployed and running (with the Softprobe backend available, e.g. at `http://<your-backend-host>:8090`) — not deployed yet? Follow [Server (Helm)](/en/testing/installation/server) first.
 
 ---
 

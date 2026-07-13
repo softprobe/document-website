@@ -15,8 +15,8 @@ title: 快速开始
 ## 前置条件
 
 - 本地安装了 **Java 8 或更高版本**（推荐 Java 17/21）且已配置到 `PATH` 环境变量中。
-- 已安装 **`sp` 命令** (`curl -fsSL https://install.softprobe.ai/install.sh | bash`)。
-- 您的 **Softprobe Helm chart** 已安装并运行（Softprobe 后端服务可用，例如：`http://<您的后端主机地址>:8090`）。
+- 已安装 **`sp` 命令** (`curl -fsSL https://install.softprobe.ai/install.sh | bash`)——详见 [安装 CLI](/zh/testing/installation/)。
+- 您的 **Softprobe Helm chart** 已安装并运行（Softprobe 后端服务可用，例如：`http://<您的后端主机地址>:8090`）——还没部署的话按 [服务端（Helm）](/zh/testing/installation/server) 先装好。
 
 ---
 

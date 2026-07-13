@@ -91,7 +91,7 @@ sudo sp setup --api-url http://sp-backend.corp:8090 --install-spcode-service
 
 若启动失败，先查看 `journalctl -u spcode-web` 再重试。
 
-可选 MCP、Agent 说明与 skills：见 [配置](./configuration)。
+可选 MCP、Agent 说明与 skills：见 [客户端配置](./configuration)。
 
 ### 卸载
 
@@ -103,7 +103,10 @@ sp setup --uninstall-spcode-service
 
 ## 下一步
 
-- [配置](./configuration) — 后端 URL、MCP、`AGENTS.md`、skills
-- [手动启动 Softprobe Web UI](./code)
-- [Doctor](./doctor)
-- [升级](./upgrade)
+CLI 装好了，接下来把你的 Java 应用接进来：
+
+1. [支持的框架](/zh/testing/supported-frameworks) — 先确认你的技术栈能被织入
+2. [接入 Java Agent](/zh/testing/java-agent) — 挂载 Agent、注册应用
+3. [启动 Web UI](./code) — 在浏览器里查看录制与回放
+
+工具与进阶：[Doctor](./doctor)（排障）· [升级](./upgrade) · [客户端配置](./configuration)（MCP、`AGENTS.md`、skills）
