@@ -17,9 +17,9 @@ const testingSidebarEn = [
     text: 'Install',
     collapsed: false,
     items: [
-      { text: 'Softprobe Server (Helm)', link: '/en/testing/installation/server' },
+      { text: 'Server (Helm)', link: '/en/testing/installation/server' },
       { text: 'Metrics data plane', link: '/en/testing/installation/metrics-data-plane' },
-      { text: 'Softprobe client (CLI)', link: '/en/testing/installation/' },
+      { text: 'Client (CLI)', link: '/en/testing/installation/' },
       { text: 'Configuration', link: '/en/testing/installation/configuration' },
       { text: 'Download Java agent', link: '/en/testing/download-java-agent' },
       { text: 'Attach the Java agent', link: '/en/testing/java-agent' },
@@ -98,9 +98,9 @@ const testingSidebarZh = [
     text: '安装',
     collapsed: false,
     items: [
-      { text: 'Softprobe 服务端（Helm）', link: '/zh/testing/installation/server' },
+      { text: '服务端（Helm）', link: '/zh/testing/installation/server' },
       { text: 'Metrics 数据面', link: '/zh/testing/installation/metrics-data-plane' },
-      { text: 'Softprobe 客户端（CLI）', link: '/zh/testing/installation/' },
+      { text: '客户端（CLI）', link: '/zh/testing/installation/' },
       { text: '配置', link: '/zh/testing/installation/configuration' },
       { text: '下载 Java Agent', link: '/zh/testing/download-java-agent' },
       { text: '接入 Java Agent', link: '/zh/testing/java-agent' },

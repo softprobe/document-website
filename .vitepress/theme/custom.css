@@ -17,11 +17,11 @@
      buttons) keeps the brand purple. */
   --sp-brand-link: #7a2eff;
 
-  /* Narrower sidebar than the 272px default — the longest label
-     ("Softprobe 服务端（Helm）") renders at 175px, so a ~200px text column
-     (240px track − paddings) fits every item on one line and gives the
-     content area 32px more room. */
-  --vp-sidebar-width: 240px;
+  /* Narrower sidebar than the 272px default. After trimming the longest labels
+     ("Softprobe Server (Helm)" → "Server (Helm)", etc.) the widest item is
+     "什么是 Softprobe 测试" at ~144px; a 220px track with tighter 20px side
+     padding leaves a ~180px text column and hands 52px back to the content. */
+  --vp-sidebar-width: 220px;
 
   --vp-c-brand-1: var(--sp-brand);
   --vp-c-brand-2: var(--sp-brand-dark);
@@ -93,6 +93,16 @@
 
 .VPSidebarItem.is-active > .item > .indicator {
   background-color: var(--sp-brand);
+}
+
+/* Tighten the sidebar's 32px side padding so the 220px track has more room
+   for the label text (VitePress default wastes 64px on padding alone). The
+   doubled class raises specificity above VitePress's own @media rule. */
+@media (min-width: 960px) {
+  .VPSidebar.VPSidebar {
+    padding-left: 20px;
+    padding-right: 16px;
+  }
 }
 
 .VPNavBarMenuLink.active::after {
