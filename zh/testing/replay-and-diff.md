@@ -36,7 +36,7 @@ sp replay run --app <你的 appId> --env http://order-service.test:8080 --json
 命令返回一个 `planId`。盯着它跑完：
 
 ```bash
-sp replay status --plan <planId> --watch
+sp replay status <planId> --watch
 ```
 
 ::: tip 两个 URL 别混
@@ -58,10 +58,11 @@ sp-backend 在每次入口请求发出前记录 **`Replay send start`**，发出
 命令行快速排查：
 
 ```bash
-sp replay case list --plan <planId> --json
-sp replay diff --plan <planId> --json
-sp diagnose replay --plan <planId> --json
+sp replay case list --plan <planId> --json     # 哪些用例失败
+sp diagnose replay <planId> --failed-only --out-dir .sp-work --json   # 失败详情 + diff 产物落盘
 ```
+
+拿到某条差异的 `diffId` 后，看单条完整 diff：`sp replay diff get <diffId> --out-dir .sp-work --json`。
 
 ## 有失败？先别当 bug
 

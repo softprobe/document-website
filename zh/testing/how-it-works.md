@@ -81,7 +81,7 @@ sequenceDiagram
 - **缺调用** — 回放未调用录制时存在的依赖
 - **多调用** — 回放调用了录制中不存在的依赖
 
-通过[对比策略](/zh/testing/policies)与[回放与对比](/zh/testing/replay-and-diff)忽略噪声字段（时间戳、令牌、IP 等）。
+通过[对比策略](/zh/testing/policies)与[② 回放与对比](/zh/testing/replay-and-diff)忽略噪声字段（时间戳、令牌、IP 等）。
 
 ## 示例说明
 

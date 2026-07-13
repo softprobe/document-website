@@ -54,10 +54,10 @@ Agent 也可能从 jar 名或环境自动解析 app id；显式设置 `-Dsp.app.
 为录制流量打标签，便于筛选与限定回放范围：
 
 ```bash
--Dsp.tags.env=staging
+-Dsp.mocker.tags=env=staging
 ```
 
-录制数据会带上 `env:<值>`，从而只回放特定环境的用例。
+录制数据会带上 `env=<值>`，从而只回放特定环境的用例。策略里用 `selector.envTags` 匹配同一标签——见 [策略 YAML 指南 · 通用字段](/zh/testing/policy-yaml-guide#common-fields)。
 
 ## 其他部署方式
 

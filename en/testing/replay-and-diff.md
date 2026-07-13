@@ -36,7 +36,7 @@ sp replay run --app <your appId> --env http://order-service.test:8080 --json
 The command returns a `planId`. Watch it to completion:
 
 ```bash
-sp replay status --plan <planId> --watch
+sp replay status <planId> --watch
 ```
 
 ::: tip Don't mix up the two URLs
@@ -58,10 +58,11 @@ A case **passes** when compare finds no material differences. **Failed** cases s
 Quick triage from the command line:
 
 ```bash
-sp replay case list --plan <planId> --json
-sp replay diff --plan <planId> --json
-sp diagnose replay --plan <planId> --json
+sp replay case list --plan <planId> --json     # which cases failed
+sp diagnose replay <planId> --failed-only --out-dir .sp-work --json   # failure detail + diff artifacts on disk
 ```
+
+Once you have a difference's `diffId`, inspect the full single diff: `sp replay diff get <diffId> --out-dir .sp-work --json`.
 
 ## Failures? Don't call them bugs yet
 

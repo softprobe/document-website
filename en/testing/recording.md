@@ -28,7 +28,7 @@ java -javaagent:sp-agent.jar \
 Confirm the agent has reported in:
 
 ```bash
-sp app status --app <your appId> --json
+sp app status <your appId> --json
 ```
 
 In multi-environment deployments, tag instances (e.g. `-Dsp.mocker.tags=env=prod`) — you will use the same tags later to filter cases and match policies.

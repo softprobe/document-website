@@ -81,7 +81,7 @@ Typical diff patterns:
 - **Missing call** — replay did not invoke a dependency that was recorded
 - **Extra call** — replay invoked something not present in the recording
 
-Use [compare policy](/en/testing/policies) and [replay and diff](/en/testing/replay-and-diff) to ignore noisy fields (timestamps, tokens, IPs).
+Use [compare policy](/en/testing/policies) and [2. Replay and diff](/en/testing/replay-and-diff) to ignore noisy fields (timestamps, tokens, IPs).
 
 ## Pedagogical example
 

@@ -6,12 +6,16 @@ title: 策略
 
 Softprobe 测试用**声明式 YAML 策略**（`apiVersion: softprobe.ai/v1`）控制行为，而非临时请求参数。策略按应用匹配、按 `metadata.priority` 合并，由 sp-boot 在运行时生效。
 
+::: tip 策略是可选的调优，不是前提
+内置的全局默认策略（priority 0）让录制与回放开箱即用。只有当你要**改变**默认行为——控制采样、缩小操作范围、忽略噪声字段——才需要写自己的策略（`priority > 0` 覆盖）。先能跑通核心流程，再回来收紧。
+:::
+
 **操作流程**与**策略配置**分开阅读：
 
 | 阶段 | 操作文档 | 策略配置 |
 |------|----------|----------|
 | **1 · 录制** | [① 录制流量](/zh/testing/recording) | 本节 [RecordingPolicy](#recording-policy) |
-| **2 · 回放** | [回放与对比](/zh/testing/replay-and-diff) | 本节 [MockPolicy](#mock-policy)、[CompareRulePolicy](#compare-policy) |
+| **2 · 回放** | [② 回放与对比](/zh/testing/replay-and-diff) | 本节 [MockPolicy](#mock-policy)、[CompareRulePolicy](#compare-policy) |
 
 逐字段说明与完整 YAML 示例：[策略 YAML 指南](/zh/testing/policy-yaml-guide) · [sp policy 命令](/zh/testing/commands/policy)
 
@@ -50,7 +54,7 @@ sp policy compare apply -f compare.yaml --json
 - **序列化跳过** — `serializeSkip` 按类名与字段名
 - **`timeMock`** — 录制时固定 `java.time.*`
 
-**如何录制（操作步骤）：** [① 录制流量](/zh/testing/recording)
+**操作步骤：** [① 录制流量](/zh/testing/recording)
 
 **YAML 字段与示例：** [策略 YAML 指南 · RecordingPolicy](/zh/testing/policy-yaml-guide#recordingpolicy)
 

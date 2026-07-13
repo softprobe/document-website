@@ -54,10 +54,10 @@ Without `sp.api.url` (and without the override above), record and replay still w
 Tag recorded traffic for filtering and replay scope:
 
 ```bash
--Dsp.tags.env=staging
+-Dsp.mocker.tags=env=staging
 ```
 
-Recorded mockers carry `env:<value>` so you can replay only traffic from a given environment.
+Recorded mockers carry `env=<value>` so you can replay only traffic from a given environment. Match the same tag in a policy via `selector.envTags` — see [Policy YAML guide · Common fields](/en/testing/policy-yaml-guide#common-fields).
 
 ## Alternative deployment patterns
 

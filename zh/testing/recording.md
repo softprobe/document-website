@@ -28,7 +28,7 @@ java -javaagent:sp-agent.jar \
 确认 Agent 已上报：
 
 ```bash
-sp app status --app <你的 appId> --json
+sp app status <你的 appId> --json
 ```
 
 多环境部署时给实例打标签（如 `-Dsp.mocker.tags=env=prod`），之后筛选用例、匹配策略都靠它。
