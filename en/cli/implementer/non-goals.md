@@ -46,4 +46,4 @@ Every `FileSystemController` button and report chart is not required in v2. The 
 
 ## OpenAPI-only features
 
-Until OpenAPI exists, the CLI does not invent endpoints not present in [API mapping](/en/cli/reference/api-mapping.md).
+Until OpenAPI exists, the CLI does not invent endpoints not present in [API mapping](/en/cli/reference/api-mapping).

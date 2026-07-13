@@ -78,7 +78,7 @@ silently fall back to `default`.
 
 ## REST mapping
 
-Config subcommands are **local only** (no HTTP), except `config agent load` in [config legacy](./config-legacy.md).
+Config subcommands are **local only** (no HTTP), except `config agent load` in [config legacy](./config-legacy).
 
 ## Errors
 
@@ -91,5 +91,5 @@ Config subcommands are **local only** (no HTTP), except `config agent load` in [
 
 ## Related
 
-- [Configuration guide](/en/testing/guide/configuration.md)
-- [auth](./auth.md)
+- [Configuration guide](/zh/testing/installation/configuration)
+- [auth](./auth)

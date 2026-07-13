@@ -86,9 +86,9 @@ Same path pattern under `/api/mock-policies`.
 
 ## Schema
 
-See [CLI policies](/en/testing/policies/) and [Policy YAML guide](/en/testing/policy-yaml-guide).
+See [CLI policies](/en/testing/policies) and [Policy YAML guide](/en/testing/policy-yaml-guide).
 
 ## Related
 
-- [CI policy gate](/en/testing/examples/ci-policy-gate.md)
-- [GitOps policies](/en/testing/examples/gitops-policies.md)
+- [CI policy gate](/en/testing/examples/ci-policy-gate)
+- [GitOps policies](/en/testing/examples/gitops-policies)

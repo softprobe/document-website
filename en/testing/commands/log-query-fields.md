@@ -1,8 +1,8 @@
 # Log query fields
 
-**When agents use this:** Interpret rows returned by [`sp logs`](./logs.md) or `GET /api/recorder/logs` — field names, meanings, and when correlation ids may be missing.
+**When agents use this:** Interpret rows returned by [`sp logs`](./logs) or `GET /api/recorder/logs` — field names, meanings, and when correlation ids may be missing.
 
-This reference describes **CLI and API query output** only. It does not document Parquet file paths, partition layout, or how to query storage directly. Use [`sp logs`](./logs.md) or the canonical HTTP API for all lookups.
+This reference describes **CLI and API query output** only. It does not document Parquet file paths, partition layout, or how to query storage directly. Use [`sp logs`](./logs) or the canonical HTTP API for all lookups.
 
 **Lookup key:** v1 accepts **`trace_id` only**. Optional correlation labels may appear on rows when ingested — they are not filter keys.
 
@@ -16,7 +16,7 @@ Each successful lookup returns one **chronological stream** of rows in `data.row
 
 Human-readable CLI output prints the same logical fields as API JSON.
 
-See [sp logs](./logs.md) for the `--trace-id` lookup key, triage workflow, and required time bounds.
+See [sp logs](./logs) for the `--trace-id` lookup key, triage workflow, and required time bounds.
 
 ---
 
@@ -73,7 +73,7 @@ Common cases:
 
 When diagnosing a failed replay, query by the **`trace_id`** from the replay case or pytest correlation block. Filter rows by optional `replay_id` in local output when you need replay-scoped lines.
 
-**Case-scoped diagnosis:** when the case row includes **`recordTime`** (API `requestDateTime`) and **`replayTime`**, use two ±2 minute windows (one per anchor) instead of one span from record to replay. The replay window usually has the relevant lines; the record window is often empty. See [sp logs — Case-scoped lookup](./logs.md#case-scoped-lookup-dual-windows).
+**Case-scoped diagnosis:** when the case row includes **`recordTime`** (API `requestDateTime`) and **`replayTime`**, use two ±2 minute windows (one per anchor) instead of one span from record to replay. The replay window usually has the relevant lines; the record window is often empty. See [sp logs — Case-scoped lookup](./logs#case-scoped-lookup-dual-windows).
 
 ---
 
@@ -91,7 +91,7 @@ Softprobe attaches correlation ids and forwards lines each logger already emits.
 
 ## Example row (JSON)
 
-From [`sp logs --json`](./logs.md) or `GET /api/recorder/logs`:
+From [`sp logs --json`](./logs) or `GET /api/recorder/logs`:
 
 ```json
 {
@@ -134,6 +134,6 @@ This reference covers unified pipeline **query output** only. Not part of v1 unl
 
 ## Related
 
-- [sp logs](./logs.md) — command reference, flags, triage, and API mapping
-- [Log correlation IDs — find and use ids](/en/testing/reference/log-correlation-ids.md)
-- [Diagnose replay failure example](/en/testing/examples/agent-diagnose-replay.md)
+- [sp logs](./logs) — command reference, flags, triage, and API mapping
+- [Log correlation IDs — find and use ids](/en/testing/reference/log-correlation-ids)
+- [Diagnose replay failure example](/en/testing/examples/agent-diagnose-replay)

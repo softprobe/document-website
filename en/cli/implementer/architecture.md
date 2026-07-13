@@ -24,7 +24,7 @@ sp-cli/
 └── testdata/               # golden JSON
 ```
 
-No `cmd/code` or embedded VFS in the **public** binary — see [Non-goals](./non-goals.md).
+No `cmd/code` or embedded VFS in the **public** binary — see [Non-goals](./non-goals).
 
 ## HTTP client
 
@@ -47,4 +47,4 @@ No `cmd/code` or embedded VFS in the **public** binary — see [Non-goals](./non
 
 ## OpenAPI (future)
 
-Generate from controllers or hand-maintain `reference/openapi.yaml` — until then [API mapping](/en/cli/reference/api-mapping.md) is authoritative.
+Generate from controllers or hand-maintain `reference/openapi.yaml` — until then [API mapping](/en/cli/reference/api-mapping) is authoritative.

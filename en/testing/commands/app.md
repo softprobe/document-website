@@ -4,9 +4,9 @@
 
 ## Synopsis
 
-List, create, and inspect SoftProbe **applications**. An application is a registered service; recording, replay, and policies are scoped by `appId`. See [Concepts — Application](/en/testing/agents/concepts.md#application-appid).
+List, create, and inspect SoftProbe **applications**. An application is a registered service; recording, replay, and policies are scoped by `appId`. See [Concepts — Application](/en/testing/agents/concepts#application-appid).
 
-Use `--json` on all subcommands. See [Output contract](/en/testing/agents/output-contract.md).
+Use `--json` on all subcommands. See [Output contract](/en/testing/agents/output-contract).
 
 ## Subcommands
 
@@ -25,7 +25,7 @@ sp app list --json
 
 **REST:** `GET /api/applications/list`
 
-Requires a token when `--json` is set (CLI exits with an auth error if `SP_TOKEN` is unset). Results are filtered by user group, ownership, and cross-group grants; see [Authentication](/en/testing/agents/authentication.md).
+Requires a token when `--json` is set (CLI exits with an auth error if `SP_TOKEN` is unset). Results are filtered by user group, ownership, and cross-group grants; see [Authentication](/en/testing/agents/authentication).
 
 ### JSON output
 
@@ -146,7 +146,7 @@ sp app replays f3e2d1c0b9a87654 --limit 10 --json
 |------|---------|-------------|
 | `--limit` | `5` | Max plans (CLI rejects &lt; 1; values above 100 are clamped to 100; server also clamps 1–100) |
 
-`data` is an array of plan summaries (`planId`, `planName`, `status`, case counts, `createTime`, `triggeredBy`, …). Use `planId` with [sp replay](replay.md) and [replay case](/en/testing/commands/replay-case.md).
+`data` is an array of plan summaries (`planId`, `planName`, `status`, case counts, `createTime`, `triggeredBy`, …). Use `planId` with [sp replay](replay.md) and [replay case](/en/testing/commands/replay-case).
 
 ## REST mapping
 
@@ -169,9 +169,9 @@ Header: `access-token: <JWT>`.
 
 ## Related
 
-- [Concepts — Application](/en/testing/agents/concepts.md#application-appid)
-- [Quickstart](/en/testing/getting-started.md)
+- [Concepts — Application](/en/testing/agents/concepts#application-appid)
+- [Quickstart](/en/testing/getting-started)
 - [sp replay](replay.md)
-- [Diagnose replay failure](/en/testing/examples/agent-diagnose-replay.md)
-- [JSON types — ApplicationListItem](/en/testing/reference/json-types.md#applicationlistitem)
-- [API mapping](/en/testing/reference/api-mapping.md)
+- [Diagnose replay failure](/en/testing/examples/agent-diagnose-replay)
+- [JSON types — ApplicationListItem](/en/testing/reference/json-types#applicationlistitem)
+- [API mapping](/en/testing/reference/api-mapping)

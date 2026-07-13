@@ -1,6 +1,6 @@
 # sp replay diff
 
-**When agents use this:** Deep dive on a failed case — diff bodies, compare JSON. For correlated logs use [`sp logs`](./logs.md).
+**When agents use this:** Deep dive on a failed case — diff bodies, compare JSON. For correlated logs use [`sp logs`](./logs).
 
 ## Subcommands
 
@@ -71,5 +71,5 @@ Artifact contains decoded `baseMsg` and `testMsg` (JSON when parseable).
 
 ## Related
 
-- [Output contract](/en/testing/agents/output-contract.md)
-- [Diagnose replay failure](/en/testing/examples/agent-diagnose-replay.md)
+- [Output contract](/en/testing/agents/output-contract)
+- [Diagnose replay failure](/en/testing/examples/agent-diagnose-replay)

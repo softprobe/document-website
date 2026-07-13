@@ -86,9 +86,9 @@ Same path pattern under `/api/mock-policies`.
 
 ## Schema
 
-见 [CLI 策略索引](/zh/testing/policies/) 与 [策略 YAML 指南](/zh/testing/policy-yaml-guide)。
+见 [CLI 策略索引](/zh/testing/policies) 与 [策略 YAML 指南](/zh/testing/policy-yaml-guide)。
 
 ## Related
 
-- [CI policy gate](/en/testing/examples/ci-policy-gate.md)
-- [GitOps policies](/en/testing/examples/gitops-policies.md)
+- [CI policy gate](/zh/testing/examples/ci-policy-gate)
+- [GitOps policies](/zh/testing/examples/gitops-policies)

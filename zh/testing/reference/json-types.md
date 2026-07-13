@@ -1,6 +1,6 @@
 # JSON types
 
-CLI-level envelope: see [Output contract](/en/testing/guide/output-contract.md).
+CLI-level envelope: see [Output contract](/zh/testing/agents/output-contract).
 
 ## Common `data` shapes
 

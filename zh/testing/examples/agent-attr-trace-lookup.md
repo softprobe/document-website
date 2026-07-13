@@ -42,5 +42,5 @@ Do **not** ask the user to open the UI to find traceId when extraction rules ind
 
 ## Related
 
-- [trace](/en/testing/commands/trace.md)
-- [Diagnose replay failure](./agent-diagnose-replay.md)
+- [trace](/zh/testing/commands/trace)
+- [Diagnose replay failure](./agent-diagnose-replay)

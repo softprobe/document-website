@@ -1,6 +1,6 @@
 # sp replay
 
-**When agents use this:** Start and monitor replay plans. For failed cases and diffs, see [replay case](./replay-case.md) and [replay diff](./replay-diff.md).
+**When agents use this:** Start and monitor replay plans. For failed cases and diffs, see [replay case](./replay-case) and [replay diff](./replay-diff).
 
 ## Synopsis
 
@@ -110,6 +110,6 @@ Response envelope: `CommonResponse` (`result`, `desc`, `data`).
 
 ## Related
 
-- [replay case](./replay-case.md)
-- [replay diff](./replay-diff.md)
-- [Diagnose replay failure](/en/testing/examples/agent-diagnose-replay.md)
+- [replay case](./replay-case)
+- [replay diff](./replay-diff)
+- [Diagnose replay failure](/zh/testing/examples/agent-diagnose-replay)

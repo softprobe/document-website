@@ -2,7 +2,7 @@
 
 **When agents use this:** Retrieve correlated application, agent, and sp-backend logs for a W3C trace within caller-provided time bounds — without direct access to Parquet files or storage credentials.
 
-**Prerequisite:** Unified log pipeline enabled (Vector ingest + Parquet storage + query wiring). See [Install sp-backend (server) — unified log pipeline](/en/testing/installation/server#unified-log-pipeline) and [Log correlation IDs](/en/testing/reference/log-correlation-ids.md).
+**Prerequisite:** Unified log pipeline enabled (Vector ingest + Parquet storage + query wiring). See [Install sp-backend (server) — unified log pipeline](/en/testing/installation/server#unified-log-pipeline) and [Log correlation IDs](/en/testing/reference/log-correlation-ids).
 
 v1 is **trace-id-only, canned lookup** — no SQL, no ad hoc query language, no `sp logs status` health command, and no replay/plan lookup keys.
 
@@ -80,7 +80,7 @@ curl -s "$SP_API_URL/api/recorder/logs?trace_id=$TRACE_ID&since=$SINCE&until=$UN
 | Field | Meaning |
 |-------|---------|
 | `lookup` | Lookup type (`trace`), value, and caller `[since, until)` bounds |
-| `rows` | Log lines — see [Log query fields](./log-query-fields.md) |
+| `rows` | Log lines — see [Log query fields](./log-query-fields) |
 | `warnings` | Non-fatal schema-skip or similar notices (may be empty) |
 
 v1 responses do **not** include `source_summary` or per-source row-count bucketing.
@@ -129,13 +129,13 @@ jq -s '[.[].rows[]] | sort_by(.timestamp)' /tmp/sp-logs-record.json /tmp/sp-logs
 
 The SoftProbe workbench **View case logs** action uses the same dual-window pattern automatically. The replay window usually contains the lines you need; the record window is often empty but cheap to query.
 
-See [Log query fields](./log-query-fields.md) and [Log correlation IDs](/en/testing/reference/log-correlation-ids.md).
+See [Log query fields](./log-query-fields) and [Log correlation IDs](/en/testing/reference/log-correlation-ids).
 
 ---
 
 ## Troubleshooting failed replays
 
-Use this after `sp diagnose replay` or a pytest failure. See [Log correlation IDs](/en/testing/reference/log-correlation-ids.md) for id sources.
+Use this after `sp diagnose replay` or a pytest failure. See [Log correlation IDs](/en/testing/reference/log-correlation-ids) for id sources.
 
 ```bash
 export SP_API_URL="${SP_API_URL:-http://127.0.0.1:18090}"
@@ -262,8 +262,8 @@ These pre-unified paths are removed, not shimmed:
 
 ## Related
 
-- [Log query fields](./log-query-fields.md) — row field reference (FR-042)
-- [Log correlation IDs — find and use ids](/en/testing/reference/log-correlation-ids.md)
-- [sp replay case](./replay-case.md)
-- [sp diagnose replay](./diagnose.md)
-- [Diagnose replay failure example](/en/testing/examples/agent-diagnose-replay.md)
+- [Log query fields](./log-query-fields) — row field reference (FR-042)
+- [Log correlation IDs — find and use ids](/en/testing/reference/log-correlation-ids)
+- [sp replay case](./replay-case)
+- [sp diagnose replay](./diagnose)
+- [Diagnose replay failure example](/en/testing/examples/agent-diagnose-replay)

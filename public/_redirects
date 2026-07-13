@@ -1,35 +1,141 @@
-# Short paths → English locale (200 = internal rewrite, keeps URL bar)
-/cli/* /en/cli/:splat 200
-/platform/* /en/platform/:splat 200
-/testing/* /en/testing/:splat 200
+# =============================================================================
+# Cloudflare Pages _redirects — first match wins, evaluated top to bottom.
+# Keep the specific cli/* 301s (generated block below) ABOVE the wildcard
+# short-path rules so a legacy cli URL lands on its exact new page.
+# =============================================================================
 
-# Legacy auto-testing (AREX era)
-/auto-testing /en/testing/ 301
-/auto-testing/* /en/testing/getting-started 301
-/en/auto-testing /en/testing/ 301
-/en/auto-testing/* /en/testing/getting-started 301
-/zh/auto-testing /zh/testing/ 301
-/zh/auto-testing/* /zh/testing/ 301
+# --- Root: language split at the HTTP layer (was client-side JS in index.md) ---
+# Cloudflare cannot read Accept-Language in _redirects, so default to English;
+# the zh site is one click away via the nav language switcher.
+/  /en/  302
 
-# Renamed agent entry (sidebar Overview)
-/en/cli/guide/for-agents /en/cli/guide/overview 301
-/cli/guide/for-agents /en/cli/guide/overview 301
-/guide/for-agents /en/cli/guide/overview 301
+# --- Legacy auto-testing (AREX era) ---
+/auto-testing      /en/testing/                 301
+/auto-testing/*    /en/testing/getting-started  301
+/en/auto-testing   /en/testing/                 301
+/en/auto-testing/* /en/testing/getting-started  301
+/zh/auto-testing   /zh/testing/                 301
+/zh/auto-testing/* /zh/testing/                 301
 
-# Legacy CLI docs-site (root paths)
-/guide/* /en/cli/guide/:splat 200
-/commands/* /en/cli/commands/:splat 200
-/examples/* /en/cli/examples/:splat 200
-/reference/* /en/cli/reference/:splat 200
-/policies/* /en/cli/policies/:splat 200
+# --- Renamed agent entry ---
+/en/cli/guide/for-agents /en/testing/agents/overview 301
+/zh/cli/guide/for-agents /zh/testing/agents/overview 301
+/cli/guide/for-agents    /en/testing/agents/overview 301
+/guide/for-agents        /en/testing/agents/overview 301
 
-# Legacy Docusaurus platform paths
-/getting-started/* /en/platform/getting-started/:splat 200
-/deployment/* /en/platform/deployment/:splat 200
-/configuration/* /en/platform/configuration/:splat 200
-/production/* /en/platform/production/:splat 200
-/advanced-guides/* /en/platform/advanced-guides/:splat 200
-/billing/* /en/platform/billing/:splat 200
-/support/* /en/platform/support/:splat 200
-/sessify /en/platform/sessify 200
-/web-sdk /en/platform/sessify 200
+# --- cli/* tombstones → final destinations (301, generated from old pages) ---
+/en/cli/commands/agent /en/testing/commands/agent 301
+/en/cli/commands/app /en/testing/commands/app 301
+/en/cli/commands/auth /en/testing/commands/auth 301
+/en/cli/commands/config-legacy /en/testing/commands/config-legacy 301
+/en/cli/commands/config /en/testing/commands/config 301
+/en/cli/commands/demo /en/testing/commands/demo 301
+/en/cli/commands/diagnose /en/testing/commands/diagnose 301
+/en/cli/commands/extraction-rule /en/testing/commands/extraction-rule 301
+/en/cli/commands/group /en/testing/commands/group 301
+/en/cli/commands/health /en/testing/commands/health 301
+/en/cli/commands/ /en/testing/commands/ 301
+/en/cli/commands/log-query-fields /en/testing/commands/log-query-fields 301
+/en/cli/commands/logs /en/testing/commands/logs 301
+/en/cli/commands/ops /en/testing/commands/ops 301
+/en/cli/commands/policy /en/testing/commands/policy 301
+/en/cli/commands/record /en/testing/commands/record 301
+/en/cli/commands/recorder /en/testing/commands/recorder 301
+/en/cli/commands/replay-case /en/testing/commands/replay-case 301
+/en/cli/commands/replay-diff /en/testing/commands/replay-diff 301
+/en/cli/commands/replay /en/testing/commands/replay 301
+/en/cli/commands/setup /en/testing/commands/setup 301
+/en/cli/commands/system /en/testing/commands/system 301
+/en/cli/commands/trace /en/testing/commands/trace 301
+/en/cli/examples/agent-attr-trace-lookup /en/testing/examples/agent-attr-trace-lookup 301
+/en/cli/examples/agent-diagnose-replay /en/testing/examples/agent-diagnose-replay 301
+/en/cli/examples/ci-policy-gate /en/testing/examples/ci-policy-gate 301
+/en/cli/examples/gitops-policies /en/testing/examples/gitops-policies 301
+/en/cli/guide/authentication /en/testing/agents/authentication 301
+/en/cli/guide/concepts /en/testing/agents/concepts 301
+/en/cli/guide/configuration /en/testing/installation/configuration 301
+/en/cli/guide/installation /en/testing/installation/ 301
+/en/cli/guide/introduction /en/testing/agents/introduction 301
+/en/cli/guide/log-correlation-ids /en/testing/reference/log-correlation-ids 301
+/en/cli/guide/output-contract /en/testing/agents/output-contract 301
+/en/cli/guide/overview /en/testing/agents/overview 301
+/en/cli/guide/quickstart /en/testing/getting-started 301
+/en/cli/guide/spcode /en/testing/installation/code 301
+/en/cli/guide/versioning /en/testing/agents/versioning 301
+/en/cli/ /en/testing/ 301
+/en/cli/policies/ /en/testing/policies/ 301
+/en/cli/reference/api-mapping /en/testing/reference/api-mapping 301
+/en/cli/reference/exit-codes /en/testing/reference/exit-codes 301
+/en/cli/reference/json-types /en/testing/reference/json-types 301
+/en/cli/reference/replay-send-log-markers /en/testing/reference/replay-send-log-markers 301
+/zh/cli/commands/agent /zh/testing/commands/agent 301
+/zh/cli/commands/app /zh/testing/commands/app 301
+/zh/cli/commands/auth /zh/testing/commands/auth 301
+/zh/cli/commands/config-legacy /zh/testing/commands/config-legacy 301
+/zh/cli/commands/config /zh/testing/commands/config 301
+/zh/cli/commands/diagnose /zh/testing/commands/diagnose 301
+/zh/cli/commands/extraction-rule /zh/testing/commands/extraction-rule 301
+/zh/cli/commands/group /zh/testing/commands/group 301
+/zh/cli/commands/health /zh/testing/commands/health 301
+/zh/cli/commands/ /zh/testing/commands/ 301
+/zh/cli/commands/ops /zh/testing/commands/ops 301
+/zh/cli/commands/policy /zh/testing/commands/policy 301
+/zh/cli/commands/record /zh/testing/commands/record 301
+/zh/cli/commands/replay-case /zh/testing/commands/replay-case 301
+/zh/cli/commands/replay-diff /zh/testing/commands/replay-diff 301
+/zh/cli/commands/replay /zh/testing/commands/replay 301
+/zh/cli/commands/setup /zh/testing/commands/setup 301
+/zh/cli/commands/system /zh/testing/commands/system 301
+/zh/cli/commands/trace /zh/testing/commands/trace 301
+/zh/cli/examples/agent-attr-trace-lookup /zh/testing/examples/agent-attr-trace-lookup 301
+/zh/cli/examples/agent-diagnose-replay /zh/testing/examples/agent-diagnose-replay 301
+/zh/cli/examples/ci-policy-gate /zh/testing/examples/ci-policy-gate 301
+/zh/cli/examples/gitops-policies /zh/testing/examples/gitops-policies 301
+/zh/cli/guide/authentication /zh/testing/agents/authentication 301
+/zh/cli/guide/concepts /zh/testing/agents/concepts 301
+/zh/cli/guide/configuration /zh/testing/installation/configuration 301
+/zh/cli/guide/installation /zh/testing/installation/ 301
+/zh/cli/guide/introduction /zh/testing/agents/introduction 301
+/zh/cli/guide/output-contract /zh/testing/agents/output-contract 301
+/zh/cli/guide/overview /zh/testing/agents/overview 301
+/zh/cli/guide/quickstart /zh/testing/getting-started 301
+/zh/cli/guide/spcode /zh/testing/installation/code 301
+/zh/cli/guide/versioning /zh/testing/agents/versioning 301
+/zh/cli/ /zh/testing/ 301
+/zh/cli/policies/ /zh/testing/policies/ 301
+/zh/cli/reference/api-mapping /zh/testing/reference/api-mapping 301
+/zh/cli/reference/exit-codes /zh/testing/reference/exit-codes 301
+/zh/cli/reference/json-types /zh/testing/reference/json-types 301
+
+# --- Legacy short paths (Docusaurus / early docs) → final destinations ---
+# These pre-date the /en /zh locale split; send them straight to the English tree.
+/guide/installation   /en/testing/installation/           301
+/guide/quickstart     /en/testing/getting-started         301
+/guide/configuration  /en/testing/installation/configuration 301
+/guide/spcode         /en/testing/installation/code       301
+/guide/overview       /en/testing/agents/overview         301
+/guide/*              /en/testing/                         301
+/commands/*           /en/testing/commands/:splat         301
+/examples/*           /en/testing/examples/               301
+/reference/*          /en/testing/reference/              301
+/policies/*           /en/testing/policies                301
+
+# --- Legacy Docusaurus platform paths ---
+/getting-started/*  /en/platform/getting-started/:splat 301
+/deployment/*       /en/platform/deployment/:splat      301
+/configuration/*    /en/platform/configuration/:splat   301
+/production/*       /en/platform/production/:splat       301
+/advanced-guides/*  /en/platform/advanced-guides/:splat 301
+/billing/*          /en/platform/billing/:splat         301
+/support/*          /en/platform/support/:splat         301
+/sessify            /en/platform/sessify                301
+/web-sdk            /en/platform/sessify                301
+
+# --- Short-path convenience (no locale prefix) → English tree ---
+/cli/*      /en/testing/commands/:splat  301
+/platform/* /en/platform/:splat          301
+/testing/*  /en/testing/:splat           301
+
+# --- Merged Policies dir index → single overview page ---
+/en/testing/policies/ /en/testing/policies 301
+/zh/testing/policies/ /zh/testing/policies 301

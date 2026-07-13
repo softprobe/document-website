@@ -52,7 +52,7 @@ Quick fixes:
 - Disable the Istio CNI component during installation: `--set components.cni.enabled=false`
 
 Read the full step-by-step guide, verification, and troubleshooting:
-[GKE Autopilot Istio Installation Guide →](./GKE-Autopilot-Istio-Installation-Guide.md)
+[GKE Autopilot Istio Installation Guide →](./GKE-Autopilot-Istio-Installation-Guide)
 :::
 
 ## Install SESSIFY (Client-Side Enrichment)
@@ -90,7 +90,7 @@ export default function RootLayout({ children }) {
 }
 ```
 
-See the full [Sessify guide](/sessify) for framework-specific examples (React/Vue/Next.js) and advanced usage.
+See the full [Sessify guide](/en/platform/sessify) for framework-specific examples (React/Vue/Next.js) and advanced usage.
 
 ## Install Server-side Agent (Istio WasmPlugin)
 

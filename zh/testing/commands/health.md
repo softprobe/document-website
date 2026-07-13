@@ -43,4 +43,4 @@ No authentication required in default deployments (verify for your environment).
 
 ## Related
 
-- [Installation](/en/testing/guide/installation.md)
+- [Installation](/zh/testing/installation/)

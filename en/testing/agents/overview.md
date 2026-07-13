@@ -64,7 +64,7 @@ sequenceDiagram
   Agent->>Agent: Read artifact file locally
 ```
 
-Commands: see [Diagnose replay failure](/en/testing/examples/agent-diagnose-replay.md).
+Commands: see [Diagnose replay failure](/en/testing/examples/agent-diagnose-replay).
 
 ### Change policy and re-run
 
@@ -94,7 +94,7 @@ Skills should be updated to call `sp` so behavior is consistent outside OpenCode
 | `2` | Usage / missing config / auth | Fix argv or run `sp auth login` / set `SP_TOKEN` |
 | `3` | Auth required | Refresh token |
 
-See [Output contract](./output-contract.md) and [Exit codes](/en/testing/reference/exit-codes.md).
+See [Output contract](./output-contract) and [Exit codes](/en/testing/reference/exit-codes).
 
 ## What not to call
 
@@ -104,6 +104,6 @@ See [Output contract](./output-contract.md) and [Exit codes](/en/testing/referen
 
 ## Related pages
 
-- [Output contract](./output-contract.md)
-- [Versioning](./versioning.md)
+- [Output contract](./output-contract)
+- [Versioning](./versioning)
 - [Commands](/en/testing/commands/)

@@ -80,6 +80,6 @@ Example success `data` (abbreviated):
 ## Related
 
 - [Doctor](/zh/testing/installation/doctor) — `sp doctor`
-- [app](./app.md) — create app and check heartbeat
-- [record](./record.md) — list recorded cases
-- [Concepts: Java agent](/en/testing/guide/concepts.md)
+- [app](./app) — create app and check heartbeat
+- [record](./record) — list recorded cases
+- [Concepts: Java agent](/zh/testing/agents/concepts)

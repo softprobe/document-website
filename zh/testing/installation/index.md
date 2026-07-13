@@ -5,7 +5,7 @@ title: 安装 Softprobe（客户端）
 # 安装 Softprobe（客户端）
 
 ::: tip 前置条件
-请先在集群中部署 Softprobe 后端：[安装 Softprobe 服务端](./server.md)。
+请先在集群中部署 Softprobe 后端：[安装 Softprobe 服务端](./server)。
 :::
 
 使用全局安装器安装 Softprobe：
@@ -50,7 +50,7 @@ URL 写入 Softprobe 配置 `~/.config/softprobe/config.jsonc`。
 
 ## Spcode Service（仅 Linux） {#spcode-service}
 
-在 **Linux** 上，`sp setup` 还可选安装 **Spcode Service** —— 供团队在内网浏览器共用的 Web 工作台。若只需在本机使用 UI，见 [手动启动 Softprobe Web UI](./code.md)。
+在 **Linux** 上，`sp setup` 还可选安装 **Spcode Service** —— 供团队在内网浏览器共用的 Web 工作台。若只需在本机使用 UI，见 [手动启动 Softprobe Web UI](./code)。
 
 ```bash
 sp setup --api-url http://sp-backend.corp:8090 --install-spcode-service
@@ -91,7 +91,7 @@ sudo sp setup --api-url http://sp-backend.corp:8090 --install-spcode-service
 
 若启动失败，先查看 `journalctl -u spcode-web` 再重试。
 
-可选 MCP、Agent 说明与 skills：见 [配置](./configuration.md)。
+可选 MCP、Agent 说明与 skills：见 [配置](./configuration)。
 
 ### 卸载
 
@@ -103,7 +103,7 @@ sp setup --uninstall-spcode-service
 
 ## 下一步
 
-- [配置](./configuration.md) — 后端 URL、MCP、`AGENTS.md`、skills
-- [手动启动 Softprobe Web UI](./code.md)
-- [Doctor](./doctor.md)
-- [升级](./upgrade.md)
+- [配置](./configuration) — 后端 URL、MCP、`AGENTS.md`、skills
+- [手动启动 Softprobe Web UI](./code)
+- [Doctor](./doctor)
+- [升级](./upgrade)

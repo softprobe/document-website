@@ -75,5 +75,5 @@ Artifact contains decoded `baseMsg` and `testMsg` (JSON when parseable).
 
 ## Related
 
-- [Output contract](/en/testing/guide/output-contract.md)
-- [Diagnose replay failure](/en/testing/examples/agent-diagnose-replay.md)
+- [Output contract](/zh/testing/agents/output-contract)
+- [Diagnose replay failure](/zh/testing/examples/agent-diagnose-replay)

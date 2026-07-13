@@ -11,7 +11,7 @@
 
 ## `diagnose replay`
 
-Replaces the manual sequence in [Diagnose replay failure](/en/testing/examples/agent-diagnose-replay.md):
+Replaces the manual sequence in [Diagnose replay failure](/zh/testing/examples/agent-diagnose-replay):
 
 ```bash
 sp diagnose replay plan-abc123 --failed-only --out-dir .sp-work --json
@@ -61,7 +61,7 @@ Writes JSON under `{outDir}/trace-{traceId}/` and returns a summary plus `nextAc
 
 ## Related
 
-- [replay](./replay.md)
-- [replay diff](./replay-diff.md)
-- [record](./record.md)
-- [trace](./trace.md)
+- [replay](./replay)
+- [replay diff](./replay-diff)
+- [record](./record)
+- [trace](./trace)

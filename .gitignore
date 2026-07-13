@@ -100,3 +100,9 @@ node_modules
 
 # AI
 ai_docs/
+
+# Stale Docusaurus build cache (site is VitePress now)
+.docusaurus/
+
+# Claude Code local tooling
+.claude/

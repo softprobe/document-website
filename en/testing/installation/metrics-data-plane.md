@@ -2,7 +2,7 @@
 
 Softprobe metrics use the **same collector and Parquet store family as logs**: OTLP → Vector → one-minute aggregate → Parquet under a `metrics/` dataset → product HTTP query. This is for **ad-hoc diagnosis** (for example “are we receiving agent logs?”), not Prometheus/Grafana dashboards.
 
-Requires chart **v4.3.x+** with the [unified log pipeline](./server.md#unified-log-pipeline) enabled (default). Metrics reuse that Vector Deployment — no second time-series database and no extra pods.
+Requires chart **v4.3.x+** with the [unified log pipeline](./server#unified-log-pipeline) enabled (default). Metrics reuse that Vector Deployment — no second time-series database and no extra pods.
 
 ## Ingest — `POST /v1/metrics`
 

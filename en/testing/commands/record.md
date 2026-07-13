@@ -16,7 +16,7 @@ Read-only access to stored recordings (not agent write APIs).
 | `completeness <traceId>` | Full-link recording completeness |
 | `view` | Visualization query/view |
 
-> **Log lookup (v1):** Use top-level [`sp logs`](./logs.md) with `--trace-id` — not `sp record logs *` (removed in unified log pipeline).
+> **Log lookup (v1):** Use top-level [`sp logs`](./logs) with `--trace-id` — not `sp record logs *` (removed in unified log pipeline).
 
 ## Examples
 
@@ -80,7 +80,7 @@ Example JSON shape:
 | sp_api | sp |
 |--------|-----|
 | `record_data` | `sp record query` |
-| `record_log_overview` | `sp logs --trace-id …` (see [logs](./logs.md)) |
+| `record_log_overview` | `sp logs --trace-id …` (see [logs](./logs)) |
 | `download_record_logs` | `sp logs --trace-id …` → redirect or `jq` |
 
 ## Non-goals
@@ -89,5 +89,5 @@ Example JSON shape:
 
 ## Related
 
-- [trace](./trace.md)
-- [replay-diff](./replay-diff.md)
+- [trace](./trace)
+- [replay-diff](./replay-diff)

@@ -13,7 +13,7 @@ Separate **how to run each phase** from **policy configuration**:
 | **1 · Record** | [How to record](/en/testing/recording) | [RecordingPolicy](#recording-policy) below |
 | **2 · Replay** | [Replay and diff](/en/testing/replay-and-diff) | [MockPolicy](#mock-policy), [CompareRulePolicy](#compare-policy) below |
 
-Field reference and full examples: [Policy YAML guide](/en/testing/policy-yaml-guide) · [CLI policies index](/en/testing/policies/)
+Field reference and full examples: [Policy YAML guide](/en/testing/policy-yaml-guide) · [sp policy command](/en/testing/commands/policy)
 
 ## CLI quick reference
 
@@ -104,6 +104,39 @@ Use `sp replay diff` after replay, then tighten policy rather than changing appl
 ## Dynamic classes (not RecordingPolicy)
 
 Register methods in **dynamic class configuration** (dashboard/API), not in `RecordingPolicy`. Control replay mocking via **MockPolicy** `UserDynamic` / `DynamicClass` rules. See [Policy YAML guide · Related configuration](/en/testing/policy-yaml-guide#related-configuration).
+
+## Policy kinds and server modules
+
+| Kind | CLI | Server module |
+|------|-----|---------------|
+| `RecordingPolicy` | `sp policy recording` | `RecordingPolicyService` |
+| `MockPolicy` | `sp policy mock` | `MockPolicyService` |
+| `CompareRulePolicy` | `sp policy compare` | `CompareRulesService` |
+
+Example files ship in `sp-policy-rules/src/main/resources/examples/`.
+
+## Agent workflow
+
+```bash
+# Always validate before apply
+sp policy recording validate -f recording.yaml --json
+sp policy recording apply -f recording.yaml --json
+```
+
+CI should fail on `valid: false` or a non-zero exit.
+
+## GitOps
+
+```bash
+sp policy recording export prod-policy-id -o policies/recording-prod.yaml
+git commit -m "chore: sync recording policy"
+```
+
+See [GitOps policies](/en/testing/examples/gitops-policies).
+
+## Relationship to legacy config
+
+`sp config legacy schedule` and Mongo `ServiceCollectConfiguration` are **not** the source of truth after the policy-rules migration. Use `sp policy recording` for operation include/exclude that affects both agent and replay scope.
 
 ## Related
 

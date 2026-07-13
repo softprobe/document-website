@@ -89,5 +89,5 @@ Decodes JWT `userName` or calls profile endpoint when implemented.
 
 ## Related
 
-- [config](./configuration.md)
-- [auth command](/en/testing/commands/auth.md)
+- [config](/zh/testing/installation/configuration)
+- [auth command](/zh/testing/commands/auth)

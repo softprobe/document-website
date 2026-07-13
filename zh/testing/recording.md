@@ -114,4 +114,4 @@ sp record case list --app <appId> --since -1h --json
 
 - [录制策略](/zh/testing/policies#recording-policy)
 - [策略 YAML 指南](/zh/testing/policy-yaml-guide)
-- [CLI 快速入门](/zh/cli/guide/quickstart)
+- [CLI 快速入门](/zh/testing/getting-started)

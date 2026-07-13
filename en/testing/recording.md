@@ -114,4 +114,4 @@ Full lifecycle: [Getting started](/en/testing/getting-started)
 
 - [Recording policy](/en/testing/policies#recording-policy)
 - [Policy YAML guide](/en/testing/policy-yaml-guide)
-- [CLI quickstart](/en/cli/guide/quickstart)
+- [CLI quickstart](/en/testing/getting-started)

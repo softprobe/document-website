@@ -17,7 +17,7 @@ export SP_TOKEN=<jwt>
 sp diagnose replay plan-xyz --failed-only --out-dir .sp-work --json
 ```
 
-Read `data.artifacts[]` paths locally. See [diagnose](/en/testing/commands/diagnose.md).
+Read `data.artifacts[]` paths locally. See [diagnose](/zh/testing/commands/diagnose).
 
 ## Manual steps
 
@@ -83,4 +83,4 @@ When diagnosing SoftProbe replay failures:
 
 ## Related
 
-- [replay-diff](/en/testing/commands/replay-diff.md)
+- [replay-diff](/zh/testing/commands/replay-diff)

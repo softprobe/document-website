@@ -11,7 +11,7 @@
 
 ## `diagnose replay`
 
-Replaces the manual sequence in [Diagnose replay failure](/en/testing/examples/agent-diagnose-replay.md):
+Replaces the manual sequence in [Diagnose replay failure](/en/testing/examples/agent-diagnose-replay):
 
 ```bash
 sp diagnose replay plan-abc123 --failed-only --out-dir .sp-work --json
@@ -82,12 +82,12 @@ jq '[.rows[].source] | group_by(.) | map({source: .[0], n: length})' .sp-work/un
 
 On **`make e2e`** failures, pytest prints **Softprobe correlation** (`trace_id`) and **Unified logs** summaries — use those before widening the investigation.
 
-See [Log correlation IDs](/en/testing/reference/log-correlation-ids.md) and [sp logs — troubleshooting](./logs.md#troubleshooting-failed-replays).
+See [Log correlation IDs](/en/testing/reference/log-correlation-ids) and [sp logs — troubleshooting](./logs#troubleshooting-failed-replays).
 
 ## Related
 
-- [Log correlation IDs](/en/testing/reference/log-correlation-ids.md)
-- [replay](./replay.md)
-- [replay diff](./replay-diff.md)
-- [record](./record.md)
-- [trace](./trace.md)
+- [Log correlation IDs](/en/testing/reference/log-correlation-ids)
+- [replay](./replay)
+- [replay diff](./replay-diff)
+- [record](./record)
+- [trace](./trace)

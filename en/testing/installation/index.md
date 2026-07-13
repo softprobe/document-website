@@ -5,7 +5,7 @@ title: Install Softprobe Client
 # Install Softprobe Client
 
 ::: tip Prerequisite
-Deploy the Softprobe backend on your cluster first: [Install Softprobe Server](./server.md).
+Deploy the Softprobe backend on your cluster first: [Install Softprobe Server](./server).
 :::
 
 Install Softprobe with the global installer:
@@ -50,7 +50,7 @@ The URL is stored in Softprobe config at `~/.config/softprobe/config.jsonc`.
 
 ## Spcode Service (Linux only) {#spcode-service}
 
-On **Linux**, `sp setup` can optionally install **Spcode Service** — a shared web workbench your team opens in the browser on the corp network. For a private UI on your own machine, see [Launch Softprobe Web UI Manually](./code.md) instead.
+On **Linux**, `sp setup` can optionally install **Spcode Service** — a shared web workbench your team opens in the browser on the corp network. For a private UI on your own machine, see [Launch Softprobe Web UI Manually](./code) instead.
 
 ```bash
 sp setup --api-url http://sp-backend.corp:8090 --install-spcode-service
@@ -91,7 +91,7 @@ Install Softprobe and run `sp setup` as the account that should own the machine�
 
 If start fails, inspect `journalctl -u spcode-web` before retrying.
 
-Optional MCP tools, agent instructions, and skills: [Configuration](./configuration.md).
+Optional MCP tools, agent instructions, and skills: [Configuration](./configuration).
 
 ### Uninstall
 
@@ -103,7 +103,7 @@ Removes the systemd unit. Softprobe config files under your install account rema
 
 ## Next
 
-- [Configuration](./configuration.md) — backend URL, MCP, `AGENTS.md`, and skills
-- [Launch Softprobe Web UI Manually](./code.md)
-- [Doctor](./doctor.md)
-- [Upgrade](./upgrade.md)
+- [Configuration](./configuration) — backend URL, MCP, `AGENTS.md`, and skills
+- [Launch Softprobe Web UI Manually](./code)
+- [Doctor](./doctor)
+- [Upgrade](./upgrade)
