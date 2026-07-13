@@ -4,8 +4,6 @@ title: 回放与对比
 
 # 回放与对比
 
-**主线 · 第 2 步（共 4 步）**　[录制](/zh/testing/recording) → **回放** → [审查差异](/zh/testing/review-diffs-in-the-web-ui) → [配置对比规则](/zh/testing/compare-rules-web-ui)
-
 回放把 [录制](/zh/testing/recording) 攒下的用例变成一次**回归运行**：把当初的入口请求原样打到你的**测试实例**上，依赖调用（数据库、外部 HTTP…）由录制数据自动 Mock，跑完自动对比录制响应和回放响应，给出通过/失败。
 
 继续用 `order-service` 的例子：生产流量已经录了一批用例，现在要在测试环境验证新版本代码有没有回归。
@@ -66,7 +64,7 @@ sp diagnose replay <planId> --failed-only --out-dir .sp-work --json   # 失败�
 
 ## 有失败？先别当 bug
 
-**大多数失败不是 bug。** 时间戳、随机 ID、Pod IP、会话令牌每次运行都会变——它们永远会"不一样"，但并没有出错。主线的后两步就是干这个的：
+**大多数失败不是 bug。** 时间戳、随机 ID、Pod IP、会话令牌每次运行都会变——它们永远会"不一样"，但并没有出错。接下来两步就是干这个的：
 
 - **[审查差异](/zh/testing/review-diffs-in-the-web-ui)** — 在工作台里逐条看 diff，接受不是 bug 的差异，让真失败露出来
 - **[配置对比规则](/zh/testing/compare-rules-web-ui)** — 把"永远会变"的字段配成规则，以后每次回放都不再误报

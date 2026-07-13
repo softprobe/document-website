@@ -4,8 +4,6 @@ title: Configure compare rules
 
 # Configure compare rules
 
-**Core workflow · step 4 of 4**　[Record](/en/testing/recording) → [Replay](/en/testing/replay-and-diff) → [Review diffs](/en/testing/review-diffs-in-the-web-ui) → **Configure compare rules**
-
 Compare rules decide which replay differences **don't count**. The principle: *what you configure is skipped; everything else is compared strictly.* Accepting diffs one by one in [Review diffs](/en/testing/review-diffs-in-the-web-ui) only covers one run; turning always-changing fields (timestamps, random IDs) into rules stops the false alarms on every future replay — this step closes the loop.
 
 This page covers setting rules in the **Web console's visual editor** — pick a rule type, fill in a field or two, click add. The visual editor is the friendlier path for day-to-day use; the exact same rules can be written declaratively in the [Policy YAML guide](/en/testing/policy-yaml-guide) for GitOps and CI.

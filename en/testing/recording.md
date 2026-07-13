@@ -4,8 +4,6 @@ title: Record traffic
 
 # Record traffic
 
-**Core workflow · step 1 of 4**　**Record** → [Replay](/en/testing/replay-and-diff) → [Review diffs](/en/testing/review-diffs-in-the-web-ui) → [Configure compare rules](/en/testing/compare-rules-web-ui)
-
 Recording means letting your agent-attached application **handle real requests as usual** — every request that flows through, together with the dependency calls it triggers (database, HTTP, Redis, …), is automatically stored as a **case**: the raw material for replay.
 
 This page follows `order-service` as the running example: the agent is attached per [Attach the Java agent](/en/testing/java-agent), and the app is registered (you have its `appId`) as in the quick start. All four workflow steps use this same application.

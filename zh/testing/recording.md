@@ -4,11 +4,9 @@ title: 录制流量
 
 # 录制流量
 
-**主线 · 第 1 步（共 4 步）**　**录制** → [回放](/zh/testing/replay-and-diff) → [审查差异](/zh/testing/review-diffs-in-the-web-ui) → [配置对比规则](/zh/testing/compare-rules-web-ui)
-
 录制就是让挂了 Agent 的应用**正常处理真实请求**——每条经过的请求连同它触发的依赖调用（数据库、HTTP、Redis…）会自动存成一条**用例**，成为后面回放的素材。
 
-本页以 `order-service` 为例：它已按 [接入 Java Agent](/zh/testing/java-agent) 挂载 Agent、按快速开始注册过应用（`appId` 在手）。整个主线四步都用这个应用。
+本页以 `order-service` 为例：它已按 [接入 Java Agent](/zh/testing/java-agent) 挂载 Agent、按快速开始注册过应用（`appId` 在手）。录制到配置对比规则这几步都用这个应用。
 
 ::: tip 开箱即录，不需要先配策略
 内置的全局默认策略（priority 0）让录制开箱即用，并已排除 `/health` 等探针流量。只有当你要调整采样率、时间窗口或操作范围时，才需要写应用级策略——见本页末尾 [调整录制范围](#调整录制范围)。

@@ -4,8 +4,6 @@ title: Replay and diff
 
 # Replay and diff
 
-**Core workflow · step 2 of 4**　[Record](/en/testing/recording) → **Replay** → [Review diffs](/en/testing/review-diffs-in-the-web-ui) → [Configure compare rules](/en/testing/compare-rules-web-ui)
-
 Replay turns the cases you collected in [Record](/en/testing/recording) into a **regression run**: the original entry requests are sent to your **test instance** as-is, dependency calls (database, external HTTP, …) are automatically mocked from recorded data, and when the run finishes each case gets an automatic pass/fail from comparing recorded vs replayed responses.
 
 Continuing the `order-service` example: production traffic has built a corpus of cases, and now you want to verify a new build in the test environment for regressions.
