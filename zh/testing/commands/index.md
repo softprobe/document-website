@@ -8,6 +8,7 @@ Job-oriented commands that follow record-and-replay order:
 
 | Command | Synopsis |
 |---------|----------|
+| [demo](./demo) | `start`、`traffic`、`replay`、`status`、`stop` —— [Travel OTA demo](https://github.com/softprobe/demo-ota) 一体化演示栈 |
 | [setup](./setup) | 配置自托管后端 URL；可选 Spcode Service（Linux） |
 | [agent](./agent) | `download`, `command` — install jar and JVM flags |
 | [record](./record) | `case list` — recorded entry cases before replay |
@@ -33,10 +34,11 @@ Recorded data, traces, and replay failures.
 
 | Command | Synopsis |
 |---------|----------|
-| [record](./record) | Query recordings, completeness, record logs |
+| [record](./record) | Query recordings, completeness |
+| [logs](./logs) | 按 `trace_id` 关联日志 —— 见[日志关联 ID](/zh/testing/reference/log-correlation-ids) |
 | [trace](./trace) | Find traces by business attributes |
 | [replay case](./replay-case) | List cases, metadata, mock tree |
-| [replay diff](./replay-diff) | Diff artifacts, replay logs |
+| [replay diff](./replay-diff) | Diff artifacts, compare results |
 | [extraction-rule](./extraction-rule) | Business attribute extraction rules |
 
 Investigation commands support `--out-dir`, `--page`, and `--limit` unless noted.

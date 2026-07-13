@@ -13,7 +13,7 @@ A registered service under test. Recording, replay, policies, and extraction rul
 | `appName` | Unique label supplied at registration (`sp app create <appName>`). |
 | `appId` | System-generated id (16-character hex). Configure the Java agent and CLI with this value. |
 
-After registration, save `data.appId` from the create response. Attach the SoftProbe Java agent to your JVM with that id and your sp-boot URL, then confirm connectivity with `sp app status <appId>` or `sp app list --json`.
+After registration, save `data.appId` from the create response. Attach the SoftProbe Java agent to your JVM with that id and your sp-backend URL, then confirm connectivity with `sp app status <appId>` or `sp app list --json`.
 
 **Agent status** (`online`, `offline`, `never`) is derived from instance heartbeats, not from the app document alone. The server marks an app `offline` when the freshest heartbeat is older than the configured threshold (default 60 seconds).
 
@@ -33,7 +33,7 @@ Minimum startup flags:
 java \
   -javaagent:/opt/softprobe/sp-agent.jar \
   -Dsp.app.id=<appId> \
-  -Dsp.api.url=http://<sp-boot-host>:8090 \
+  -Dsp.api.url=http://<sp-backend-host>:8090 \
   -jar app.jar
 ```
 
@@ -49,7 +49,7 @@ Requirements:
 
 - Use a reachable base URL for the app under test, including scheme and host (and port when not default), for example `http://travel-ota:8080` or `https://order-service.internal:8443`.
 - The URL must parse as a URI with a non-empty host; otherwise plan validation fails with *requested target env unable load active instance*.
-- This is independent of **`SP_API_URL`** / `api_url` in CLI config, which points at sp-boot (storage, report, schedule APIs), not at the service being replayed.
+- This is independent of **`SP_API_URL`** / `api_url` in CLI config, which points at sp-backend (storage, report, schedule APIs), not at the service being replayed.
 
 Optional **`sourceEnv`** on the same request is a separate URI used only when you need a non-default source deployment; the demo stack often leaves it as `pro`.
 
@@ -82,17 +82,29 @@ A batch replay job with a `planId`. Created by `sp replay run`, tracked with `sp
 
 Schedule service endpoints: `/api/createPlan`, `/api/progress`, `/api/stopPlan`.
 
-## Trace and replay IDs
+## Trace、replay 与 plan ID {#trace-replay-and-plan-ids}
 
-| ID | Meaning |
-|----|---------|
-| `traceId` | W3C trace id for a recorded request |
-| `replayId` | Identifier for one replay execution of a case |
-| `planId` | Replay plan container |
-| `planItemId` | Operation-level item within a plan |
-| `diffId` | Comparison result row for deep diff fetch |
+平台 ID 把录制、回放、diff 与**关联日志检索**串联起来。完整参考——每个 ID 的含义、在哪里获取、以及如何分诊统一日志——见 **[日志关联 ID](/zh/testing/reference/log-correlation-ids)**。
 
-Agents should obtain `traceId` via `sp trace find` when users supply business attributes (orderId, caseId) instead of trace IDs.
+| ID | 含义 | 日志查询（v1） |
+|----|------|----------------|
+| `traceId` | 一次录制或回放请求流的 W3C trace id | **`sp logs --trace-id …`** 或 `GET /api/recorder/logs?trace_id=…` —— **唯一的 v1 键** |
+| `replayId` | 一个 case 的一次回放**尝试** | 仅用于 diff/diagnose —— 查日志请从同一 case 行复制 **`traceId`** |
+| `planId` | `sp replay run` 产生的回放计划容器 | case 列表 / diagnose —— 查日志用每个 case 的 **`traceId`** |
+| `planItemId` | 计划内的操作级条目 | 同上 —— 不是日志查询键 |
+| `diffId` | 用于深度 diff 拉取的比对结果行 | 用 `sp replay diff get` —— 不是日志查询键 |
+
+**ID 在 CLI 输出中的位置**
+
+| 命令 | 字段 |
+|------|------|
+| `sp replay run --json` | `planId` |
+| `sp replay case list --plan … --json` | `replayId`、`traceId`、plan item id |
+| `sp replay metadata <replayId> --json` | `traceId`、关联的录制元数据 |
+| `sp trace find … --json` | 解析业务属性时的 `traceId` |
+| `sp diagnose replay <planId> --json` | 带 id 的失败 case，供后续跟进 |
+
+当用户提供业务属性（orderId、caseId）而非 trace id 时，Agent 应通过 `sp trace find` 获取 `traceId`。回放失败后做日志诊断时，使用失败回放 case 中的 **`traceId`** 或 e2e **Softprobe correlation** 块（`trace_id` 字段）——而不是把 `replayId` 当作日志查询键。
 
 ## Historical coupling: schedule ↔ recording
 

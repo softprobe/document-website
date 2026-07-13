@@ -38,7 +38,7 @@ Recorded data, traces, and replay failures.
 | [trace](./trace) | Find traces by business attributes |
 | [logs](./logs) | Correlated logs by `trace_id` — see [Log correlation IDs](/en/testing/reference/log-correlation-ids) |
 | [replay case](./replay-case) | List cases, metadata, mock tree |
-| [replay diff](./replay-diff) | Diff artifacts, replay logs |
+| [replay diff](./replay-diff) | Diff artifacts, compare results |
 | [extraction-rule](./extraction-rule) | Business attribute extraction rules |
 
 Investigation commands support `--out-dir`, `--page`, and `--limit` unless noted.

@@ -3,6 +3,14 @@
 
 使用本地 Kind Kubernetes 集群，在几分钟内开始使用 SP-Istio Agent。
 
+::: tip 用 sp CLI 做 Java 录制回放
+需要 Java 流量的录制、回放与差异测试（agent、策略、回放）？见 [测试快速开始](/zh/testing/getting-started)；用 `sp` 做自动化见 [CLI 快速入门](/zh/testing/getting-started)。
+:::
+
+::: info SESSIFY 已预装
+本快速入门演示环境已预装并启用 SESSIFY（`@softprobe/sessify`），无需再次安装。要把 SDK 集成进你自己的前端应用，见 [SESSIFY 集成](/zh/platform/sessify)。
+:::
+
 ## 先决条件
 
 - **操作系统**: macOS (或带有 Docker 的 Linux)
@@ -74,3 +82,11 @@ https://github.com/user-attachments/assets/dc8c68db-dd8b-4da8-a6e2-346adf6ecffb
 ```bash
 kind delete cluster --name sp-demo-cluster
 ```
+
+::: tip 恭喜！
+你已成功跑通 Softprobe 并看到实际效果。下一步：
+
+- [生产部署](/zh/platform/deployment/installation) —— 部署到你的生产集群
+- [配置指南](/zh/platform/configuration/config) —— 自定义采集规则
+- [高级概念](/zh/platform/advanced-guides/concepts) —— 了解 Softprobe 的工作原理
+:::

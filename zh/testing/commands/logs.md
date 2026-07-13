@@ -93,7 +93,7 @@ v1 响应**不**包含 `source_summary`，也不做按来源的行数分桶统�
 
 ---
 
-## 按 case 范围查询（双窗口）
+## 按 case 范围查询（双窗口） {#case-scoped-lookup-dual-windows}
 
 在诊断某个**回放 case** 时，你通常会有两个时间戳：
 
@@ -135,7 +135,7 @@ SoftProbe 工作台的 **View case logs** 操作会自动使用相同的双窗�
 
 ---
 
-## 排查回放失败
+## 排查回放失败 {#troubleshooting-failed-replays}
 
 在 `sp diagnose replay` 或 pytest 失败之后使用。id 来源参见[日志关联 ID](/zh/testing/reference/log-correlation-ids)。
 

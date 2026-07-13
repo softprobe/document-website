@@ -13,7 +13,7 @@ Softprobe Java Agent（`sp-agent.jar`）通过 `-javaagent` 挂载到 JVM。它�
 ## 前置条件
 
 - 可通过 JVM 参数重启的 Java 服务
-- Agent 主机可访问 **sp-boot**（本地默认 `http://127.0.0.1:8090`）
+- Agent 主机可访问 **sp-backend**（本地默认 `http://127.0.0.1:8090`）
 - 已注册 **`appId`** — 使用 `sp app create` 创建，并在所有实例上固定同一 id
 
 ## 启动命令
@@ -31,7 +31,7 @@ java \
 | 参数 | 指向 | 含义 |
 |------|------|------|
 | `-Dsp.app.id` | — | 注册应用 id（`sp app create` 返回的 16 位十六进制）。**请在共享录制的各环境固定此值。** |
-| `-Dsp.api.url` | **sp-backend**（如 `:8090`） | **必填** — sp-boot 根 URL（须含 `http://` 或 `https://`）。环境变量回退：`SP_API_URL`。录制、回放、Mock、对比，**以及关联日志导出**（`{sp.api.url}/v1/logs`）。 |
+| `-Dsp.api.url` | **sp-backend**（如 `:8090`） | **必填** — sp-backend 根 URL（须含 `http://` 或 `https://`）。环境变量回退：`SP_API_URL`。录制、回放、Mock、对比，**以及关联日志导出**（`{sp.api.url}/v1/logs`）。 |
 
 当 `sp.api.url` 已设置且服务端 [统一日志管道](./installation/server.md#unified-log-pipeline) 已启用时，日志由 sp-backend 内部代理到 Vector — Agent **无需**单独配置 Vector URL。
 
@@ -54,10 +54,10 @@ Agent 也可能从 jar 名或环境自动解析 app id；显式设置 `-Dsp.app.
 为录制流量打标签，便于筛选与限定回放范围：
 
 ```bash
--Dsp.tags.env=staging
+-Dsp.mocker.tags=env=staging
 ```
 
-录制数据会带上 `env:<值>`，从而只回放特定环境的用例。
+录制数据会带上 `env=<值>`，从而只回放特定环境的用例。策略里用 `selector.envTags` 匹配同一标签——见 [策略 YAML 指南 · 通用字段](/zh/testing/policy-yaml-guide#common-fields)。
 
 ## 其他部署方式
 
@@ -130,9 +130,8 @@ sp.api.url=http://127.0.0.1:8090
 
 接收回放流量的实例也必须挂载**同一** Agent JAR。专用回放机上请将录制设为关闭或极低，避免在回放过程中误录大量新流量。
 
-## 相关文档
+## 下一步
 
-- [下载 Java Agent](/zh/testing/download-java-agent)
-- [快速开始](/zh/testing/getting-started)
-- [支持的框架](/zh/testing/supported-frameworks)
-- [配置（JVM）](/zh/testing/installation/configuration)
+Agent 挂上、`sp app status` 显示 online 之后，接入就完成了 → 进入核心流程 **[录制流量](/zh/testing/recording)**。
+
+相关：[下载 Java Agent](/zh/testing/download-java-agent) · [支持的框架](/zh/testing/supported-frameworks) · [快速开始](/zh/testing/getting-started)

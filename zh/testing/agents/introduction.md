@@ -2,7 +2,7 @@
 
 SoftProbe is a record-and-replay testing system for Java services. It attaches to an application as a `-javaagent`, observes real traffic in the background, records request and dependency data, then replays recorded cases later with automatic mocking and automatic comparison.
 
-The SoftProbe CLI (`sp`) is the command-line interface to the SoftProbe backend (**sp-boot**). It is specified **AI-agent first**: stable JSON output, predictable exit codes, and artifact files for large diagnosis payloads.
+The SoftProbe CLI (`sp`) is the command-line interface to the SoftProbe backend (**sp-backend**). It is specified **AI-agent first**: stable JSON output, predictable exit codes, and artifact files for large diagnosis payloads.
 
 ## How SoftProbe Works
 
@@ -46,7 +46,7 @@ java \
 
 ## Single public surface
 
-All documented `sp` commands call **sp-boot** over HTTP (`:8090` by default). The Java agent also talks to backend services to pull config, send heartbeats, and upload recording/replay observability data.
+All documented `sp` commands call **sp-backend** over HTTP (`:8090` by default). The Java agent also talks to backend services to pull config, send heartbeats, and upload recording/replay observability data.
 
 ## Who uses `sp`?
 

@@ -4,9 +4,9 @@
 
 **agent 何时使用：** 解读每次回放 HTTP 分发前后 sp-backend 的 schedule 日志——这是回放调度与你的应用之间关键的进入和退出边界。
 
-这些结构化日志行由 **sp-schedule**（`DefaultHttpReplaySender`）在每次入口 HTTP 调用之前和之后立即输出。当 `sp.source` 为 **`backend`** 且 `service_name` 通常为 **`sp-backend`** 时，它们会出现在关联日志查询（`sp recorder logs`、统一 trace 日志下载）的结果中。
+这些结构化日志行由 **sp-schedule**（`DefaultHttpReplaySender`）在每次入口 HTTP 调用之前和之后立即输出。当 `sp.source` 为 **`backend`** 且 `service_name` 通常为 **`sp-backend`** 时，它们会出现在关联日志查询（`sp logs --trace-id …`、统一 trace 日志下载）的结果中。
 
-用 case 的 **`traceId`** 查询日志（当关联成功时，该值与消息中的 `recordedTraceId` 相同）。参见 [recorder 命令](../commands/recorder.md)。
+用 case 的 **`traceId`** 查询日志（当关联成功时，该值与消息中的 `recordedTraceId` 相同）。参见 [sp logs 命令](../commands/logs.md)。
 
 ---
 
@@ -79,6 +79,6 @@ Replay send failed: planId=6a3f2aad59f0c4655b0f99da, targetEnv=true, method=POST
 
 ## 相关
 
-- [回放与 diff — 回放期间发生了什么](/zh/testing/replay-and-diff#what-happens-during-replay)
+- [回放与对比](/zh/testing/replay-and-diff)
 - [诊断回放失败示例](../examples/agent-diagnose-replay.md)
-- [Recorder 命令](../commands/recorder.md)
+- [sp logs 命令](../commands/logs.md)

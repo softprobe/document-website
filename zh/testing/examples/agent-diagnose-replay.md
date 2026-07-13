@@ -54,14 +54,15 @@ sp replay diff get diff-abc --out-dir .sp-work --json
 
 Parse `data.artifact` and read the JSON file in a follow-up tool call. Inspect `baseMsg` vs `testMsg`.
 
-### 5. Optional: record logs
+### 5. Optional: correlated runtime logs
 
-When failure may be agent-side (no recording, incomplete trace):
+When failure may be agent-side (no recording, incomplete trace), pull the unified logs for the failed case's `traceId`:
 
 ```bash
-sp record logs overview --trace-id <traceId> --json
-sp record logs download --trace-id <traceId> --out-dir .sp-work --json
+sp logs --trace-id <traceId> --since <start> --until <end> --json
 ```
+
+Filter `backend` rows for `Replay send start` / `done` / `failed`. See [Replay send log markers](/zh/testing/reference/replay-send-log-markers).
 
 ### 6. Optional: metadata for full-link
 

@@ -1,10 +1,10 @@
 ---
-title: Configuration
+title: Client configuration
 ---
 
-# Configuration
+# Client configuration
 
-Softprobe uses one XDG namespace shared by `sp`, `sp code`, and the Java agent.
+This page is the reference for client-side (`sp` CLI, Java agent, coding engine) config files and advanced options. Softprobe uses one XDG namespace shared by `sp`, `sp code`, and the Java agent.
 
 | Path | Purpose |
 |------|---------|

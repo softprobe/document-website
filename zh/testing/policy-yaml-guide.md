@@ -4,7 +4,7 @@ title: 策略 YAML 指南
 
 # 策略 YAML 指南
 
-Softprobe 测试通过**声明式 YAML 策略**（`apiVersion: softprobe.ai/v1`）控制录制、回放 Mock 与差异对比。策略按应用（及可选的环境、操作）匹配，按优先级合并，由 sp-boot 在运行时生效。
+Softprobe 测试通过**声明式 YAML 策略**（`apiVersion: softprobe.ai/v1`）控制录制、回放 Mock 与差异对比。策略按应用（及可选的环境、操作）匹配，按优先级合并，由 sp-backend 在运行时生效。
 
 通过 CLI 管理三种已支持的策略类型：
 
@@ -43,7 +43,7 @@ spec:
   # 各 kind 专有字段
 ```
 
-### 通用字段
+### 通用字段 {#common-fields}
 
 | 字段 | 类型 | 必填 | 说明 |
 |------|------|------|------|
@@ -75,7 +75,7 @@ spec:
 | **Recording** | 标量覆盖；列表合并；`timeMock` 任一为 true 则 true；`serializeSkip` 按 `className` + 字段名合并 |
 | **Mock** | 标量覆盖；`skipMock`/`forceMock` 合并；`matchTolerance`、`multiServiceDependencies` 按 pattern/应用键后者覆盖 |
 
-sp-boot 内置 priority 0 的 `default-global-*-policy.yaml`；用户策略请设置 `priority > 0` 覆盖。
+sp-backend 内置 priority 0 的 `default-global-*-policy.yaml`；用户策略请设置 `priority > 0` 覆盖。
 
 ### 运行时流水线
 

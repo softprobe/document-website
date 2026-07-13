@@ -7,7 +7,7 @@ title: Webhook 与 CI/CD 回放
 在部署或合并后自动对**测试环境**中的服务发起录制回放，并根据对比结果决定流水线是否通过。本节说明两种触发方式、如何拿到结果，以及 GitHub Actions 与 Jenkins 的集成模式。
 
 ::: tip 先录制，再自动化回放
-Webhook 与 CI 都不会替你产生用例。请先完成 [如何录制](/zh/testing/recording)，并确认 [回放前置条件](/zh/testing/replay-and-diff#前置条件)（`appId`、策略、`targetEnv` 可达）。
+Webhook 与 CI 都不会替你产生用例。请先走通核心流程 [录制](/zh/testing/recording) 与 [回放](/zh/testing/replay-and-diff)（`appId`、策略、`targetEnv` 可达），再把它交给自动化。
 :::
 
 ## 该用 `sp` CLI 还是 REST API？
@@ -27,7 +27,7 @@ CLI 细节见 [replay 命令](/zh/testing/commands/replay)、[认证](/zh/testin
 ```mermaid
 sequenceDiagram
   participant CI as CI/CD 或 Webhook
-  participant API as sp-boot（调度 + 报告）
+  participant API as sp-backend（调度 + 报告）
   participant SUT as 测试环境服务 targetEnv
   CI->>API: 创建回放计划 createPlan
   API->>SUT: 发送录制的入口 HTTP
@@ -35,7 +35,7 @@ sequenceDiagram
   CI->>API: 轮询 progress / 查询失败用例
 ```
 
-- **`SP_API_URL`**：sp-boot 地址（存储、调度、报告），**不是**被测服务 URL。
+- **`SP_API_URL`**：sp-backend 地址（存储、调度、报告），**不是**被测服务 URL。
 - **`targetEnv`**：被测服务基础 URL（如 `http://order-service.test.svc:8080`），与 `SP_API_URL` 不可混淆 — 见 [CLI 概念：targetEnv](/zh/testing/agents/concepts#replay-target-url-targetenv)。
 
 ## 方式一：Webhook（GET）触发回放
@@ -92,10 +92,10 @@ GET Webhook **只创建计划**，不会等待回放结束。请在 CI 后续步
 
 ## 方式二：CLI / REST 创建计划（推荐用于 CI）
 
-与 [回放与对比](/zh/testing/replay-and-diff#回放计划) 相同，CI 中常用：
+与 [回放与对比](/zh/testing/replay-and-diff) 相同，CI 中常用：
 
 ```bash
-export SP_API_URL=https://your-tenant.softprobe.ai   # 或内网 sp-boot :8090
+export SP_API_URL=https://your-tenant.softprobe.ai   # 或内网 sp-backend :8090
 export SP_TOKEN="${SP_TOKEN}"                         # 来自密钥库，勿写入仓库
 
 sp replay run \
@@ -267,7 +267,7 @@ Webhook 触发可放在 **Post-deployment** 步骤：`curl -G …/api/createPlan
 
 - **`SP_TOKEN` 仅放在 CI 密钥库**，不要提交到 Git；轮换泄露的令牌 — [认证](/zh/testing/agents/authentication)。
 - Webhook URL 若暴露在公网，应配合网络策略、IP 允许列表，并始终携带 **`access-token`**（与 CLI 相同）。
-- 回放会向 **`targetEnv` 发送真实 HTTP**；仅在测试/预发实例上配置 Webhook，勿指向生产入口 — [回放与对比 § 前置条件](/zh/testing/replay-and-diff#前置条件)。
+- 回放会向 **`targetEnv` 发送真实 HTTP**；仅在测试/预发实例上配置 Webhook，勿指向生产入口 — [回放与对比](/zh/testing/replay-and-diff)。
 - 回放机上**降低或关闭录制**，避免回放过程中再录一套数据。
 
 ## 相关文档

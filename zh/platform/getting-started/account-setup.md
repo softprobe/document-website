@@ -103,7 +103,7 @@ metadata:
   name: sp-istio-agent
 spec:
   pluginConfig:
-    api_key: "your-generated-api-key"
+    public_key: "your-generated-api-key"
     # ... other configurations
 ```
 

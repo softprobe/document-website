@@ -34,3 +34,7 @@ sp code
 | **配置** | `sp setup` 写入的 Softprobe 设置 | 与安装 Spcode Service 的账号相同的 Softprobe 设置 |
 
 只有你使用这台机器时，用开发机方式即可。需要多人通过浏览器共用同一工作台时，再考虑 Spcode Service。
+
+## 下一步
+
+UI 能打开后，接入流程就齐了。还没跑过完整流程的话从 [快速开始](/zh/testing/getting-started) 走一遍；已有录制用例的话，回放后在这里 [审查差异](/zh/testing/review-diffs-in-the-web-ui)。

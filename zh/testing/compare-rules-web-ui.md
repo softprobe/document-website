@@ -1,12 +1,12 @@
 ---
-title: 在 Web UI 里配对比规则
+title: 配置对比规则
 ---
 
-# 在 Web UI 里配对比规则
+# 配置对比规则
 
-对比规则决定哪些回放差异**不算数**。原则：*配了的就跳过，没配的严格对比。*
+对比规则决定哪些回放差异**不算数**。原则：*配了的就跳过，没配的严格对比。* [审查差异](/zh/testing/review-diffs-in-the-web-ui) 里逐条接受只管一次；把总在变的字段（时间戳、随机 ID）沉淀成规则，以后每次回放都不再误报——到这一步整个流程就闭环了。
 
-本页讲在**可视化编辑器**里配规则——选一种规则、填一两个字段、点添加。同样的规则也能用 YAML 写（见 [策略 YAML 指南](/zh/testing/policy-yaml-guide)）；日常还是可视化编辑器更友好。
+本页讲在**网页控制台的可视化编辑器**里配规则——选一种规则、填一两个字段、点添加。日常用可视化编辑器最友好；同样的规则也能声明式地写进 [策略 YAML 指南](/zh/testing/policy-yaml-guide)，用于 GitOps 与 CI。
 
 ## 在哪里配置规则
 
@@ -113,8 +113,8 @@ title: 在 Web UI 里配对比规则
 
 作用于某接口时落进接口专属组，作用于整个应用时落进顶层。
 
-## 相关
+## 下一步
 
-- [在 Web UI 里查看差异](/zh/testing/review-diffs-in-the-web-ui) —— 这些规则从哪来
-- [策略 YAML 指南](/zh/testing/policy-yaml-guide) —— 每个规则字段，用 YAML
-- [Mock 与对比策略](/zh/testing/policies#mock-policy)
+规则配好后，回到 [回放](/zh/testing/replay-and-diff) 再跑一次（或在 [审查差异](/zh/testing/review-diffs-in-the-web-ui) 里用**重新比对**立即验证），失败列表里剩下的就都是值得看的真差异了。
+
+想把整个流程自动化——部署后自动回放、流水线门禁——见 [Webhook 与 CI/CD](/zh/testing/webhook-and-ci)；规则进 GitOps 见 [策略 YAML 指南](/zh/testing/policy-yaml-guide)。

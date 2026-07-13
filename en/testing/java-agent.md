@@ -13,7 +13,7 @@ Mesh capture is documented under [Platform agent architecture](/en/platform/adva
 ## Prerequisites
 
 - Java service you can restart with JVM flags
-- **sp-boot** reachable from the agent host (default `http://127.0.0.1:8090` locally)
+- **sp-backend** reachable from the agent host (default `http://127.0.0.1:8090` locally)
 - Registered **`appId`** — create with `sp app create` and pin the same id on every instance
 
 ## Startup command
@@ -33,7 +33,7 @@ The agent may also resolve an app id automatically from jar name or environment;
 | Property | Points to | Purpose |
 |----------|-----------|---------|
 | `-Dsp.app.id` | — | Registered application id (16-char hex from `sp app create`). **Pin this** in every environment that shares recordings. |
-| `-Dsp.api.url` | **sp-backend** (e.g. `:8090`) | **Required** — sp-boot base URL (must include `http://` or `https://`). Env fallback: `SP_API_URL`. Record, replay, mock, compare, **and correlated log export** (`{sp.api.url}/v1/logs`). |
+| `-Dsp.api.url` | **sp-backend** (e.g. `:8090`) | **Required** — sp-backend base URL (must include `http://` or `https://`). Env fallback: `SP_API_URL`. Record, replay, mock, compare, **and correlated log export** (`{sp.api.url}/v1/logs`). |
 
 When `sp.api.url` is set and the server [unified log pipeline](./installation/server.md#unified-log-pipeline) is enabled, logs are proxied to Vector internally — you do **not** need a separate Vector URL on the agent.
 
@@ -54,10 +54,10 @@ Without `sp.api.url` (and without the override above), record and replay still w
 Tag recorded traffic for filtering and replay scope:
 
 ```bash
--Dsp.tags.env=staging
+-Dsp.mocker.tags=env=staging
 ```
 
-Recorded mockers carry `env:<value>` so you can replay only traffic from a given environment.
+Recorded mockers carry `env=<value>` so you can replay only traffic from a given environment. Match the same tag in a policy via `selector.envTags` — see [Policy YAML guide · Common fields](/en/testing/policy-yaml-guide#common-fields).
 
 ## Alternative deployment patterns
 
@@ -112,7 +112,7 @@ To limit impact on live traffic, the agent implements **backpressure** when over
 
 ### Queue overflow
 
-1. Recording tasks enter an in-memory queue (default capacity **1024**).
+Recording tasks enter an in-memory queue (default capacity **1024**).
 2. If the queue is full, recording stops immediately.
 3. After ~30s, a health task lowers sampling (~20%) and retries.
 4. If still full after ~5 minutes, frequency drops again until a minimum (~once per hour).
@@ -130,9 +130,8 @@ Combined with [recording policy](/en/testing/policies) sampling and desensitizat
 
 The **same** agent JAR must be attached on the instance that receives replay traffic. Set recording to minimal or zero on dedicated replay hosts so you only mock, not capture new production-like volume unintentionally.
 
-## Related
+## Next
 
-- [Download Java agent](/en/testing/download-java-agent)
-- [Getting started](/en/testing/getting-started)
-- [Supported frameworks](/en/testing/supported-frameworks)
-- [Configuration (JVM)](/en/testing/installation/configuration)
+Agent attached and `sp app status` shows online? Onboarding is done → head into the core workflow with **[Record traffic](/en/testing/recording)**.
+
+Related: [Download Java agent](/en/testing/download-java-agent) · [Supported frameworks](/en/testing/supported-frameworks) · [Getting started](/en/testing/getting-started)

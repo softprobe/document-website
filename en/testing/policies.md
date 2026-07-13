@@ -4,13 +4,17 @@ title: Policies
 
 # Policies overview
 
-Softprobe Testing uses **declarative YAML policies** (`apiVersion: softprobe.ai/v1`), merged by `metadata.priority` and applied by sp-boot at runtime.
+Softprobe Testing uses **declarative YAML policies** (`apiVersion: softprobe.ai/v1`), merged by `metadata.priority` and applied by sp-backend at runtime.
+
+::: tip Policies are optional tuning, not a prerequisite
+Built-in global defaults (priority 0) make recording and replay work out of the box. You only write your own policy when you want to **change** the default behavior — control sampling, narrow operation scope, ignore noisy fields (`priority > 0` overrides). Get the core workflow running first, then come back to tighten.
+:::
 
 Separate **how to run each phase** from **policy configuration**:
 
 | Phase | Operations | Policy config |
 |-------|------------|---------------|
-| **1 · Record** | [How to record](/en/testing/recording) | [RecordingPolicy](#recording-policy) below |
+| **1 · Record** | [Record traffic](/en/testing/recording) | [RecordingPolicy](#recording-policy) below |
 | **2 · Replay** | [Replay and diff](/en/testing/replay-and-diff) | [MockPolicy](#mock-policy), [CompareRulePolicy](#compare-policy) below |
 
 Field reference and full examples: [Policy YAML guide](/en/testing/policy-yaml-guide) · [sp policy command](/en/testing/commands/policy)
@@ -40,7 +44,7 @@ Full lifecycle: [Getting started](/en/testing/getting-started)
 
 ## RecordingPolicy {#recording-policy}
 
-**Phase 1 · Before traffic**
+**For the [Record](/en/testing/recording) stage · apply before traffic**
 
 Controls **what the agent records**: sampling, time window, operation include/exclude, serialize skip, record-time time mock.
 
@@ -50,7 +54,7 @@ Controls **what the agent records**: sampling, time window, operation include/ex
 - **Serialize skip** — `serializeSkip` by class and field names
 - **`timeMock`** — fix `java.time.*` at record time
 
-**Operational steps:** [How to record](/en/testing/recording)
+**Operational steps:** [Record traffic](/en/testing/recording)
 
 **YAML fields and examples:** [Policy YAML guide · RecordingPolicy](/en/testing/policy-yaml-guide#recordingpolicy)
 
@@ -67,7 +71,7 @@ sp policy recording validate -f my-recording.yaml --json
 
 ## MockPolicy {#mock-policy}
 
-**Phase 2 · Before replay**
+**For the [Replay](/en/testing/replay-and-diff) stage · apply before `sp replay run`**
 
 Controls **whether dependencies are mocked** at replay, mock-key tolerance, cross-app dependencies, and fallback when no mock matches.
 
@@ -87,7 +91,7 @@ Global defaults **force-mock** `DynamicClass:SystemTime.**` and `RandomSource.**
 
 ## CompareRulePolicy {#compare-policy}
 
-**Phase 2 · Before replay**
+**For the [Replay](/en/testing/replay-and-diff) stage · apply before `sp replay run`**
 
 Controls **diff noise** during replay comparison (not mock behavior).
 
@@ -140,7 +144,7 @@ See [GitOps policies](/en/testing/examples/gitops-policies).
 
 ## Related
 
-- [How to record](/en/testing/recording)
+- [Record traffic](/en/testing/recording)
 - [Replay and diff](/en/testing/replay-and-diff)
 - [Policy YAML guide](/en/testing/policy-yaml-guide)
 - [CLI: policy command](/en/testing/commands/policy)

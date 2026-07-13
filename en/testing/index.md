@@ -43,7 +43,7 @@ Traditional integration tests require maintaining environments, seed data, and h
 flowchart LR
   App[JVM app under test]
   Agent[Java agent]
-  Backend[sp-boot]
+  Backend[sp-backend]
   App --> Agent
   Agent --> Backend
 ```
@@ -55,7 +55,7 @@ flowchart LR
 3. **Replay** — Schedule service sends recorded entry requests to your **test instance** (`targetEnv` URL). The agent returns recorded dependency responses instead of calling real downstreams.
 4. **Compare** — Engine diffs recorded vs replay traffic; policies define what to ignore or how strictly to match.
 
-Details: [How to record](/en/testing/recording) · [How it works](/en/testing/how-it-works) · [Replay and diff](/en/testing/replay-and-diff)
+Details: [Record traffic](/en/testing/recording) · [How it works](/en/testing/how-it-works) · [Replay and diff](/en/testing/replay-and-diff)
 
 ## Platform agent ≠ Java agent
 
@@ -65,16 +65,16 @@ The [Platform](/en/platform/advanced-guides/agent-architecture) **SP-Istio agent
 
 - **Java developers** adopting record/replay for the first time
 - **QA / release engineers** running regression without full downstream stacks
-- **Platform engineers** wiring `sp-boot` and agent startup in K8s or VM images
+- **Platform engineers** wiring `sp-backend` and agent startup in K8s or VM images
 - **Automation authors** — start here for concepts, then [Commands](/en/testing/commands/) for `sp` automation
 
 ## Quick links
 
 - [Getting Started](/en/testing/getting-started) — Try the 5-minute [Travel OTA](https://github.com/softprobe/demo-ota) demo and onboard your application.
 - [Install Softprobe](/en/testing/installation/) — Install, set up, launch coding, diagnose, and upgrade with `sp`.
-- [How to record](/en/testing/recording) — Phase 1: build the case corpus.
+- [Record traffic](/en/testing/recording) — Core workflow step 1: build the case corpus.
 - [Java agent](/en/testing/java-agent) — Attach, JVM flags, and production safety.
 - [Policies overview](/en/testing/policies) — YAML by lifecycle phase.
-- [Replay and diff](/en/testing/replay-and-diff) — Phase 2: regression run.
+- [Replay and diff](/en/testing/replay-and-diff) — Core workflow step 2: regression run.
 - [Webhook and CI/CD](/en/testing/webhook-and-ci) — Post-deploy replay and pipeline gates.
 - [Supported frameworks](/en/testing/supported-frameworks)

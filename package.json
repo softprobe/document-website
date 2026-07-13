@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "docs:dev": "vitepress dev",
+    "docs:dev": "vitepress dev --port ${PORT:-5173}",
     "docs:build": "vitepress build",
     "docs:preview": "vitepress preview",
     "validate:testing-ia": "node scripts/validate-testing-ia.mjs",

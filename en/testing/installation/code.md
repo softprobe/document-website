@@ -34,3 +34,7 @@ If Softprobe cannot start the web UI, run `sp doctor` and follow the remediation
 | **Config** | Your Softprobe settings from `sp setup` | Same Softprobe settings as the account that installed Spcode Service |
 
 Use the dev-box flow when you are the only person on that machine. Choose the shared workbench when several people need browser access without each running their own process.
+
+## Next
+
+With the UI opening, your onboarding toolkit is complete. Haven't run the full loop yet? Walk through [Getting started](/en/testing/getting-started); if you already have recorded cases, this UI is where you'll [Review diffs](/en/testing/review-diffs-in-the-web-ui) after a replay.

@@ -1,6 +1,6 @@
-# sp replay diff & logs
+# sp replay diff
 
-**When agents use this:** Deep dive on a failed case — diff bodies, compare JSON, replay-phase logs.
+**When agents use this:** Deep dive on a failed case — diff bodies, compare JSON. For correlated logs use [`sp logs`](./logs).
 
 ## Subcommands
 
@@ -8,7 +8,6 @@
 |------------|-------------|
 | `diff get <diffId>` | Base vs test messages (artifact) |
 | `compare` | Full-link compare result |
-| `logs [replayId]` | Replay log stream/query (`--overview` for summary) |
 | `mock-tree <replayId>` | Mock tree for replay |
 | `noise query` | Query noise rules |
 | `noise exclude` | Exclude noise (`-f` + `--confirm`) |
@@ -19,8 +18,7 @@
 ```bash
 sp replay diff get diff-abc --out-dir .sp-work --json
 sp replay compare --trace-id t1 --replay-id r1 --out-dir .sp-work --json
-sp replay logs r1 --overview --json
-sp replay logs r1 --limit 200 --keyword timeout --json
+sp logs --trace-id <trace-id> --since 2026-06-27T10:00:00Z --until 2026-06-27T10:05:00Z --json
 sp replay mock-tree replay-uuid --json
 ```
 
@@ -49,8 +47,6 @@ Artifact contains decoded `baseMsg` and `testMsg` (JSON when parseable).
 |------------|--------|------|
 | `diff get` | GET | `/api/report/queryDiffMsgById/{id}` |
 | `compare` | POST | Schedule `/api/compareCase` + report APIs |
-| `logs` (`--overview`) | GET | `/api/replay-logs/overview?replayId=...` |
-| `logs` | GET | `/api/replay-logs/download?...` (normalized log entries) |
 | `mock-tree` | GET | `/api/storage/replay-mock-tree/{replayId}` |
 | `noise query` | GET | `/api/queryNoise` |
 | `noise exclude` | POST | `/api/excludeNoise` |
@@ -70,8 +66,8 @@ Artifact contains decoded `baseMsg` and `testMsg` (JSON when parseable).
 |--------|-----|
 | `diff_detail` | `sp replay diff get` |
 | `compare_result` | `sp replay compare` |
-| `replay_log_overview` | `sp replay logs <replayId> --overview` |
-| `download_replay_logs` | `sp replay logs <replayId>` |
+| `replay_log_overview` | `sp logs --trace-id …` |
+| `download_replay_logs` | `sp logs --trace-id …` → 落盘后 `grep` |
 
 ## Related
 
