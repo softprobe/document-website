@@ -291,9 +291,6 @@ export default withMermaid(
   ignoreDeadLinks: [/^https?:\/\/localhost/],
   srcExclude: [
     '**/implementer/**',
-    'docs/**',
-    'i18n/**',
-    'content_backup*/**',
     'archive/**',
     'README.md',
     'REDIRECTS.md',
