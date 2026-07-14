@@ -1,6 +1,6 @@
 # sp logs
 
-**When agents use this:** Retrieve correlated application, agent, and sp-backend logs for a W3C trace, a log **source** (`agent`/`app`/`backend`), or both — within caller-provided time bounds — without direct access to Parquet files or storage credentials.
+**When agents use this:** Retrieve correlated application, agent, and sp-backend logs for a W3C trace, a log **source** (`agent`/`app`/`backend`), or both — within caller-provided time bounds — without direct access to Parquet files or storage credentials. For Softprobe chat investigation exports and optional charts, see [Agent telemetry export + chart](/en/testing/examples/agent-telemetry-export-chart.md).
 
 **Prerequisite:** Unified log pipeline enabled (Vector ingest + Parquet storage + query wiring). See [Install sp-backend (server) — unified log pipeline](/en/testing/installation/server#unified-log-pipeline) and [Log correlation IDs](/en/testing/reference/log-correlation-ids.md).
 

@@ -24,6 +24,18 @@ sp code
 
 If Softprobe cannot start the web UI, run `sp doctor` and follow the remediation, or run `sp upgrade` if the install is out of date.
 
+## Local images in Softprobe chat
+
+In Softprobe chat (`/sp/chat`), assistant markdown can embed **workspace-relative** images:
+
+```markdown
+![chart](.spcode/demo/telemetry/chart.png)
+```
+
+Softprobe resolves those paths through the session workspace (OpenCode local-image support). Absolute paths and `..` segments are rejected. Remote `https://…` images continue to work as before.
+
+Agents that export telemetry and charts typically write files under `.spcode/{scope}/` and embed relative paths — see [Agent telemetry export + chart](/en/testing/examples/agent-telemetry-export-chart.md).
+
 ## Dev machine vs shared workbench
 
 | | On your dev box (this page) | Shared web workbench (optional) |

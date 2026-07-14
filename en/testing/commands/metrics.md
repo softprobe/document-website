@@ -1,6 +1,6 @@
 # sp metrics
 
-**When agents use this:** Retrieve Softprobe product metrics (backend log-pipeline health, agent log-export health, and other emitted series) by `metric_name` and time window — same filter grammar as [`sp logs`](./logs.md), without direct Parquet access or storage credentials.
+**When agents use this:** Retrieve Softprobe product metrics (backend log-pipeline health, agent log-export health, and other emitted series) by `metric_name` and time window — same filter grammar as [`sp logs`](./logs.md), without direct Parquet access or storage credentials. For Softprobe agent export + chart workflows, see [Agent telemetry export + chart](/en/testing/examples/agent-telemetry-export-chart.md).
 
 **Prerequisite:** Unified log pipeline enabled (metrics reuse the same Vector Deployment and Parquet store family as logs, under a `metrics/` dataset). See [Metrics data plane](/en/testing/installation/metrics-data-plane.md).
 
