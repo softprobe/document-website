@@ -6,7 +6,7 @@
 
 本参考仅描述 **CLI 与 API 的查询输出**。它不涉及 Parquet 文件路径、分区布局，也不说明如何直接查询存储。所有查询请使用 [`sp logs`](./logs) 或规范的 HTTP API。
 
-**查询键：** v1 **只接受 `trace_id`**。可选的关联标签在数据被采集时可能出现在行中——它们不是过滤键。
+**查询键：** **`trace_id`** 是必填查询键。**`replay_id`**、**`plan_id`**、**`plan_item_id`** 与 **`mode`**（`record` 或 `replay`）是受支持的**可选查询过滤参数**——作为 query 参数传入，用于在同一条 trace 内把录制行与某一次回放运行的行分开。
 
 **命名：** API 与 Parquet 的行使用**无前缀**的列名（`source`、`replay_id`……）。在传输链路上，OTLP 在 Vector 将它们映射进存储之前可能使用 `sp.source`、`sp.replay_id` 等带前缀的名称。
 
@@ -35,9 +35,11 @@ CLI 的人类可读输出打印的逻辑字段与 API JSON 相同。
 | `source` | yes | 产生该行的 v1 流水线来源。固定取值：`agent`、`app` 或 `backend`（参见 [source 取值](#source-取值)）。 |
 | `trace_id` | when known | 打出该行时处于活动状态的请求或工作单元的 W3C OpenTelemetry trace id。**v1 唯一的查询键。** |
 | `span_id` | when known | 打出该行时活动 span 的 OpenTelemetry span id。 |
-| `replay_id` | when known | 打日志时回放上下文处于活动状态的那一次回放**尝试**的 id。可选标签——不是查询键。 |
-| `plan_id` | when known | 打日志时计划上下文处于活动状态的回放**计划** id。可选标签——不是查询键。 |
-| `plan_item_id` | when known | 回放计划内的某个 case 或操作。可选标签——不是查询键。 |
+| `replay_id` | when known | 打日志时回放上下文处于活动状态的那一次回放**尝试**的 id。同时是受支持的可选查询过滤参数（`&replay_id=`）。 |
+| `plan_id` | when known | 打日志时计划上下文处于活动状态的回放**计划** id。同时是受支持的可选查询过滤参数（`&plan_id=`）。 |
+| `plan_item_id` | when known | 回放计划内的某个 case 或操作。同时是受支持的可选查询过滤参数（`&plan_item_id=`）。 |
+| `mode` | when known | agent 打行时标注的录制/回放相位（`record` 或 `replay`）。是原始 v1 契约之后新增的可选列——老 writer 写出的行没有它，读相位请用 `effective_mode`。同时是受支持的可选查询过滤参数（`&mode=record` / `&mode=replay`）。 |
+| `effective_mode` | yes（推导） | 服务端为每行推导的相位：存储列 `mode` 存在时用它，否则按 `replay_id` 推断（缺失 ⇒ `record`，存在 ⇒ `replay`）。**相位的权威字段**——优先用它，别自己去看 `replay_id`。仅存在于响应中，不是存储列。 |
 
 **不在 v1 查询结果中：** `session_id` / `sp.session_id`。
 
@@ -73,9 +75,9 @@ jq -r '.rows[] | select(.source=="backend") | .body' /tmp/sp-logs.json | head -2
 | **agent 或 backend 空闲**诊断 | `replay_id`、`plan_id`、`plan_item_id` | 仅带 trace 上下文的诊断行，或没有入站 W3C 上下文 |
 | 行上**未设置计划上下文** | `plan_id`、`plan_item_id` | 即便在回放期间，该行也是在计划项派发之外打出的 |
 
-诊断失败的回放时，请按回放 case 或 pytest 关联块中的 **`trace_id`** 查询。当你需要限定在回放范围内的行时，在本地输出中按可选的 `replay_id` 过滤。
+诊断失败的回放时，请按回放 case 或 pytest 关联块中的 **`trace_id`** 查询。当你需要限定在回放范围内的行时，直接在查询上传 **`&replay_id=`**（或 `&mode=replay`）——服务端替你过滤。
 
-**限定 case 的诊断：** 当 case 行包含 **`recordTime`**（API 中为 `requestDateTime`）和 **`replayTime`** 时，请使用两个各 ±2 分钟的窗口（每个锚点一个），而不是从录制到回放的单一跨度。回放窗口通常包含相关行；录制窗口往往为空。参见 [sp logs — 限定 case 的查询](./logs#case-scoped-lookup-dual-windows)。
+**限定 case 的诊断：** 录制窗锚到 case 行的 **`recordTime`**（真实录制时刻；老 backend 没有该字段——退回 `requestDateTime` 会把窗口锚偏，因为它是**回放请求发出时刻**，不是录制时刻），回放窗锚到 **`replayTime`**。使用两个各 ±2 分钟的窗口（每个锚点一个），而不是从录制到回放的单一跨度。两个窗口正常都应有行：录制窗为空意味着锚点错了（`requestDateTime` 降级）或录制日志真的缺失——要排查，不能当正常现象。参见 [sp logs — 限定 case 的查询](./logs#case-scoped-lookup-dual-windows)。
 
 ---
 
@@ -106,7 +108,9 @@ Softprobe 附加关联 id 并转发各 logger 已经发出的行。它不会更�
   "span_id": "8d10c94a2a6f4e11",
   "replay_id": "6891fd300c676b31",
   "plan_id": "6a3f2aad59f0c4655b0f99da",
-  "plan_item_id": "6a3f2aad59f0c4655b0f99da:1"
+  "plan_item_id": "6a3f2aad59f0c4655b0f99da:1",
+  "mode": "replay",
+  "effective_mode": "replay"
 }
 ```
 
@@ -118,9 +122,12 @@ Softprobe 附加关联 id 并转发各 logger 已经发出的行。它不会更�
   "severity": "INFO",
   "body": "Started SpBootApplication in 4.2 seconds",
   "service_name": "sp-backend",
-  "source": "backend"
+  "source": "backend",
+  "effective_mode": "record"
 }
 ```
+
+注意这个示例暴露的坑：无上下文的平台行（没有存储列 `mode`、也没有 `replay_id`）会被兜底推导成 `effective_mode: "record"`，尽管它们并不是录制流量。只在带请求/回放上下文的行上把 `effective_mode` 当权威；平台诊断行要结合 `source` 判断。
 
 ---
 

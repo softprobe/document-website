@@ -95,7 +95,7 @@ Optional Softprobe labels (`replay_id`, `plan_id`, `plan_item_id`, …) may appe
 
 When diagnosing a **replay case**, you often have two timestamps:
 
-- **`recordTime`** — when the case was originally recorded (API field `requestDateTime`)
+- **`recordTime`** — when the case was originally recorded (API field `recordTime`; older backends omit it — falling back to `requestDateTime` mis-anchors the record window, because that field is the **replay send time**, not the recording time)
 - **`replayTime`** — when the replay run executed
 
 **Do not** query from `recordTime` through `replayTime` in one request. That spans every minute partition in between and can scan hundreds of Parquet files.
@@ -105,7 +105,7 @@ Instead, run **two** narrow lookups (±2 minutes around each anchor) and merge r
 ```bash
 export SP_API_URL="${SP_API_URL:-http://127.0.0.1:18090}"
 TRACE_ID="<32-hex from replay case traceId>"
-RECORD_TIME_MS=1714000000000   # requestDateTime from case row
+RECORD_TIME_MS=1714000000000   # recordTime from case row (requestDateTime only as legacy fallback)
 REPLAY_TIME_MS=1714046100000   # replayTime from case row
 PADDING_MS=$((2 * 60 * 1000))
 
@@ -127,7 +127,7 @@ curl -s "${SP_API_URL}/api/recorder/logs?trace_id=${TRACE_ID}&since=${REPLAY_SIN
 jq -s '[.[].rows[]] | sort_by(.timestamp)' /tmp/sp-logs-record.json /tmp/sp-logs-replay.json
 ```
 
-The SoftProbe workbench **View case logs** action uses the same dual-window pattern automatically. The replay window usually contains the lines you need; the record window is often empty but cheap to query.
+The SoftProbe workbench **View case logs** action uses the same dual-window pattern automatically. Both windows should normally contain rows: an empty record window means a bad anchor (`requestDateTime` fallback on an old backend) or genuinely missing recording logs — investigate it rather than treating it as normal. For replays that run longer than ~2 minutes, the two ±2m windows miss the middle — switch to explicit `since`/`until` covering the replay span.
 
 See [Log query fields](./log-query-fields) and [Log correlation IDs](/en/testing/reference/log-correlation-ids).
 
