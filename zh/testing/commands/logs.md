@@ -97,7 +97,7 @@ v1 响应**不**包含 `source_summary`，也不做按来源的行数分桶统�
 
 在诊断某个**回放 case** 时，你通常会有两个时间戳：
 
-- **`recordTime`**——case 最初被录制的时间（API 字段 `requestDateTime`）
+- **`recordTime`**——case 最初被录制的时间（API 字段 `recordTime`；老 backend 没有该字段——退回 `requestDateTime` 会把录制窗锚偏，因为它是**回放请求发出时刻**，不是录制时刻）
 - **`replayTime`**——回放运行执行的时间
 
 **不要**在一次请求中从 `recordTime` 一直查询到 `replayTime`。那会跨越其间的每一个分钟分区，可能扫描数百个 Parquet 文件。
@@ -107,7 +107,7 @@ v1 响应**不**包含 `source_summary`，也不做按来源的行数分桶统�
 ```bash
 export SP_API_URL="${SP_API_URL:-http://127.0.0.1:18090}"
 TRACE_ID="<32-hex from replay case traceId>"
-RECORD_TIME_MS=1714000000000   # requestDateTime from case row
+RECORD_TIME_MS=1714000000000   # recordTime from case row（requestDateTime 仅老 backend 降级用）
 REPLAY_TIME_MS=1714046100000   # replayTime from case row
 PADDING_MS=$((2 * 60 * 1000))
 
@@ -129,7 +129,7 @@ curl -s "${SP_API_URL}/api/recorder/logs?trace_id=${TRACE_ID}&since=${REPLAY_SIN
 jq -s '[.[].rows[]] | sort_by(.timestamp)' /tmp/sp-logs-record.json /tmp/sp-logs-replay.json
 ```
 
-SoftProbe 工作台的 **View case logs** 操作会自动使用相同的双窗口模式。回放窗口通常包含你需要的日志行；录制窗口往往为空，但查询成本很低。
+SoftProbe 工作台的 **View case logs** 操作会自动使用相同的双窗口模式。两个窗口正常都应有行：录制窗为空意味着锚点错了（老 backend 上退回了 `requestDateTime`）或录制日志真的缺失——要排查，不能当正常现象。回放本身超过 ~2 分钟时，±2m 双窗会漏中段——改用显式 `since`/`until` 圈住整个回放期。
 
 参见[日志查询字段](./log-query-fields)和[日志关联 ID](/zh/testing/reference/log-correlation-ids)。
 
