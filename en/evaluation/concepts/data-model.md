@@ -4,160 +4,103 @@ title: Data model
 
 # Data model
 
-Agent Evaluation uses two layers: **immutable resources** pinned before a run, and **runtime records** produced during execution. Names are mutable pointers; execution uses IDs and content digests.
+Agent Evaluation separates **framework-native artifacts** from **workflow records**.
 
-## Public API compiles to manifest
+## Core flow
 
 ```text
-data + subject + evaluators + environment  →  resolve  →  RunManifest
+framework-native suite + subject + environment policy
+→ framework runner
+→ native result bundle + evidence
+→ Softprobe lifecycle + compare + gate
 ```
 
 ```mermaid
 flowchart LR
-  API[data + subject + evaluators + environment]
-  Comp[Manifest compiler]
-  RM[RunManifest]
-  Run[Run]
-  API --> Comp --> RM --> Run
+  In[Framework files + runner config]
+  Run[Runner execution]
+  Native[Native result bundle]
+  Outer[Outer workflow records]
+  Gate[Gate decision]
+  In --> Run --> Native --> Outer --> Gate
 ```
 
-## Layer 1 — Immutable resources
+## Layer A — Pinned inputs (before execution)
 
 | Entity | Description | Example |
 |--------|-------------|---------|
-| **DatasetVersion** | Ordered or query-resolved set of case versions; splits: `development`, `calibration`, `regression`, `held_out_release` | Support router regression set (40 cases) |
-| **CaseVersion** | Input/task, optional expected refs, metadata, media, lineage, split labels — **no stale model output** | `billing_double_charge` case with `user_query` + prompt ref |
-| **SubjectVersion** | Agent under test: code/image digest, model config, prompts, tools, dependency lock | Prompt-only: `router.txt@sha` + GPT-4o; Full agent: container digest + tool config |
-| **EnvironmentVersion** | Harness: reset, step, observe, verify; may be noop | Prompt-only: noop; Sandbox: fixture repo + stubbed APIs |
-| **EvaluatorVersion** | Scorer: selectors, output schema, runtime, capabilities, topology | `contains("billing-support")`, LLM rubric, test oracle |
-| **SuiteVersion** | Cases + subjects + environment + evaluators + trials + reducers + budgets + seed + gate refs | Full router + sandbox suites |
-| **RunManifest** | Fully resolved snapshot: all above + initiator, platform, secrets-by-ref, reproducibility class | CI job runs suite `sha256:abc…` |
-| **EvaluationPolicyVersion** | Online/backfill: filters, sampling, watermarks, budgets, exclusion tags | Nightly 5% sample of production support traces |
-| **GatePolicyVersion** | Pass/fail rules over measurements/aggregates | `router.skill_match = pass AND task.tests_pass = true` |
+| **DefinitionArtifactVersion** | Content-addressed framework definition bundle | Promptfoo config/tests/prompts bundle digest |
+| **RunnerVersion** | Runner id, runtime image digest, framework version | `promptfoo-runner@2.1.0` + image sha |
+| **SubjectVersion** | The target system under test identity | `support-agent@sha256:...` or hosted model route |
+| **EnvironmentPolicyVersion** | Capability and isolation policy | network off, mounts, secret refs, limits |
+| **RunRequestVersion** | The pinned request object referencing all above | request digest used in CI |
+| **GatePolicyVersion** | Release policy over outer status and projected measurements | `status=succeeded` and selected checks |
 
-## Layer 2 — Runtime records
+## Layer B — Runtime records (during/after execution)
 
 | Entity | Description |
 |--------|-------------|
-| **Run** | One execution of one RunManifest |
-| **CaseRun** | One case × one subject × one trial |
-| **Rollout** | Ordered turns/actions/observations + W3C trace context |
-| **EvidenceArtifact** | Output, reference, context, trajectory, env state, logs — content-addressed |
-| **EvaluationResult** | Typed status + zero or more measurements per evaluator attempt |
-| **Attempt** | Immutable retry record; linked; deterministic key prevents duplicate measurements |
-| **Measurement** | Name, typed value, target, evaluator version, explanation, evidence refs, uncertainty, cost/latency/tokens |
-| **Aggregate** | Reducer output: mean, pass@k, CI, paired deltas across trials/cases/groups |
-| **GateDecision** | Policy result over measurements/aggregates — separate from raw facts |
-| **Event** | Append-only ledger entry (`run.planned` … `run.completed`) |
+| **Run** | One execution of one RunRequestVersion |
+| **Attempt** | One runner attempt with retry linkage |
+| **NativeResultArtifact** | Full framework-native result files |
+| **EvidenceArtifact** | Logs, traces, usage/cost, stdout/stderr, attachments |
+| **ProjectionResult** | Optional projected measurements and loss diagnostics |
+| **GateDecision** | Policy outcome for release/governance |
+| **Event** | Outer lifecycle events (`requested`, `validated`, `running`, `terminal`) |
 
-## Entity relationship diagram
+## ER diagram
 
 ```mermaid
 erDiagram
-  DatasetVersion ||--o{ CaseVersion : contains
-  SuiteVersion ||--o{ CaseVersion : references
-  SuiteVersion ||--o{ SubjectVersion : references
-  SuiteVersion ||--o{ EvaluatorVersion : references
-  SuiteVersion ||--|| EnvironmentVersion : uses
-  RunManifest ||--|| SuiteVersion : resolves
-  Run ||--|| RunManifest : executes
-  Run ||--o{ CaseRun : contains
-  CaseRun ||--|| CaseVersion : uses
-  CaseRun ||--|| SubjectVersion : uses
-  CaseRun ||--o| Rollout : produces
-  CaseRun ||--o{ EvidenceArtifact : materializes
-  CaseRun ||--o{ EvaluationResult : grades
-  EvaluationResult ||--o{ Measurement : emits
-  Run ||--o{ Aggregate : reduces
+  RunRequestVersion ||--|| DefinitionArtifactVersion : references
+  RunRequestVersion ||--|| RunnerVersion : uses
+  RunRequestVersion ||--|| SubjectVersion : targets
+  RunRequestVersion ||--|| EnvironmentPolicyVersion : enforces
+  Run ||--|| RunRequestVersion : executes
+  Run ||--o{ Attempt : contains
+  Attempt ||--o{ NativeResultArtifact : writes
+  Attempt ||--o{ EvidenceArtifact : writes
+  Attempt ||--o| ProjectionResult : may_emit
   Run ||--o| GateDecision : decides
   Run ||--o{ Event : appends
-  Measurement }o--|| EvidenceArtifact : cites
 ```
 
-## Runtime flow (one case)
+## Worked example (Promptfoo runner)
 
-```mermaid
-sequenceDiagram
-  participant K as Kernel
-  participant CR as CaseRun
-  participant S as Subject
-  participant E as Environment
-  participant Ev as Evaluators
-
-  K->>CR: start case
-  K->>E: reset
-  K->>S: run input
-  S->>E: tools optional
-  S-->>CR: rollout + trace
-  K->>Ev: grade evidence
-  Ev-->>CR: measurements
-  K->>CR: case.completed event
-```
-
-## Worked example — native suite (prompt-only router)
-
-**Authoring** (`suites/support-router-v1.yaml`):
+**Input**
 
 ```yaml
-cases:
-  - id: billing_double_charge
-    input:
-      user_query: "I was charged twice for my subscription"
-    input_refs:
-      prompt: file://prompts/router.txt
-subject:
-  provider: openai:gpt-4o
-  temperature: 0
-  prompt_ref: file://prompts/router.txt
-environment:
-  type: noop
-evaluators:
-  - id: router.skill_match
-    capability: builtin/deterministic/contains@1
-    params: { pattern: billing-support, selector: rollout.output }
-  - id: confidentiality.no_internal_terms
-    capability: builtin/deterministic/not-contains@1
-    params: { pattern: internal_db_schema, selector: rollout.output }
+runner: promptfoo-runner@2.1.0
+definition_artifact: cas://sha256:promptfoo-def-bundle
+subject: support-router-prod
+environment_policy:
+  network: off
+  secrets: [OPENAI_API_KEY_REF]
+  limits: { timeout_s: 300, max_result_mb: 50 }
+gate_policy: support-router-v1
 ```
 
-**Resolves to RunManifest (digests pinned at validate time):**
+**After execution**
 
 ```text
-CaseVersion:
-  case_version_id: case_billing_double_charge_…
-  input.user_query: "I was charged twice…"
-  input_refs.prompt_digest: sha256:router.txt…
-SubjectVersion:
-  subject_version_id: subj_openai_gpt4o_…
-  provider: openai:gpt-4o
-EnvironmentVersion: env_noop_v1
-EvaluatorVersion[]:
-  - eval_contains_router_skill_match_…  (capability: builtin/deterministic/contains@1)
-  - eval_not_contains_confidentiality_…
+Run.status = succeeded
+NativeResultArtifact = cas://sha256:promptfoo-results
+ProjectionResult.status = lossy
+GateDecision = pass
 ```
 
-**After execution:**
+**Lifecycle events**
 
 ```text
-CaseRun → Rollout (model output text)
-       → EvidenceArtifact (output + prompt capture)
-       → EvaluationResult status: succeeded
-       → Measurement router.skill_match = true
-       → Measurement confidentiality.no_internal_terms = true
-Events: case.started → rollout.completed → evaluation.attempted → measurement.emitted ×2 → run.completed
+run.requested → run.validated → run.running → run.terminal
 ```
 
-Framework adapters (Promptfoo, etc.) produce the **same manifest shape** for supported inputs — with provenance and diagnostics. See [Native model and adapters](/en/evaluation/concepts/native-model-and-adapters).
+## Projection note
 
-## Score projection
+Projection is optional. Unsupported framework fields remain in native artifacts and are represented as diagnostics. Softprobe does not require full DSL parity mapping.
 
-Measurements attach to **targets** (score target v2): `span | trace | session | rollout | case_run | run | comparison_group`. Query-friendly rows project to thelake **scores**; gate decisions and reducer intermediates stay ledger-only unless explicitly projected.
+## Related
 
-See [Scores and gates](/en/evaluation/concepts/scores-and-gates) and [Score targets](/en/evaluation/reference/score-targets).
-
-## Related pages
-
-- [Terminology](/en/evaluation/concepts/terminology)
-- [Mental model](/en/evaluation/mental-model)
-- [Data model](/en/evaluation/concepts/data-model) — full entity reference
-- [Promptfoo field mapping](/en/evaluation/reference/promptfoo-mapping) — redirects to framework adapters
+- [Framework adapters](/en/evaluation/reference/framework-adapters)
+- [Promptfoo integration](/en/evaluation/guides/promptfoo-integration)
+- [Scores and gates](/en/evaluation/concepts/scores-and-gates)

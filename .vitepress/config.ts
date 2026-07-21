@@ -291,7 +291,7 @@ const evaluationSidebarEn = [
     text: 'Guides',
     collapsed: false,
     items: [
-      { text: 'Author a suite', link: '/en/evaluation/guides/author-a-suite' },
+      { text: 'Prepare a framework run', link: '/en/evaluation/guides/author-a-suite' },
       { text: 'Run locally and in CI', link: '/en/evaluation/guides/run-locally-and-ci' },
       { text: 'Compare and promote', link: '/en/evaluation/guides/compare-and-promote' },
       { text: 'Promptfoo integration', link: '/en/evaluation/guides/promptfoo-integration' },

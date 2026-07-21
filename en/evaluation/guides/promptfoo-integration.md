@@ -75,8 +75,8 @@ Projection is additive and loss-aware. It does not replace native artifacts.
 flowchart TB
   A[Existing Promptfoo CI]
   B[Run Promptfoo via Softprobe runner]
-  C[Add small kernel-owned evaluators]
-  D[Optional native suite authoring for new cases]
+  C[Add policy checks and optional projections]
+  D[Operate one workflow across local and managed]
   A --> B --> C --> D
 ```
 

@@ -1,168 +1,112 @@
 ---
-title: Author a suite
+title: Prepare a framework run
 ---
 
-# Author a suite
+# Prepare a framework run
 
-Define evaluation with four ingredients — **framework-agnostic**, compiled to RunManifest:
+This guide replaces "author a suite". You keep using your framework's suite DSL (Promptfoo, DeepEval, etc.) and prepare it for reproducible workflow execution.
 
-```text
-data + subject + evaluators + environment
-```
+## Preparation checklist
 
 ```mermaid
 flowchart TB
-  Data[DatasetVersion / cases]
-  Sub[SubjectVersion]
-  Eval[EvaluatorVersion capabilities]
-  Env[EnvironmentVersion]
-  Suite[SuiteVersion]
-  Manifest[RunManifest]
-  Data & Sub & Eval & Env --> Suite --> Manifest
+  A[Framework files ready]
+  B[Pin definition artifact bundle]
+  C[Select runner image and version]
+  D[Declare environment policy]
+  E[Validate closure and limits]
+  F[Run and gate]
+  A --> B --> C --> D --> E --> F
 ```
 
-## Example — complete native suite
+## 1) Keep framework-native definitions
 
-` suites/support-router-v1.yaml`:
+Example Promptfoo files:
+
+- `promptfooconfig.yaml`
+- `tests.yaml`
+- `prompts/router.txt`
+
+Do not rewrite these into a new Softprobe DSL.
+
+## 2) Package the definition bundle
+
+```bash
+sp eval pack --framework promptfoo \
+  --config promptfooconfig.yaml \
+  --tests tests.yaml \
+  --out .softprobe/promptfoo-definition.cas.json
+```
+
+The bundle should contain all resolved files by digest.
+
+## 3) Declare runner + environment policy
 
 ```yaml
-cases:
-  - id: billing_double_charge
-    title: Route billing questions to billing-support
-    input:
-      user_query: "I was charged twice for my subscription"
-    input_refs:
-      prompt: file://prompts/router.txt
-  - id: technical_api_error
-    title: Route API errors to technical-support
-    input:
-      user_query: "Our checkout API returns 503 intermittently"
-    input_refs:
-      prompt: file://prompts/router.txt
+run_request:
+  runner:
+    id: promptfoo-runner@2.1.0
+    runtime_image: ghcr.io/softprobe/promptfoo-runner@sha256:9c3...
+  definition_artifact: .softprobe/promptfoo-definition.cas.json
+  environment_policy:
+    network: off
+    filesystem:
+      workspace: ro
+      artifacts: rw
+    secrets:
+      - OPENAI_API_KEY_REF
+    limits:
+      timeout_s: 300
+      max_result_mb: 50
+  gate_policy: support-router-v1
+```
 
-subject:
-  provider: openai:gpt-4o
-  temperature: 0
-  prompt_ref: file://prompts/router.txt
+## 4) Validate before run
 
-environment:
-  type: noop
+```bash
+sp eval validate \
+  --runner promptfoo-runner@2.1.0 \
+  --definition .softprobe/promptfoo-definition.cas.json \
+  --json
+```
 
-evaluators:
-  - id: router.skill_match
-    capability: builtin/deterministic/contains@1
-    params:
-      pattern: "{{case.expected_skill}}"   # per-case override in case metadata
-      selector: rollout.output
-  - id: confidentiality.no_internal_terms
-    capability: builtin/deterministic/not-contains@1
-    params:
-      pattern: internal_db_schema
-      selector: rollout.output
+Typical validation failures:
+- unpinned file reference
+- disallowed network capability
+- missing secret reference
+- oversized declared result budget
 
-trials:
-  count: 1
+## 5) Execute and collect results
 
+```bash
+sp eval run \
+  --runner promptfoo-runner@2.1.0 \
+  --definition .softprobe/promptfoo-definition.cas.json \
+  --gate support-router-v1 \
+  --out-dir .softprobe/runs/latest
+```
+
+## Result structure
+
+| Output | Meaning |
+|--------|---------|
+| Native framework result bundle | Full framework semantics and diagnostics |
+| Outer run lifecycle events | Cross-framework workflow state |
+| Optional projected measurements | Query convenience, explicitly loss-aware |
+| Gate decision | Release policy output |
+
+## Example governance rule
+
+```yaml
 gate: support-router-v1
+rules:
+  - run_status == succeeded
+  - native_result_present == true
+  - projected.router_skill_match == true
 ```
-
-Per-case skill expectation (example metadata on case 1):
-
-```yaml
-  - id: billing_double_charge
-    metadata:
-      expected_skill: billing-support
-```
-
-Compile: `sp eval validate --suite suites/support-router-v1.yaml --out .softprobe/manifest.json`
-
-## Data (cases)
-
-Each **case** includes:
-
-- **input** — user query, task spec, media refs
-- **input_refs** — content-addressed prompt/files
-- **metadata** — category, difficulty, expected_skill
-- **lineage** — `derived_from` trace or prod snapshot (optional)
-- **split** — `development`, `regression`, `held_out_release`
-
-Cases do **not** store stale model outputs.
-
-## Subject
-
-| Eval mode | Example |
-|-----------|---------|
-| Prompt-only | `provider: openai:gpt-4o` + `prompt_ref: file://prompts/router.txt` |
-| Full agent | `ref: oci://support-agent@sha256:…` + tool config |
-
-Pin every behavior-affecting digest.
-
-## Evaluators (capabilities)
-
-Reference evaluators by **capability id**, not framework assert types:
-
-```yaml
-evaluators:
-  - id: task.tests_pass
-    capability: builtin/environment/outcome@1
-    params: { oracle: integration_tests }
-  - id: support.grounded
-    capability: plugin/llm-judge@3
-    params:
-      rubric_ref: file://rubrics/groundedness.txt
-      model: openai:gpt-4o
-      selector: rollout.output
-```
-
-See [Evaluator taxonomy](/en/evaluation/evaluators/) and [Capability descriptors](/en/evaluation/reference/capability-descriptors).
-
-## Environment
-
-| Type | Example | When |
-|------|---------|------|
-| `noop` | `type: noop` | Prompt-only output checks |
-| `fixture` | `ref: oci://billing-sandbox@sha256:…` | Agent with stubbed APIs + verify |
-| `sandbox` | Stateful harness + `reset`/`step`/`verify` | Multi-turn tasks |
-
-**Example — sandbox upgrade:**
-
-```yaml
-environment:
-  type: fixture
-  ref: oci://billing-sandbox@sha256:def456…
-  verify: integration_tests
-```
-
-See [Prompt-only vs environment eval](/en/evaluation/guides/eval-modes).
-
-## SDK example
-
-```python
-from softprobe.eval import Suite, dataset, subject, evaluators, environment
-
-suite = Suite(
-    data=dataset.from_yaml("suites/support-router-v1.yaml"),
-    subject=subject.provider("openai:gpt-4o", prompt="prompts/router.txt"),
-    environment=environment.noop(),
-    evaluators=[
-        evaluators.contains("router.skill_match", "billing-support"),
-        evaluators.not_contains("confidentiality.no_internal_terms", "internal_db_schema"),
-    ],
-    gate="support-router-v1",
-)
-manifest = suite.validate()
-run = suite.run(output=".softprobe/runs/latest")
-```
-
-## REST equivalent
-
-`POST /api/v1/eval/compile` with the four fields → **RunManifest**.
-
-## Optional — Promptfoo import
-
-Use `--import promptfoo` only for migration; rewrite to native YAML for cases you gate on. See [Framework adapters](/en/evaluation/reference/framework-adapters).
 
 ## Related
 
-- [Native model and adapters](/en/evaluation/concepts/native-model-and-adapters)
 - [Quick start](/en/evaluation/getting-started)
+- [Promptfoo integration](/en/evaluation/guides/promptfoo-integration)
+- [Framework adapters](/en/evaluation/reference/framework-adapters)

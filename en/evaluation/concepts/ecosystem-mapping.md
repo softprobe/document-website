@@ -4,112 +4,47 @@ title: Ecosystem mapping
 
 # Ecosystem mapping
 
-If you know Promptfoo, Langfuse, Braintrust, or Prime Intellect Verifiers, this page maps their concepts to Softprobe Agent Evaluation — and where we deliberately differ.
+Softprobe integrates frameworks as runners, not as schema replacements.
 
-## Promptfoo → Softprobe (adapter, not schema)
-
-Promptfoo is an **optional import path**. We do not mirror every assert type in RunManifest JSON.
-
-| Promptfoo | Softprobe (native) | Notes |
-|-----------|-------------------|-------|
-| `promptfooconfig.yaml` | **SuiteVersion** via importer | Prefer native `suite.yaml` long-term |
-| `tests` / `vars` | **CaseVersion** | Importer maps subset; rewrite natively for gates |
-| `assert[]` | **EvaluatorVersion** capabilities | Common deterministic asserts only; rest → diagnostic or sandbox node |
-| `providers` | **SubjectVersion** | Matrix expands in kernel, not in framework |
-| `promptfoo eval` | **`sp eval run`** | Parallel during migration |
-| `.promptfoo` SQLite | **Artifacts** + thelake | Not system of record |
-
-Integration: [Framework adapters](/en/evaluation/reference/framework-adapters) · [Promptfoo integration](/en/evaluation/guides/promptfoo-integration).
-
-## Langfuse → Softprobe
-
-| Langfuse | Softprobe | Notes |
-|----------|-----------|-------|
-| Dataset + items | **DatasetVersion** + **CaseVersion** | Immutable versions; prod → case with governance |
-| Experiment / dataset run | **Run** on dataset snapshot | One kernel semantics local + managed |
-| Evaluator template | **EvaluatorVersion** capability descriptor | Open topology, not `LLM_AS_JUDGE \| CODE` enum |
-| Job configuration | Compiled **RunManifest** | No mutable DB rows as source of truth |
-| Score on trace/observation | **Measurement** → score projection | Score target v2 adds rollout/case_run/run |
-| LLM-as-a-judge on live traces | **EvaluationPolicyVersion** | Sampling, watermarks, loop guard |
-| Annotation queue | **Human evaluator** runtime | Async evaluator, not separate score subsystem |
-| Variable mapping | **Evidence selectors** + `missing_evidence` | Explicit, not silent template gaps |
-
-See [Langfuse and Braintrust adoption](/en/evaluation/guides/langfuse-and-braintrust-adoption).
-
-## Braintrust → Softprobe
-
-| Braintrust | Softprobe | Notes |
-|------------|-----------|-------|
-| `data` | **DatasetVersion** / `data` in public API | |
-| `task` | **SubjectVersion** + **EnvironmentVersion** | Environment outcomes first-class |
-| `scores` / scorers | **EvaluatorVersion[]** | |
-| Experiment | **Run** + **RunManifest** | Portable export |
-| Online scoring rule | **EvaluationPolicyVersion** | Filters, sampling, span vs trace scope |
-| Playground → CI → production loop | [Evaluation loop](/en/evaluation/concepts/evaluation-loop) | Documented flywheel |
-| Production log → dataset | [Production-to-eval loop](/en/evaluation/guides/production-to-eval-loop) | Governed proposal/approval |
-
-Braintrust mental model `data + task + scores` maps directly to our public API:
-
-```text
-data + subject + evaluators + environment
-```
-
-## Concept map (all ecosystems)
+## Mapping in one view
 
 ```mermaid
-flowchart TB
-  subgraph pf [Promptfoo]
-    PFY[YAML tests + asserts]
-  end
-  subgraph lf [Langfuse]
-    LFD[Datasets + experiments]
-  end
-  subgraph bt [Braintrust]
-    BTD[data + task + scores]
-  end
-  subgraph pi [Verifiers]
-    PIE[Environment + rubrics]
-  end
-  subgraph sp [Softprobe kernel]
-    SV[SuiteVersion]
-    RM[RunManifest]
-    Run[Run + ledger]
-  end
-  PFY --> SV
-  LFD --> SV
-  BTD --> SV
-  PIE --> SV
-  SV --> RM --> Run
+flowchart LR
+  PF[Promptfoo]
+  DE[DeepEval]
+  LF[Langfuse]
+  BT[Braintrust]
+  Runner[Framework runner]
+  WF[Softprobe workflow]
+  Gate[Compare + Gate]
+  PF --> Runner
+  DE --> Runner
+  LF --> Runner
+  BT --> Runner
+  Runner --> WF --> Gate
 ```
 
-## Prime Intellect Verifiers → Softprobe
+## Promptfoo
 
-| Verifiers | Softprobe | Notes |
-|-----------|-----------|-------|
-| Environment (SingleTurn, Tool, Stateful) | **EnvironmentVersion** + **SubjectVersion** | Rollout export interoperable; training orchestration out of scope |
-| Dataset / taskset | **DatasetVersion** | |
-| Rubric / reward functions | **EvaluatorVersion** + **Reducer** | Named measurements; no single opaque scalar replaces evidence |
-| Weighted rewards | **Reducer** over measurements | Gates consume aggregates |
-| `JudgeRubric` | Model-backed **EvaluatorVersion** | Pinned prompt/model in descriptor |
-| Group scoring / pass@k | **Aggregate** + trial groups | |
-| Sandbox harness | **EnvironmentVersion** verify contract | Outcomes beat transcript-only grading |
+| Promptfoo concept | Softprobe concept |
+|-------------------|-------------------|
+| `promptfooconfig.yaml` + `tests.yaml` | Definition artifact bundle |
+| `promptfoo eval` | Framework runner execution inside workflow |
+| `.promptfoo` results | Native result artifact + diagnostics |
+| cell pass/fail | Optional projected measurement (non-authoritative) |
 
-## Deliberate differences
+## DeepEval
 
-Softprobe **does not** copy these patterns:
+| DeepEval concept | Softprobe concept |
+|------------------|-------------------|
+| test case definitions | Definition artifact bundle |
+| metric execution | Runner-owned semantics |
+| metric outputs | Native result artifact + optional projection |
 
-| Anti-pattern | Softprobe approach |
-|--------------|-------------------|
-| Promptfoo local SQLite as product SoR | thelake append-only ledger + CAS artifacts |
-| Langfuse closed evaluator kind union | Capability-described evaluators + group/stream/aggregate topologies |
-| Separate local vs managed experiment semantics | One `sp-eval-kernel` contract everywhere |
-| DeepEval proprietary trace graph | OTLP + canonical trajectory library |
-| Framework pass/fail as release gate | Kernel recomputes **GatePolicyVersion**; framework flags are measurements/provenance |
-| Prime Intellect training loop in eval core | Export rollouts + score vectors; training out of scope |
-| Nested framework orchestrator under kernel | Importer or single sandboxed evaluator node only |
+## Braintrust / Langfuse
 
-## Next steps
+Softprobe can ingest/export datasets and traces, but release gates and lifecycle remain in Softprobe workflow.
 
-- [Data model](/en/evaluation/concepts/data-model)
-- [Promptfoo integration](/en/evaluation/guides/promptfoo-integration)
-- [Evaluation loop](/en/evaluation/concepts/evaluation-loop)
+## Deliberate difference
+
+Softprobe does **not** attempt complete parity translation of each framework DSL into a new universal schema.

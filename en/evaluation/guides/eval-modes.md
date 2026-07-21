@@ -113,6 +113,6 @@ Compare runs with `sp eval compare` using paired trial seeds when subject versio
 
 ## Related
 
-- [Author a suite](/en/evaluation/guides/author-a-suite)
+- [Prepare a framework run](/en/evaluation/guides/author-a-suite)
 - [Environment outcome evaluators](/en/evaluation/evaluators/environment-outcome)
 - [Evidence and trajectories](/en/evaluation/concepts/evidence-and-trajectories)
