@@ -9,20 +9,22 @@ Read these pages in order if you are new to Agent Evaluation. Each builds on the
 ## Recommended reading order
 
 1. [Mental model](/en/evaluation/mental-model) — suite, run, evidence, measurement, gate
-2. [Data model](/en/evaluation/concepts/data-model) — immutable resources vs runtime records
-3. [Ecosystem mapping](/en/evaluation/concepts/ecosystem-mapping) — Promptfoo, Langfuse, Braintrust, Verifiers → Softprobe
-4. [Scores and gates](/en/evaluation/concepts/scores-and-gates) — facts vs release policies
-5. [Evidence and trajectories](/en/evaluation/concepts/evidence-and-trajectories) — OTLP boundary
-6. [How it works](/en/evaluation/how-it-works) — full lifecycle
+2. [Native model and adapters](/en/evaluation/concepts/native-model-and-adapters) — framework-agnostic contract
+3. [Data model](/en/evaluation/concepts/data-model) — immutable resources vs runtime records
+4. [Ecosystem mapping](/en/evaluation/concepts/ecosystem-mapping) — optional bridges from other tools
+5. [Scores and gates](/en/evaluation/concepts/scores-and-gates) — facts vs release policies
+6. [Evidence and trajectories](/en/evaluation/concepts/evidence-and-trajectories) — OTLP boundary
+7. [How it works](/en/evaluation/how-it-works) — full lifecycle
 
 ## By persona
 
-### Eval author (Promptfoo, SDK, YAML)
+### Eval author (native YAML, SDK)
 
 | Topic | Page |
 |-------|------|
 | Glossary | [Terminology](/en/evaluation/concepts/terminology) |
-| Promptfoo field mapping | [Promptfoo mapping](/en/evaluation/reference/promptfoo-mapping) |
+| Native model | [Native model and adapters](/en/evaluation/concepts/native-model-and-adapters) |
+| Framework import | [Framework adapters](/en/evaluation/reference/framework-adapters) |
 | Author a suite | [Author a suite](/en/evaluation/guides/author-a-suite) |
 | Evaluator types | [Evaluator taxonomy](/en/evaluation/evaluators/) |
 

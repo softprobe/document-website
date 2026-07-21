@@ -26,7 +26,7 @@ flowchart LR
 | Entity | Description | Example |
 |--------|-------------|---------|
 | **DatasetVersion** | Ordered or query-resolved set of case versions; splits: `development`, `calibration`, `regression`, `held_out_release` | Support router regression set (40 cases) |
-| **CaseVersion** | Input/task, optional expected refs, metadata, media, lineage, split labels — **no stale model output** | One test row: `user_query` + assert expectations |
+| **CaseVersion** | Input/task, optional expected refs, metadata, media, lineage, split labels — **no stale model output** | `billing_double_charge` case with `user_query` + prompt ref |
 | **SubjectVersion** | Agent under test: code/image digest, model config, prompts, tools, dependency lock | Prompt-only: `router.txt@sha` + GPT-4o; Full agent: container digest + tool config |
 | **EnvironmentVersion** | Harness: reset, step, observe, verify; may be noop | Prompt-only: noop; Sandbox: fixture repo + stubbed APIs |
 | **EvaluatorVersion** | Scorer: selectors, output schema, runtime, capabilities, topology | `contains("billing-support")`, LLM rubric, test oracle |
@@ -94,36 +94,46 @@ sequenceDiagram
   K->>CR: case.completed event
 ```
 
-## Worked example — one Promptfoo case (prompt-only router)
+## Worked example — native suite (prompt-only router)
 
-**Input** (`tests.yaml`):
+**Authoring** (`suites/support-router-v1.yaml`):
 
 ```yaml
-- description: Route billing questions to billing-support
-  vars:
-    system_prompt: "file://prompts/router.txt"
-    user_query: "I was charged twice for my subscription"
-  assert:
-    - type: icontains
-      value: "billing-support"
-    - type: not-icontains
-      value: "internal_db_schema"
+cases:
+  - id: billing_double_charge
+    input:
+      user_query: "I was charged twice for my subscription"
+    input_refs:
+      prompt: file://prompts/router.txt
+subject:
+  provider: openai:gpt-4o
+  temperature: 0
+  prompt_ref: file://prompts/router.txt
+environment:
+  type: noop
+evaluators:
+  - id: router.skill_match
+    capability: builtin/deterministic/contains@1
+    params: { pattern: billing-support, selector: rollout.output }
+  - id: confidentiality.no_internal_terms
+    capability: builtin/deterministic/not-contains@1
+    params: { pattern: internal_db_schema, selector: rollout.output }
 ```
 
-**Resolves to RunManifest fragment:**
+**Resolves to RunManifest (digests pinned at validate time):**
 
 ```text
 CaseVersion:
+  case_version_id: case_billing_double_charge_…
   input.user_query: "I was charged twice…"
   input_refs.prompt_digest: sha256:router.txt…
 SubjectVersion:
+  subject_version_id: subj_openai_gpt4o_…
   provider: openai:gpt-4o
-  temperature: 0
-  prompt_ref: sha256:router.txt…
-EnvironmentVersion: noop
+EnvironmentVersion: env_noop_v1
 EvaluatorVersion[]:
-  - router.skill_match (icontains billing-support)
-  - confidentiality.no_internal_terms (not-icontains internal_db_schema)
+  - eval_contains_router_skill_match_…  (capability: builtin/deterministic/contains@1)
+  - eval_not_contains_confidentiality_…
 ```
 
 **After execution:**
@@ -137,7 +147,7 @@ CaseRun → Rollout (model output text)
 Events: case.started → rollout.completed → evaluation.attempted → measurement.emitted ×2 → run.completed
 ```
 
-For **environment-backed** eval, swap in a full agent **SubjectVersion** and fixture **EnvironmentVersion** with `verify` oracles — same envelope. See [Prompt-only vs environment eval](/en/evaluation/guides/eval-modes).
+Framework adapters (Promptfoo, etc.) produce the **same manifest shape** for supported inputs — with provenance and diagnostics. See [Native model and adapters](/en/evaluation/concepts/native-model-and-adapters).
 
 ## Score projection
 
@@ -149,4 +159,5 @@ See [Scores and gates](/en/evaluation/concepts/scores-and-gates) and [Score targ
 
 - [Terminology](/en/evaluation/concepts/terminology)
 - [Mental model](/en/evaluation/mental-model)
-- [Promptfoo field mapping](/en/evaluation/reference/promptfoo-mapping)
+- [Data model](/en/evaluation/concepts/data-model) — full entity reference
+- [Promptfoo field mapping](/en/evaluation/reference/promptfoo-mapping) — redirects to framework adapters

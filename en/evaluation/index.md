@@ -62,7 +62,7 @@ flowchart TB
 ## What you can do
 
 - **Author suites** with a small API: `data + subject + evaluators + environment`
-- **Validate before you spend** — compile Promptfoo YAML to manifests; catch unsupported assertions in CI for free
+- **Validate before you spend** — compile native suites or import frameworks with explicit diagnostics
 - **Run anywhere** — same manifest on local laptop, GitHub Actions, or managed workers
 - **Grade evidence, not vibes** — measurements cite artifacts and traces; missing evidence is a typed outcome, never score zero
 - **Gate releases** — scores are facts; pass/fail is a versioned **gate policy** you can change without rewriting history
@@ -89,10 +89,10 @@ Both modes share the same suite envelope — you change **SubjectVersion** and *
 
 | Persona | Start here |
 |---------|------------|
-| Eval author (Promptfoo YAML, SDK) | [Quick start](/en/evaluation/getting-started) · [Promptfoo integration](/en/evaluation/guides/promptfoo-integration) |
+| Eval author (native YAML, SDK) | [Quick start](/en/evaluation/getting-started) · [Author a suite](/en/evaluation/guides/author-a-suite) |
+| Migrating from Promptfoo | [Native model and adapters](/en/evaluation/concepts/native-model-and-adapters) · [Framework adapters](/en/evaluation/reference/framework-adapters) |
 | Agent builder (shipping agents) | [Eval modes](/en/evaluation/guides/eval-modes) · [Compare and promote](/en/evaluation/guides/compare-and-promote) |
 | Migrating from Langfuse / Braintrust | [Ecosystem mapping](/en/evaluation/concepts/ecosystem-mapping) |
-| Platform operator | [Architecture](/en/evaluation/architecture/) · [Storage and thelake](/en/evaluation/architecture/storage-and-thelake) |
 | AI coding agent | [For AI agents](/en/evaluation/agents/overview) |
 
 ## How it relates to Testing and Observability

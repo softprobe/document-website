@@ -6,21 +6,20 @@ title: Ecosystem mapping
 
 If you know Promptfoo, Langfuse, Braintrust, or Prime Intellect Verifiers, this page maps their concepts to Softprobe Agent Evaluation — and where we deliberately differ.
 
-## Promptfoo → Softprobe
+## Promptfoo → Softprobe (adapter, not schema)
 
-| Promptfoo | Softprobe | Notes |
-|-----------|-----------|-------|
-| `promptfooconfig.yaml` | **SuiteVersion** (via importer) | Kernel compiles to manifest; Promptfoo does not orchestrate inside a run |
-| `tests` / `vars` | **CaseVersion** inputs | `system_prompt`, `user_query` → case fields + prompt digest |
-| `assert` / `defaultTest.assert` | **EvaluatorVersion[]** | `icontains` → builtin evaluator; unsupported → typed diagnostic at `sp eval validate` |
-| `providers` | **SubjectVersion** provider descriptor | Matrix expands at plan time in kernel |
-| `prompts` | Subject prompt refs or case vars | Pinned by digest in manifest |
-| Matrix (prompt × provider × test) | **CaseRun** grid | Kernel-owned scheduling |
-| `promptfoo eval` | **`sp eval run`** | Same semantics local and managed |
-| `.promptfoo` / `promptfoo view` | Native diagnostics as **artifacts** | Query via API/projections; UI not authoritative SoR |
-| Provider cache | Kernel cache on pure/hermetic nodes | External cache is not source of truth |
+Promptfoo is an **optional import path**. We do not mirror every assert type in RunManifest JSON.
 
-Integration modes: [Promptfoo integration](/en/evaluation/guides/promptfoo-integration).
+| Promptfoo | Softprobe (native) | Notes |
+|-----------|-------------------|-------|
+| `promptfooconfig.yaml` | **SuiteVersion** via importer | Prefer native `suite.yaml` long-term |
+| `tests` / `vars` | **CaseVersion** | Importer maps subset; rewrite natively for gates |
+| `assert[]` | **EvaluatorVersion** capabilities | Common deterministic asserts only; rest → diagnostic or sandbox node |
+| `providers` | **SubjectVersion** | Matrix expands in kernel, not in framework |
+| `promptfoo eval` | **`sp eval run`** | Parallel during migration |
+| `.promptfoo` SQLite | **Artifacts** + thelake | Not system of record |
+
+Integration: [Framework adapters](/en/evaluation/reference/framework-adapters) · [Promptfoo integration](/en/evaluation/guides/promptfoo-integration).
 
 ## Langfuse → Softprobe
 

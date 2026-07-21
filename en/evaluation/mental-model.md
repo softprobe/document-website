@@ -49,7 +49,7 @@ Friendly names like `support-router-v3` are mutable pointers. Execution uses **I
 data + subject + evaluators + environment  →  resolve  →  RunManifest
 ```
 
-**Promptfoo users:** your `promptfooconfig.yaml` + `tests.yaml` compile into a suite. Promptfoo remains the authoring tool; Softprobe owns orchestration and storage. See [Ecosystem mapping](/en/evaluation/concepts/ecosystem-mapping).
+**Promptfoo users:** you may import YAML during migration; long-term, author native suites. Promptfoo remains optional input — Softprobe owns orchestration, **environment**, and storage. See [Native model and adapters](/en/evaluation/concepts/native-model-and-adapters).
 
 ## 2. Run — one execution
 

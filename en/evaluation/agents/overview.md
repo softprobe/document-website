@@ -35,7 +35,7 @@ flowchart LR
 - [Output contract](/en/evaluation/agents/output-contract) — JSON envelope and artifacts
 - [CLI reference](/en/evaluation/reference/cli)
 - [Result status](/en/evaluation/reference/result-status) — never treat errors as score 0
-- [Promptfoo field mapping](/en/evaluation/reference/promptfoo-mapping)
+- [Framework adapters](/en/evaluation/reference/framework-adapters)
 
 ## Eval depth
 

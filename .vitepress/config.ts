@@ -260,6 +260,7 @@ const evaluationSidebarEn = [
     collapsed: false,
     items: [
       { text: 'Concepts overview', link: '/en/evaluation/concepts/' },
+      { text: 'Native model and adapters', link: '/en/evaluation/concepts/native-model-and-adapters' },
       { text: 'Terminology', link: '/en/evaluation/concepts/terminology' },
       { text: 'Data model', link: '/en/evaluation/concepts/data-model' },
       { text: 'Ecosystem mapping', link: '/en/evaluation/concepts/ecosystem-mapping' },
@@ -329,7 +330,8 @@ const evaluationSidebarEn = [
       { text: 'Events', link: '/en/evaluation/reference/events' },
       { text: 'Score targets', link: '/en/evaluation/reference/score-targets' },
       { text: 'Capability descriptors', link: '/en/evaluation/reference/capability-descriptors' },
-      { text: 'Promptfoo field mapping', link: '/en/evaluation/reference/promptfoo-mapping' },
+      { text: 'Framework adapters', link: '/en/evaluation/reference/framework-adapters' },
+      { text: 'Promptfoo mapping (legacy)', link: '/en/evaluation/reference/promptfoo-mapping' },
     ],
   },
   {

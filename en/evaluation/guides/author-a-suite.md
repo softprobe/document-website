@@ -4,7 +4,7 @@ title: Author a suite
 
 # Author a suite
 
-Define evaluation with four ingredients:
+Define evaluation with four ingredients — **framework-agnostic**, compiled to RunManifest:
 
 ```text
 data + subject + evaluators + environment
@@ -12,76 +12,157 @@ data + subject + evaluators + environment
 
 ```mermaid
 flowchart TB
-  Data[DatasetVersion]
+  Data[DatasetVersion / cases]
   Sub[SubjectVersion]
-  Eval[EvaluatorVersion]
+  Eval[EvaluatorVersion capabilities]
   Env[EnvironmentVersion]
   Suite[SuiteVersion]
-  Data & Sub & Eval & Env --> Suite
-  Suite --> Manifest[RunManifest]
+  Manifest[RunManifest]
+  Data & Sub & Eval & Env --> Suite --> Manifest
 ```
 
-## Data (DatasetVersion / cases)
+## Example — complete native suite
+
+` suites/support-router-v1.yaml`:
+
+```yaml
+cases:
+  - id: billing_double_charge
+    title: Route billing questions to billing-support
+    input:
+      user_query: "I was charged twice for my subscription"
+    input_refs:
+      prompt: file://prompts/router.txt
+  - id: technical_api_error
+    title: Route API errors to technical-support
+    input:
+      user_query: "Our checkout API returns 503 intermittently"
+    input_refs:
+      prompt: file://prompts/router.txt
+
+subject:
+  provider: openai:gpt-4o
+  temperature: 0
+  prompt_ref: file://prompts/router.txt
+
+environment:
+  type: noop
+
+evaluators:
+  - id: router.skill_match
+    capability: builtin/deterministic/contains@1
+    params:
+      pattern: "{{case.expected_skill}}"   # per-case override in case metadata
+      selector: rollout.output
+  - id: confidentiality.no_internal_terms
+    capability: builtin/deterministic/not-contains@1
+    params:
+      pattern: internal_db_schema
+      selector: rollout.output
+
+trials:
+  count: 1
+
+gate: support-router-v1
+```
+
+Per-case skill expectation (example metadata on case 1):
+
+```yaml
+  - id: billing_double_charge
+    metadata:
+      expected_skill: billing-support
+```
+
+Compile: `sp eval validate --suite suites/support-router-v1.yaml --out .softprobe/manifest.json`
+
+## Data (cases)
 
 Each **case** includes:
 
-- Input (user query, task spec, media refs)
-- Optional expected references (gold answer, rubric ref)
-- Metadata (category, difficulty)
-- Lineage (`derived_from` trace or prod snapshot)
-- Split label (`development`, `regression`, …)
+- **input** — user query, task spec, media refs
+- **input_refs** — content-addressed prompt/files
+- **metadata** — category, difficulty, expected_skill
+- **lineage** — `derived_from` trace or prod snapshot (optional)
+- **split** — `development`, `regression`, `held_out_release`
 
 Cases do **not** store stale model outputs.
 
 ## Subject
 
-The **system under test**:
+| Eval mode | Example |
+|-----------|---------|
+| Prompt-only | `provider: openai:gpt-4o` + `prompt_ref: file://prompts/router.txt` |
+| Full agent | `ref: oci://support-agent@sha256:…` + tool config |
 
-| Eval mode | Subject example |
-|-----------|-----------------|
-| Prompt-only | Router prompt digest + pinned LLM provider |
-| Full agent | Container/binary digest + tool config + model |
+Pin every behavior-affecting digest.
 
-Pin every behavior-affecting digest: prompts, tools, dependency locks, image tags.
+## Evaluators (capabilities)
 
-## Evaluators
+Reference evaluators by **capability id**, not framework assert types:
 
-List scorer versions by reference or inline descriptor:
+```yaml
+evaluators:
+  - id: task.tests_pass
+    capability: builtin/environment/outcome@1
+    params: { oracle: integration_tests }
+  - id: support.grounded
+    capability: plugin/llm-judge@3
+    params:
+      rubric_ref: file://rubrics/groundedness.txt
+      model: openai:gpt-4o
+      selector: rollout.output
+```
 
-- Deterministic (`contains`, `regex`, JSON Schema)
-- LLM judges (pinned model + rubric digest)
-- Trajectory assertions (tool order, span selectors)
-- Environment verifiers (tests pass, oracle state)
+See [Evaluator taxonomy](/en/evaluation/evaluators/) and [Capability descriptors](/en/evaluation/reference/capability-descriptors).
 
 ## Environment
 
-| Type | When |
-|------|------|
-| `noop` | Prompt-only eval (output text checks) |
-| `fixture` | Agent episode with stubbed APIs |
-| `sandbox` | Stateful tasks (Terminal-Bench-style) |
+| Type | Example | When |
+|------|---------|------|
+| `noop` | `type: noop` | Prompt-only output checks |
+| `fixture` | `ref: oci://billing-sandbox@sha256:…` | Agent with stubbed APIs + verify |
+| `sandbox` | Stateful harness + `reset`/`step`/`verify` | Multi-turn tasks |
+
+**Example — sandbox upgrade:**
+
+```yaml
+environment:
+  type: fixture
+  ref: oci://billing-sandbox@sha256:def456…
+  verify: integration_tests
+```
 
 See [Prompt-only vs environment eval](/en/evaluation/guides/eval-modes).
 
-## SDK example (conceptual)
+## SDK example
 
 ```python
 from softprobe.eval import Suite, dataset, subject, evaluators, environment
 
 suite = Suite(
-    data=dataset.pin("sha256:…"),
-    subject=subject.pin("oci://support-agent@sha256:…"),
-    environment=environment.pin("fixture:billing-sandbox"),
-    evaluators=[router_skill_match, confidentiality, outcome_verifier],
-    trials=TrialPolicy(count=3, seed=42),
-    gate="router-v1",
+    data=dataset.from_yaml("suites/support-router-v1.yaml"),
+    subject=subject.provider("openai:gpt-4o", prompt="prompts/router.txt"),
+    environment=environment.noop(),
+    evaluators=[
+        evaluators.contains("router.skill_match", "billing-support"),
+        evaluators.not_contains("confidentiality.no_internal_terms", "internal_db_schema"),
+    ],
+    gate="support-router-v1",
 )
-suite.validate()  # compile manifest, no model cost
+manifest = suite.validate()
 run = suite.run(output=".softprobe/runs/latest")
 ```
 
 ## REST equivalent
 
-`POST /api/v1/eval/compile` with the same four fields → returns a resolved **RunManifest** for `sp eval run` or `POST /api/v1/eval/runs` (managed host).
+`POST /api/v1/eval/compile` with the four fields → **RunManifest**.
 
-See [API reference](/en/evaluation/reference/api).
+## Optional — Promptfoo import
+
+Use `--import promptfoo` only for migration; rewrite to native YAML for cases you gate on. See [Framework adapters](/en/evaluation/reference/framework-adapters).
+
+## Related
+
+- [Native model and adapters](/en/evaluation/concepts/native-model-and-adapters)
+- [Quick start](/en/evaluation/getting-started)

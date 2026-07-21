@@ -16,7 +16,15 @@ Agent Evaluation commands extend the **`sp`** CLI with the same `--json` envelop
 | `sp eval publish` | Upload local JSONL bundle to thelake (managed) |
 | `sp eval promote` | Record authorized gate/suite promotion for release audit |
 
-## Validate (Phase 0)
+## Validate
+
+**Native suite (recommended):**
+
+```bash
+sp eval validate --suite suites/support-router-v1.yaml --out .softprobe/manifest.json --json
+```
+
+**Framework import (migration):**
 
 ```bash
 sp eval validate --import promptfoo \
@@ -24,7 +32,7 @@ sp eval validate --import promptfoo \
   --json
 ```
 
-Returns typed diagnostics for unsupported assertions, lossy mappings, and digest pins — **no model spend**.
+Returns typed diagnostics for unsupported features, lossy mappings, and digest pins — **no model spend**.
 
 ## Run
 

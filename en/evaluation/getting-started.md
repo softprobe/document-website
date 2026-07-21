@@ -4,88 +4,103 @@ title: Quick start
 
 # Quick start
 
-This guide runs your first agent evaluation in about ten minutes: define a Promptfoo-style suite, validate it, run locally, and read results.
+Run your first agent evaluation in about ten minutes using the **native suite format** — framework-agnostic YAML that compiles to a **RunManifest**. Optional Promptfoo import is covered at the end.
 
 ## Prerequisites
 
-- **Softprobe CLI** (`sp`) installed — see [Testing installation](/en/testing/installation/)
-- **sp-eval-kernel** available on `PATH` (bundled with Softprobe CLI or installed separately)
-- A Promptfoo-style config (or use the inline example below)
+- **Softprobe CLI** (`sp`) — [Testing installation](/en/testing/installation/)
+- **sp-eval-kernel** on `PATH` (bundled with CLI)
 
 ## Overview
 
 ```mermaid
 flowchart LR
+  Suite[suite.yaml]
   V[sp eval validate]
   M[RunManifest]
   R[sp eval run]
   Out[events + measurements + gate]
-  V --> M --> R --> Out
+  Suite --> V --> M --> R --> Out
 ```
 
-## Step 1 — Author or import a suite
+## Step 1 — Author a native suite
 
-Define cases in YAML (Promptfoo-compatible) or via SDK/API:
-
-```bash
-sp eval validate --import promptfoo \
-  --config promptfooconfig.yaml \
-  --tests tests.yaml \
-  --out .softprobe/manifest.json
-```
-
-Example `tests.yaml` row (customer support **router**):
+Create `suites/support-router-v1.yaml`:
 
 ```yaml
-- description: Route billing questions to billing-support skill
-  vars:
-    system_prompt: "file://prompts/router.txt"
-    user_query: "I was charged twice for my subscription"
-  assert:
-    - type: icontains
-      value: "billing-support"
-    - type: not-icontains
-      value: "internal_db_schema"
+cases:
+  - id: billing_double_charge
+    title: Route billing questions to billing-support
+    input:
+      user_query: "I was charged twice for my subscription"
+    input_refs:
+      prompt: file://prompts/router.txt
+
+subject:
+  provider: openai:gpt-4o
+  temperature: 0
+  prompt_ref: file://prompts/router.txt
+
+environment:
+  type: noop
+
+evaluators:
+  - id: router.skill_match
+    capability: builtin/deterministic/contains@1
+    params:
+      pattern: billing-support
+      selector: rollout.output
+  - id: confidentiality.no_internal_terms
+    capability: builtin/deterministic/not-contains@1
+    params:
+      pattern: internal_db_schema
+      selector: rollout.output
+
+gate: support-router-v1
 ```
 
-`validate` compiles to a canonical **RunManifest**, emits stable IDs, and returns typed diagnostics for unsupported assertions — **without calling a model**.
+This is the **product model**: cases, subject, **environment**, evaluators by **capability** — not a translation layer from another tool.
 
-::: tip
-Run `sp eval validate` in CI as a non-gating check while migrating; gate on `sp eval run` once parity is proven.
-:::
+Compile (no model cost):
+
+```bash
+sp eval validate --suite suites/support-router-v1.yaml --out .softprobe/manifest.json
+```
 
 ## Step 2 — Inspect the manifest
 
-The manifest pins every behavior-affecting input by digest:
+Validation resolves file refs to digests and produces a portable **RunManifest**:
 
 ```json
 {
   "suite_version_id": "suite_v1_abc123…",
   "cases": [{
     "case_version_id": "case_billing_double_charge_…",
-    "input": { "user_query": "I was charged twice for my subscription" }
+    "input": { "user_query": "I was charged twice for my subscription" },
+    "input_refs": { "prompt_digest": "sha256:router.txt…" }
   }],
-  "subject": {
-    "prompt_digest": "sha256:router.txt…",
-    "provider": "openai:gpt-4o",
-    "temperature": 0
-  },
-  "evaluators": [
-    { "name": "router.skill_match", "type": "contains", "value": "billing-support" },
-    { "name": "confidentiality.no_internal_terms", "type": "not-contains", "value": "internal_db_schema" }
+  "subject_version_id": "subj_openai_gpt4o_router_…",
+  "environment_version_id": "env_noop_v1",
+  "evaluator_version_ids": [
+    "eval_contains_router_skill_match_…",
+    "eval_not_contains_confidentiality_…"
   ],
-  "environment": { "type": "noop" },
-  "reproducibility": "pinned_external"
+  "gate_policy_id": "gate_support_router_v1",
+  "reproducibility": "pinned_external",
+  "provenance": { "source": "native_suite", "path": "suites/support-router-v1.yaml" }
 }
 ```
 
-See [Data model](/en/evaluation/concepts/data-model) for field definitions.
+Evaluator **names** (`router.skill_match`) and **capabilities** (`builtin/deterministic/contains@1`) are stable across runs. You do not encode Promptfoo `assert[].type` in the manifest.
+
+See [Native model and adapters](/en/evaluation/concepts/native-model-and-adapters).
 
 ## Step 3 — Run locally
 
 ```bash
 sp eval run \
   --manifest .softprobe/manifest.json \
+  --gate support-router-v1 \
   --out-dir .softprobe/runs/$(date +%Y%m%d-%H%M%S)
 ```
 
@@ -93,24 +108,18 @@ sp eval run \
 sequenceDiagram
   participant CLI as sp eval run
   participant K as Kernel
+  participant Env as Environment noop
   participant S as Subject model
-  participant E as Evaluators
+  participant Ev as Evaluators
 
   CLI->>K: RunManifest
-  K->>S: case input + prompt
-  S-->>K: model output
-  K->>E: evidence bundle
-  E-->>K: measurements
-  K-->>CLI: events + report + gate
+  K->>Env: reset noop
+  K->>S: case + prompt
+  S-->>K: rollout output
+  K->>Ev: evidence bundle
+  Ev-->>K: measurements
+  K-->>CLI: events + gate
 ```
-
-The kernel:
-
-1. Plans the execution DAG
-2. Executes the **subject** (pinned model + prompt)
-3. Materializes **evidence**
-4. Runs **evaluators**
-5. Emits **events** and writes artifacts
 
 Output in `--out-dir`:
 
@@ -120,49 +129,77 @@ Output in `--out-dir`:
 | `manifest.resolved.json` | Fully resolved run snapshot |
 | `report.md` | Human-readable summary |
 | `junit.xml` | CI integration |
-| `artifacts/` | Content-addressed evidence blobs |
+| `artifacts/` | Content-addressed evidence |
 
 ## Step 4 — Read results
 
-Each case run produces **measurements** (facts) and optionally a **gate decision** (policy view):
-
 ```text
-Case: Route billing questions to billing-support
+Case: billing_double_charge — Route billing questions to billing-support
   router.skill_match = true
   confidentiality.no_internal_terms = true
   status = succeeded
-Gate (router-v1): PASS
+Gate (support-router-v1): PASS
 ```
 
-Drill into any measurement to see evaluator version, evidence refs, and linked trace IDs.
+Each measurement links to evidence artifacts and evaluator version digests.
 
-## Step 5 — Compare and gate in CI
-
-Pin the suite digest in your workflow and fail the job on gate regression:
+## Step 5 — Gate in CI
 
 ```bash
-sp eval run --manifest .softprobe/manifest.json --gate router-v1 --out-dir "$RUN_DIR"
-sp eval compare --baseline "$LAST_GREEN_MANIFEST" --candidate "$RUN_DIR/manifest.resolved.json"
+sp eval run --manifest .softprobe/manifest.json --gate support-router-v1 --out-dir "$RUN_DIR"
+sp eval compare --baseline "$LAST_GREEN" --candidate "$RUN_DIR/manifest.resolved.json"
 ```
 
 See [Run locally and in CI](/en/evaluation/guides/run-locally-and-ci).
 
-## Mock / offline runs
+## Step 6 — Upgrade to environment-backed eval
 
-For fork-safe CI without provider credentials, use a deterministic subject fixture:
+When you move from output checks to a full agent, change **environment** and **evaluators** — not the workflow:
 
-```bash
-sp eval run --manifest .softprobe/manifest.json --subject fixture:mock-router --out-dir .softprobe/runs/mock
+```yaml
+environment:
+  type: fixture
+  ref: oci://billing-sandbox@sha256:…
+  verify: integration_tests
+
+subject:
+  ref: oci://support-agent@sha256:…
+
+evaluators:
+  - id: task.tests_pass
+    capability: builtin/environment/outcome@1
+  - id: agent.tool_policy
+    capability: builtin/trajectory/tools@1
 ```
 
-The fixture exercises kernel plumbing; it is not a substitute for live provider parity testing on trusted branches.
+See [Prompt-only vs environment eval](/en/evaluation/guides/eval-modes).
+
+## Optional — import existing Promptfoo YAML
+
+If you already have `tests.yaml`, use an adapter — **do not** treat the import output as the long-term authoring format:
+
+```bash
+sp eval validate --import promptfoo \
+  --config promptfooconfig.yaml --tests tests.yaml \
+  --out .softprobe/manifest.json --json
+```
+
+The adapter maps a **supported subset** and reports `unsupported` / `lossy_mapping` for everything else. Migrate important cases to native suites over time.
+
+See [Framework adapters](/en/evaluation/reference/framework-adapters).
+
+## Mock / offline runs
+
+```bash
+sp eval run --manifest .softprobe/manifest.json \
+  --subject fixture:mock-router --out-dir .softprobe/runs/mock
+```
 
 ## Next steps
 
 | Goal | Page |
 |------|------|
-| Understand entities | [Data model](/en/evaluation/concepts/data-model) |
-| Prompt-only vs full agent harness | [Eval modes](/en/evaluation/guides/eval-modes) |
-| Keep using Promptfoo | [Promptfoo integration](/en/evaluation/guides/promptfoo-integration) |
-| REST automation | [API reference](/en/evaluation/reference/api) |
-| AI agent hosts | [For AI agents](/en/evaluation/agents/overview) |
+| Why native vs adapters | [Native model and adapters](/en/evaluation/concepts/native-model-and-adapters) |
+| Entity reference | [Data model](/en/evaluation/concepts/data-model) |
+| Authoring guide | [Author a suite](/en/evaluation/guides/author-a-suite) |
+| Promptfoo coexistence | [Promptfoo integration](/en/evaluation/guides/promptfoo-integration) |

@@ -31,7 +31,7 @@ They are pure scorers over typed artifacts — fast, hermetic, and ideal for CI.
 | `router.skill_match` | `icontains` → `billing-support` |
 | `confidentiality.no_internal_terms` | `not-icontains` → `internal_db_schema` |
 
-Promptfoo `icontains` / `not-icontains` map to builtin deterministic evaluators. See [Promptfoo field mapping](/en/evaluation/reference/promptfoo-mapping).
+Promptfoo `icontains` / `not-icontains` may be imported via adapter — native authoring uses capability descriptors. See [Framework adapters](/en/evaluation/reference/framework-adapters).
 
 ## Resembles
 

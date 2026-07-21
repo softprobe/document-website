@@ -4,53 +4,112 @@ title: Promptfoo integration
 
 # Promptfoo integration
 
-Promptfoo remains a **supported authoring ecosystem**. Softprobe owns orchestration, storage, comparison, and gates.
+Promptfoo is a **supported authoring ecosystem** — not the canonical schema for Softprobe eval. Use it while migrating; **author native suites** for long-term CI and environment-backed eval.
+
+```mermaid
+flowchart TB
+  PF[Promptfoo YAML]
+  Imp[Versioned importer]
+  RM[RunManifest]
+  Kern[sp-eval-kernel]
+  PF -->|supported subset + diagnostics| Imp --> RM --> Kern
+  Native[Native suite YAML] --> RM
+```
+
+## What Softprobe owns
+
+| Softprobe | Promptfoo |
+|-----------|-----------|
+| RunManifest, run identity, trials | Matrix authoring UX |
+| Kernel DAG + **environment** lifecycle | Assert library surface |
+| thelake ledger, compare, gates | Local SQLite + `promptfoo view` |
+| GatePolicyVersion (release truth) | Cell pass/fail (measurement/diagnostic only) |
 
 ## Three integration modes
 
-### 1. Importer / compiler (primary)
+### 1. Importer (migration)
 
-`sp eval validate --import promptfoo` translates supported definitions into a **RunManifest**:
+```bash
+sp eval validate --import promptfoo \
+  --config promptfooconfig.yaml --tests tests.yaml --json
+```
 
-- Preserves adapter version, source-config digest, framework lockfile/runtime digests
-- Emits typed warnings for lossy mappings
-- Rejects unsupported assertions with specified diagnostics — never silent pass
+- Maps **supported** cases, vars, deterministic asserts, providers
+- Emits `unsupported_assert` / `lossy_mapping` — **never silent pass**
+- Records `adapter` + `source_digest` in manifest provenance
+- Does **not** encode every future assert type into RunManifest JSON
 
-Use in CI before model spend. Maps `tests.yaml` → CaseVersion + EvaluatorVersion — see [Promptfoo field mapping](/en/evaluation/reference/promptfoo-mapping).
+See [Framework adapters](/en/evaluation/reference/framework-adapters).
 
-### 2. Sandboxed evaluator component
+**Example diagnostic:**
 
-The kernel invokes Promptfoo (or a subset) as **one DAG node**:
+```json
+{
+  "code": "unsupported_assert",
+  "path": "tests[4].assert[0]",
+  "detail": "type javascript — use sandboxed node or rewrite as native evaluator"
+}
+```
 
-- Method-specific evaluation inside the node
-- Returns measurements + native diagnostics as artifacts
-- **May not** expand suite matrix, schedule trials, retry, or publish authoritative gates
+### 2. Sandboxed evaluator node
+
+Invoke Promptfoo for **one grading method** inside the kernel DAG:
+
+- Returns measurements + Promptfoo diagnostics as artifacts
+- Cannot expand matrix, schedule trials, retry, or publish gates
+
+Use when no native capability exists yet; migrate to `builtin/*` or plugin evaluators when ready.
 
 ### 3. Opaque legacy-run importer
 
-Import a whole Promptfoo run as one non-cacheable external node:
+Archive a whole Promptfoo run for comparison. Framework IDs are provenance — not portable CaseRun identity.
 
-- Framework-native IDs are provenance only
-- No claim of item-level kernel portability unless adapter proves it
+## Recommended migration
 
-## Coexistence during migration {#coexistence-during-migration}
+```mermaid
+flowchart LR
+  A[Import + validate in CI]
+  B[Run kernel + Promptfoo parallel]
+  C[Rewrite suites natively]
+  D[Gate on manifest digest]
+  A --> B --> C --> D
+```
 
-Phase 1–2 keep Promptfoo and kernel jobs **side-by-side** until:
+During parallel running, compare measurements on your **supported subset** — not every Promptfoo feature.
 
-- 8/8 cases import with parity
-- 20 consecutive CI runs or 14-day soak at 100% deterministic-fixture parity
-- 5+ trusted live-provider comparisons adjudicated
+Exit criteria (team-defined, example):
 
-Only then may teams retire duplicated legacy Promptfoo CI — the **public adapter** remains a product feature.
+- Critical cases import without `unsupported` blockers
+- N consecutive CI runs at fixture parity on shared cases
+- Live-provider spot checks adjudicated
 
-## What Softprobe adds beyond Promptfoo
+Retire duplicate Promptfoo CI when ready; keep the **public adapter** for teams still on YAML.
 
-| Promptfoo | Softprobe |
-|-----------|-----------|
-| Matrix eval + local SQLite | Portable manifest + thelake ledger |
-| Assertion library | Same + outcome verifiers + trajectory + gates |
-| `promptfoo view` | Artifacts + API + managed compare |
+## Native rewrite example
+
+**Promptfoo input:**
+
+```yaml
+assert:
+  - type: icontains
+    value: billing-support
+```
+
+**Native target (what you maintain):**
+
+```yaml
+evaluators:
+  - id: router.skill_match
+    capability: builtin/deterministic/contains@1
+    params: { pattern: billing-support, selector: rollout.output }
+```
 
 ## External pass/fail
 
-Promptfoo pass/fail may be retained as a **measurement** or diagnostic. **GateDecision** always comes from kernel **GatePolicyVersion**.
+Promptfoo pass/fail may be stored as a **measurement** or diagnostic artifact. **GateDecision** always comes from kernel **GatePolicyVersion**.
+
+## Related
+
+- [Native model and adapters](/en/evaluation/concepts/native-model-and-adapters)
+- [Quick start](/en/evaluation/getting-started)
+- [Author a suite](/en/evaluation/guides/author-a-suite)
