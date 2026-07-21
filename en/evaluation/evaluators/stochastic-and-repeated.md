@@ -21,9 +21,9 @@ SuiteVersion declares trial count, seed derivation, and reducer bindings. Each t
 
 Promptfoo `--repeat` maps to kernel trial policy. See [Trials and aggregates](/en/evaluation/concepts/trials-and-aggregates).
 
-## spcode note
+## Note
 
-Routing eval defaults to deterministic single-trial. Episode eval may use paired repeated trials when SubjectVersion has temperature &gt; 0.
+Prompt-only suites default to deterministic single-trial. Environment-backed eval may use paired repeated trials when SubjectVersion has temperature &gt; 0.
 
 ## Resembles
 

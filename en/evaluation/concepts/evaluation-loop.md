@@ -29,7 +29,7 @@ Authors prototype suites in Promptfoo YAML, SDK, or UI. `sp eval validate` catch
 
 ## 2. Gate in CI
 
-Pin suite digest in GitHub Actions (or equivalent). `sp eval run --gate <policy>` blocks merges on routing, confidentiality, or episode regressions.
+Pin suite digest in GitHub Actions (or equivalent). `sp eval run --gate <policy>` blocks merges on output-policy, confidentiality, or outcome regressions.
 
 ## 3. Compare versions
 

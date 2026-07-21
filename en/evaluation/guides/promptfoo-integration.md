@@ -41,7 +41,7 @@ Phase 1–2 keep Promptfoo and kernel jobs **side-by-side** until:
 - 20 consecutive CI runs or 14-day soak at 100% deterministic-fixture parity
 - 5+ trusted live-provider comparisons adjudicated
 
-Only then may spcode retire duplicated internal Promptfoo CI — the **public adapter** remains a product feature.
+Only then may teams retire duplicated legacy Promptfoo CI — the **public adapter** remains a product feature.
 
 ## What Softprobe adds beyond Promptfoo
 

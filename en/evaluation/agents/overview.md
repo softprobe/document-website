@@ -11,10 +11,19 @@ Agent Evaluation docs describe how coding agents and CI scripts **author, run, c
 | Use | Product |
 |-----|---------|
 | Record/replay regression on Java services | [Testing](/en/testing/) |
-| Route/diagnose/troubleshoot **spcode** agents | **Agent Evaluation** |
+| Evaluate **your** LLM agents (routing, tools, outcomes) | **Agent Evaluation** |
 | Istio/session business observability | [Platform](/en/platform/) |
 
 ## Agent workflow
+
+```mermaid
+flowchart LR
+  V[validate]
+  R[run]
+  C[compare]
+  G[gate on exit code]
+  V --> R --> C --> G
+```
 
 1. **Validate** — `sp eval validate --import promptfoo` before model spend
 2. **Run** — `sp eval run --manifest … --json --out-dir …`
@@ -28,12 +37,12 @@ Agent Evaluation docs describe how coding agents and CI scripts **author, run, c
 - [Result status](/en/evaluation/reference/result-status) — never treat errors as score 0
 - [Promptfoo field mapping](/en/evaluation/reference/promptfoo-mapping)
 
-## spcode paths
+## Eval depth
 
-| Phase | Guide |
-|-------|-------|
-| Routing (8 cases) | [Routing eval](/en/evaluation/guides/spcode/routing-eval) |
-| Full episodes | [Troubleshooting episodes](/en/evaluation/guides/spcode/troubleshooting-episodes) |
+| Mode | Guide |
+|------|-------|
+| Prompt-only (output checks) | [Eval modes](/en/evaluation/guides/eval-modes) |
+| Environment-backed (oracles) | Same guide |
 
 ## Mental model (one line)
 

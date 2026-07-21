@@ -23,12 +23,12 @@ title: Environment outcome evaluators
 - Optional test logs and diff artifacts
 - Rollout correlation IDs for drill-down
 
-## spcode examples
+## Example measurements
 
 | Measurement | Oracle |
 |-------------|--------|
-| `agent.task_success` | Episode completes with correct remediation |
-| `diagnosis.root_cause_correct` | Matches fixture failure taxonomy |
+| `task.tests_pass` | Integration tests green in sandbox |
+| `task.root_cause_correct` | Matches fixture failure taxonomy |
 
 Phase 1 routing uses a **no-op environment**; Phase 2 episodes use read-only fixture repos with stubbed `sp` / `sp_api`.
 

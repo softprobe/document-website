@@ -10,6 +10,17 @@ Define evaluation with four ingredients:
 data + subject + evaluators + environment
 ```
 
+```mermaid
+flowchart TB
+  Data[DatasetVersion]
+  Sub[SubjectVersion]
+  Eval[EvaluatorVersion]
+  Env[EnvironmentVersion]
+  Suite[SuiteVersion]
+  Data & Sub & Eval & Env --> Suite
+  Suite --> Manifest[RunManifest]
+```
+
 ## Data (DatasetVersion / cases)
 
 Each **case** includes:
@@ -26,10 +37,10 @@ Cases do **not** store stale model outputs.
 
 The **system under test**:
 
-| Eval type | Subject example |
+| Eval mode | Subject example |
 |-----------|-----------------|
-| Routing | `diagnose.txt` digest + pinned LLM provider |
-| Full agent | Softprobe Code binary + plugin + model config |
+| Prompt-only | Router prompt digest + pinned LLM provider |
+| Full agent | Container/binary digest + tool config + model |
 
 Pin every behavior-affecting digest: prompts, tools, dependency locks, image tags.
 
@@ -46,9 +57,11 @@ List scorer versions by reference or inline descriptor:
 
 | Type | When |
 |------|------|
-| `noop` | Prompt-only routing eval |
-| `fixture` | spcode episode with stubbed APIs |
+| `noop` | Prompt-only eval (output text checks) |
+| `fixture` | Agent episode with stubbed APIs |
 | `sandbox` | Stateful tasks (Terminal-Bench-style) |
+
+See [Prompt-only vs environment eval](/en/evaluation/guides/eval-modes).
 
 ## SDK example (conceptual)
 
@@ -57,11 +70,11 @@ from softprobe.eval import Suite, dataset, subject, evaluators, environment
 
 suite = Suite(
     data=dataset.pin("sha256:…"),
-    subject=subject.pin("oci://spcode@sha256:…"),
-    environment=environment.pin("fixture:travel-ota-replay-failure"),
-    evaluators=[routing_skill_match, confidentiality, outcome_verifier],
+    subject=subject.pin("oci://support-agent@sha256:…"),
+    environment=environment.pin("fixture:billing-sandbox"),
+    evaluators=[router_skill_match, confidentiality, outcome_verifier],
     trials=TrialPolicy(count=3, seed=42),
-    gate="routing-v1",
+    gate="router-v1",
 )
 suite.validate()  # compile manifest, no model cost
 run = suite.run(output=".softprobe/runs/latest")

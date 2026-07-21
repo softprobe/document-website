@@ -36,12 +36,12 @@ Combinations (judge ensembles, causal comparisons, multimodal judges) use group 
 | `stream` | Streaming partial outputs |
 | `aggregate` | Cross-run reducers |
 
-## spcode examples
+## Example measurements
 
 | Eval type | Typical evaluators |
 |-----------|-------------------|
-| Routing | Deterministic contains + confidentiality |
-| Episode | Environment outcome + trajectory + LLM judge + meta measurements |
+| Prompt-only router | Deterministic contains + confidentiality |
+| Sandbox agent | Environment outcome + trajectory + LLM judge |
 
 ## Extension rule
 

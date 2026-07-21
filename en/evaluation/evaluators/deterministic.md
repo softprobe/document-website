@@ -24,12 +24,12 @@ They are pure scorers over typed artifacts — fast, hermetic, and ideal for CI.
 - Optional reference text from CaseVersion
 - Environment state snapshots when rules target oracle fields
 
-## spcode examples
+## Example measurements
 
 | Measurement | Evaluator |
 |-------------|-----------|
-| `routing.skill_match` | `icontains` → `sp-diagnosis` |
-| `confidentiality.no_internal_storage` | `not-icontains` → `sp_storage_db` |
+| `router.skill_match` | `icontains` → `billing-support` |
+| `confidentiality.no_internal_terms` | `not-icontains` → `internal_db_schema` |
 
 Promptfoo `icontains` / `not-icontains` map to builtin deterministic evaluators. See [Promptfoo field mapping](/en/evaluation/reference/promptfoo-mapping).
 

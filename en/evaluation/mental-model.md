@@ -10,16 +10,40 @@ Agent evaluation has five nouns. If you remember these, everything else fits.
 Suite (pinned recipe) → Run (execution) → Evidence (what happened) → Measurements (facts) → Gates (release view)
 ```
 
+## The five nouns
+
+```mermaid
+flowchart LR
+  Suite[1 Suite pinned recipe]
+  Run[2 Run execution]
+  Evidence[3 Evidence artifacts]
+  Meas[4 Measurements facts]
+  Gate[5 Gate release view]
+  Suite --> Run --> Evidence --> Meas --> Gate
+```
+
 ## 1. Suite — the pinned recipe
 
 A **suite** is everything needed to evaluate an agent, frozen as content-addressed **versions**:
+
+```mermaid
+flowchart TB
+  subgraph suite [SuiteVersion]
+    Data[DatasetVersion cases]
+    Sub[SubjectVersion agent or model]
+    Eval[EvaluatorVersion graders]
+    Env[EnvironmentVersion harness]
+  end
+  Manifest[RunManifest resolved snapshot]
+  suite --> Manifest
+```
 
 - **Data** — test cases (inputs, expected references, lineage)
 - **Subject** — the agent or model under test (prompts, tools, binary digests)
 - **Evaluators** — graders (deterministic checks, LLM judges, outcome verifiers)
 - **Environment** — harness (noop for prompt-only eval; fixtures for full agents)
 
-Friendly names like `routing-suite` are mutable pointers. Execution uses **IDs and digests only**.
+Friendly names like `support-router-v3` are mutable pointers. Execution uses **IDs and digests only**.
 
 ```text
 data + subject + evaluators + environment  →  resolve  →  RunManifest
@@ -35,11 +59,32 @@ A **run** executes one resolved **RunManifest** once. It produces:
 - **Rollouts** — agent turns, tool calls, observations (with W3C trace context)
 - **Events** — append-only ledger (`run.planned` … `run.completed`)
 
+```mermaid
+flowchart TB
+  Manifest[RunManifest]
+  Run[Run]
+  CR1[CaseRun]
+  CR2[CaseRun]
+  Ev[Events ledger]
+  Manifest --> Run
+  Run --> CR1 & CR2
+  Run --> Ev
+```
+
 Local runs write JSONL + content-addressed artifacts. Managed runs append to **thelake**.
 
 ## 3. Evidence — what graders look at
 
 **Evidence** is material evaluators grade: model output, OTLP trajectory, environment state, retrieved context, logs. Evidence is stored as **content-addressed artifacts** with provenance.
+
+```mermaid
+flowchart LR
+  Rollout[Rollout + OTLP]
+  Norm[Canonical trajectory]
+  Art[EvidenceArtifact CAS]
+  Eval[Evaluators]
+  Rollout --> Norm --> Art --> Eval
+```
 
 Design rule: **evidence before score**. Every measurement should cite evidence references so you can drill down and replay the conclusion.
 
@@ -49,7 +94,7 @@ Design rule: **evidence before score**. Every measurement should cite evidence r
 
 A **measurement** is a typed score fact:
 
-- name (e.g. `routing.skill_match`, `diagnosis.root_cause_correct`)
+- name (e.g. `router.skill_match`, `task.tests_pass`)
 - value (boolean, number, string, …)
 - target (case run, rollout, span, trace, …)
 - evaluator version + evidence refs + optional cost/latency
@@ -60,25 +105,22 @@ Errors are **not** measurements: `missing_evidence`, `evaluator_error`, and `tim
 
 ## 5. Gates — versioned release views
 
-A **gate** is a **policy** over measurements and aggregates: e.g. `outcome_correct ≥ 0.9 AND confidentiality = pass`.
+A **gate** is a **policy** over measurements and aggregates: e.g. `task.tests_pass = true AND router.skill_match = true`.
+
+```mermaid
+flowchart TB
+  Meas[Measurements immutable]
+  Agg[Aggregates]
+  GP[GatePolicyVersion recomputable]
+  GD[GateDecision]
+  Meas --> Agg
+  Meas --> GP
+  Agg --> GP --> GD
+```
 
 - Gate policies are **versioned** — you can tighten thresholds without rewriting historical measurements
 - Re-running a gate on old runs uses the new policy; raw facts stay unchanged
 - Framework-native pass/fail (Promptfoo cell green/red) may be stored as measurements but is **not** the authoritative release decision
-
-## End-to-end flow
-
-```mermaid
-flowchart LR
-  Author[Author suite]
-  Compile[Compile manifest]
-  Kernel[sp-eval-kernel]
-  Evidence[Evidence artifacts]
-  Meas[Measurements]
-  Gate[Gate decision]
-  Author --> Compile --> Kernel
-  Kernel --> Evidence --> Meas --> Gate
-```
 
 ## Two layers of data
 
@@ -86,6 +128,24 @@ flowchart LR
 |-------|------|----------|
 | **Immutable resources** | Pinned before run | CaseVersion, SubjectVersion, EvaluatorVersion, RunManifest |
 | **Runtime records** | Produced during run | CaseRun, Rollout, Measurement, Event, GateDecision |
+
+```mermaid
+flowchart TB
+  subgraph immutable [Layer 1 Immutable]
+    CV[CaseVersion]
+    SV[SubjectVersion]
+    EV[EvaluatorVersion]
+    RM[RunManifest]
+  end
+  subgraph runtime [Layer 2 Runtime]
+    CR[CaseRun]
+    RO[Rollout]
+    M[Measurement]
+    GD[GateDecision]
+  end
+  RM --> CR --> RO --> M
+  M --> GD
+```
 
 Full entity list: [Data model](/en/evaluation/concepts/data-model).
 
@@ -102,6 +162,6 @@ Promptfoo, DeepEval, and others integrate as **importers** or **sandboxed evalua
 
 ## Next steps
 
-- [How it works](/en/evaluation/how-it-works) — lifecycle sequence diagram
+- [How it works](/en/evaluation/how-it-works) — full lifecycle diagrams
 - [Quick start](/en/evaluation/getting-started) — validate and run your first suite
 - [Ecosystem mapping](/en/evaluation/concepts/ecosystem-mapping) — Promptfoo / Langfuse / Braintrust / Verifiers → Softprobe

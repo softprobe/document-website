@@ -21,12 +21,12 @@ They return numeric, categorical, or boolean measurements plus optional reasonin
 - Rubric prompt pinned in EvaluatorVersion digest
 - Model/provider descriptor with version lock
 
-## spcode examples
+## Example measurements
 
 | Measurement | Use |
 |-------------|-----|
-| `diagnosis.actionability` | Is the troubleshooting advice actionable? |
-| `diagnosis.evidence_grounded` | Does the diagnosis cite session evidence? |
+| `support.actionability` | Is the advice actionable? |
+| `support.evidence_grounded` | Does the answer cite session evidence? |
 
 ## Reproducibility
 

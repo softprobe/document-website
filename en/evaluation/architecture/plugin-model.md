@@ -6,6 +6,27 @@ title: Plugin model
 
 Evaluators and environments extend the kernel through **capability descriptors** — not closed enum kinds.
 
+## Plugin pipeline
+
+```mermaid
+flowchart TB
+  Gen[Generator]
+  Sub[Subject]
+  Env[Environment]
+  Adp[EvidenceAdapter]
+  Eval[Evaluator]
+  Red[Reducer]
+  Gate[Gate]
+  Rep[Reporter]
+  Gen --> Sub
+  Sub --> Env
+  Sub --> Adp
+  Adp --> Eval
+  Eval --> Red
+  Red --> Gate
+  Gate --> Rep
+```
+
 ## Plugin interfaces
 
 ```text
@@ -17,6 +38,22 @@ Evaluator.evaluate(bundle | group | stream) → measurements + status
 Reducer.reduce(results, grouping, seed) → aggregates
 Gate.decide(aggregates, baseline)  → decision + reasons
 Reporter.consume(events)           → side effects (reports, webhooks)
+```
+
+## Evaluator execution topologies
+
+```mermaid
+flowchart LR
+  Item[item one case]
+  Pair[pair A vs B]
+  Group[group listwise]
+  Stream[stream partial]
+  Agg[aggregate reducer]
+  Item --> Eval1[Evaluator]
+  Pair --> Eval2[Comparative judge]
+  Group --> Eval3[Tournament]
+  Stream --> Eval4[Streaming judge]
+  Eval1 & Eval2 & Eval3 & Eval4 --> Agg
 ```
 
 ## Evaluator descriptor fields
@@ -35,6 +72,17 @@ Planning rejects incompatible descriptors before spending money.
 ## Framework adapters
 
 Promptfoo/DeepEval integrate as:
+
+```mermaid
+flowchart LR
+  PF[Promptfoo YAML]
+  Imp[Importer compiler]
+  Node[Sandboxed DAG node]
+  Leg[Legacy run importer]
+  PF --> Imp --> Manifest[RunManifest]
+  PF --> Node
+  PF --> Leg
+```
 
 1. **Importer** — YAML → manifest
 2. **Sandboxed evaluator node** — one DAG invocation; no nested orchestration

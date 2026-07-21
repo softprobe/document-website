@@ -8,17 +8,33 @@ Every artifact has a **visibility class** controlling which components may read 
 
 ## Classes
 
+```mermaid
+flowchart TB
+  subgraph subjectInput [subject_input]
+    SI[Case prompts fixture API responses]
+  end
+  subgraph evalOnly [evaluator_only]
+    EO[Gold labels rubrics judge prompts]
+  end
+  subgraph control [control_plane]
+    CP[Manifests gate policies case indexes]
+  end
+  Agent[Subject agent] --> subjectInput
+  Eval[Evaluators] --> subjectInput & evalOnly
+  Kernel[Kernel hosts] --> control
+```
+
 | Class | Who reads | Examples |
 |-------|-----------|----------|
 | **subject_input** | Subject + evaluators (after run) | Case prompts, fixture API responses visible to agent |
 | **evaluator_only** | Evaluators only | Gold labels, rubrics, prohibited-claim lists, judge prompts |
 | **control_plane** | Kernel / trusted hosts only | Manifests, gate policies, sibling case indexes |
 
-## spcode troubleshooting episodes
+## Environment-backed eval
 
-Phase 2 episode eval enforces:
+When running agents in sandbox fixtures:
 
-- Expected root cause and gold evidence in `evaluator_only`
+- Expected outcomes and gold evidence stay in `evaluator_only`
 - Subject sees sanitized fixture state only
 - Subject attempts to read gold data, sibling cases, or result paths → typed policy failure + security test
 

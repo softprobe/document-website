@@ -13,9 +13,9 @@ title: Robustness and security evaluators
 - Fuzz-generated edge cases
 - Red-team success rate (jailbreak, exfiltration)
 
-## spcode security tests
+## Security test examples
 
-Episode suites include cases for:
+Episode suites may include cases for:
 
 - Prompt injection resistance
 - Exfiltration of tenant secrets

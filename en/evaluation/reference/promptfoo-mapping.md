@@ -6,6 +6,17 @@ title: Promptfoo field mapping
 
 Field-by-field mapping from Promptfoo authoring files to Softprobe **immutable resources**. Use with `sp eval validate --import promptfoo`.
 
+```mermaid
+flowchart LR
+  PF[promptfooconfig.yaml + tests.yaml]
+  Imp[Importer]
+  CV[CaseVersion]
+  EV[EvaluatorVersion]
+  SV[SubjectVersion]
+  RM[RunManifest]
+  PF --> Imp --> CV & EV & SV --> RM
+```
+
 ## Config and suite
 
 | Promptfoo | Softprobe |
@@ -59,25 +70,25 @@ Field-by-field mapping from Promptfoo authoring files to Softprobe **immutable r
 | Provider cache | Kernel cache on hermetic nodes only |
 | Pass/fail | External measurement; **GateDecision** from GatePolicyVersion |
 
-## Worked example (routing case)
+## Worked example (support router)
 
 ```yaml
 # tests.yaml excerpt
 vars:
-  system_prompt: "file://../spcode-plugin/src/prompts/diagnose.txt"
-  user_query: "Why did my replay of travel-ota fail?"
+  system_prompt: "file://prompts/router.txt"
+  user_query: "I was charged twice for my subscription"
 assert:
   - type: icontains
-    value: "sp-diagnosis"
+    value: "billing-support"
   - type: not-icontains
-    value: "sp_storage_db"
+    value: "internal_db_schema"
 ```
 
 Compiles to:
 
 - **CaseVersion** with `user_query` + prompt digest
 - **EvaluatorVersion** ×2 (skill match, confidentiality)
-- **SubjectVersion** with pinned provider (Phase 1 routing)
+- **SubjectVersion** with pinned provider
 - **EnvironmentVersion** noop
 
-See [Routing eval](/en/evaluation/guides/spcode/routing-eval) and [Promptfoo integration](/en/evaluation/guides/promptfoo-integration).
+See [Promptfoo integration](/en/evaluation/guides/promptfoo-integration) and [Data model worked example](/en/evaluation/concepts/data-model).

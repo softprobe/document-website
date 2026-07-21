@@ -10,7 +10,7 @@ title: Scores and gates
 
 Evaluators emit **measurements** — typed values with:
 
-- name (`routing.skill_match`, `diagnosis.root_cause_correct`)
+- name (e.g. `router.skill_match`, `task.root_cause_correct`)
 - value (boolean, number, string, …)
 - target (see [Score targets](/en/evaluation/reference/score-targets))
 - evaluator version + evidence references
@@ -35,13 +35,13 @@ A **gate** applies a versioned policy to measurements and aggregates:
 ```yaml
 # Conceptual gate policy routing-v2
 rules:
-  - measurement: routing.skill_match
+  - measurement: router.skill_match
     op: all
     threshold: true
-  - measurement: confidentiality.no_internal_storage
+  - measurement: confidentiality.no_internal_terms
     op: all
     threshold: true
-  - aggregate: routing.pass_rate
+  - aggregate: router.pass_rate
     op: gte
     threshold: 0.95
 ```

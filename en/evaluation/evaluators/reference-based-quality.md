@@ -24,9 +24,9 @@ They require CaseVersion expected refs plus retrieved context artifacts in the e
 - Retrieved context chunks (content-addressed)
 - Optional citation spans
 
-## spcode note
+## Example
 
-Episode evaluators such as `diagnosis.evidence_grounded` combine reference-based checks with trajectory and environment oracles.
+RAG evaluators such as `support.evidence_grounded` combine reference-based checks with trajectory and environment oracles.
 
 ## Resembles
 

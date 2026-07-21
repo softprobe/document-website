@@ -26,7 +26,7 @@ Artifacts:
 - name: Validate eval suite
   run: sp eval validate --import promptfoo --config promptfooconfig.yaml --tests tests.yaml --out manifest.json
 
-- name: Run routing eval
+- name: Run prompt-only eval
   run: sp eval run --manifest manifest.json --gate routing-v1 --out-dir run-output
 
 - name: Upload eval artifacts

@@ -11,7 +11,7 @@ User-facing **`sp`** install, setup, lifecycle, commands, and automation docs li
 | AI agent contracts (output, versioning, concepts) | `{en,zh}/testing/agents/*.md` |
 | Examples / reference / policies | `{en,zh}/testing/{examples,reference,policies}/` |
 | Platform / Istio / K8s mesh ops | `{en,zh}/platform/deployment/` |
-| Agent Evaluation (suites, evaluators, gates, spcode eval guides) | `en/evaluation/` (English-only for now) |
+| Agent Evaluation (suites, evaluators, gates; `en/evaluation/implementer/` is internal, excluded from build) | `en/evaluation/` (English-only for now) |
 
 **Do not** add feature content under `{en,zh}/cli/` — those files are **redirect stubs** for legacy URLs. VitePress `rewrites` map `/en/cli/*` bookmarks to `testing/*` sources.
 

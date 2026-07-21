@@ -10,11 +10,11 @@ title: Trajectory and tool evaluators
 
 | Check | Example |
 |-------|---------|
-| Tool used | Agent invoked `sp_api` not raw HTTP |
+| Tool used | Agent invoked approved API tool, not raw HTTP |
 | Args shape | Tool args match expected schema |
 | Ordering | Diagnosis before remediation suggestion |
 | Step count / efficiency | Fewer redundant tool loops |
-| Policy compliance | No forbidden tools in routing eval |
+| Policy compliance | No forbidden tools in sandbox eval |
 
 ## Required evidence
 
@@ -22,7 +22,7 @@ title: Trajectory and tool evaluators
 - Span selectors: `generation`, `tool`, `retriever`, guardrail, sub-agent
 - Optional baseline trajectory for diff-style checks
 
-## spcode examples
+## Example measurements
 
 | Measurement | Evaluator |
 |-------------|-----------|

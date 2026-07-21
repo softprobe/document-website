@@ -20,7 +20,7 @@ flowchart LR
 
 ## Steps
 
-1. **Observe** — Online policy or manual selection identifies a failed/spcode diagnosis trace
+1. **Observe** — Online policy or manual selection identifies a failed production trace
 2. **Snapshot** — Capture evidence with consent, redaction, sensitivity tags
 3. **Propose** — Create candidate CaseVersion + optional rubric/evaluator changes (`derived_from` lineage)
 4. **Review** — Human or independent policy approves exact digest

@@ -296,9 +296,7 @@ const evaluationSidebarEn = [
       { text: 'Promptfoo integration', link: '/en/evaluation/guides/promptfoo-integration' },
       { text: 'Langfuse and Braintrust adoption', link: '/en/evaluation/guides/langfuse-and-braintrust-adoption' },
       { text: 'Production-to-eval loop', link: '/en/evaluation/guides/production-to-eval-loop' },
-      { text: 'Evaluating Softprobe Code', link: '/en/evaluation/guides/spcode/' },
-      { text: 'Routing eval', link: '/en/evaluation/guides/spcode/routing-eval' },
-      { text: 'Troubleshooting episodes', link: '/en/evaluation/guides/spcode/troubleshooting-episodes' },
+      { text: 'Prompt-only vs environment eval', link: '/en/evaluation/guides/eval-modes' },
     ],
   },
   {

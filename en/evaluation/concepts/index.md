@@ -26,11 +26,11 @@ Read these pages in order if you are new to Agent Evaluation. Each builds on the
 | Author a suite | [Author a suite](/en/evaluation/guides/author-a-suite) |
 | Evaluator types | [Evaluator taxonomy](/en/evaluation/evaluators/) |
 
-### Agent builder (Softprobe Code, custom agents)
+### Agent builder (custom agents, tool use)
 
 | Topic | Page |
 |-------|------|
-| Routing vs episode eval | [spcode guides](/en/evaluation/guides/spcode/) |
+| Prompt-only vs sandbox eval | [Eval modes](/en/evaluation/guides/eval-modes) |
 | Outcome verifiers | [Environment outcome](/en/evaluation/evaluators/environment-outcome) |
 | CI gates | [Compare and promote](/en/evaluation/guides/compare-and-promote) |
 | Artifact visibility | [Artifact visibility](/en/evaluation/concepts/artifact-visibility) |

@@ -55,6 +55,34 @@ Braintrust mental model `data + task + scores` maps directly to our public API:
 data + subject + evaluators + environment
 ```
 
+## Concept map (all ecosystems)
+
+```mermaid
+flowchart TB
+  subgraph pf [Promptfoo]
+    PFY[YAML tests + asserts]
+  end
+  subgraph lf [Langfuse]
+    LFD[Datasets + experiments]
+  end
+  subgraph bt [Braintrust]
+    BTD[data + task + scores]
+  end
+  subgraph pi [Verifiers]
+    PIE[Environment + rubrics]
+  end
+  subgraph sp [Softprobe kernel]
+    SV[SuiteVersion]
+    RM[RunManifest]
+    Run[Run + ledger]
+  end
+  PFY --> SV
+  LFD --> SV
+  BTD --> SV
+  PIE --> SV
+  SV --> RM --> Run
+```
+
 ## Prime Intellect Verifiers → Softprobe
 
 | Verifiers | Softprobe | Notes |
