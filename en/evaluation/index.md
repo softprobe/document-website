@@ -93,6 +93,7 @@ Both modes share the same suite envelope — you change **SubjectVersion** and *
 | Migrating from Promptfoo | [Native model and adapters](/en/evaluation/concepts/native-model-and-adapters) · [Framework adapters](/en/evaluation/reference/framework-adapters) |
 | Agent builder (shipping agents) | [Eval modes](/en/evaluation/guides/eval-modes) · [Compare and promote](/en/evaluation/guides/compare-and-promote) |
 | Migrating from Langfuse / Braintrust | [Ecosystem mapping](/en/evaluation/concepts/ecosystem-mapping) |
+| Platform operator | [Architecture](/en/evaluation/architecture/) · [Storage and thelake](/en/evaluation/architecture/storage-and-thelake) |
 | AI coding agent | [For AI agents](/en/evaluation/agents/overview) |
 
 ## How it relates to Testing and Observability
