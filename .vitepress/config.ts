@@ -245,21 +245,124 @@ const platformSidebarZh = [
   },
 ]
 
+const evaluationSidebarEn = [
+  {
+    text: 'Get started',
+    items: [
+      { text: 'What is Agent Evaluation', link: '/en/evaluation/' },
+      { text: 'Mental model', link: '/en/evaluation/mental-model' },
+      { text: 'Quick start', link: '/en/evaluation/getting-started' },
+      { text: 'How it works', link: '/en/evaluation/how-it-works' },
+    ],
+  },
+  {
+    text: 'Concepts',
+    collapsed: false,
+    items: [
+      { text: 'Concepts overview', link: '/en/evaluation/concepts/' },
+      { text: 'Terminology', link: '/en/evaluation/concepts/terminology' },
+      { text: 'Data model', link: '/en/evaluation/concepts/data-model' },
+      { text: 'Ecosystem mapping', link: '/en/evaluation/concepts/ecosystem-mapping' },
+      { text: 'Evaluation loop', link: '/en/evaluation/concepts/evaluation-loop' },
+      { text: 'Scores and gates', link: '/en/evaluation/concepts/scores-and-gates' },
+      { text: 'Evidence and trajectories', link: '/en/evaluation/concepts/evidence-and-trajectories' },
+      { text: 'Trials and aggregates', link: '/en/evaluation/concepts/trials-and-aggregates' },
+      { text: 'Correlation and traces', link: '/en/evaluation/concepts/correlation-and-traces' },
+      { text: 'Online evaluation', link: '/en/evaluation/concepts/online-evaluation' },
+      { text: 'Human evaluation', link: '/en/evaluation/concepts/human-evaluation' },
+      { text: 'Reproducibility', link: '/en/evaluation/concepts/reproducibility' },
+      { text: 'Artifact visibility', link: '/en/evaluation/concepts/artifact-visibility' },
+    ],
+  },
+  {
+    text: 'Architecture',
+    collapsed: false,
+    items: [
+      { text: 'Architecture overview', link: '/en/evaluation/architecture/' },
+      { text: 'Kernel and hosts', link: '/en/evaluation/architecture/kernel-and-hosts' },
+      { text: 'Execution DAG', link: '/en/evaluation/architecture/execution-dag' },
+      { text: 'Plugin model', link: '/en/evaluation/architecture/plugin-model' },
+      { text: 'Storage and thelake', link: '/en/evaluation/architecture/storage-and-thelake' },
+      { text: 'Trust boundaries', link: '/en/evaluation/architecture/trust-boundaries' },
+    ],
+  },
+  {
+    text: 'Guides',
+    collapsed: false,
+    items: [
+      { text: 'Author a suite', link: '/en/evaluation/guides/author-a-suite' },
+      { text: 'Run locally and in CI', link: '/en/evaluation/guides/run-locally-and-ci' },
+      { text: 'Compare and promote', link: '/en/evaluation/guides/compare-and-promote' },
+      { text: 'Promptfoo integration', link: '/en/evaluation/guides/promptfoo-integration' },
+      { text: 'Langfuse and Braintrust adoption', link: '/en/evaluation/guides/langfuse-and-braintrust-adoption' },
+      { text: 'Production-to-eval loop', link: '/en/evaluation/guides/production-to-eval-loop' },
+      { text: 'Evaluating Softprobe Code', link: '/en/evaluation/guides/spcode/' },
+      { text: 'Routing eval', link: '/en/evaluation/guides/spcode/routing-eval' },
+      { text: 'Troubleshooting episodes', link: '/en/evaluation/guides/spcode/troubleshooting-episodes' },
+    ],
+  },
+  {
+    text: 'Evaluators',
+    collapsed: false,
+    items: [
+      { text: 'Evaluator taxonomy', link: '/en/evaluation/evaluators/' },
+      { text: 'Deterministic', link: '/en/evaluation/evaluators/deterministic' },
+      { text: 'Similarity and statistical', link: '/en/evaluation/evaluators/similarity-and-statistical' },
+      { text: 'Reference-based quality', link: '/en/evaluation/evaluators/reference-based-quality' },
+      { text: 'LLM judge', link: '/en/evaluation/evaluators/llm-judge' },
+      { text: 'Comparative judge', link: '/en/evaluation/evaluators/comparative-judge' },
+      { text: 'Trajectory and tools', link: '/en/evaluation/evaluators/trajectory-and-tools' },
+      { text: 'Environment outcome', link: '/en/evaluation/evaluators/environment-outcome' },
+      { text: 'Multi-turn and multi-agent', link: '/en/evaluation/evaluators/multi-turn-and-multi-agent' },
+      { text: 'Human annotation', link: '/en/evaluation/evaluators/human-annotation' },
+      { text: 'Production and online', link: '/en/evaluation/evaluators/production-online' },
+      { text: 'Robustness and security', link: '/en/evaluation/evaluators/robustness-and-security' },
+      { text: 'Stochastic and repeated', link: '/en/evaluation/evaluators/stochastic-and-repeated' },
+      { text: 'Meta-evaluation', link: '/en/evaluation/evaluators/meta-evaluation' },
+    ],
+  },
+  {
+    text: 'Reference',
+    collapsed: true,
+    items: [
+      { text: 'CLI', link: '/en/evaluation/reference/cli' },
+      { text: 'REST API', link: '/en/evaluation/reference/api' },
+      { text: 'Result status', link: '/en/evaluation/reference/result-status' },
+      { text: 'Events', link: '/en/evaluation/reference/events' },
+      { text: 'Score targets', link: '/en/evaluation/reference/score-targets' },
+      { text: 'Capability descriptors', link: '/en/evaluation/reference/capability-descriptors' },
+      { text: 'Promptfoo field mapping', link: '/en/evaluation/reference/promptfoo-mapping' },
+    ],
+  },
+  {
+    text: 'For AI agents',
+    collapsed: false,
+    items: [
+      { text: 'Overview', link: '/en/evaluation/agents/overview' },
+      { text: 'Output contract', link: '/en/evaluation/agents/output-contract' },
+    ],
+  },
+]
+
 function sidebarForLocale(locale: DocLocale) {
   const platform = locale === 'zh' ? platformSidebarZh : platformSidebarEn
   const testing = locale === 'zh' ? testingSidebarZh : testingSidebarEn
   const platformBase = locale === 'zh' ? '/zh/platform/' : '/en/platform/'
   const testingBase = locale === 'zh' ? '/zh/testing/' : '/en/testing/'
-  return {
+  const sidebars: Record<string, typeof platformSidebarEn> = {
     [platformBase]: platform,
     [testingBase]: testing,
   }
+  if (locale === 'en') {
+    sidebars['/en/evaluation/'] = evaluationSidebarEn
+  }
+  return sidebars
 }
 
 export default withMermaid(
   defineConfig({
   title: 'Softprobe',
-  description: 'Softprobe platform, Java record-replay testing, and sp CLI documentation',
+  description: 'Softprobe platform, Java record-replay testing, agent evaluation, and sp CLI documentation',
   base: '/',
   appearance: true,
   lastUpdated: true,
@@ -277,7 +380,7 @@ export default withMermaid(
       llmstxt({
         ignoreFiles: ['**/implementer/**'],
         description:
-          'Softprobe — business observability (Istio/SESSIFY) and Java record-replay testing driven by the sp CLI and AI agents.',
+          'Softprobe — business observability (Istio/SESSIFY), Java record-replay testing, and agent evaluation driven by the sp CLI and AI agents.',
       }),
     ],
   },

@@ -29,8 +29,12 @@ features:
     details: Istio Wasm agent and SESSIFY session context feed a business-flow dashboard — deploy on GKE with the platform guides.
     link: /en/platform/getting-started/quick-start
     linkText: Business observability
+  - title: I evaluate AI agents
+    details: Author suites, run deterministic and outcome-based evals in CI, compare runs, and gate releases — Promptfoo-compatible imports with kernel-owned manifests and thelake storage.
+    link: /en/evaluation/
+    linkText: Agent Evaluation
 ---
 
 ::: info
-Two product areas, one site — **Testing** (Java record/replay plus `sp` automation) and **Business Observability** (Istio/SESSIFY). Pick the path that matches your role above.
+Three product areas, one site — **Testing** (Java record/replay plus `sp` automation), **Business Observability** (Istio/SESSIFY), and **Agent Evaluation** (suites, evaluators, gates for coding agents). Pick the path that matches your role above.
 :::

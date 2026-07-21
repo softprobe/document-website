@@ -34,6 +34,7 @@ export function navForLocale(locale: DocLocale): DefaultTheme.NavItem[] {
     { text: 'Home', link: `${p}/` },
     { text: 'Business Observability', link: `${p}/platform/getting-started/quick-start`, activeMatch: '/en/platform/' },
     { text: 'Testing', link: `${p}/testing/`, activeMatch: '/en/testing/' },
+    { text: 'Agent Evaluation', link: `${p}/evaluation/`, activeMatch: '/en/evaluation/' },
   ]
 }
 
