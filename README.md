@@ -1,6 +1,6 @@
 # Softprobe documentation (VitePress v2)
 
-Unified public docs: **Platform** (`/en/platform/…`) and **Testing** (`/en/testing/…` — install, `sp` commands, record & replay).
+Unified public docs: **Platform** (`/en/platform/…`), **Testing** (`/en/testing/…` — install, `sp` commands, record & replay), and **Agent Evaluation** (`/en/evaluation/…` — suites, evaluators, gates; EN only for now).
 
 User-facing **`sp`** docs are canonical under **`en/testing/`** and **`zh/testing/`**. Legacy `/en/cli/*` URLs rewrite to Testing sources (see `CONTRIBUTING.md`).
 

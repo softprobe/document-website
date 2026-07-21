@@ -79,6 +79,7 @@ export function footerForLocale(locale: DocLocale): DefaultTheme.Footer {
             { text: 'Installation', link: `${p}/testing/installation/` },
             { text: 'sp-backend (Helm)', link: `${p}/testing/installation/server` },
             { text: 'Testing overview', link: `${p}/testing/` },
+            { text: 'Agent Evaluation', link: `${p}/evaluation/` },
             { text: 'Commands', link: `${p}/testing/commands/` },
           ],
         },

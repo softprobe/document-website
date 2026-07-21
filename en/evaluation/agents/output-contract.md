@@ -81,12 +81,7 @@ Large outputs (full event streams, trace bundles) write under `--out-dir`:
 
 ## Exit codes
 
-| Code | Meaning |
-|------|---------|
-| 0 | Success |
-| 1 | Kernel/API error or gate failed |
-| 2 | Usage / invalid input |
-| 3 | Auth missing |
+Same as Testing — see [exit codes](/en/testing/reference/exit-codes). Eval-specific: exit `1` when **GateDecision** fails after an otherwise successful run.
 
 ## Rules for agents
 

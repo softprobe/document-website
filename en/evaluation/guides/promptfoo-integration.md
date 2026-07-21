@@ -33,7 +33,7 @@ Import a whole Promptfoo run as one non-cacheable external node:
 - Framework-native IDs are provenance only
 - No claim of item-level kernel portability unless adapter proves it
 
-## Coexistence during migration
+## Coexistence during migration {#coexistence-during-migration}
 
 Phase 1–2 keep Promptfoo and kernel jobs **side-by-side** until:
 

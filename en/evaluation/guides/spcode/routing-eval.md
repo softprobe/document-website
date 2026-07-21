@@ -11,7 +11,7 @@ Routing eval tests production **`diagnose.txt`** skill selection and confidentia
 | Measurement | Method |
 |-------------|--------|
 | `routing.skill_match` | Output contains expected skill (`sp-diagnosis`, `sp-agent-onboarding`, …) |
-| `confidentiality.clean` | Output excludes prohibited internal terms |
+| `confidentiality.no_internal_storage` | Output excludes prohibited internal terms |
 
 ## What it does not measure
 
@@ -62,6 +62,6 @@ sp eval run --manifest manifest.json --out-dir run/ --gate routing-v1
 
 ## Parity with Promptfoo
 
-Run Promptfoo and kernel side-by-side until exit gates pass (20 consecutive CI runs, 5 live adjudications). Promptfoo remains rollback path via workflow config revert.
+Run Promptfoo and kernel side-by-side until [Promptfoo integration exit gates](/en/evaluation/guides/promptfoo-integration#coexistence-during-migration) pass. Promptfoo remains rollback path via workflow config revert.
 
 See [Promptfoo integration](/en/evaluation/guides/promptfoo-integration).

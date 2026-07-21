@@ -38,7 +38,7 @@ rules:
   - measurement: routing.skill_match
     op: all
     threshold: true
-  - measurement: confidentiality.clean
+  - measurement: confidentiality.no_internal_storage
     op: all
     threshold: true
   - aggregate: routing.pass_rate

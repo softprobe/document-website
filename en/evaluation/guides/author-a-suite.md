@@ -69,6 +69,6 @@ run = suite.run(output=".softprobe/runs/latest")
 
 ## REST equivalent
 
-`POST /v1/eval/suites` with the same four fields → returns `suite_version_id` for `POST /v1/eval/runs`.
+`POST /api/v1/eval/compile` with the same four fields → returns a resolved **RunManifest** for `sp eval run` or `POST /api/v1/eval/runs` (managed host).
 
 See [API reference](/en/evaluation/reference/api).

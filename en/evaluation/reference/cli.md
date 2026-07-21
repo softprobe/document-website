@@ -10,17 +10,17 @@ Agent Evaluation commands extend the **`sp`** CLI with the same `--json` envelop
 
 | Command | Purpose |
 |---------|---------|
-| `sp eval validate` | Compile suite → manifest; lint imports (Promptfoo, etc.) |
+| `sp eval validate` | Compile suite → manifest; lint imports (`--import promptfoo`) |
 | `sp eval run` | Execute manifest locally or against managed host |
 | `sp eval compare` | Diff measurements/aggregates across runs |
 | `sp eval publish` | Upload local JSONL bundle to thelake (managed) |
-| `sp eval import promptfoo` | Translate `tests.yaml` / config → manifest fragment |
+| `sp eval promote` | Record authorized gate/suite promotion for release audit |
 
 ## Validate (Phase 0)
 
 ```bash
 sp eval validate --import promptfoo \
-  --config softprobe-code/packages/softprobecode-eval/tests.yaml \
+  --config promptfooconfig.yaml --tests tests.yaml \
   --json
 ```
 

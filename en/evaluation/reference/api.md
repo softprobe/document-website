@@ -37,6 +37,17 @@ Content-Type: application/json
 
 Response: fully resolved **RunManifest** with reproducibility class and capability negotiation result.
 
+## Start a run (managed)
+
+```http
+POST /api/v1/eval/runs
+Content-Type: application/json
+
+{ "manifest_digest": "sha256:..." }
+```
+
+Returns `run_id` and streams events to the tenant eval ledger. Local CLI (`sp eval run`) uses the same manifest semantics without this HTTP hop.
+
 ## Score writes (v2)
 
 ```http
@@ -47,7 +58,9 @@ Accepts canonical `target_type` + `target_id`:
 
 `span | trace | session | rollout | case_run | run | comparison_group`
 
-v1 APIs remain for span/trace/session only. See [Score targets](/en/evaluation/reference/score-targets).
+**Eval run measurements** are emitted only by the kernel during `evaluation.attempted` — public clients do not synthesize scorer output. The v2 write API remains for legacy telemetry, human-annotation ingest, and non-eval score paths; eval automation should use `sp eval run` / publish + query APIs instead.
+
+v1 APIs remain for span/trace/session only. See [Score targets](/en/evaluation/reference/score-targets) and [Trust boundaries](/en/evaluation/architecture/trust-boundaries).
 
 ## Auth
 

@@ -31,7 +31,7 @@ Promotion is distinct from gate pass on a single run; it may require human appro
 gate: spcode-routing-v1
 rules:
   - all_cases: routing.skill_match == true
-  - all_cases: confidentiality.clean == true
+  - all_cases: confidentiality.no_internal_storage == true
   - aggregate: pass_rate >= 1.0  # deterministic routing suite
 ```
 

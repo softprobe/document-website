@@ -80,7 +80,7 @@ Each case run produces **measurements** (facts) and optionally a **gate decision
 ```text
 Case: Route replay failure to sp-diagnosis
   routing.skill_match = true
-  confidentiality.clean = true
+  confidentiality.no_internal_storage = true
   status = succeeded
 Gate (routing-v1): PASS
 ```
