@@ -4,27 +4,27 @@ title: Prompt-only vs environment eval
 
 # Prompt-only vs environment eval
 
-Most teams start with **prompt-only** evaluation (model output checks). Mature agent programs add **environment-backed** evaluation (outcome oracles in a harness). Both use the same suite envelope — only the subject and environment versions change.
+Most teams start with **prompt-only** evaluation (model output checks). Mature agent programs add **environment-backed** evaluation (outcome oracles in a harness). Both use the same Softprobe workflow envelope — only **SubjectVersion** and **EnvironmentVersion** change. Assertions stay in the **framework** suite.
 
 ```mermaid
 flowchart TB
-  subgraph shared [Same suite envelope]
-    Data[DatasetVersion cases]
-    Eval[EvaluatorVersion graders]
-    Gate[GatePolicyVersion]
+  subgraph shared [Same Softprobe envelope]
+    Def[FrameworkDefinition]
+    RunV[RunnerVersion]
+    Gate[Gate policy]
   end
-  subgraph promptOnly [Prompt-only eval]
+  subgraph promptOnly [Prompt-only]
     S1[Subject: model + prompt]
-    E1[Environment: noop]
-    O1[Grade: output text / trajectory]
+    E1[Environment: noop / light]
+    O1[Framework grades text outputs]
   end
-  subgraph envBacked [Environment-backed eval]
+  subgraph envBacked [Environment-backed]
     S2[Subject: full agent process]
     E2[Environment: fixture + verify]
-    O2[Grade: oracle + trajectory + judges]
+    O2[Framework grades tools / oracles]
   end
-  Data --> S1 & S2
-  Eval --> O1 & O2
+  Def --> S1 & S2
+  RunV --> O1 & O2
   S1 --> E1 --> O1
   S2 --> E2 --> O2
   O1 & O2 --> Gate
@@ -32,15 +32,15 @@ flowchart TB
 
 ## Prompt-only eval
 
-Use when the agent is a **single model call** (or short chain) and graders inspect **output text** or a lightweight trajectory.
+Use when the agent is a **single model call** (or short chain) and graders inspect **output text**.
 
 | Piece | Typical choice |
 |-------|----------------|
 | **SubjectVersion** | Pinned model + system prompt digest |
 | **EnvironmentVersion** | `noop` — no harness |
-| **Evaluators** | Deterministic contains/regex, LLM rubric, confidentiality scanners |
+| **Framework checks** | Promptfoo `icontains` / confidentiality asserts, etc. |
 
-**Customer example:** a support **router** that must name the correct department (`billing-support`, `technical-support`) and never leak internal schema names.
+**Customer example:** a support **router** that must name the correct department and never leak internal schema names.
 
 ```yaml
 vars:
@@ -62,26 +62,22 @@ Use when the **agent is a process** (tools, multi-turn, code execution) and you 
 | Piece | Typical choice |
 |-------|----------------|
 | **SubjectVersion** | Agent binary/image digest + tool config |
-| **EnvironmentVersion** | Fixture repo, stubbed APIs, `reset` / `step` / `verify` |
-| **Evaluators** | Environment outcome, trajectory/tool policy, LLM judges |
-
-**Customer example:** a **coding or ops agent** that must fix a failing integration test in a sandbox repo — success = tests green + allowed tools only.
+| **EnvironmentVersion** | Fixture repo, stubbed APIs, reset/step/verify |
+| **Framework checks** | Outcome asserts, trajectory metrics, LLM judges — still in-framework |
 
 ```mermaid
 sequenceDiagram
-  participant Kernel
-  participant Env as Environment
-  participant Agent as Subject agent
-  participant Eval as Evaluators
+  participant Kernel as Softprobe kernel
+  participant Env as EnvironmentVersion
+  participant Runner as Framework runner
+  participant Agent as Subject
 
-  Kernel->>Env: reset(fixture)
-  Kernel->>Agent: run(case, trace context)
-  Agent->>Env: tool calls (stubbed APIs)
-  Agent-->>Kernel: rollout + OTLP trace
-  Kernel->>Env: verify(oracle)
-  Env-->>Kernel: state artifacts
-  Kernel->>Eval: evidence bundle
-  Eval-->>Kernel: measurements
+  Kernel->>Env: allocate / reset(fixture)
+  Kernel->>Runner: FrameworkAttempt
+  Runner->>Agent: framework-owned cases
+  Agent->>Env: tool calls under policy
+  Runner-->>Kernel: native result bundle + OTEL
+  Kernel->>Kernel: EvidenceArtifact + GateDecision
 ```
 
 **What it proves:** **outcomes beat transcripts** — a plausible answer that fails the oracle is still a failure.
@@ -96,23 +92,26 @@ sequenceDiagram
 | Catches tool misuse? | Limited | Yes |
 | CI without secrets | Easy (fixtures) | Needs harness images |
 
-Many programs run **both** on the same product: prompt-only gates for fast PR checks; environment suites nightly or on release candidates.
+Many programs run **both**: prompt-only gates for fast PR checks; environment suites nightly or on release candidates.
 
-## Same manifest, different digests
+## Same workflow, different digests
 
 ```text
-SuiteVersion
-  ├── CaseVersion[]           # shared or split datasets
+WorkflowVersion
+  ├── FrameworkDefinition     # Promptfoo/DeepEval suite (mode-specific asserts)
+  ├── RunnerVersion
   ├── SubjectVersion          # ← changes between modes
   ├── EnvironmentVersion      # ← noop vs fixture
-  ├── EvaluatorVersion[]      # ← output checks vs oracles
-  └── GatePolicyVersion
+  └── gate policy
 ```
 
-Compare runs with `sp eval compare` using paired trial seeds when subject versions change.
+Compare WorkflowRuns with `sp eval compare` when SubjectVersion digests change.
 
 ## Related
 
 - [Prepare a framework run](/en/evaluation/guides/author-a-suite)
-- [Environment outcome evaluators](/en/evaluation/evaluators/environment-outcome)
+- [Environment outcome](/en/evaluation/evaluators/environment-outcome)
 - [Evidence and trajectories](/en/evaluation/concepts/evidence-and-trajectories)
+- [Environment bundles and dependency tapes](/en/evaluation/concepts/environment-bundles)
+- [Record and replay an agent environment](/en/evaluation/guides/record-replay-agent-environment)
+- [Gym episodes and training rollouts](/en/evaluation/guides/gym-and-training-rollouts)

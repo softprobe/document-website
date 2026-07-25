@@ -4,7 +4,9 @@ title: Environment outcome evaluators
 
 # Environment outcome evaluators
 
-**Environment outcome evaluators** call `Environment.verify` after rollout: tests pass, DB/API/UI state, sandbox oracle, task completion.
+> **Softprobe role:** Softprobe does not implement this family as a Softprobe evaluator. Use a framework that already owns these checks, pin it as a **RunnerVersion**, and capture the native result bundle. See [Ecosystem method families](/en/evaluation/evaluators/).
+
+**Environment outcome evaluators** call `harness verify (framework-owned)` after rollout: tests pass, DB/API/UI state, sandbox oracle, task completion.
 
 ## Design principle
 
@@ -30,7 +32,7 @@ title: Environment outcome evaluators
 | `task.tests_pass` | Integration tests green in sandbox |
 | `task.root_cause_correct` | Matches fixture failure taxonomy |
 
-Phase 1 routing uses a **no-op environment**; Phase 2 episodes use read-only fixture repos with stubbed `sp` / `sp_api`.
+Early suites often use a **no-op** environment (prompt-only). Environment-backed suites pin fixture repos and stubbed tools so oracles can run without ambient production access. See [Prompt-only vs environment eval](/en/evaluation/guides/eval-modes).
 
 ## Resembles
 
@@ -38,4 +40,12 @@ Prime Intellect Verifiers Stateful environments, SWE-bench-style test oracles, B
 
 ## Extension rule
 
-Implement verify contract on EnvironmentVersion — scorers consume oracle artifacts, not ad-hoc shell checks in CI scripts.
+Ship or pin a **framework runner** that already owns this method family. Do **not** add Softprobe scorer plugins, Softprobe Measurement schemas, Softprobe reducers, or Softprobe human-evaluator runtimes.
+
+See [Ecosystem method families](/en/evaluation/evaluators/) and [Framework runners](/en/evaluation/reference/framework-adapters).
+
+## Related Softprobe environment guides
+
+- [Environment bundles and dependency tapes](/en/evaluation/concepts/environment-bundles)
+- [Record and replay an agent environment](/en/evaluation/guides/record-replay-agent-environment)
+- [Gym episodes and training rollouts](/en/evaluation/guides/gym-and-training-rollouts)

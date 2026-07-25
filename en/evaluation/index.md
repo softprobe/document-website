@@ -63,12 +63,18 @@ flowchart TB
 |---------|------------|
 | Framework user (Promptfoo/DeepEval) | [Quick start](/en/evaluation/getting-started) |
 | Migration lead | [Promptfoo integration](/en/evaluation/guides/promptfoo-integration) |
+| Agent environment / record-replay | [Record and replay an agent environment](/en/evaluation/guides/record-replay-agent-environment) |
 | Platform operator | [Architecture](/en/evaluation/architecture/) |
 | CI / AI coding agent | [For AI agents](/en/evaluation/agents/overview) |
 
 ## Quick links
 
 - [Native model and framework runners](/en/evaluation/concepts/native-model-and-adapters)
-- [Framework adapters](/en/evaluation/reference/framework-adapters)
+- [Framework runners](/en/evaluation/reference/framework-adapters)
 - [Prepare a framework run](/en/evaluation/guides/author-a-suite)
 - [How it works](/en/evaluation/how-it-works)
+- [Environment bundles and dependency tapes](/en/evaluation/concepts/environment-bundles)
+- [Record and replay an agent environment](/en/evaluation/guides/record-replay-agent-environment)
+- [Score an episode with Promptfoo](/en/evaluation/guides/score-episode-with-promptfoo)
+- [Gym episodes and training rollouts](/en/evaluation/guides/gym-and-training-rollouts)
+- [Node packages](/en/evaluation/reference/node-packages)

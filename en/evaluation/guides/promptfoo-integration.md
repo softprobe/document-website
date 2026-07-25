@@ -90,6 +90,7 @@ Use this path when you want quick adoption without rewriting your entire Promptf
 
 ## Related
 
-- [Framework adapters](/en/evaluation/reference/framework-adapters)
+- [Framework runners](/en/evaluation/reference/framework-adapters)
 - [Native model and framework runners](/en/evaluation/concepts/native-model-and-adapters)
 - [Quick start](/en/evaluation/getting-started)
+- [Score an episode with Promptfoo](/en/evaluation/guides/score-episode-with-promptfoo) (Node adapter after an environment episode)
