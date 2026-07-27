@@ -4,9 +4,12 @@ title: 安装 Softprobe 服务端
 
 # 安装 Softprobe 服务端
 
+> **SoftProbe product Parquet deleted (018):** SoftProbe no longer stores or queries hive Parquet. Telemetry SoT is **thelake** (Vector → OTLP → thelake; product reads via `THELAKE_BASE_URL` / `THELAKE_API_KEY`). Compaction/rclone/Parquet PVC docs below are historical and must not be followed for new installs.
+
+
 使用 Helm 在 Kubernetes 上安装统一的 Softprobe 后端。Chart 会在集群内部署 **Redis**，并选择部署**内置 MongoDB** 或连接您**已有的 MongoDB** 服务器。
 
-Chart **v4.3.x+** 默认启用[统一日志管道](#unified-log-pipeline)（Vector、Parquet PVC、压缩）。全新安装只需配置下方的 MongoDB 与加密密钥——无需单独的 `logPipeline` 块。
+Chart **v4.3.x+** 默认启用[统一日志管道](#unified-log-pipeline)（Vector → thelake OTLP）。全新安装只需配置下方的 MongoDB 与加密密钥，并配置 `logPipeline.thelake`（或等价环境变量）以支持产品日志/指标查询。
 
 **前置条件：** Kubernetes 1.24+、Helm 3.x、Softprobe 提供的 GCR 拉取凭证，以及用于静态载荷加密的 `encryption.secretKey`。
 
@@ -357,12 +360,12 @@ release 为 `softprobe`、命名空间为 `softprobe` 时：
 -Dsp.api.url=http://softprobe-sp-backend.softprobe.svc.cluster.local:8090
 ```
 
-录制与回放期间，关联的应用与 Agent 日志导出至 `{sp.api.url}/v1/logs`。日志管道启用时，sp-backend 将 Agent JSON 代理到 Vector `:4320`，OTLP 代理到 `:4318`。
+录制与回放期间，关联的应用与 Agent 日志导出至 `{sp.api.url}/v1/logs`。SoftProbe 将 Agent flat JSON 转为 OTLP 并转发到 Vector **`:4318`**（thelake SoT）。**不要**为了产品存储把 Agent 指到 Vector `:4320`——该路径只喂入不会写入 thelake 的 layout remap。
 
-可选高级覆盖 — 直连 Vector（绕过 backend 代理）：
+可选高级覆盖 — 直连 Vector **OTLP**（必须是 `:4318`，不是 agent-JSON `:4320`）：
 
 ```text
--Dsp.otel.exporter.otlp.log.endpoint=http://<release>-log-vector.<namespace>.svc.cluster.local:4320/v1/logs
+-Dsp.otel.exporter.otlp.log.endpoint=http://<release>-log-vector.<namespace>.svc.cluster.local:4318
 ```
 
 v1 不使用旧版采集标志（`sp.record.user.log`、`sp-capture-log`、`sp.user.log.level` 等）。
