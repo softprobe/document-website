@@ -4,9 +4,12 @@ title: Install Softprobe Server
 
 # Install Softprobe Server
 
+> **SoftProbe product Parquet deleted (018):** SoftProbe no longer stores or queries hive Parquet. Telemetry SoT is **thelake** (Vector → OTLP → thelake; product reads via `THELAKE_BASE_URL` / `THELAKE_API_KEY`). Compaction/rclone/Parquet PVC docs below are historical and must not be followed for new installs.
+
+
 Install the unified Softprobe backend on Kubernetes with Helm. The chart deploys **Redis** in-cluster and either **bundled MongoDB** or connects to your **existing MongoDB** server.
 
-Chart **v4.3.x+** also enables the [unified log pipeline](#unified-log-pipeline) by default (Vector, Parquet PVC, compaction). Fresh installs need only the MongoDB and encryption keys below — no separate `logPipeline` block required.
+Chart **v4.3.x+** enables the [unified log pipeline](#unified-log-pipeline) by default (Vector → thelake OTLP). Fresh installs need only the MongoDB and encryption keys below — plus `logPipeline.thelake` (or env equivalents) for product log/metrics queries.
 
 **Prerequisites:** Kubernetes 1.24+, Helm 3.x, GCR pull credentials from Softprobe, and `encryption.secretKey` for at-rest payload encryption.
 
@@ -359,12 +362,12 @@ For release `softprobe` in namespace `softprobe`:
 -Dsp.api.url=http://softprobe-sp-backend.softprobe.svc.cluster.local:8090
 ```
 
-Correlated application and agent logs export to `{sp.api.url}/v1/logs` during record and replay. sp-backend proxies agent JSON to Vector `:4320` and OTLP to `:4318` when the log pipeline is enabled.
+Correlated application and agent logs export to `{sp.api.url}/v1/logs` during record and replay. SoftProbe converts agent flat JSON to OTLP and forwards to Vector **`:4318`** (thelake SoT). Do **not** point agents at Vector `:4320` for product storage — that path only feeds layout remaps that are not written to thelake.
 
-Optional advanced override — direct Vector ingest (bypasses backend proxy):
+Optional advanced override — direct Vector **OTLP** ingest (must be `:4318`, not agent-JSON `:4320`):
 
 ```text
--Dsp.otel.exporter.otlp.log.endpoint=http://<release>-log-vector.<namespace>.svc.cluster.local:4320/v1/logs
+-Dsp.otel.exporter.otlp.log.endpoint=http://<release>-log-vector.<namespace>.svc.cluster.local:4318
 ```
 
 Legacy capture flags (`sp.record.user.log`, `sp-capture-log`, `sp.user.log.level`, etc.) are not used in v1.

@@ -74,7 +74,7 @@ curl -s "${SP_API_URL}/api/recorder/logs?trace_id=${TRACE_ID}&since=${SINCE}&unt
 
 1. Start with a window around the failure (for example five minutes before plan finish through one minute after).
 2. Widen the window if row counts show zeros for a `source` you expect (`agent`, `app`, `backend`).
-3. E2E after `make compose-parquet-clean`: rerun the session, then poll up to ~180s for Vector ingest.
+3. E2E after `compose recreate (thelake volume as needed)`: rerun the session, then poll up to ~180s for Vector ingest.
 4. v1 returns **all** matching rows in the window — redirect or pipe locally for large output:
 
 ```bash

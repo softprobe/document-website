@@ -76,7 +76,7 @@ curl -s "${SP_API_URL}/api/recorder/logs?trace_id=${TRACE_ID}&since=${SINCE}&unt
 
 1. 从失败点附近的窗口开始（例如从计划完成前五分钟到完成后一分钟）。
 2. 如果你预期的某个 `source`（`agent`、`app`、`backend`）行数为零，则加宽窗口。
-3. 执行 `make compose-parquet-clean` 后的 E2E：重跑会话，然后轮询最多约 180 秒等待 Vector 摄取。
+3. 执行 `compose recreate (thelake volume as needed)` 后的 E2E：重跑会话，然后轮询最多约 180 秒等待 Vector 摄取。
 4. v1 会返回窗口内**所有**匹配的行——输出量大时请在本地重定向或用管道处理：
 
 ```bash
