@@ -90,7 +90,8 @@ Authoritative **REST ↔ CLI** reference for sp-backend (default port **8090**).
 | Method | Path | CLI | Category |
 |--------|------|-----|-------|
 | GET | `/api/report/queryDiffMsgById/{id}` | `sp replay diff get` | investigation |
-| POST | `/api/report/queryReplayCase` | `sp replay case list` | investigation |
+| POST | `/api/report/queryReplayCase` | `sp replay case list` (plan-item scoped) | investigation |
+| POST | `/api/report/queryPlanFailCase` | `sp replay case list --plan …` / `sp diagnose replay` (plan-scoped) | investigation |
 | POST | `/api/report/init` | `sp replay report init` | investigation |
 | * | `/api/report/*` (others) | partial / future | investigation |
 

@@ -25,9 +25,9 @@ sp diagnose replay plan-abc123 --failed-only --out-dir .sp-work --json
 
 Steps performed:
 
-1. `POST /api/report/queryPlanStatistic` — plan status + case counts (drives `classification` when fail-case rows are empty)
+1. `GET /api/progress?planId=…` — plan progress (feeds diagnose summary / classification inputs)
 2. `POST /api/report/queryPlanFailCase` with `diffResultCodeList=[1,2]` when `--failed-only` (plan-scoped fail/invalid cases)
-3. For each assertion-failure case with a diff id: `GET /api/report/queryDiffMsgById/{id}` → artifact file
+3. For each assertion-failure case with a resolvable diff id: `GET /api/report/queryDiffMsgById/{id}` → artifact file
 
 Example `data` shape:
 
