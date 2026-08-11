@@ -37,7 +37,7 @@ sp replay case list --plan-item item-abc --json
 | Subcommand | APIs |
 |------------|------|
 | `metadata` | Storage replay query / schedule metadata endpoints |
-| `case list` | `/api/report/queryReplayCase`, storage `viewRecord`, schedule report |
+| `case list` | `/api/report/queryPlanFailCase` (plan-only) or `/api/report/queryReplayCase` (plan-item), storage `viewRecord`, schedule report |
 | `case get` | Report query by planItemId |
 
 Exact paths vary by deployment; see [API mapping](/zh/testing/reference/api-mapping).
