@@ -23,7 +23,7 @@ Using real traffic instead of hand-crafted test cases is the core value of the s
 
 ---
 
-## 2. Core features (what it can do)
+## 2. Core features
 
 ### 2.1 Traffic recording (no business code changes)
 
@@ -83,9 +83,9 @@ A web console provides application management, replay plan management, record/re
 
 ---
 
-## 3. Performance and scale (how much, how fast)
+## 3. Performance and scale
 
-### 3.1 Agent impact on the business system (key concern)
+### 3.1 Agent impact on the business system
 
 The agent runs inside the application under test, so customers care most about its overhead. Conclusions:
 
@@ -118,7 +118,7 @@ Recorded data first enters an in-memory buffer on the agent side and is uploaded
 
 Replay pressure is controlled: the system ramps up in steps, only advancing after consecutive successes and backing off automatically on failure, so the target system is never overwhelmed.
 
-### 3.4 Scale limits (how large it can go)
+### 3.4 Scale limits
 
 The system has been validated and evaluated at the following scales:
 
@@ -129,7 +129,7 @@ By design, the backend needs only two kinds of infrastructure — MongoDB for pe
 
 ---
 
-## 4. Resource requirements (how much it needs)
+## 4. Resource requirements
 
 ### 4.1 Agent side: near-zero extra resources
 
@@ -158,18 +158,10 @@ The delivered edition consists of 4 containers — backend, web console, MongoDB
 
 ---
 
-## 5. Onboarding (how quickly you can start)
+## 5. Onboarding
 
 1. **Attach the agent**: add one `-javaagent` flag to the application's startup command, pointing at the agent jar, and configure the backend address — recording starts. No business code changes throughout.
 2. **Deploy the backend**: one-click Docker deployment of the backend and web console.
 3. **Start using it**: create an application in the console, record traffic, create a replay plan, and view diff reports.
 
 From deployment to the first recorded traffic, same-day completion is typical.
-
----
-
-## 6. Honest caveats
-
-- Attaching the agent requires no code changes, but bytecode instrumentation is a JVM-level technique. In environments that already run other bytecode-instrumenting components (such as other APM or recording agents), evaluate compatibility first.
-- With ordinary payloads at 10k-level QPS, agent overhead is negligible; very large payloads or million-level QPS scenarios must be tuned per the onboarding guide.
-- Replay depends on a healthy backend — keep the network and storage between replay and the backend in good shape.
