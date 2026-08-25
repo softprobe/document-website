@@ -49,11 +49,13 @@ This JVM property wins over `{sp.api.url}/v1/logs`.
 
 Without `sp.api.url` (and without the override above), record and replay still work, but application logs are not exported and `sp logs` will be empty for that trace.
 
-## Coverage deduplication
+## Execution-path deduplication
 
-The coverage deduplication capability is included in the standard `sp-agent.jar`. You do not need to download, build, or place a separate extension JAR in an extension directory.
+The Java agent can deduplicate recorded cases by the execution path taken through selected application code. This is the goal of this feature. Coverage instrumentation is the mechanism used to calculate that path; it does not produce a separate coverage report.
 
-Coverage is opt-in by package scope. If `sp.coverage.packages` is missing or empty, coverage remains inactive and no coverage configuration is required for normal Agent use. To collect coverage for selected application packages, pass comma-separated package prefixes:
+The capability is included in the standard `sp-agent.jar`. You do not need to download, build, or place a separate extension JAR in an extension directory.
+
+Execution-path deduplication is opt-in by package scope. If `sp.coverage.packages` is missing or empty, deduplication remains inactive and no additional configuration is required for normal Agent use. To select application packages whose execution paths should be used for deduplication, pass comma-separated package prefixes:
 
 ```bash
 java \
@@ -66,7 +68,7 @@ java \
 
 When `sp.coverage.packages` is configured, `sp.coverage.enabled` is optional and defaults to enabled. This preserves the behavior of existing package-scoped configurations.
 
-To turn coverage off while leaving the rest of the agent enabled, set the explicit kill switch:
+To turn execution-path deduplication off while leaving the rest of the agent enabled, set the explicit kill switch:
 
 ```bash
 -Dsp.coverage.enabled=false
@@ -76,12 +78,12 @@ These properties are read when the JVM starts. Restart the service after changin
 
 ### How duplicate cases are handled
 
-Coverage deduplication operates on retained recording cases, not on the HTTP response sent to the caller. For each request, the agent builds an execution-path key from the instrumented methods and branches in the configured packages. The backend keeps one active case for each distinct path within an application and operation. A later request with the same path is discarded from the active rolling cases; a request that follows a different path is retained as another case.
+Execution-path deduplication operates on retained recording cases, not on the HTTP response sent to the caller. For each request, the agent builds an execution-path key from the instrumented methods and branches in the configured packages. The backend keeps one active case for each distinct path within an application and operation. A later request with the same path is discarded from the active rolling cases; a request that follows a different path is retained as another case.
 
 This means two identical requests normally produce:
 
-- **Coverage enabled:** one retained case and one Coverage path.
-- **Coverage disabled or unconfigured:** two retained cases and no Coverage path.
+- **Deduplication enabled:** one retained case and one Coverage path.
+- **Deduplication disabled or unconfigured:** two retained cases and no Coverage path.
 
 The key is the execution path, not the request body alone. Therefore different inputs that follow the same path can also be deduplicated, while identical inputs that take different branches remain separate. `sp-force-record` is an explicit raw-capture override and bypasses coverage deduplication; do not use it when validating deduplication behavior.
 
