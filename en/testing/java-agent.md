@@ -49,6 +49,30 @@ This JVM property wins over `{sp.api.url}/v1/logs`.
 
 Without `sp.api.url` (and without the override above), record and replay still work, but application logs are not exported and `sp logs` will be empty for that trace.
 
+## Coverage deduplication
+
+The coverage deduplication capability is included in the standard `sp-agent.jar`. You do not need to download, build, or place a separate extension JAR in an extension directory.
+
+Coverage is effectively off unless you provide a package scope. To collect coverage for selected application packages, pass comma-separated package prefixes and optionally make the default explicit:
+
+```bash
+java \
+  -javaagent:sp-agent.jar \
+  -Dsp.app.id=<appId> \
+  -Dsp.api.url=http://127.0.0.1:8090 \
+  -Dsp.coverage.packages=com.example.orders,com.example.payments \
+  -Dsp.coverage.enabled=true \
+  -jar your-service.jar
+```
+
+To turn coverage off while leaving the rest of the agent enabled, set the explicit kill switch:
+
+```bash
+-Dsp.coverage.enabled=false
+```
+
+These properties are read when the JVM starts. Restart the service after changing them. An empty or missing `sp.coverage.packages` value also leaves coverage inactive.
+
 ## Environment tags
 
 Tag recorded traffic for filtering and replay scope:

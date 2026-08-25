@@ -47,6 +47,30 @@ java \
 
 未设置 `sp.api.url`（且未设置上述覆盖）时，录制与回放仍可用，但应用日志不会导出，该 trace 的 `sp logs` 将为空。
 
+## 覆盖率去重
+
+覆盖率去重能力已包含在标准的 `sp-agent.jar` 中。无需下载、构建或在扩展目录中放置单独的扩展 JAR。
+
+除非配置包范围，否则覆盖率实际上处于关闭状态。要采集指定应用包的覆盖率，请传入英文逗号分隔的包前缀；也可以显式写出启用参数：
+
+```bash
+java \
+  -javaagent:sp-agent.jar \
+  -Dsp.app.id=<appId> \
+  -Dsp.api.url=http://127.0.0.1:8090 \
+  -Dsp.coverage.packages=com.example.orders,com.example.payments \
+  -Dsp.coverage.enabled=true \
+  -jar your-service.jar
+```
+
+如果要在保持 Agent 其他能力运行的同时关闭覆盖率，请设置显式开关：
+
+```bash
+-Dsp.coverage.enabled=false
+```
+
+这些参数在 JVM 启动时读取。修改后请重启服务。`sp.coverage.packages` 缺失或为空时，覆盖率同样保持不启用。
+
 Agent 也可能从 jar 名或环境自动解析 app id；显式设置 `-Dsp.app.id` 可避免录制与回放 id 不一致。旧文档中的 **`sp.service.name`** 在部分部署中仍作别名；新环境请优先使用 **`sp.app.id`**。
 
 ## 环境标签
