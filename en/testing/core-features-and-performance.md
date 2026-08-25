@@ -4,9 +4,7 @@ title: Core Features and Performance
 
 # Core Features and Performance
 
-> This document is written for system users and decision makers. It answers four questions: what the system does, how large it scales, how fast it processes, and how many resources it needs. Performance figures are derived from the system's existing code, configuration, and design documents; measured figures are marked separately.
-
-![SoftProbe system architecture](/img/docs/data-flow.png)
+> This document is written for system users and decision makers. It answers four questions: what the system does, how large it scales, how fast it processes, and how many resources it needs.
 
 ---
 
@@ -93,7 +91,7 @@ The agent runs inside the application under test, so customers care most about i
 |---|---|
 | Attach method | One JVM startup flag, no code changes |
 | Overhead under normal load | Imperceptible for ordinary business at 10k-level QPS; per-request extra cost on recorded endpoints is in the microseconds-to-tens-of-milliseconds range |
-| Extra threads | About 10–20 background threads (mostly daemon threads), independent of business thread pools — no competition with business threads |
+| Extra threads | About 10–20 background threads, independent of business thread pools — no competition with business threads |
 | Data upload | Asynchronous batched upload, does not block business requests |
 | Protection mechanisms | Automatic slowdown when host CPU/memory exceeds thresholds; buffer overflow discards data instead of affecting the business |
 
@@ -103,17 +101,17 @@ One clarification: "microseconds to tens of milliseconds" applies to ordinary pa
 
 | Metric | Value | Notes |
 |---|---|---|
-| Per-record persistence latency | ~2 ms | Backend single-record processing time (design baseline) |
-| Backend ingestion capacity | ~400 QPS | Design capacity for single-record writes |
-| Agent-side sampling | Configurable | Default ~1000 records/s; sampling rate adjustable |
+| Per-record persistence latency | ~2 ms | Design baseline for a single write |
+| Ingestion mode | Batched concurrent writes | The agent uploads asynchronously in batches; the backend persists concurrently with multiple threads |
+| Agent-side recording rate limit | Configurable | Per-endpoint rate limiting to keep recording from affecting the business |
 
-Recorded data first enters an in-memory buffer on the agent side and is uploaded asynchronously in batches (~50–200 records per batch), avoiding frequent network requests.
+Recorded data first enters an in-memory buffer on the agent side and is uploaded asynchronously by background threads, never blocking business requests.
 
 ### 3.3 Replay throughput
 
 | Metric | Value | Notes |
 |---|---|---|
-| Replay pressure | Configurable | Default 20 QPS/instance, 0.25x–8x speed adjustment |
+| Replay pressure | Configurable | Delivered default 5 QPS/instance, speed gears from 0.25x to 4x |
 | Real-time replay processing | ~1 s/batch | ~800 cases per batch (8-core, shard-warmed scenario) |
 
 Replay pressure is controlled: the system ramps up in steps, only advancing after consecutive successes and backing off automatically on failure, so the target system is never overwhelmed.
@@ -122,10 +120,8 @@ Replay pressure is controlled: the system ramps up in steps, only advancing afte
 
 The system has been validated and evaluated at the following scales:
 
-- **Million-level QPS gateway scenario**: integrated with Spring Cloud Gateway, handling large payloads (~1 MB requests, ~10 MB responses). At this scale, agent tuning is required during onboarding (mainly shortening internal context retention and limiting recording sampling); after tuning it runs stably.
-- **Massive data volume**: estimated at 500k records/s and ~5 KB per record, data writes reach ~2.5 GB/s, or ~216 TB/day; the storage layer is built on sharded MongoDB and scales horizontally.
-
-By design, the backend needs only two kinds of infrastructure — MongoDB for persistence and Redis as a high-speed cache during replay — both horizontally scalable via sharding/clustering.
+- **Million-level QPS gateway scenario**: integrated with Spring Cloud Gateway, handling large payloads (~1 MB requests, ~10 MB responses). That figure is the gateway's business traffic — recording happens after sampling and rate limiting. After agent tuning during onboarding (shorter internal context retention, limited recording sampling), the system runs stably.
+- **Massive data volume**: estimated at 500k records/s and ~5 KB per record, data writes reach ~2.5 GB/s, or ~216 TB/day (worst-case estimate without sampling); the storage layer supports sharding and scales horizontally.
 
 ---
 
@@ -135,33 +131,11 @@ By design, the backend needs only two kinds of infrastructure — MongoDB for pe
 
 The agent runs inside the application's own JVM and needs no dedicated server. Extra footprint:
 
-- About 10–20 background threads (mostly daemon threads, consuming almost no CPU when idle).
+- About 10–20 background threads, consuming almost no CPU when idle.
 - A small amount of memory for buffering and class instrumentation (Metaspace).
 
 The agent uploads data through its own dedicated connection pool, never sharing business thread pools or connection pools.
 
 ### 4.2 Backend: a single ordinary server is enough to start
 
-The backend offers an All-in-One monolithic deployment that combines configuration, storage, scheduling, and reporting into a single process with a single external port. Default JVM memory starts at 2 GB, max 3 GB.
-
-| Component | Resource spec |
-|---|---|
-| Backend monolith (All-in-One) | 2–3 GB memory, single machine |
-| Database | MongoDB (persistent storage) |
-| Cache | Redis (high-speed cache during replay) |
-
-The system has no dependency on message queues, object storage, or other extra components — deployment dependencies are minimal.
-
-### 4.3 Deployment shape
-
-The delivered edition consists of 4 containers — backend, web console, MongoDB, and Redis — brought up with a single Docker Compose command.
-
----
-
-## 5. Onboarding
-
-1. **Attach the agent**: add one `-javaagent` flag to the application's startup command, pointing at the agent jar, and configure the backend address — recording starts. No business code changes throughout.
-2. **Deploy the backend**: one-click Docker deployment of the backend and web console.
-3. **Start using it**: create an application in the console, record traffic, create a replay plan, and view diff reports.
-
-From deployment to the first recorded traffic, same-day completion is typical.
+The backend offers an All-in-One monolithic deployment that combines configuration, storage, scheduling, and reporting into a single process with a single external port. Default JVM memory starts at 2 GB, max 3 GB — a single ordinary server is enough, with minimal deployment dependencies.
