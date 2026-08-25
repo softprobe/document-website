@@ -119,7 +119,7 @@ Replay pressure is controlled: the system ramps up in steps, only advancing afte
 
 The system has been validated and evaluated at the following scales:
 
-- **Million-level QPS gateway scenario**: integrated with Spring Cloud Gateway, handling large payloads (~1 MB requests, ~10 MB responses). That figure is the gateway's business traffic; recording fans out per request — one request produces an entry record plus one record per dependency call — and is full-volume by default. Onboarding at this scale requires agent tuning (shorter internal context retention, optional sampling-rate configuration), with automatic degradation as a backstop when host resources exceed thresholds; after tuning the system runs stably.
+- **Million-level QPS gateway scenario**: this figure is the gateway's business traffic; recording fans out per request — one request produces an entry record plus one record per dependency call — and is full-volume by default.
 - **Massive data volume**: estimated at 500k records/s and ~5 KB per record, data writes reach ~2.5 GB/s, or ~216 TB/day (worst-case estimate without sampling); the storage layer supports sharding and scales horizontally.
 
 ---
