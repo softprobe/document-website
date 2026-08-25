@@ -91,7 +91,7 @@ The agent runs inside the application under test, so customers care most about i
 |---|---|
 | Attach method | One JVM startup flag, no code changes |
 | Overhead under normal load | Imperceptible for ordinary business at 10k-level QPS; per-request extra cost on recorded endpoints is in the microseconds-to-tens-of-milliseconds range |
-| Extra threads | About 10–20 background threads, independent of business thread pools — no competition with business threads |
+| Extra threads | Anywhere from a dozen to a few dozen background threads (grows with CPU cores; ~26 on an 8-core machine), independent of business thread pools — no competition with business threads |
 | Data upload | Asynchronous batched upload, does not block business requests |
 | Protection mechanisms | Automatic slowdown when host CPU/memory exceeds thresholds; buffer overflow discards data instead of affecting the business |
 
@@ -131,7 +131,7 @@ The system has been validated and evaluated at the following scales:
 
 The agent runs inside the application's own JVM and needs no dedicated server. Extra footprint:
 
-- About 10–20 background threads, consuming almost no CPU when idle.
+- Anywhere from a dozen to a few dozen background threads (grows with CPU cores; ~26 on an 8-core machine), consuming almost no CPU when idle.
 - A small amount of memory for buffering and class instrumentation (Metaspace).
 
 The agent uploads data through its own dedicated connection pool, never sharing business thread pools or connection pools.
