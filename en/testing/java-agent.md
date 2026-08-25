@@ -53,7 +53,7 @@ Without `sp.api.url` (and without the override above), record and replay still w
 
 The coverage deduplication capability is included in the standard `sp-agent.jar`. You do not need to download, build, or place a separate extension JAR in an extension directory.
 
-Coverage is effectively off unless you provide a package scope. To collect coverage for selected application packages, pass comma-separated package prefixes and optionally make the default explicit:
+Coverage is opt-in by package scope. If `sp.coverage.packages` is missing or empty, coverage remains inactive and no coverage configuration is required for normal Agent use. To collect coverage for selected application packages, pass comma-separated package prefixes:
 
 ```bash
 java \
@@ -61,9 +61,10 @@ java \
   -Dsp.app.id=<appId> \
   -Dsp.api.url=http://127.0.0.1:8090 \
   -Dsp.coverage.packages=com.example.orders,com.example.payments \
-  -Dsp.coverage.enabled=true \
   -jar your-service.jar
 ```
+
+When `sp.coverage.packages` is configured, `sp.coverage.enabled` is optional and defaults to enabled. This preserves the behavior of existing package-scoped configurations.
 
 To turn coverage off while leaving the rest of the agent enabled, set the explicit kill switch:
 
@@ -71,7 +72,7 @@ To turn coverage off while leaving the rest of the agent enabled, set the explic
 -Dsp.coverage.enabled=false
 ```
 
-These properties are read when the JVM starts. Restart the service after changing them. An empty or missing `sp.coverage.packages` value also leaves coverage inactive.
+These properties are read when the JVM starts. Restart the service after changing them.
 
 ## Environment tags
 
