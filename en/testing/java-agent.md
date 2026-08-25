@@ -74,6 +74,17 @@ To turn coverage off while leaving the rest of the agent enabled, set the explic
 
 These properties are read when the JVM starts. Restart the service after changing them.
 
+### How duplicate cases are handled
+
+Coverage deduplication operates on retained recording cases, not on the HTTP response sent to the caller. For each request, the agent builds an execution-path key from the instrumented methods and branches in the configured packages. The backend keeps one active case for each distinct path within an application and operation. A later request with the same path is discarded from the active rolling cases; a request that follows a different path is retained as another case.
+
+This means two identical requests normally produce:
+
+- **Coverage enabled:** one retained case and one Coverage path.
+- **Coverage disabled or unconfigured:** two retained cases and no Coverage path.
+
+The key is the execution path, not the request body alone. Therefore different inputs that follow the same path can also be deduplicated, while identical inputs that take different branches remain separate. `sp-force-record` is an explicit raw-capture override and bypasses coverage deduplication; do not use it when validating deduplication behavior.
+
 ## Environment tags
 
 Tag recorded traffic for filtering and replay scope:
