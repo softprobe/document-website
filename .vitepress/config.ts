@@ -11,6 +11,7 @@ const testingSidebarEn = [
       { text: 'What is Softprobe Testing', link: '/en/testing/' },
       { text: 'Quick start', link: '/en/testing/getting-started' },
       { text: 'How it works', link: '/en/testing/how-it-works' },
+      { text: 'Core features & performance', link: '/en/testing/core-features-and-performance' },
     ],
   },
   {
@@ -87,6 +88,7 @@ const testingSidebarZh = [
       { text: '什么是 Softprobe 测试', link: '/zh/testing/' },
       { text: '快速开始', link: '/zh/testing/getting-started' },
       { text: '工作原理', link: '/zh/testing/how-it-works' },
+      { text: '核心功能与性能参数', link: '/zh/testing/core-features-and-performance' },
     ],
   },
   {
