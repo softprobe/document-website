@@ -47,6 +47,49 @@ java \
 
 未设置 `sp.api.url`（且未设置上述覆盖）时，录制与回放仍可用，但应用日志不会导出，该 trace 的 `sp logs` 将为空。
 
+## 基于执行路径的去重录制
+
+Java Agent 可以根据选定应用代码实际走过的执行路径，对录制用例进行去重。这是此功能的目标。用于计算执行路径的插桩是实现细节，不会生成独立的覆盖率报告。
+
+该能力已包含在标准的 `sp-agent.jar` 中。无需下载、构建或在扩展目录中放置单独的扩展 JAR。
+
+### 开启基于执行路径的去重
+
+主要功能开关是 `sp.dedup.enabled`，默认值为 `false`。因此，只有显式开启去重后，Agent 的行为才会改变。
+
+原始 transformer 还要求配置 `sp.coverage.packages`。这个参数是必需的插桩范围白名单：它告诉 Agent 哪些应用包前缀可以被转换，以便收集执行路径。参数名中的 `coverage` 来自已有 transformer 配置；它不表示开启独立的覆盖率产品，也不会改变录制内容。多个包前缀使用英文逗号分隔：
+
+```bash
+java \
+  -javaagent:sp-agent.jar \
+  -Dsp.app.id=<appId> \
+  -Dsp.api.url=http://127.0.0.1:8090 \
+  -Dsp.dedup.enabled=true \
+  -Dsp.coverage.packages=com.example.orders,com.example.payments \
+  -jar your-service.jar
+```
+
+只有同时配置这两个参数，才会启用基于执行路径的去重。未设置或设置为 `false` 的 `sp.dedup.enabled` 会关闭该功能，即使已经配置了包范围；设置 `sp.dedup.enabled=true` 但未设置或设置为空的 `sp.coverage.packages` 时，也不会安装 transformer，Agent 的其他行为保持不变。
+
+如果要在保持 Agent 其他能力运行的同时关闭基于执行路径的去重，请省略主要开关或显式设置为 `false`：
+
+```bash
+-Dsp.dedup.enabled=false
+```
+
+这些参数在 JVM 启动时读取。修改后请重启服务。
+
+### 重复用例如何去重
+
+基于执行路径的去重作用于最终保留的录制用例，而不是阻止 HTTP 响应返回。对于每个请求，Agent 会根据已配置包范围内执行过的方法和分支生成执行路径键。后端会在同一个应用和操作内为每条不同路径保留一个有效用例；后续执行相同路径的请求会从活动滚动用例中丢弃，执行不同路径的请求则会保留为另一个用例。
+
+因此，两个完全相同的请求通常会得到：
+
+- **去重启用（`sp.dedup.enabled=true` 且 `sp.coverage.packages` 非空）：** 保留一个用例和一条 Coverage 路径。
+- **去重关闭或未配置：** 保留两个用例，且没有 Coverage 路径。包括未设置/设置为 `false` 的 `sp.dedup.enabled`，以及未设置/为空的 `sp.coverage.packages`。
+
+去重键是执行路径，而不只是请求体。因此，不同输入如果走过相同路径，也可能被去重；相同输入如果命中不同分支，则会保留为不同用例。`sp-force-record` 是显式的原始捕获覆盖开关，会绕过覆盖率去重；验证去重行为时不要使用它。
+
 Agent 也可能从 jar 名或环境自动解析 app id；显式设置 `-Dsp.app.id` 可避免录制与回放 id 不一致。旧文档中的 **`sp.service.name`** 在部分部署中仍作别名；新环境请优先使用 **`sp.app.id`**。
 
 ## 环境标签

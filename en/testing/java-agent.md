@@ -49,6 +49,49 @@ This JVM property wins over `{sp.api.url}/v1/logs`.
 
 Without `sp.api.url` (and without the override above), record and replay still work, but application logs are not exported and `sp logs` will be empty for that trace.
 
+## Execution-path deduplication
+
+The Java agent can deduplicate recorded cases by the execution path taken through selected application code. This is the goal of this feature. The instrumentation used to calculate that path is an implementation detail; it does not produce a separate coverage report.
+
+The capability is included in the standard `sp-agent.jar`. You do not need to download, build, or place a separate extension JAR in an extension directory.
+
+### Enable execution-path deduplication
+
+The primary feature switch is `sp.dedup.enabled`. It defaults to `false`, so existing Agent behavior is unchanged unless you explicitly enable deduplication.
+
+The original transformer also requires `sp.coverage.packages`. This property is a required instrumentation allowlist: it tells the Agent which application package prefixes may be transformed to collect execution paths. The `coverage` name is retained because it is part of the existing transformer configuration; it does not enable a coverage-reporting product or change what is recorded. Use comma-separated package prefixes:
+
+```bash
+java \
+  -javaagent:sp-agent.jar \
+  -Dsp.app.id=<appId> \
+  -Dsp.api.url=http://127.0.0.1:8090 \
+  -Dsp.dedup.enabled=true \
+  -Dsp.coverage.packages=com.example.orders,com.example.payments \
+  -jar your-service.jar
+```
+
+Both properties are required to activate execution-path deduplication. If `sp.dedup.enabled` is missing or `false`, the feature is off even when packages are configured. If `sp.dedup.enabled=true` but `sp.coverage.packages` is missing or empty, the transformer is not installed and normal Agent behavior continues.
+
+To turn execution-path deduplication off while leaving the rest of the Agent enabled, omit the primary switch or set it explicitly to `false`:
+
+```bash
+-Dsp.dedup.enabled=false
+```
+
+These properties are read when the JVM starts. Restart the service after changing them.
+
+### How duplicate cases are handled
+
+Execution-path deduplication operates on retained recording cases, not on the HTTP response sent to the caller. For each request, the agent builds an execution-path key from the instrumented methods and branches in the configured packages. The backend keeps one active case for each distinct path within an application and operation. A later request with the same path is discarded from the active rolling cases; a request that follows a different path is retained as another case.
+
+This means two identical requests normally produce:
+
+- **Deduplication enabled (`sp.dedup.enabled=true` plus non-empty `sp.coverage.packages`):** one retained case and one Coverage path.
+- **Deduplication disabled or unconfigured:** two retained cases and no Coverage path. This includes a missing/false `sp.dedup.enabled` or a missing/empty `sp.coverage.packages`.
+
+The key is the execution path, not the request body alone. Therefore different inputs that follow the same path can also be deduplicated, while identical inputs that take different branches remain separate. `sp-force-record` is an explicit raw-capture override and bypasses coverage deduplication; do not use it when validating deduplication behavior.
+
 ## Environment tags
 
 Tag recorded traffic for filtering and replay scope:
