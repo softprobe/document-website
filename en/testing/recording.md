@@ -45,7 +45,7 @@ The CLI cannot author cases manually. Want more cases? Send more traffic through
 sp record case list --app <your appId> --since -1h --json
 ```
 
-Cases showing up in the list means step 1 of the workflow is done — move on to [Replay](/en/testing/replay-and-diff).
+Cases showing up in the list means step 1 of the workflow is done. If a case should survive the default retention window, [pin it and add it to a test set](/en/testing/pinned-cases) before moving on to [Replay](/en/testing/replay-and-diff).
 
 To check completeness per trace, use `sp record completeness <traceId> --json`.
 
@@ -89,4 +89,4 @@ This caps how many instances may record concurrently in an env group. With `1`, 
 
 ## Next
 
-Your cases are in the corpus → **[Replay & diff](/en/testing/replay-and-diff)**: turn them into a regression run.
+Your cases are in the corpus → **[Pin cases & test sets](/en/testing/pinned-cases)** to keep selected cases, or continue to **[Replay & diff](/en/testing/replay-and-diff)** for a time-window replay.
