@@ -18,6 +18,10 @@ Pin cases that you want to reuse, for example:
 
 Pinning is currently a Workbench action. The `sp` CLI can start and inspect replay plans, but it does not create or manage pinned-case sets.
 
+![The Workbench recordings list](/img/docs/testing/pinned-cases-recordings.png)
+
+The recordings list shows the endpoint-level recording inventory before you open a trace and pin a case.
+
 ## Pin a recording
 
 1. Open the application in **Workbench**.
@@ -25,6 +29,10 @@ Pinning is currently a Workbench action. The `sp` CLI can start and inspect repl
 3. Select **Pin**.
 4. Optionally enter a name and note, then select **Pin** again.
 5. Select **View case**, or open **Recording → Pinned cases** later.
+
+![The Workbench pin dialog](/img/docs/testing/pinned-cases-pin-dialog.png)
+
+The pin dialog confirms the source trace and its downstream calls. Retention is **Forever** for the pinned copy.
 
 The name and note help you identify the case when you build a test set. If the case is already pinned, the operation is idempotent: it remains one pinned case rather than creating a duplicate.
 
@@ -43,6 +51,10 @@ Open **Recording → Pinned cases** to review the permanent library. You can:
 
 The list can contain cases pinned by you and cases automatically pinned by the system. Review the list before using it as a curated regression set. Deleting a pinned case removes it from the library.
 
+![The pinned-case library](/img/docs/testing/pinned-cases-library.png)
+
+The pinned-case library keeps the saved trace available after the rolling recording window ends.
+
 ## Create and run a test set
 
 1. Open the **Replay** tab and select **New plan**.
@@ -52,6 +64,10 @@ The list can contain cases pinned by you and cases automatically pinned by the s
 5. Create the plan, wait for it to finish, and review the results and diffs.
 
 The selected pinned cases are the test set for that replay plan. You can create another plan later with a different selection without changing the pinned library.
+
+![Selecting Pinned cases for a replay plan](/img/docs/testing/pinned-cases-replay-scope.png)
+
+Choose **Pinned cases** to turn the selected permanent cases into the test set for this plan.
 
 ::: warning Replay only against a non-production target
 Replay sends real entry requests to the target environment. Recorded downstream calls are mocked, but the application under test still executes its entry path. Use a test or staging target and turn recording off, or set it to a minimal level, on the replay host. See [Replay and diff](/en/testing/replay-and-diff#step-1-prepare-the-test-instance).
