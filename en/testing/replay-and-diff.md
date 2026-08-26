@@ -83,7 +83,9 @@ Rules can also be declared in YAML (`sp policy compare`) for CI and GitOps — s
 
 ## Replay scope
 
-Which cases replay is determined by the plan request's time range and operation filters, plus the recording policy's `operations` include/exclude. To expand coverage, go back to [Record](/en/testing/recording) and record more traffic.
+For a normal replay, the plan's time range and operation filters determine which cases replay, together with the recording policy's `operations` include/exclude. To replay recordings after their normal retention window, use the **Pinned cases** scope when creating a plan. Select the saved cases that should make up that test set; the original recording time range is not required. See [Pin cases & test sets](/en/testing/pinned-cases).
+
+If a pinned case's API has been deleted or renamed, Workbench marks it **API gone** and skips it. Update the application configuration or remove that case from the test set.
 
 ## Automation
 
