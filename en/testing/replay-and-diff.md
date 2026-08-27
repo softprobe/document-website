@@ -83,7 +83,27 @@ Rules can also be declared in YAML (`sp policy compare`) for CI and GitOps — s
 
 ## Replay scope
 
-Which cases replay is determined by the plan request's time range and operation filters, plus the recording policy's `operations` include/exclude. To expand coverage, go back to [Record](/en/testing/recording) and record more traffic.
+Replay has two case-selection modes:
+
+| Mode | Selection | Time range |
+|------|-----------|------------|
+| Rolling (default) | Recorded cases matching the plan's time range and operation filters | Applied; omitted flags use the normal rolling window |
+| `--suite Pinned` | Cases manually saved in the application's `Pinned` collection | Not applied; `--from` and `--to` are ignored |
+
+`Pinned` is intended for a stable regression suite. It includes manual pinned cases only and excludes automatically managed `AutoPinned` cases. A pinned case can therefore be replayed even when its recording is older than the normal rolling window.
+
+To run the pinned suite:
+
+```bash
+sp replay run \
+  --app <your appId> \
+  --env http://order-service.test:8080 \
+  --suite Pinned \
+  --watch \
+  --json
+```
+
+An empty manual collection fails with `NO_PINNED_CASES`; it does not create a misleading empty passing run. To expand a Rolling corpus, go back to [Record](/en/testing/recording) and record more traffic. To change a Pinned suite, pin or unpin cases in the Workbench.
 
 ## Automation
 

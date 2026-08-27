@@ -21,14 +21,15 @@ Create, monitor, stop, and rerun replay plans against recorded cases.
 |------|-----------|-------------|
 | `--app` | `appId` | Application id (required) |
 | `--env` | `targetEnv` | **Replay target base URL** (required), not a symbolic name. Must include `http://` or `https://` and a host, e.g. `http://travel-ota:8080`. The CLI rejects values like `staging` or `dev`. |
-| `--from` | `caseSourceFrom` | Start time (duration e.g. `-24h` or RFC3339) |
-| `--to` | `caseSourceTo` | End time (default: now) |
+| `--suite` | — | Case suite. Set to `Pinned` for manually pinned cases only. `AutoPinned` is not selectable. |
+| `--from` | `caseSourceFrom` | Rolling selection start time (duration e.g. `-24h` or RFC3339). Ignored for `--suite Pinned`. |
+| `--to` | `caseSourceTo` | Rolling selection end time (default: now). Ignored for `--suite Pinned`. |
 | `--limit` | `caseCountLimit` | Max cases |
 | `--name` | `planName` | Display name |
 | `--operation` | `operationIds` | Repeatable; filter operations |
 | `--enable-mock` | `enableMock` | Mock during replay (default true) |
 | `--no-mock` | `enableMock` | Disable mock (`enableMock=false`; overrides `--enable-mock`) |
-| `--allow-empty` | — | Create plan even when no recorded cases in window (default false) |
+| `--allow-empty` | — | Create a Rolling plan even when no recorded cases exist in the window (default false). It does not make an empty `Pinned` suite runnable. |
 | `--watch` | — | On `run`: create plan then poll until terminal; on `status`: poll an existing plan |
 
 ## Examples
@@ -36,13 +37,29 @@ Create, monitor, stop, and rerun replay plans against recorded cases.
 ```bash
 sp record case list --app my-app --since -24h --json   # verify cases exist first
 sp replay run --app my-app --env http://travel-ota:8080 --from -24h --enable-mock --json
+sp replay run --app my-app --env http://travel-ota:8080 --suite Pinned --watch --json
 sp replay run --app my-app --env http://travel-ota:8080 --from -24h --no-mock --watch --json
 sp replay status plan-xyz --watch --json
 sp replay stop plan-xyz --json
 sp replay rerun plan-xyz --json
 ```
 
-### Preflight (`run`)
+### Case selection
+
+The default selection is **Rolling**: cases are selected from the `--from`/`--to` window (the default window is the last 24 hours when the flags are omitted).
+
+`--suite Pinned` selects the explicit manual **Pinned** collection for the application. It is not a time-window query, so `--from` and `--to` are ignored. A case remains eligible after it falls outside the normal recording window. Automatically managed `AutoPinned` cases are excluded.
+
+```bash
+sp replay run \
+  --app my-app \
+  --env http://travel-ota:8080 \
+  --suite Pinned \
+  --watch \
+  --json
+```
+
+### Preflight (`run`, Rolling)
 
 Before `POST /api/createPlan`, the CLI queries `POST /api/storage/replay/query/replayCase` for the same `--app`, `--from`, and `--to` window. If no entry cases exist and `--allow-empty` is not set:
 
@@ -56,6 +73,8 @@ Before `POST /api/createPlan`, the CLI queries `POST /api/storage/replay/query/r
   }
 }
 ```
+
+For `--suite Pinned`, the CLI checks the manual Pinned collection instead. If it is empty, the command fails with `NO_PINNED_CASES`; `--allow-empty` does not override this safety check.
 
 ### JSON output (`run`)
 

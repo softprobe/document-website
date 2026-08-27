@@ -22,6 +22,18 @@ Webhook 与 CI 都不会替你产生用例。请先走通核心流程 [录制](/
 
 CLI 细节见 [replay 命令](/zh/testing/commands/replay)、[认证](/zh/testing/agents/authentication)。
 
+## 推荐的 CI 套件：手动 `Pinned` 用例
+
+需要在部署后稳定回归时，先在 Workbench 中置顶需要运行的用例，再运行内置的 `Pinned` 套件：
+
+```text
+在 Workbench 置顶用例 → Jenkins 运行 Pinned 套件 → SoftProbe 返回运行结果
+```
+
+`Pinned` 只包含所选应用的手动置顶用例，不包含 `AutoPinned` 用例，也不使用录制时间范围。使用这个套件时会忽略 `--from` 和 `--to`，因此较早的置顶用例仍然可以运行。不指定 `--suite` 时，仍使用默认的 Rolling 时间窗选择逻辑。
+
+v1 的 `Pinned` CLI 流程使用 `SP_API_URL` 指向内网 sp-backend，不需要 SoftProbe 用户 JWT。可在 Jenkins agent 上从 SoftProbe 官方源安装一次 `sp`，流水线只需提供后端地址和运行参数。如果企业入口确实要求凭证，请由 Jenkins 管理，不要写进命令参数或归档文件。
+
 ## 架构（简述）
 
 ```mermaid
@@ -96,16 +108,17 @@ GET Webhook **只创建计划**，不会等待回放结束。请在 CI 后续步
 
 ```bash
 export SP_API_URL=https://your-tenant.softprobe.ai   # 或内网 sp-backend :8090
-export SP_TOKEN="${SP_TOKEN}"                         # 来自密钥库，勿写入仓库
 
 sp replay run \
   --app YOUR_APP_ID \
   --env http://your-service.test:8080 \
-  --from -24h \
+  --suite Pinned \
   --name "ci-${GITHUB_SHA:-build}" \
   --watch \
   --json
 ```
+
+如果明确需要时间范围，请使用默认 Rolling 模式并传入 `--from`/`--to`。上面的 `Pinned` 命令会忽略这两个参数。
 
 `--watch` 会在创建计划后轮询 `GET /api/progress?planId=…`，直到进度结束。回放**对比失败**时 CLI 仍可能以 **0** 退出 — 流水线必须再检查失败用例（见下节）。
 
@@ -159,7 +172,7 @@ sp diagnose replay plan-abc123 --failed-only --out-dir .sp-work --json
 
 ## GitHub Actions 示例
 
-在**测试环境已部署且 Agent 已挂载**的 job 中运行（Secrets：`SP_API_URL`、`SP_TOKEN`）。
+在**测试环境已部署且 Agent 已挂载**的 job 中运行。配置 `SP_API_URL` 指向内网后端；`Pinned` CLI 流程不需要 SoftProbe 用户 JWT。
 
 ```yaml
 name: Softprobe replay gate
@@ -174,9 +187,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SP_API_URL: ${{ secrets.SP_API_URL }}
-      SP_TOKEN: ${{ secrets.SP_TOKEN }}
       SP_APP_ID: ${{ vars.SP_APP_ID }}
-      SP_TARGET_ENV: http://my-service.test:8080
+      SP_TARGET_URL: http://my-service.test:8080
     steps:
       - name: Install sp
         run: |
@@ -193,8 +205,8 @@ jobs:
         run: |
           sp replay run \
             --app "$SP_APP_ID" \
-            --env "$SP_TARGET_ENV" \
-            --from -24h \
+            --env "$SP_TARGET_URL" \
+            --suite Pinned \
             --name "gha-${GITHUB_SHA}" \
             --watch \
             --json | tee replay.ndjson
@@ -219,7 +231,7 @@ jobs:
           curl -fsS -G "$SP_API_URL/api/createPlan" \
             -H "access-token: $SP_TOKEN" \
             --data-urlencode "appId=$SP_APP_ID" \
-            --data-urlencode "targetEnv=$SP_TARGET_ENV" \
+            --data-urlencode "targetEnv=$SP_TARGET_URL" \
             --data-urlencode "planName=deploy-${{ github.run_id }}"
 ```
 
@@ -227,16 +239,15 @@ jobs:
 
 ## Jenkins 示例
 
-使用 **Credentials** 绑定 `SP_TOKEN`，在 Declarative Pipeline 中：
+在 Jenkins agent 上从 SoftProbe 官方源安装一次 `sp`。下面的流水线只运行手动置顶用例，不需要交互式登录：
 
 ```groovy
 pipeline {
   agent any
   environment {
-    SP_API_URL = credentials('sp-api-url')
-    SP_TOKEN   = credentials('sp-token')
+    SP_API_URL = 'https://softprobe.internal.example'
     SP_APP_ID  = 'YOUR_APP_ID'
-    SP_TARGET_ENV = 'http://my-service.test:8080'
+    SP_TARGET_URL = 'http://my-service.test:8080'
   }
   stages {
     stage('Replay') {
@@ -244,8 +255,8 @@ pipeline {
         sh '''
           sp replay run \
             --app "$SP_APP_ID" \
-            --env "$SP_TARGET_ENV" \
-            --from -24h \
+            --env "$SP_TARGET_URL" \
+            --suite Pinned \
             --name "jenkins-${BUILD_NUMBER}" \
             --watch \
             --json > replay.ndjson

@@ -83,7 +83,27 @@ sp diagnose replay <planId> --failed-only --out-dir .sp-work --json   # 失败�
 
 ## 回放范围
 
-回放哪些用例由计划请求的时间范围、操作过滤，以及录制策略的 `operations` 包含/排除决定。想扩大覆盖，回到 [录制](/zh/testing/recording) 录更多流量。
+回放支持两种用例选择模式：
+
+| 模式 | 选择方式 | 是否使用时间范围 |
+|------|----------|------------------|
+| Rolling（默认） | 计划时间窗与操作过滤匹配的录制用例 | 使用；省略参数时采用普通滚动窗口 |
+| `--suite Pinned` | 应用 `Pinned` 集合中手动保存的用例 | 不使用；忽略 `--from` 和 `--to` |
+
+`Pinned` 用于建立稳定的回归套件。它只包含手动置顶的用例，不包含自动管理的 `AutoPinned` 用例。因此，即使用例早于普通滚动窗口，也可以被回放。
+
+运行 Pinned 套件：
+
+```bash
+sp replay run \
+  --app <你的 appId> \
+  --env http://order-service.test:8080 \
+  --suite Pinned \
+  --watch \
+  --json
+```
+
+如果手动集合为空，命令会返回 `NO_PINNED_CASES`，不会创建一个看似成功的空运行。要扩大 Rolling 用例库，请回到 [录制](/zh/testing/recording) 录制更多流量；要调整 Pinned 套件，请在 Workbench 中置顶或取消置顶用例。
 
 ## 自动化
 
