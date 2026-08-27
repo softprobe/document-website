@@ -73,6 +73,7 @@ The [Platform](/en/platform/advanced-guides/agent-architecture) **SP-Istio agent
 - [Getting Started](/en/testing/getting-started) — Try the 5-minute [Travel OTA](https://github.com/softprobe/demo-ota) demo and onboard your application.
 - [Install Softprobe](/en/testing/installation/) — Install, set up, launch coding, diagnose, and upgrade with `sp`.
 - [Record traffic](/en/testing/recording) — Core workflow step 1: build the case corpus.
+- [Pin cases & test sets](/en/testing/pinned-cases) — Keep selected recordings beyond retention and replay them as a reusable set.
 - [Java agent](/en/testing/java-agent) — Attach, JVM flags, and production safety.
 - [Policies overview](/en/testing/policies) — YAML by lifecycle phase.
 - [Replay and diff](/en/testing/replay-and-diff) — Core workflow step 2: regression run.

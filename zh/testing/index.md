@@ -73,6 +73,7 @@ flowchart LR
 - [快速开始](/zh/testing/getting-started) — 5分钟内体验 [Travel OTA](https://github.com/softprobe/demo-ota) 演示并快速接入您自己的应用。
 - [安装 Softprobe](/zh/testing/installation/) — 使用 `sp` 安装、设置、启动编码、诊断与升级。
 - [录制流量](/zh/testing/recording) — 核心流程第 1 步：产生用例。
+- [固化用例与测试集](/zh/testing/pinned-cases) — 让选中的录制数据超出保留期后仍可用，并作为可复用测试集回放。
 - [Java Agent](/zh/testing/java-agent) — 挂载、JVM 参数与生产安全。
 - [策略概览](/zh/testing/policies) — 按阶段配置 YAML。
 - [回放与对比](/zh/testing/replay-and-diff) — 核心流程第 2 步：回归运行。

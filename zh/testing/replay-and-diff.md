@@ -83,6 +83,8 @@ sp diagnose replay <planId> --failed-only --out-dir .sp-work --json   # 失败�
 
 ## 回放范围
 
+普通回放哪些用例由计划请求的时间范围、操作过滤，以及录制策略的 `operations` 包含/排除决定。默认的 Rolling 回放使用基于时间范围的选择逻辑。
+
 回放支持两种用例选择模式：
 
 | 模式 | 选择方式 | 是否使用时间范围 |
@@ -104,6 +106,10 @@ sp replay run \
 ```
 
 如果手动集合为空，命令会返回 `NO_PINNED_CASES`，不会创建一个看似成功的空运行。要扩大 Rolling 用例库，请回到 [录制](/zh/testing/recording) 录制更多流量；要调整 Pinned 套件，请在 Workbench 中置顶或取消置顶用例。
+
+如果要在普通保留期后回放录制数据，请在 Workbench 中选择 **Pinned cases（固化用例）** 范围，并选择要组成测试集的固化用例；此时不要求原始录制仍处于时间窗口内。详见[固化用例与测试集](/zh/testing/pinned-cases)。
+
+如果固化用例对应的 API 已被删除或重命名，工作台会标记 **API gone（API 已不存在）** 并跳过该用例。请更新应用配置，或将该用例从测试集中移除。
 
 ## 自动化
 

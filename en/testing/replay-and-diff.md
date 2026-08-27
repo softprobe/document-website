@@ -83,6 +83,8 @@ Rules can also be declared in YAML (`sp policy compare`) for CI and GitOps — s
 
 ## Replay scope
 
+For a normal replay, the plan's time range and operation filters determine which cases replay, together with the recording policy's `operations` include/exclude. Rolling replay uses this time-window-based selection by default.
+
 Replay has two case-selection modes:
 
 | Mode | Selection | Time range |
@@ -104,6 +106,10 @@ sp replay run \
 ```
 
 An empty manual collection fails with `NO_PINNED_CASES`; it does not create a misleading empty passing run. To expand a Rolling corpus, go back to [Record](/en/testing/recording) and record more traffic. To change a Pinned suite, pin or unpin cases in the Workbench.
+
+To replay recordings after their normal retention window in Workbench, use the **Pinned cases** scope when creating a plan and select the saved cases that should make up that test set. See [Pin cases & test sets](/en/testing/pinned-cases).
+
+If a pinned case's API has been deleted or renamed, Workbench marks it **API gone** and skips it. Update the application configuration or remove that case from the test set.
 
 ## Automation
 
