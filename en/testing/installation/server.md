@@ -181,7 +181,11 @@ logPipeline:
 
 ### 4. Helm install
 
-Use the chart version and image tag from your Softprobe release (`v4.4.1` → chart `4.4.1`, image `v4.4.1`).
+::: info Chart Version vs. Image Tag
+The **Helm Chart version** (`--version <CHART_VERSION>`, e.g. `4.4.1`) and the backend application **Docker image tag** (`image.tag`, e.g. `v4.3.23` or `latest`) are versioned independently:
+- **Chart version**: Specifies the Helm packaging and template structure.
+- **`image.tag`**: Specifies which container image is pulled from GCR (configured in `values.yaml` or via `--set image.tag=<TAG>`).
+:::
 
 **Via Helm repository:**
 ```bash

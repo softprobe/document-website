@@ -181,7 +181,11 @@ logPipeline:
 
 ### 4. Helm 安装
 
-使用 Softprobe 发布版本对应的 Chart 版本与镜像 tag（`v4.4.1` → Chart `4.4.1`，镜像 `v4.4.1`）。
+::: info Chart 版本与镜像 Tag 的区别
+**Helm Chart 版本**（`--version <CHART_VERSION>`，例如 `4.4.1`）与后端应用程序的 **Docker 镜像 Tag**（`image.tag`，例如 `v4.3.23` 或 `latest`）是两个独立版本号：
+- **Chart 版本**：决定 Helm 模板结构与 Kubernetes 资源声明版本。
+- **`image.tag`**：决定实际从镜像仓库拉取运行的后端容器镜像（在 `values.yaml` 中配置，或通过 `--set image.tag=<TAG>` 指定）。
+:::
 
 **通过 Helm 仓库安装：**
 ```bash
