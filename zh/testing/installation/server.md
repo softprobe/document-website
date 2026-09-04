@@ -110,7 +110,7 @@ encryption:
 
 ```bash
 # 提前创建 S3 访问凭据 Secret：
-kubectl create secret generic softprobe-log-s3-credentials -n softprobe \
+kubectl create secret generic softprobe-log-s3-credentials -n "$NAMESPACE" \
   --from-literal=access-key-id='YOUR_S3_ACCESS_KEY_ID' \
   --from-literal=secret-access-key='YOUR_S3_SECRET_ACCESS_KEY'
 ```
@@ -236,10 +236,10 @@ curl -s http://127.0.0.1:8090/actuator/health
 ```bash
 helm repo update
 helm upgrade softprobe softprobe/sp-backend \
-  --version 4.3.10 \
-  -n softprobe \
+  --version 4.4.1 \
+  --namespace "$NAMESPACE" \
   -f values.yaml \
-  --set image.tag=v4.3.10 \
+  --set image.tag=v4.4.1 \
   --set createNamespace=false \
   --dry-run
 ```
@@ -251,10 +251,10 @@ helm upgrade softprobe softprobe/sp-backend \
 ```bash
 helm repo update
 helm upgrade softprobe softprobe/sp-backend \
-  --version 4.3.10 \
-  -n softprobe \
+  --version 4.4.1 \
+  --namespace "$NAMESPACE" \
   -f values.yaml \
-  --set image.tag=v4.3.10 \
+  --set image.tag=v4.4.1 \
   --set createNamespace=false
 ```
 
@@ -280,10 +280,10 @@ encryption:
 
 ```bash
 helm upgrade softprobe softprobe/sp-backend \
-  --version 4.3.10 \
-  -n softprobe \
+  --version 4.4.1 \
+  --namespace "$NAMESPACE" \
   -f values.yaml \
-  --set image.tag=v4.3.10 \
+  --set image.tag=v4.4.1 \
   --set createNamespace=false
 ```
 
@@ -294,22 +294,22 @@ Helm 会按 Chart 默认值添加日志管道资源。Rollout 完成后，为工
 离线安装或从 GCS 校验 SHA-256 时：
 
 ```bash
-curl -fLO "https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.3.10/sp-backend-4.3.10.tgz"
+curl -fLO "https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.4.1/sp-backend-4.4.1.tgz"
 
-helm upgrade softprobe ./sp-backend-4.3.10.tgz \
-  -n softprobe \
+helm upgrade softprobe ./sp-backend-4.4.1.tgz \
+  --namespace "$NAMESPACE" \
   -f values.yaml \
-  --set image.tag=v4.3.10 \
+  --set image.tag=v4.4.1 \
   --set createNamespace=false
 ```
 
 ### 升级后验证
 
 ```bash
-kubectl rollout status -n softprobe deploy/softprobe-sp-backend
-kubectl get pods -n softprobe
-kubectl get pods,cronjob,pvc -n softprobe | grep -E 'log-vector|log-parquet|compaction|retention'
-kubectl port-forward -n softprobe svc/softprobe-sp-backend 8090:8090
+kubectl rollout status -n "$NAMESPACE" deploy/softprobe-sp-backend
+kubectl get pods -n "$NAMESPACE"
+kubectl get pods,cronjob,pvc -n "$NAMESPACE" | grep -E 'log-vector|log-parquet|compaction|retention'
+kubectl port-forward -n "$NAMESPACE" svc/softprobe-sp-backend 8090:8090
 curl -s http://127.0.0.1:8090/actuator/health
 ```
 
@@ -407,20 +407,20 @@ logPipeline:
 
 ```bash
 helm upgrade softprobe softprobe/sp-backend \
-  --version 4.3.10 \
-  -n softprobe \
+  --version 4.4.1 \
+  --namespace "$NAMESPACE" \
   -f values.yaml \
-  --set image.tag=v4.3.10 \
+  --set image.tag=v4.4.1 \
   --set createNamespace=false
 ```
 
-**`image.tag`** 须固定为 semver 发布版本（例如 `v4.3.10`），不要用 `latest`，以保证后端与 Chart 版本一致。
+**`image.tag`** 须固定为 semver 发布版本（例如 `v4.4.1`），不要用 `latest`，以保证后端与 Chart 版本一致。
 
 ### 验证日志管道
 
 ```bash
-kubectl get pods,cronjob,pvc -n softprobe | grep -E 'log-vector|log-parquet|compaction|retention'
-kubectl port-forward -n softprobe svc/softprobe-sp-backend 8090:8090
+kubectl get pods,cronjob,pvc -n "$NAMESPACE" | grep -E 'log-vector|log-parquet|compaction|retention'
+kubectl port-forward -n "$NAMESPACE" svc/softprobe-sp-backend 8090:8090
 ```
 
 运行固定查询（替换 trace id 与时间范围）：
@@ -494,7 +494,7 @@ logPipeline:
 **第 1 步 — 创建凭证 Secret。** 必须包含以下两个键：
 
 ```bash
-kubectl create secret generic softprobe-log-s3-credentials -n softprobe \
+kubectl create secret generic softprobe-log-s3-credentials -n "$NAMESPACE" \
   --from-literal=access-key-id='AKIA...' \
   --from-literal=secret-access-key='...'
 ```
@@ -526,7 +526,7 @@ Bucket 需已存在。此模式下**不会**创建 Parquet PVC。
 **第 1 步 — 创建凭证 Secret。** 必须且仅包含一个键 `account-key`，即存储账户访问密钥：
 
 ```bash
-kubectl create secret generic softprobe-log-azure-credentials -n softprobe \
+kubectl create secret generic softprobe-log-azure-credentials -n "$NAMESPACE" \
   --from-literal=account-key='<存储账户访问密钥>'
 ```
 
@@ -589,8 +589,8 @@ Chart 默认值中的 `logPipeline.parquet.localRoot`（`/data/parquet/logs`）�
 查看最近运行：
 
 ```bash
-kubectl get cronjob,jobs -n softprobe -l 'app.kubernetes.io/component=log-pipeline-maintenance'
-kubectl logs -n softprobe job/<compaction-job-name>
+kubectl get cronjob,jobs -n "$NAMESPACE" -l 'app.kubernetes.io/component=log-pipeline-maintenance'
+kubectl logs -n "$NAMESPACE" job/<compaction-job-name>
 ```
 
 ### v1 范围外
@@ -602,13 +602,13 @@ kubectl logs -n softprobe job/<compaction-job-name>
 ## 卸载
 
 ```bash
-helm uninstall softprobe -n softprobe
+helm uninstall softprobe -n "$NAMESPACE"
 ```
 
 内置 MongoDB PVC 默认保留。需要时可手动删除：
 
 ```bash
-kubectl delete pvc -n softprobe -l app.kubernetes.io/instance=softprobe
+kubectl delete pvc -n "$NAMESPACE" -l app.kubernetes.io/instance=softprobe
 ```
 
 ## Java Agent
@@ -616,7 +616,7 @@ kubectl delete pvc -n softprobe -l app.kubernetes.io/instance=softprobe
 将已插桩应用指向集群内服务：
 
 ```text
--Dsp.api.url=http://softprobe-sp-backend.softprobe.svc.cluster.local:8090
+-Dsp.api.url=http://<release>-sp-backend.<namespace>.svc.cluster.local:8090
 ```
 
 ## 故障排查 {#troubleshooting}
@@ -624,13 +624,13 @@ kubectl delete pvc -n softprobe -l app.kubernetes.io/instance=softprobe
 | 现象 | 检查项 |
 |------|--------|
 | `helm install` 因 MongoDB 失败 | 须设置 **`mongodb.connectionString` 或 `mongodb.bundled.auth.password` 之一** |
-| `sp-backend` Pod `Init:0/1`（内置） | MongoDB 或 Redis 未就绪 — `kubectl get pods -n softprobe` |
+| `sp-backend` Pod `Init:0/1`（内置） | MongoDB 或 Redis 未就绪 — `kubectl get pods -n "$NAMESPACE"` |
 | `sp-backend` 启动慢 | JVM 预热 — 最多约 2 分钟（startup probe） |
 | `ImagePullBackOff` | 缺少 `softprobe-gcr-pull` Secret 或 `image.tag` 错误 |
 | Mongo PVC Pending（内置） | 无 StorageClass — 设置 `mongodb.bundled.storageClass` |
 | 外部 MongoDB 连接错误 | URI 从集群可达；数据库名唯一；`authSource` 正确 |
 | 预期有数据但 `GET /api/recorder/logs` 为空 | 中断的压缩留下不完整 `part-hourly.parquet` — 删除 hourly 文件或等待下次压缩；确认存在 minute `part-*.parquet` |
-| Vector Pod 未就绪 | `kubectl logs -n softprobe deploy/<release>-log-vector -c vector` |
+| Vector Pod 未就绪 | `kubectl logs -n "$NAMESPACE" deploy/<release>-log-vector -c vector` |
 | arm64 上 Compaction `ImagePullBackOff` | 用本地 `arm64` 构建覆盖 `logPipeline.compaction.image` |
 | Agent 日志缺失 | `sp.api.url` 须可达 sp-backend；日志管道已启用；导出须带 `trace_id` |
 | sp-backend 日志缺失 | `logPipeline.enabled` 会在 sp-backend 上自动启用 OTLP 导出 |

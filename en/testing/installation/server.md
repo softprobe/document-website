@@ -110,7 +110,7 @@ For enterprise deployments connecting to external managed databases, Redis Senti
 
 ```bash
 # Create the S3 credentials secret in advance:
-kubectl create secret generic softprobe-log-s3-credentials -n softprobe \
+kubectl create secret generic softprobe-log-s3-credentials -n "$NAMESPACE" \
   --from-literal=access-key-id='YOUR_S3_ACCESS_KEY_ID' \
   --from-literal=secret-access-key='YOUR_S3_SECRET_ACCESS_KEY'
 ```
@@ -236,10 +236,10 @@ Use the same release name, namespace, and `values.yaml` you used at install. A S
 ```bash
 helm repo update
 helm upgrade softprobe softprobe/sp-backend \
-  --version 4.3.10 \
-  -n softprobe \
+  --version 4.4.1 \
+  --namespace "$NAMESPACE" \
   -f values.yaml \
-  --set image.tag=v4.3.10 \
+  --set image.tag=v4.4.1 \
   --set createNamespace=false \
   --dry-run
 ```
@@ -251,10 +251,10 @@ Typical upgrade — same `values.yaml` as install, new chart and image version:
 ```bash
 helm repo update
 helm upgrade softprobe softprobe/sp-backend \
-  --version 4.3.10 \
-  -n softprobe \
+  --version 4.4.1 \
+  --namespace "$NAMESPACE" \
   -f values.yaml \
-  --set image.tag=v4.3.10 \
+  --set image.tag=v4.4.1 \
   --set createNamespace=false
 ```
 
@@ -280,10 +280,10 @@ Upgrade command (no edits required):
 
 ```bash
 helm upgrade softprobe softprobe/sp-backend \
-  --version 4.3.10 \
-  -n softprobe \
+  --version 4.4.1 \
+  --namespace "$NAMESPACE" \
   -f values.yaml \
-  --set image.tag=v4.3.10 \
+  --set image.tag=v4.4.1 \
   --set createNamespace=false
 ```
 
@@ -294,22 +294,22 @@ Helm adds log-pipeline resources from chart defaults. After rollout, instrument 
 If you install offline or verify SHA-256 from GCS:
 
 ```bash
-curl -fLO "https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.3.10/sp-backend-4.3.10.tgz"
+curl -fLO "https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.4.1/sp-backend-4.4.1.tgz"
 
-helm upgrade softprobe ./sp-backend-4.3.10.tgz \
-  -n softprobe \
+helm upgrade softprobe ./sp-backend-4.4.1.tgz \
+  --namespace "$NAMESPACE" \
   -f values.yaml \
-  --set image.tag=v4.3.10 \
+  --set image.tag=v4.4.1 \
   --set createNamespace=false
 ```
 
 ### Verify after upgrade
 
 ```bash
-kubectl rollout status -n softprobe deploy/softprobe-sp-backend
-kubectl get pods -n softprobe
-kubectl get pods,cronjob,pvc -n softprobe | grep -E 'log-vector|log-parquet|compaction|retention'
-kubectl port-forward -n softprobe svc/softprobe-sp-backend 8090:8090
+kubectl rollout status -n "$NAMESPACE" deploy/softprobe-sp-backend
+kubectl get pods -n "$NAMESPACE"
+kubectl get pods,cronjob,pvc -n "$NAMESPACE" | grep -E 'log-vector|log-parquet|compaction|retention'
+kubectl port-forward -n "$NAMESPACE" svc/softprobe-sp-backend 8090:8090
 curl -s http://127.0.0.1:8090/actuator/health
 ```
 
@@ -407,20 +407,20 @@ Example upgrade with explicit overrides (optional):
 
 ```bash
 helm upgrade softprobe softprobe/sp-backend \
-  --version 4.3.10 \
-  -n softprobe \
+  --version 4.4.1 \
+  --namespace "$NAMESPACE" \
   -f values.yaml \
-  --set image.tag=v4.3.10 \
+  --set image.tag=v4.4.1 \
   --set createNamespace=false
 ```
 
-Pin **`image.tag`** to a semver release (for example `v4.3.10`), not `latest`, so the backend matches your chart version.
+Pin **`image.tag`** to a semver release (for example `v4.4.1`), not `latest`, so the backend matches your chart version.
 
 ### Verify log pipeline
 
 ```bash
-kubectl get pods,cronjob,pvc -n softprobe | grep -E 'log-vector|log-parquet|compaction|retention'
-kubectl port-forward -n softprobe svc/softprobe-sp-backend 8090:8090
+kubectl get pods,cronjob,pvc -n "$NAMESPACE" | grep -E 'log-vector|log-parquet|compaction|retention'
+kubectl port-forward -n "$NAMESPACE" svc/softprobe-sp-backend 8090:8090
 ```
 
 Run a canned lookup (replace trace id and bounds):
@@ -496,7 +496,7 @@ Back up by snapshotting the `{release}-log-parquet` PVC.
 **Step 1 — create the credentials secret.** It must contain exactly these two keys:
 
 ```bash
-kubectl create secret generic softprobe-log-s3-credentials -n softprobe \
+kubectl create secret generic softprobe-log-s3-credentials -n "$NAMESPACE" \
   --from-literal=access-key-id='AKIA...' \
   --from-literal=secret-access-key='...'
 ```
@@ -528,7 +528,7 @@ The bucket must already exist. No Parquet PVC is created in this mode.
 **Step 1 — create the credentials secret.** It must contain exactly one key, `account-key`, holding your storage account access key:
 
 ```bash
-kubectl create secret generic softprobe-log-azure-credentials -n softprobe \
+kubectl create secret generic softprobe-log-azure-credentials -n "$NAMESPACE" \
   --from-literal=account-key='<storage account key>'
 ```
 
@@ -591,8 +591,8 @@ Both run automatically and identically for `local`, `s3`, and `azure_blob` — n
 Check last run:
 
 ```bash
-kubectl get cronjob,jobs -n softprobe -l 'app.kubernetes.io/component=log-pipeline-maintenance'
-kubectl logs -n softprobe job/<compaction-job-name>
+kubectl get cronjob,jobs -n "$NAMESPACE" -l 'app.kubernetes.io/component=log-pipeline-maintenance'
+kubectl logs -n "$NAMESPACE" job/<compaction-job-name>
 ```
 
 ### Out of scope (v1)
@@ -604,13 +604,13 @@ kubectl logs -n softprobe job/<compaction-job-name>
 ## Uninstall
 
 ```bash
-helm uninstall softprobe -n softprobe
+helm uninstall softprobe -n "$NAMESPACE"
 ```
 
 Bundled MongoDB PVCs are retained by default. Delete manually if required:
 
 ```bash
-kubectl delete pvc -n softprobe -l app.kubernetes.io/instance=softprobe
+kubectl delete pvc -n "$NAMESPACE" -l app.kubernetes.io/instance=softprobe
 ```
 
 ## Java agents
@@ -618,7 +618,7 @@ kubectl delete pvc -n softprobe -l app.kubernetes.io/instance=softprobe
 Point instrumented applications at the in-cluster service:
 
 ```text
--Dsp.api.url=http://softprobe-sp-backend.softprobe.svc.cluster.local:8090
+-Dsp.api.url=http://<release>-sp-backend.<namespace>.svc.cluster.local:8090
 ```
 
 ## Troubleshooting
@@ -626,13 +626,13 @@ Point instrumented applications at the in-cluster service:
 | Symptom | Check |
 |---------|--------|
 | `helm install` fails on MongoDB | Set **one** of `mongodb.connectionString` or `mongodb.bundled.auth.password` |
-| `sp-backend` pod `Init:0/1` (bundled) | MongoDB or Redis not ready — `kubectl get pods -n softprobe` |
+| `sp-backend` pod `Init:0/1` (bundled) | MongoDB or Redis not ready — `kubectl get pods -n "$NAMESPACE"` |
 | `sp-backend` slow start | JVM warm-up — up to ~2 minutes (startup probe) |
 | `ImagePullBackOff` | Missing `softprobe-gcr-pull` secret or wrong `image.tag` |
 | Mongo PVC pending (bundled) | No StorageClass — set `mongodb.bundled.storageClass` |
 | External MongoDB connection errors | URI reachable from cluster; unique DB name; correct `authSource` |
 | Empty `GET /api/recorder/logs` but data expected | Partial `part-hourly.parquet` from interrupted compaction — delete hourly file or wait for next compaction; confirm minute `part-*.parquet` files exist |
-| Vector pod not ready | `kubectl logs -n softprobe deploy/<release>-log-vector -c vector` |
+| Vector pod not ready | `kubectl logs -n "$NAMESPACE" deploy/<release>-log-vector -c vector` |
 | Compaction `ImagePullBackOff` on arm64 | Override `logPipeline.compaction.image` with a local `arm64` build |
 | Agent logs missing | `sp.api.url` must reach sp-backend; log pipeline enabled; trace must have `trace_id` on export |
 | sp-backend logs missing | `logPipeline.enabled` auto-enables OTLP export on sp-backend |
