@@ -37,7 +37,7 @@ helm repo add softprobe \
 helm repo update
 
 # 设置目标命名空间（默认使用 softprobe，也可使用已有自定义命名空间）：
-export NAMESPACE="<YOUR_NAMESPACE>"
+export NAMESPACE="softprobe"
 kubectl create namespace "$NAMESPACE"   # 若命名空间已存在可跳过
 ```
 
@@ -189,7 +189,7 @@ logPipeline:
 
 **通过 Helm 仓库安装：**
 ```bash
-export NAMESPACE="<YOUR_NAMESPACE>"
+export NAMESPACE="softprobe"   # 或使用已有自定义命名空间
 
 helm install softprobe softprobe/sp-backend \
   --version 4.4.1 \
@@ -200,6 +200,8 @@ helm install softprobe softprobe/sp-backend \
 
 **或直接使用下载的 `.tgz` 离线包安装：**
 ```bash
+export NAMESPACE="softprobe"   # 或使用已有自定义命名空间
+
 curl -fLO https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.4.1/sp-backend-4.4.1.tgz
 
 helm install softprobe ./sp-backend-4.4.1.tgz \
@@ -238,12 +240,14 @@ curl -s http://127.0.0.1:8090/actuator/health
 6. **预览差异**（可选）：
 
 ```bash
+export NAMESPACE="softprobe"   # 或您的已有命名空间
+
 helm repo update
 helm upgrade softprobe softprobe/sp-backend \
-  --version 4.4.1 \
+  --version 4.3.10 \
   --namespace "$NAMESPACE" \
   -f values.yaml \
-  --set image.tag=v4.4.1 \
+  --set image.tag=v4.3.10 \
   --set createNamespace=false \
   --dry-run
 ```
@@ -253,12 +257,14 @@ helm upgrade softprobe softprobe/sp-backend \
 典型升级 — 使用安装时的 `values.yaml`，更新 Chart 与镜像版本：
 
 ```bash
+export NAMESPACE="softprobe"   # 或您的已有命名空间
+
 helm repo update
 helm upgrade softprobe softprobe/sp-backend \
-  --version 4.4.1 \
+  --version 4.3.10 \
   --namespace "$NAMESPACE" \
   -f values.yaml \
-  --set image.tag=v4.4.1 \
+  --set image.tag=v4.3.10 \
   --set createNamespace=false
 ```
 
@@ -283,11 +289,13 @@ encryption:
 升级命令（无需编辑文件）：
 
 ```bash
+export NAMESPACE="softprobe"   # 或您的已有命名空间
+
 helm upgrade softprobe softprobe/sp-backend \
-  --version 4.4.1 \
+  --version 4.3.10 \
   --namespace "$NAMESPACE" \
   -f values.yaml \
-  --set image.tag=v4.4.1 \
+  --set image.tag=v4.3.10 \
   --set createNamespace=false
 ```
 
@@ -298,12 +306,14 @@ Helm 会按 Chart 默认值添加日志管道资源。Rollout 完成后，为工
 离线安装或从 GCS 校验 SHA-256 时：
 
 ```bash
-curl -fLO "https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.4.1/sp-backend-4.4.1.tgz"
+export NAMESPACE="softprobe"   # 或您的已有命名空间
 
-helm upgrade softprobe ./sp-backend-4.4.1.tgz \
+curl -fLO "https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.3.10/sp-backend-4.3.10.tgz"
+
+helm upgrade softprobe ./sp-backend-4.3.10.tgz \
   --namespace "$NAMESPACE" \
   -f values.yaml \
-  --set image.tag=v4.4.1 \
+  --set image.tag=v4.3.10 \
   --set createNamespace=false
 ```
 
@@ -411,14 +421,14 @@ logPipeline:
 
 ```bash
 helm upgrade softprobe softprobe/sp-backend \
-  --version 4.4.1 \
+  --version 4.3.10 \
   --namespace "$NAMESPACE" \
   -f values.yaml \
-  --set image.tag=v4.4.1 \
+  --set image.tag=v4.3.10 \
   --set createNamespace=false
 ```
 
-**`image.tag`** 须固定为 semver 发布版本（例如 `v4.4.1`），不要用 `latest`，以保证后端与 Chart 版本一致。
+**`image.tag`** 须固定为 semver 发布版本（例如 `v4.3.10`），不要用 `latest`，以保证后端与 Chart 版本一致。
 
 ### 验证日志管道
 

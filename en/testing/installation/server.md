@@ -36,8 +36,8 @@ helm repo add softprobe \
   https://storage.googleapis.com/softprobe-published-files/helm/sp-backend
 helm repo update
 
-# Define target namespace (default is softprobe, or use your existing custom namespace):
-export NAMESPACE="<YOUR_NAMESPACE>"
+# Target namespace (default is softprobe, or set to your custom namespace):
+export NAMESPACE="softprobe"
 kubectl create namespace "$NAMESPACE"   # omit if namespace already exists
 ```
 
@@ -189,7 +189,7 @@ The **Helm Chart version** (`--version <CHART_VERSION>`, e.g. `4.4.1`) and the b
 
 **Via Helm repository:**
 ```bash
-export NAMESPACE="<YOUR_NAMESPACE>"
+export NAMESPACE="softprobe"   # or your custom namespace
 
 helm install softprobe softprobe/sp-backend \
   --version 4.4.1 \
@@ -200,6 +200,8 @@ helm install softprobe softprobe/sp-backend \
 
 **Or directly from the downloaded `.tgz` archive:**
 ```bash
+export NAMESPACE="softprobe"   # or your custom namespace
+
 curl -fLO https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.4.1/sp-backend-4.4.1.tgz
 
 helm install softprobe ./sp-backend-4.4.1.tgz \
@@ -238,12 +240,14 @@ Use the same release name, namespace, and `values.yaml` you used at install. A S
 6. **Preview the diff** (optional):
 
 ```bash
+export NAMESPACE="softprobe"   # or your custom namespace
+
 helm repo update
 helm upgrade softprobe softprobe/sp-backend \
-  --version 4.4.1 \
+  --version 4.3.10 \
   --namespace "$NAMESPACE" \
   -f values.yaml \
-  --set image.tag=v4.4.1 \
+  --set image.tag=v4.3.10 \
   --set createNamespace=false \
   --dry-run
 ```
@@ -253,12 +257,14 @@ helm upgrade softprobe softprobe/sp-backend \
 Typical upgrade — same `values.yaml` as install, new chart and image version:
 
 ```bash
+export NAMESPACE="softprobe"   # or your custom namespace
+
 helm repo update
 helm upgrade softprobe softprobe/sp-backend \
-  --version 4.4.1 \
+  --version 4.3.10 \
   --namespace "$NAMESPACE" \
   -f values.yaml \
-  --set image.tag=v4.4.1 \
+  --set image.tag=v4.3.10 \
   --set createNamespace=false
 ```
 
@@ -283,11 +289,13 @@ encryption:
 Upgrade command (no edits required):
 
 ```bash
+export NAMESPACE="softprobe"   # or your custom namespace
+
 helm upgrade softprobe softprobe/sp-backend \
-  --version 4.4.1 \
+  --version 4.3.10 \
   --namespace "$NAMESPACE" \
   -f values.yaml \
-  --set image.tag=v4.4.1 \
+  --set image.tag=v4.3.10 \
   --set createNamespace=false
 ```
 
@@ -298,12 +306,14 @@ Helm adds log-pipeline resources from chart defaults. After rollout, instrument 
 If you install offline or verify SHA-256 from GCS:
 
 ```bash
-curl -fLO "https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.4.1/sp-backend-4.4.1.tgz"
+export NAMESPACE="softprobe"   # or your custom namespace
 
-helm upgrade softprobe ./sp-backend-4.4.1.tgz \
+curl -fLO "https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.3.10/sp-backend-4.3.10.tgz"
+
+helm upgrade softprobe ./sp-backend-4.3.10.tgz \
   --namespace "$NAMESPACE" \
   -f values.yaml \
-  --set image.tag=v4.4.1 \
+  --set image.tag=v4.3.10 \
   --set createNamespace=false
 ```
 
@@ -411,14 +421,14 @@ Example upgrade with explicit overrides (optional):
 
 ```bash
 helm upgrade softprobe softprobe/sp-backend \
-  --version 4.4.1 \
+  --version 4.3.10 \
   --namespace "$NAMESPACE" \
   -f values.yaml \
-  --set image.tag=v4.4.1 \
+  --set image.tag=v4.3.10 \
   --set createNamespace=false
 ```
 
-Pin **`image.tag`** to a semver release (for example `v4.4.1`), not `latest`, so the backend matches your chart version.
+Pin **`image.tag`** to a semver release (for example `v4.3.10`), not `latest`, so the backend matches your chart version.
 
 ### Verify log pipeline
 
