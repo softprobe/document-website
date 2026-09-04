@@ -41,6 +41,84 @@ sp replay mock-tree replay-uuid --json
 
 Artifact contains decoded `baseMsg` and `testMsg` (JSON when parseable).
 
+### JSON output (`compare`)
+
+```json
+{
+  "ok": true,
+  "command": "replay compare",
+  "data": {
+    "replayId": "r1",
+    "traceId": "t1"
+  }
+}
+```
+
+When `--plan-item` is provided, full-link compare detail is persisted to `--out-dir`:
+
+```json
+{
+  "ok": true,
+  "command": "replay compare",
+  "data": {
+    "artifact": ".sp-work/compare-t1.json",
+    "replayId": "r1",
+    "traceId": "t1",
+    "summary": {
+      "planItemId": "item-abc"
+    }
+  }
+}
+```
+
+### JSON output (`mock-tree`)
+
+```json
+{
+  "ok": true,
+  "command": "replay mock-tree",
+  "data": {
+    "tree": [
+      {
+        "category": "Database",
+        "operation": "SELECT",
+        "matchStatus": "MATCHED",
+        "invocations": 1
+      }
+    ]
+  }
+}
+```
+
+### JSON output (`noise query`)
+
+```json
+{
+  "ok": true,
+  "command": "replay noise query",
+  "data": {
+    "interfaceNoiseItemList": [
+      {
+        "categoryName": "ResponseBody",
+        "operationName": "GET /api/orders/{id}",
+        "path": "data.timestamp",
+        "reason": "Dynamic timestamp"
+      }
+    ]
+  }
+}
+```
+
+### JSON output (`noise exclude`)
+
+```json
+{
+  "ok": true,
+  "command": "replay noise exclude",
+  "data": true
+}
+```
+
 ## REST mapping
 
 | Subcommand | Method | Path |

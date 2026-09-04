@@ -30,6 +30,71 @@ Query replay plans, cases, and metadata (read-only report/storage APIs).
 sp replay metadata replay-uuid --json
 sp replay case list --plan plan-xyz --failed --page 1 --limit 20 --json
 sp replay case list --plan-item item-abc --json
+sp replay case get case-001 --plan-item item-abc --json
+```
+
+### JSON output (`metadata`)
+
+```json
+{
+  "ok": true,
+  "command": "replay metadata",
+  "data": {
+    "replayId": "replay-uuid",
+    "traceId": "4bf92f3577b34da6a3ce929d0e0e4736",
+    "fullLink": true,
+    "nodes": [
+      {
+        "nodeId": "order-service",
+        "status": "SUCCESS"
+      }
+    ]
+  }
+}
+```
+
+### JSON output (`case list`)
+
+```json
+{
+  "ok": true,
+  "command": "replay case list",
+  "data": {
+    "items": [
+      {
+        "caseId": "case-001",
+        "replayId": "replay-uuid-001",
+        "traceId": "4bf92f3577b34da6a3ce929d0e0e4736",
+        "operationId": "item-abc",
+        "diffResultCode": 1,
+        "recordTime": 1747564800000,
+        "replayTime": 1747568400000
+      }
+    ],
+    "page": 1,
+    "pageSize": 20,
+    "total": 1
+  }
+}
+```
+
+### JSON output (`case get`)
+
+```json
+{
+  "ok": true,
+  "command": "replay case get",
+  "data": {
+    "caseId": "case-001",
+    "replayId": "replay-uuid-001",
+    "traceId": "4bf92f3577b34da6a3ce929d0e0e4736",
+    "diffId": "diff-883311",
+    "diffResultCode": 1,
+    "operationId": "item-abc",
+    "recordTime": 1747564800000,
+    "replayTime": 1747568400000
+  }
+}
 ```
 
 ## REST mapping

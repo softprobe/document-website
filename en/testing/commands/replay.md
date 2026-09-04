@@ -113,6 +113,33 @@ With `--json`, stdout is newline-delimited envelopes:
 }
 ```
 
+### JSON output (`stop`)
+
+```json
+{
+  "ok": true,
+  "command": "replay stop",
+  "data": {
+    "result": 1,
+    "desc": "success"
+  }
+}
+```
+
+### JSON output (`rerun`)
+
+```json
+{
+  "ok": true,
+  "command": "replay rerun",
+  "data": {
+    "planId": "plan-xyz-rerun",
+    "result": 1,
+    "desc": "success"
+  }
+}
+```
+
 ## REST mapping
 
 | Subcommand | Method | Path |

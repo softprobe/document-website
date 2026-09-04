@@ -29,19 +29,23 @@ Steps performed:
 2. `POST /api/report/queryReplayCase` with `diffResultCode=1` when `--failed-only`
 3. For each failed case with `diffId`: `GET /api/report/queryDiffMsgById/{id}` → artifact file
 
-Example `data` shape:
+Example JSON output (`diagnose replay`):
 
 ```json
 {
-  "planId": "plan-abc123",
-  "status": "FINISHED",
-  "classification": "invalid_target",
-  "message": "Connection refused: travel-ota:9999",
-  "failedCaseCount": 0,
-  "invalidCaseCount": 12,
-  "artifacts": [
-    ".sp-work/plan-abc123/item-1-diff.json"
-  ]
+  "ok": true,
+  "command": "diagnose replay",
+  "data": {
+    "planId": "plan-abc123",
+    "status": "FINISHED",
+    "classification": "invalid_target",
+    "message": "Connection refused: travel-ota:9999",
+    "failedCaseCount": 0,
+    "invalidCaseCount": 12,
+    "artifacts": [
+      ".sp-work/plan-abc123/item-1-diff.json"
+    ]
+  }
 }
 ```
 
@@ -61,7 +65,28 @@ Fetches:
 - `GET /api/storage/record/completeness?traceId=…`
 - Trace summary (when available)
 
-Writes JSON under `{outDir}/trace-{traceId}/` and returns a summary plus `nextActions` (e.g. `sp record query --trace-id …`).
+Writes JSON under `{outDir}/trace-{traceId}/` and returns a summary plus `nextActions`:
+
+### JSON output (`diagnose trace`)
+
+```json
+{
+  "ok": true,
+  "command": "diagnose trace",
+  "data": {
+    "traceId": "4bf92f3577b34da6a3ce929d0e0e4736",
+    "complete": true,
+    "artifacts": [
+      ".sp-work/trace-4bf92f3577b34da6a3ce929d0e0e4736/record-trace.json",
+      ".sp-work/trace-4bf92f3577b34da6a3ce929d0e0e4736/completeness.json",
+      ".sp-work/trace-4bf92f3577b34da6a3ce929d0e0e4736/trace-summary.json"
+    ],
+    "nextActions": [
+      "Inspect artifacts or query details: sp record query --trace-id 4bf92f3577b34da6a3ce929d0e0e4736 --json"
+    ]
+  }
+}
+```
 
 ## After diagnose: unified logs
 

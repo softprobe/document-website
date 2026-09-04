@@ -41,6 +41,20 @@ ${XDG_STATE_HOME:-~/.local/state}/softprobe/          # logs and state
 `config.jsonc` is shared with other Softprobe tools. `sp.jsonc` is only for this CLI and overrides shared values. `spcode.jsonc` (global and inside project-level `.softprobe/`) is parsed separately by the `spcode` AI assistant engine.
 
 
+### JSON output (`init`)
+
+```json
+{
+  "ok": true,
+  "command": "config init",
+  "data": {
+    "path": "~/.config/softprobe/sp.jsonc",
+    "sharedPath": "~/.config/softprobe/config.jsonc",
+    "spPath": "~/.config/softprobe/sp.jsonc"
+  }
+}
+```
+
 ### JSON output (`show`)
 
 ```json
@@ -50,11 +64,43 @@ ${XDG_STATE_HOME:-~/.local/state}/softprobe/          # logs and state
   "data": {
     "profile": "default",
     "url": "http://127.0.0.1:8090",
-    "tokenConfigured": true,
+    "path": "~/.config/softprobe/sp.jsonc",
+    "sharedPath": "~/.config/softprobe/config.jsonc",
     "sources": [
       "~/.config/softprobe/config.jsonc",
       "~/.config/softprobe/sp.jsonc"
-    ]
+    ],
+    "tokenConfigured": true,
+    "tokenMasked": "eyJhbGciOi...[masked]",
+    "tenantConfigured": false,
+    "tenantApiKeyConfigured": false,
+    "tenantApiKeyMasked": "",
+    "agentJarConfigured": false
+  }
+}
+```
+
+### JSON output (`set-url`)
+
+```json
+{
+  "ok": true,
+  "command": "config set-url",
+  "data": {
+    "url": "http://127.0.0.1:8090",
+    "profile": "default"
+  }
+}
+```
+
+### JSON output (`set-profile`)
+
+```json
+{
+  "ok": true,
+  "command": "config set-profile",
+  "data": {
+    "profile": "staging"
   }
 }
 ```

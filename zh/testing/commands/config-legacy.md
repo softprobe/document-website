@@ -39,6 +39,22 @@ POST …/batchModify/{modifyType}
 | `agent load --app <id>` | POST | `/api/config/agent/load` |
 | `agent status` | POST | `/api/config/agent/agentStatus` |
 
+```bash
+sp config agent load --app travel-ota --json
+```
+
+### JSON 输出 (`agent load`)
+
+```json
+{
+  "ok": true,
+  "command": "config agent load",
+  "data": {
+    "loaded": true
+  }
+}
+```
+
 Replaces `sp_api` `app_config`.
 
 ## Related

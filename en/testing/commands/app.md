@@ -148,6 +148,30 @@ sp app replays f3e2d1c0b9a87654 --limit 10 --json
 
 `data` is an array of plan summaries (`planId`, `planName`, `status`, case counts, `createTime`, `triggeredBy`, …). Use `planId` with [sp replay](replay.md) and [replay case](/en/testing/commands/replay-case).
 
+### JSON output
+
+```json
+{
+  "ok": true,
+  "command": "app replays",
+  "data": {
+    "items": [
+      {
+        "planId": "plan-6644220011",
+        "planName": "nightly-regression-20260904",
+        "status": 3,
+        "totalCaseCount": 42,
+        "replayCaseCount": 42,
+        "successCaseCount": 40,
+        "failCaseCount": 2,
+        "createTime": 1747564800000,
+        "triggeredBy": "ci-pipeline"
+      }
+    ]
+  }
+}
+```
+
 ## REST mapping
 
 | Subcommand | Method | Path |

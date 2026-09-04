@@ -11,6 +11,7 @@ Read-only access to stored recordings (not agent write APIs).
 | Subcommand | Description |
 |------------|-------------|
 | `case list` | List recorded entry cases for an app and time window |
+| `operation list` | List recorded operations by category (dependency map) |
 | `query` | Query mocker/record payload by trace or replay id |
 | `trace <traceId>` | Trace tree and children |
 | `completeness <traceId>` | Full-link recording completeness |
@@ -60,6 +61,117 @@ Example JSON shape:
     "page": 1,
     "pageSize": 20,
     "total": 1
+  }
+}
+```
+
+## `query`
+
+Query stored record payload by trace ID or replay ID:
+
+```bash
+sp record query --trace-id 4bf92f3577b34da6a3ce929d0e0e4736 --json
+```
+
+```json
+{
+  "ok": true,
+  "command": "record query",
+  "data": {
+    "traceId": "4bf92f3577b34da6a3ce929d0e0e4736",
+    "entryAction": "GET /api/orders/{id}",
+    "recordTime": 1747564800000,
+    "subTraces": [
+      {
+        "subTraceId": "sub-001",
+        "category": "Database",
+        "operation": "SELECT",
+        "status": 0
+      }
+    ]
+  }
+}
+```
+
+When payload size exceeds the threshold (64 KiB), an artifact file is written under `--out-dir`:
+
+```json
+{
+  "ok": true,
+  "command": "record query",
+  "data": {
+    "artifact": ".sp-work/record-query-4bf92f3577b34da6a3ce929d0e0e4736.json",
+    "traceId": "4bf92f3577b34da6a3ce929d0e0e4736"
+  }
+}
+```
+
+## `trace`
+
+Inspect record trace tree and children:
+
+```bash
+sp record trace 4bf92f3577b34da6a3ce929d0e0e4736 --json
+```
+
+```json
+{
+  "ok": true,
+  "command": "record trace",
+  "data": {
+    "traceId": "4bf92f3577b34da6a3ce929d0e0e4736",
+    "operationName": "GET /api/orders/{id}",
+    "durationMs": 85,
+    "children": [
+      {
+        "operationName": "SELECT * FROM orders WHERE id = ?",
+        "category": "Database",
+        "durationMs": 12
+      }
+    ]
+  }
+}
+```
+
+## `completeness`
+
+Verify recording completeness for a trace:
+
+```bash
+sp record completeness 4bf92f3577b34da6a3ce929d0e0e4736 --json
+```
+
+```json
+{
+  "ok": true,
+  "command": "record completeness",
+  "data": {
+    "traceId": "4bf92f3577b34da6a3ce929d0e0e4736",
+    "complete": true,
+    "recordedNodes": 3,
+    "expectedNodes": 3
+  }
+}
+```
+
+## `operation list`
+
+List recorded dependency operations and categories for an application:
+
+```bash
+sp record operation list --app a1b2c3d4e5f67890 --json
+```
+
+```json
+{
+  "ok": true,
+  "command": "record operation list",
+  "data": {
+    "appId": "a1b2c3d4e5f67890",
+    "operationMap": {
+      "Database": ["SELECT", "INSERT"],
+      "HttpClient": ["GET https://inventory.internal/items"]
+    }
   }
 }
 ```

@@ -29,19 +29,23 @@ Steps performed:
 2. `POST /api/report/queryReplayCase` with `diffResultCode=1` when `--failed-only`
 3. For each failed case with `diffId`: `GET /api/report/queryDiffMsgById/{id}` → artifact file
 
-Example `data` shape:
+JSON 输出示例（`diagnose replay`）：
 
 ```json
 {
-  "planId": "plan-abc123",
-  "status": "FINISHED",
-  "classification": "invalid_target",
-  "message": "Connection refused: travel-ota:9999",
-  "failedCaseCount": 0,
-  "invalidCaseCount": 12,
-  "artifacts": [
-    ".sp-work/plan-abc123/item-1-diff.json"
-  ]
+  "ok": true,
+  "command": "diagnose replay",
+  "data": {
+    "planId": "plan-abc123",
+    "status": "FINISHED",
+    "classification": "invalid_target",
+    "message": "Connection refused: travel-ota:9999",
+    "failedCaseCount": 0,
+    "invalidCaseCount": 12,
+    "artifacts": [
+      ".sp-work/plan-abc123/item-1-diff.json"
+    ]
+  }
 }
 ```
 
@@ -55,13 +59,34 @@ Example `data` shape:
 sp diagnose trace 4bf92f3577b34da6a3ce929d0e0e4736 --out-dir .sp-work --json
 ```
 
-Fetches:
+执行步骤：
 
 - `GET /api/storage/record/trace/{traceId}`
 - `GET /api/storage/record/completeness?traceId=…`
-- Trace summary (when available)
+- Trace summary（可用时）
 
-Writes JSON under `{outDir}/trace-{traceId}/` and returns a summary plus `nextActions` (e.g. `sp record query --trace-id …`).
+将 JSON 写入 `{outDir}/trace-{traceId}/`，并返回摘要和 `nextActions`：
+
+### JSON 输出 (`diagnose trace`)
+
+```json
+{
+  "ok": true,
+  "command": "diagnose trace",
+  "data": {
+    "traceId": "4bf92f3577b34da6a3ce929d0e0e4736",
+    "complete": true,
+    "artifacts": [
+      ".sp-work/trace-4bf92f3577b34da6a3ce929d0e0e4736/record-trace.json",
+      ".sp-work/trace-4bf92f3577b34da6a3ce929d0e0e4736/completeness.json",
+      ".sp-work/trace-4bf92f3577b34da6a3ce929d0e0e4736/trace-summary.json"
+    ],
+    "nextActions": [
+      "Inspect artifacts or query details: sp record query --trace-id 4bf92f3577b34da6a3ce929d0e0e4736 --json"
+    ]
+  }
+}
+```
 
 ## diagnose 之后：统一日志
 

@@ -49,8 +49,113 @@ sp policy compare get compare-global --json
   "command": "policy recording validate",
   "data": {
     "valid": true,
-    "errors": [],
-    "warnings": []
+    "details": {
+      "valid": true,
+      "errors": [],
+      "warnings": []
+    }
+  }
+}
+```
+
+### JSON output (`gate`)
+
+用于 CI/CD 流水线中校验全部变更或提交的策略文件：
+
+```json
+{
+  "ok": true,
+  "command": "policy gate",
+  "data": {
+    "valid": true,
+    "files": [
+      {
+        "path": "policies/recording-prod.yaml",
+        "kind": "recording",
+        "valid": true
+      },
+      {
+        "path": "policies/mock-prod.yaml",
+        "kind": "mock",
+        "valid": true
+      }
+    ]
+  }
+}
+```
+
+当策略文件校验失败时，`policy gate` 退出码为 1，并包含校验错误明细：
+
+```json
+{
+  "ok": true,
+  "command": "policy gate",
+  "data": {
+    "valid": false,
+    "files": [
+      {
+        "path": "policies/recording-prod.yaml",
+        "kind": "recording",
+        "valid": false,
+        "details": {
+          "valid": false,
+          "errors": ["unsupported filter key 'invalidField'"]
+        }
+      }
+    ]
+  }
+}
+```
+
+### JSON output (`apply`)
+
+```json
+{
+  "ok": true,
+  "command": "policy recording apply",
+  "data": {
+    "id": "rec-policy-prod",
+    "version": 1,
+    "status": "applied"
+  }
+}
+```
+
+### JSON output (`diff`)
+
+对比本地策略文件与服务端当前生效配置：
+
+```json
+{
+  "ok": true,
+  "command": "policy recording diff",
+  "data": {
+    "against": "rec-policy-prod",
+    "file": "policies/recording-prod.yaml",
+    "added": ["includeOperations[1]"],
+    "changed": ["samplingRate"],
+    "removed": [],
+    "unchanged": ["excludeOperations"]
+  }
+}
+```
+
+### JSON output (`list`)
+
+```json
+{
+  "ok": true,
+  "command": "policy recording list",
+  "data": {
+    "policies": {
+      "items": [
+        {
+          "id": "rec-policy-prod",
+          "name": "Production Recording",
+          "version": 1
+        }
+      ]
+    }
   }
 }
 ```
