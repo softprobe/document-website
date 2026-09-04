@@ -36,17 +36,25 @@ helm repo add softprobe \
   https://storage.googleapis.com/softprobe-published-files/helm/sp-backend
 helm repo update
 
-kubectl create namespace softprobe
+# 设置目标命名空间（默认使用 softprobe，也可使用已有自定义命名空间）：
+export NAMESPACE="softprobe"
+kubectl create namespace "$NAMESPACE"   # 若命名空间已存在可跳过
 ```
 
+::: tip 自定义或已有命名空间
+若安装至已有的命名空间，请在 `values.yaml` 中设置 `createNamespace: false`（或在 `helm install` 时指定 `--set createNamespace=false`），以避免 Helm 尝试创建已存在的命名空间引发冲突。
+:::
+
 ### 2. GCR 拉取 Secret
+
+在目标命名空间中创建镜像拉取凭证：
 
 ```bash
 kubectl create secret docker-registry softprobe-gcr-pull \
   --docker-server=https://gcr.io \
   --docker-username=_json_key \
   --docker-password="$(cat softprobe-registry-puller.json)" \
-  --namespace softprobe
+  --namespace "$NAMESPACE"
 ```
 
 ::: warning
@@ -102,7 +110,7 @@ encryption:
 
 ```bash
 # 提前创建 S3 访问凭据 Secret：
-kubectl create secret generic softprobe-log-s3-credentials -n softprobe \
+kubectl create secret generic softprobe-log-s3-credentials -n "$NAMESPACE" \
   --from-literal=access-key-id='YOUR_S3_ACCESS_KEY_ID' \
   --from-literal=secret-access-key='YOUR_S3_SECRET_ACCESS_KEY'
 ```
@@ -146,24 +154,67 @@ encryption:
   secretKey: "CHANGE_ME_base64_32_byte_key"
 ```
 
+#### 自定义镜像覆盖（busybox、aws-cli、私有镜像源）
+
+在离线隔离环境或企业私有镜像仓库中，可覆盖 Chart 使用的基础与维护镜像：
+
+```yaml
+# 覆盖 sp-backend 与 spwebui wait-for-deps 初始化容器使用的 busybox 镜像：
+initContainer:
+  image: "my-registry.internal/busybox:1.37.0"
+
+# 覆盖统一日志管道中的各项组件镜像：
+logPipeline:
+  # 覆盖压缩分钟清理与保留 TTL CronJob 使用的 aws-cli 镜像：
+  maintenance:
+    image: "my-registry.internal/amazon/aws-cli:2.36.39"
+  # 覆盖 Vector OTLP 日志摄取镜像：
+  vector:
+    image: "my-registry.internal/timberio/vector:0.56.0-debian"
+  # 覆盖 rclone S3 网关镜像（本地 PVC / Azure Blob 模式）：
+  rclone:
+    image: "my-registry.internal/rclone/rclone:1.75.0"
+  # 覆盖 DuckDB 小时压缩合并镜像：
+  compaction:
+    image: "my-registry.internal/softprobe/duckdb:1.4.1"
+```
+
 ### 4. Helm 安装
 
-使用 Softprobe 发布版本对应的 Chart 版本与镜像 tag（`v4.3.10` → Chart `4.3.10`，镜像 `v4.3.10`）。
+::: info Chart 版本与镜像 Tag 的区别
+**Helm Chart 版本**（`--version <CHART_VERSION>`，例如 `4.4.1`）与后端应用程序的 **Docker 镜像 Tag**（`image.tag`，例如 `v4.3.23` 或 `latest`）是两个独立版本号：
+- **Chart 版本**：决定 Helm 模板结构与 Kubernetes 资源声明版本。
+- **`image.tag`**：决定实际从镜像仓库拉取运行的后端容器镜像（在 `values.yaml` 中配置，或通过 `--set image.tag=<TAG>` 指定）。
+:::
 
+**通过 Helm 仓库安装：**
 ```bash
+export NAMESPACE="softprobe"   # 或使用已有自定义命名空间
+
 helm install softprobe softprobe/sp-backend \
-  --version 4.3.10 \
-  --namespace softprobe \
-  -f values.yaml \
-  --set image.tag=v4.3.10 \
-  --set createNamespace=false
+  --version 4.4.1 \
+  --namespace "$NAMESPACE" \
+  --set createNamespace=false \
+  -f values.yaml
+```
+
+**或直接使用下载的 `.tgz` 离线包安装：**
+```bash
+export NAMESPACE="softprobe"   # 或使用已有自定义命名空间
+
+curl -fLO https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.4.1/sp-backend-4.4.1.tgz
+
+helm install softprobe ./sp-backend-4.4.1.tgz \
+  --namespace "$NAMESPACE" \
+  --set createNamespace=false \
+  -f values.yaml
 ```
 
 ## 验证
 
 ```bash
-kubectl get pods -n softprobe
-kubectl port-forward -n softprobe svc/softprobe-sp-backend 8090:8090
+kubectl get pods -n "$NAMESPACE"
+kubectl port-forward -n "$NAMESPACE" svc/softprobe-sp-backend 8090:8090
 curl -s http://127.0.0.1:8090/actuator/health
 ```
 
@@ -189,10 +240,12 @@ curl -s http://127.0.0.1:8090/actuator/health
 6. **预览差异**（可选）：
 
 ```bash
+export NAMESPACE="softprobe"   # 或您的已有命名空间
+
 helm repo update
 helm upgrade softprobe softprobe/sp-backend \
   --version 4.3.10 \
-  -n softprobe \
+  --namespace "$NAMESPACE" \
   -f values.yaml \
   --set image.tag=v4.3.10 \
   --set createNamespace=false \
@@ -204,10 +257,12 @@ helm upgrade softprobe softprobe/sp-backend \
 典型升级 — 使用安装时的 `values.yaml`，更新 Chart 与镜像版本：
 
 ```bash
+export NAMESPACE="softprobe"   # 或您的已有命名空间
+
 helm repo update
 helm upgrade softprobe softprobe/sp-backend \
   --version 4.3.10 \
-  -n softprobe \
+  --namespace "$NAMESPACE" \
   -f values.yaml \
   --set image.tag=v4.3.10 \
   --set createNamespace=false
@@ -234,9 +289,11 @@ encryption:
 升级命令（无需编辑文件）：
 
 ```bash
+export NAMESPACE="softprobe"   # 或您的已有命名空间
+
 helm upgrade softprobe softprobe/sp-backend \
   --version 4.3.10 \
-  -n softprobe \
+  --namespace "$NAMESPACE" \
   -f values.yaml \
   --set image.tag=v4.3.10 \
   --set createNamespace=false
@@ -249,10 +306,12 @@ Helm 会按 Chart 默认值添加日志管道资源。Rollout 完成后，为工
 离线安装或从 GCS 校验 SHA-256 时：
 
 ```bash
+export NAMESPACE="softprobe"   # 或您的已有命名空间
+
 curl -fLO "https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.3.10/sp-backend-4.3.10.tgz"
 
 helm upgrade softprobe ./sp-backend-4.3.10.tgz \
-  -n softprobe \
+  --namespace "$NAMESPACE" \
   -f values.yaml \
   --set image.tag=v4.3.10 \
   --set createNamespace=false
@@ -261,10 +320,10 @@ helm upgrade softprobe ./sp-backend-4.3.10.tgz \
 ### 升级后验证
 
 ```bash
-kubectl rollout status -n softprobe deploy/softprobe-sp-backend
-kubectl get pods -n softprobe
-kubectl get pods,cronjob,pvc -n softprobe | grep -E 'log-vector|log-parquet|compaction|retention'
-kubectl port-forward -n softprobe svc/softprobe-sp-backend 8090:8090
+kubectl rollout status -n "$NAMESPACE" deploy/softprobe-sp-backend
+kubectl get pods -n "$NAMESPACE"
+kubectl get pods,cronjob,pvc -n "$NAMESPACE" | grep -E 'log-vector|log-parquet|compaction|retention'
+kubectl port-forward -n "$NAMESPACE" svc/softprobe-sp-backend 8090:8090
 curl -s http://127.0.0.1:8090/actuator/health
 ```
 
@@ -363,7 +422,7 @@ logPipeline:
 ```bash
 helm upgrade softprobe softprobe/sp-backend \
   --version 4.3.10 \
-  -n softprobe \
+  --namespace "$NAMESPACE" \
   -f values.yaml \
   --set image.tag=v4.3.10 \
   --set createNamespace=false
@@ -374,8 +433,8 @@ helm upgrade softprobe softprobe/sp-backend \
 ### 验证日志管道
 
 ```bash
-kubectl get pods,cronjob,pvc -n softprobe | grep -E 'log-vector|log-parquet|compaction|retention'
-kubectl port-forward -n softprobe svc/softprobe-sp-backend 8090:8090
+kubectl get pods,cronjob,pvc -n "$NAMESPACE" | grep -E 'log-vector|log-parquet|compaction|retention'
+kubectl port-forward -n "$NAMESPACE" svc/softprobe-sp-backend 8090:8090
 ```
 
 运行固定查询（替换 trace id 与时间范围）：
@@ -449,7 +508,7 @@ logPipeline:
 **第 1 步 — 创建凭证 Secret。** 必须包含以下两个键：
 
 ```bash
-kubectl create secret generic softprobe-log-s3-credentials -n softprobe \
+kubectl create secret generic softprobe-log-s3-credentials -n "$NAMESPACE" \
   --from-literal=access-key-id='AKIA...' \
   --from-literal=secret-access-key='...'
 ```
@@ -481,7 +540,7 @@ Bucket 需已存在。此模式下**不会**创建 Parquet PVC。
 **第 1 步 — 创建凭证 Secret。** 必须且仅包含一个键 `account-key`，即存储账户访问密钥：
 
 ```bash
-kubectl create secret generic softprobe-log-azure-credentials -n softprobe \
+kubectl create secret generic softprobe-log-azure-credentials -n "$NAMESPACE" \
   --from-literal=account-key='<存储账户访问密钥>'
 ```
 
@@ -544,8 +603,8 @@ Chart 默认值中的 `logPipeline.parquet.localRoot`（`/data/parquet/logs`）�
 查看最近运行：
 
 ```bash
-kubectl get cronjob,jobs -n softprobe -l 'app.kubernetes.io/component=log-pipeline-maintenance'
-kubectl logs -n softprobe job/<compaction-job-name>
+kubectl get cronjob,jobs -n "$NAMESPACE" -l 'app.kubernetes.io/component=log-pipeline-maintenance'
+kubectl logs -n "$NAMESPACE" job/<compaction-job-name>
 ```
 
 ### v1 范围外
@@ -557,13 +616,13 @@ kubectl logs -n softprobe job/<compaction-job-name>
 ## 卸载
 
 ```bash
-helm uninstall softprobe -n softprobe
+helm uninstall softprobe -n "$NAMESPACE"
 ```
 
 内置 MongoDB PVC 默认保留。需要时可手动删除：
 
 ```bash
-kubectl delete pvc -n softprobe -l app.kubernetes.io/instance=softprobe
+kubectl delete pvc -n "$NAMESPACE" -l app.kubernetes.io/instance=softprobe
 ```
 
 ## Java Agent
@@ -571,7 +630,7 @@ kubectl delete pvc -n softprobe -l app.kubernetes.io/instance=softprobe
 将已插桩应用指向集群内服务：
 
 ```text
--Dsp.api.url=http://softprobe-sp-backend.softprobe.svc.cluster.local:8090
+-Dsp.api.url=http://<release>-sp-backend.<namespace>.svc.cluster.local:8090
 ```
 
 ## 故障排查 {#troubleshooting}
@@ -579,13 +638,13 @@ kubectl delete pvc -n softprobe -l app.kubernetes.io/instance=softprobe
 | 现象 | 检查项 |
 |------|--------|
 | `helm install` 因 MongoDB 失败 | 须设置 **`mongodb.connectionString` 或 `mongodb.bundled.auth.password` 之一** |
-| `sp-backend` Pod `Init:0/1`（内置） | MongoDB 或 Redis 未就绪 — `kubectl get pods -n softprobe` |
+| `sp-backend` Pod `Init:0/1`（内置） | MongoDB 或 Redis 未就绪 — `kubectl get pods -n "$NAMESPACE"` |
 | `sp-backend` 启动慢 | JVM 预热 — 最多约 2 分钟（startup probe） |
 | `ImagePullBackOff` | 缺少 `softprobe-gcr-pull` Secret 或 `image.tag` 错误 |
 | Mongo PVC Pending（内置） | 无 StorageClass — 设置 `mongodb.bundled.storageClass` |
 | 外部 MongoDB 连接错误 | URI 从集群可达；数据库名唯一；`authSource` 正确 |
 | 预期有数据但 `GET /api/recorder/logs` 为空 | 中断的压缩留下不完整 `part-hourly.parquet` — 删除 hourly 文件或等待下次压缩；确认存在 minute `part-*.parquet` |
-| Vector Pod 未就绪 | `kubectl logs -n softprobe deploy/<release>-log-vector -c vector` |
+| Vector Pod 未就绪 | `kubectl logs -n "$NAMESPACE" deploy/<release>-log-vector -c vector` |
 | arm64 上 Compaction `ImagePullBackOff` | 用本地 `arm64` 构建覆盖 `logPipeline.compaction.image` |
 | Agent 日志缺失 | `sp.api.url` 须可达 sp-backend；日志管道已启用；导出须带 `trace_id` |
 | sp-backend 日志缺失 | `logPipeline.enabled` 会在 sp-backend 上自动启用 OTLP 导出 |
