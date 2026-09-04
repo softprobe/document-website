@@ -35,9 +35,33 @@ is returned in JSON only and no config, cache, data, or state file is modified.
   "ok": true,
   "command": "auth login",
   "data": {
-    "token": "eyJ...",
-    "userName": "ops@corp.com",
-    "expiresAt": "2026-05-19T12:00:00Z"
+    "token": "eyJhbGciOi...",
+    "userName": "ops@corp.com"
+  }
+}
+```
+
+### JSON output (`whoami`)
+
+```json
+{
+  "ok": true,
+  "command": "auth whoami",
+  "data": {
+    "userName": "ops@corp.com"
+  }
+}
+```
+
+### JSON output (`refresh`)
+
+```json
+{
+  "ok": true,
+  "command": "auth refresh",
+  "data": {
+    "token": "eyJhbGciOi...",
+    "userName": "ops@corp.com"
   }
 }
 ```

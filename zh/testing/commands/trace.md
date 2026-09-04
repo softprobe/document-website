@@ -35,6 +35,7 @@ Modes:
 ```bash
 sp trace find --app my-app --attr-name orderId --attr-value ORD-1234 --json
 sp trace get 4bf92f3577b34da6a3ce929d0e0e4736 --json
+sp trace stats --app my-app --json
 ```
 
 ### JSON output (`find`)
@@ -51,6 +52,43 @@ sp trace get 4bf92f3577b34da6a3ce929d0e0e4736 --json
         "status": "OK",
         "durationMs": 120,
         "startedAt": "2026-05-18T10:00:00Z"
+      }
+    ]
+  }
+}
+```
+
+### JSON output (`get`)
+
+```json
+{
+  "ok": true,
+  "command": "trace get",
+  "data": {
+    "traceId": "4bf92f3577b34da6a3ce929d0e0e4736",
+    "endpoint": "POST /api/order",
+    "status": "OK",
+    "durationMs": 120,
+    "startedAt": "2026-05-18T10:00:00Z",
+    "attrs": {
+      "orderId": "ORD-1234"
+    }
+  }
+}
+```
+
+### JSON output (`stats`)
+
+```json
+{
+  "ok": true,
+  "command": "trace stats",
+  "data": {
+    "items": [
+      {
+        "ruleName": "orderId",
+        "hitCount": 1420,
+        "lastHitAt": "2026-05-18T10:15:00Z"
       }
     ]
   }

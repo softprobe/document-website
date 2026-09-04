@@ -10,6 +10,62 @@
 | `apply -f rules.yaml` | PUT app rules |
 | `preview -f rules.yaml` | POST preview |
 
+## Examples
+
+```bash
+sp extraction-rule list --app my-app --json
+sp extraction-rule apply --app my-app -f rules.yaml --json
+sp extraction-rule preview -f rules.yaml --json
+```
+
+### JSON output (`list`)
+
+```json
+{
+  "ok": true,
+  "command": "extraction-rule list",
+  "data": {
+    "rules": [
+      {
+        "ruleName": "orderId",
+        "extractorType": "jsonPath",
+        "expression": "$.orderId"
+      }
+    ]
+  }
+}
+```
+
+### JSON output (`apply`)
+
+```json
+{
+  "ok": true,
+  "command": "extraction-rule apply",
+  "data": {
+    "success": true,
+    "appId": "my-app"
+  }
+}
+```
+
+### JSON output (`preview`)
+
+```json
+{
+  "ok": true,
+  "command": "extraction-rule preview",
+  "data": {
+    "preview": [
+      {
+        "ruleName": "orderId",
+        "extractedValue": "ORD-1234"
+      }
+    ]
+  }
+}
+```
+
 ## REST mapping
 
 | Subcommand | Method | Path |

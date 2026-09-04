@@ -29,6 +29,43 @@ sp group my --json
 sp grant list --app my-app --json
 ```
 
+### JSON output (`group list`)
+
+```json
+{
+  "ok": true,
+  "command": "group list",
+  "data": {
+    "items": [
+      {
+        "id": "group-core-dev",
+        "name": "Core Development",
+        "description": "Core engineering team"
+      }
+    ]
+  }
+}
+```
+
+### JSON output (`grant list`)
+
+```json
+{
+  "ok": true,
+  "command": "grant list",
+  "data": {
+    "items": [
+      {
+        "id": "grant-101",
+        "appId": "my-app",
+        "userGroupId": "group-core-dev",
+        "permission": "READ"
+      }
+    ]
+  }
+}
+```
+
 ## Related
 
 - [app](/en/testing/commands/app)

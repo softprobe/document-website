@@ -19,6 +19,33 @@ Operational endpoints under `/vi/storage` and `/vi/schedule`.
 
 ```bash
 sp ops storage overview --json
+sp ops storage diagnostics --json
 sp ops schedule monitor --json
+```
+
+### JSON output (`storage overview`)
+
+```json
+{
+  "ok": true,
+  "command": "ops storage overview",
+  "data": {
+    "status": "ok",
+    "healthy": true
+  }
+}
+```
+
+### JSON output (`schedule monitor`)
+
+```json
+{
+  "ok": true,
+  "command": "ops schedule monitor",
+  "data": {
+    "jobs": 0,
+    "status": "healthy"
+  }
+}
 ```
 

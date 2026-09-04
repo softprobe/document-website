@@ -49,8 +49,113 @@ sp policy compare get compare-global --json
   "command": "policy recording validate",
   "data": {
     "valid": true,
-    "errors": [],
-    "warnings": []
+    "details": {
+      "valid": true,
+      "errors": [],
+      "warnings": []
+    }
+  }
+}
+```
+
+### JSON output (`gate`)
+
+Used in CI/CD pipelines to validate all changed or committed policy files:
+
+```json
+{
+  "ok": true,
+  "command": "policy gate",
+  "data": {
+    "valid": true,
+    "files": [
+      {
+        "path": "policies/recording-prod.yaml",
+        "kind": "recording",
+        "valid": true
+      },
+      {
+        "path": "policies/mock-prod.yaml",
+        "kind": "mock",
+        "valid": true
+      }
+    ]
+  }
+}
+```
+
+When a policy file fails validation, `policy gate` exits with code 1 and includes validation details:
+
+```json
+{
+  "ok": true,
+  "command": "policy gate",
+  "data": {
+    "valid": false,
+    "files": [
+      {
+        "path": "policies/recording-prod.yaml",
+        "kind": "recording",
+        "valid": false,
+        "details": {
+          "valid": false,
+          "errors": ["unsupported filter key 'invalidField'"]
+        }
+      }
+    ]
+  }
+}
+```
+
+### JSON output (`apply`)
+
+```json
+{
+  "ok": true,
+  "command": "policy recording apply",
+  "data": {
+    "id": "rec-policy-prod",
+    "version": 1,
+    "status": "applied"
+  }
+}
+```
+
+### JSON output (`diff`)
+
+Diff local policy file against current server state:
+
+```json
+{
+  "ok": true,
+  "command": "policy recording diff",
+  "data": {
+    "against": "rec-policy-prod",
+    "file": "policies/recording-prod.yaml",
+    "added": ["includeOperations[1]"],
+    "changed": ["samplingRate"],
+    "removed": [],
+    "unchanged": ["excludeOperations"]
+  }
+}
+```
+
+### JSON output (`list`)
+
+```json
+{
+  "ok": true,
+  "command": "policy recording list",
+  "data": {
+    "policies": {
+      "items": [
+        {
+          "id": "rec-policy-prod",
+          "name": "Production Recording",
+          "version": 1
+        }
+      ]
+    }
   }
 }
 ```
