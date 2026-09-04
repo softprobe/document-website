@@ -4,7 +4,7 @@ title: Install Softprobe Server
 
 # Install Softprobe Server
 
-Install the unified Softprobe backend on Kubernetes with Helm. The chart deploys **Redis** in-cluster and either **bundled MongoDB** or connects to your **existing MongoDB** server.
+Install the unified Softprobe backend on Kubernetes with Helm. The chart supports deploying in-cluster **bundled MongoDB and Redis**, or connecting to your **external MongoDB (standalone/replica set), external Redis (standalone/Sentinel), and external S3** data stores.
 
 Chart **v4.3.x+** also enables the [unified log pipeline](#unified-log-pipeline) by default (Vector, Parquet PVC, compaction). Fresh installs need only the MongoDB and encryption keys below — no separate `logPipeline` block required.
 
@@ -167,9 +167,9 @@ kubectl port-forward -n softprobe svc/softprobe-sp-backend 8090:8090
 curl -s http://127.0.0.1:8090/actuator/health
 ```
 
-**Bundled mode:** expect pods for `mongodb`, `redis`, `sp-backend`, and (chart v4.3.x+) `log-vector`.
-
-**External mode:** expect `redis`, `sp-backend`, and `log-vector` (no `{release}-mongo` pod).
+- **Bundled mode (Mode A):** expect pods for `mongodb`, `redis`, `sp-backend`, `log-vector`, and `log-rclone`.
+- **External MongoDB mode (Mode B):** expect `redis`, `sp-backend`, `log-vector`, and `log-rclone` (no `{release}-mongo` pod).
+- **External Data Stores mode (Mode C):** expect only `sp-backend` and `log-vector` (no `{release}-mongo`, `{release}-redis`, or `{release}-log-rclone` pods since MongoDB, Redis, and S3 are managed externally).
 
 ## Upgrade an existing release
 

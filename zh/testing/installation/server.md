@@ -4,7 +4,7 @@ title: 安装 Softprobe 服务端
 
 # 安装 Softprobe 服务端
 
-使用 Helm 在 Kubernetes 上安装统一的 Softprobe 后端。Chart 会在集群内部署 **Redis**，并选择部署**内置 MongoDB** 或连接您**已有的 MongoDB** 服务器。
+使用 Helm 在 Kubernetes 上安装统一的 Softprobe 后端。Chart 支持部署集群内**内置 MongoDB 与 Redis**，或无缝连接至**外部 MongoDB（单机/副本集）、外部 Redis（单机/Sentinel 集群）与外部 S3 存储桶**。
 
 Chart **v4.3.x+** 默认启用[统一日志管道](#unified-log-pipeline)（Vector、Parquet PVC、压缩）。全新安装只需配置下方的 MongoDB 与加密密钥——无需单独的 `logPipeline` 块。
 
@@ -167,9 +167,9 @@ kubectl port-forward -n softprobe svc/softprobe-sp-backend 8090:8090
 curl -s http://127.0.0.1:8090/actuator/health
 ```
 
-**内置模式：** 应看到 `mongodb`、`redis`、`sp-backend`，以及（Chart v4.3.x+）`log-vector` Pod。
-
-**外部模式：** 应看到 `redis`、`sp-backend` 与 `log-vector`（无 `{release}-mongo` Pod）。
+- **内置模式（模式 A）：** 应看到 `mongodb`、`redis`、`sp-backend`、`log-vector` 及 `log-rclone` Pod。
+- **外部 MongoDB 模式（模式 B）：** 应看到 `redis`、`sp-backend`、`log-vector` 及 `log-rclone`（无 `{release}-mongo` Pod）。
+- **全外部数据存储模式（模式 C）：** 应仅看到 `sp-backend` 与 `log-vector`（由于 MongoDB、Redis 及 S3 均由外部提供，不会部署 `{release}-mongo`、`{release}-redis` 及 `{release}-log-rclone` Pod）。
 
 ## 升级已有 Release {#upgrade-existing-release}
 
