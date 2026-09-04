@@ -36,17 +36,25 @@ helm repo add softprobe \
   https://storage.googleapis.com/softprobe-published-files/helm/sp-backend
 helm repo update
 
-kubectl create namespace softprobe
+# 设置目标命名空间（默认使用 softprobe，也可使用已有自定义命名空间）：
+export NAMESPACE="<YOUR_NAMESPACE>"
+kubectl create namespace "$NAMESPACE"   # 若命名空间已存在可跳过
 ```
 
+::: tip 自定义或已有命名空间
+若安装至已有的命名空间，请在 `values.yaml` 中设置 `createNamespace: false`（或在 `helm install` 时指定 `--set createNamespace=false`），以避免 Helm 尝试创建已存在的命名空间引发冲突。
+:::
+
 ### 2. GCR 拉取 Secret
+
+在目标命名空间中创建镜像拉取凭证：
 
 ```bash
 kubectl create secret docker-registry softprobe-gcr-pull \
   --docker-server=https://gcr.io \
   --docker-username=_json_key \
   --docker-password="$(cat softprobe-registry-puller.json)" \
-  --namespace softprobe
+  --namespace "$NAMESPACE"
 ```
 
 ::: warning
@@ -146,24 +154,61 @@ encryption:
   secretKey: "CHANGE_ME_base64_32_byte_key"
 ```
 
+#### 自定义镜像覆盖（busybox、aws-cli、私有镜像源）
+
+在离线隔离环境或企业私有镜像仓库中，可覆盖 Chart 使用的基础与维护镜像：
+
+```yaml
+# 覆盖 sp-backend 与 spwebui wait-for-deps 初始化容器使用的 busybox 镜像：
+initContainer:
+  image: "my-registry.internal/busybox:1.37.0"
+
+# 覆盖统一日志管道中的各项组件镜像：
+logPipeline:
+  # 覆盖压缩分钟清理与保留 TTL CronJob 使用的 aws-cli 镜像：
+  maintenance:
+    image: "my-registry.internal/amazon/aws-cli:2.36.39"
+  # 覆盖 Vector OTLP 日志摄取镜像：
+  vector:
+    image: "my-registry.internal/timberio/vector:0.56.0-debian"
+  # 覆盖 rclone S3 网关镜像（本地 PVC / Azure Blob 模式）：
+  rclone:
+    image: "my-registry.internal/rclone/rclone:1.75.0"
+  # 覆盖 DuckDB 小时压缩合并镜像：
+  compaction:
+    image: "my-registry.internal/softprobe/duckdb:1.4.1"
+```
+
 ### 4. Helm 安装
 
-使用 Softprobe 发布版本对应的 Chart 版本与镜像 tag（`v4.3.10` → Chart `4.3.10`，镜像 `v4.3.10`）。
+使用 Softprobe 发布版本对应的 Chart 版本与镜像 tag（`v4.4.1` → Chart `4.4.1`，镜像 `v4.4.1`）。
 
+**通过 Helm 仓库安装：**
 ```bash
+export NAMESPACE="<YOUR_NAMESPACE>"
+
 helm install softprobe softprobe/sp-backend \
-  --version 4.3.10 \
-  --namespace softprobe \
-  -f values.yaml \
-  --set image.tag=v4.3.10 \
-  --set createNamespace=false
+  --version 4.4.1 \
+  --namespace "$NAMESPACE" \
+  --set createNamespace=false \
+  -f values.yaml
+```
+
+**或直接使用下载的 `.tgz` 离线包安装：**
+```bash
+curl -fLO https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.4.1/sp-backend-4.4.1.tgz
+
+helm install softprobe ./sp-backend-4.4.1.tgz \
+  --namespace "$NAMESPACE" \
+  --set createNamespace=false \
+  -f values.yaml
 ```
 
 ## 验证
 
 ```bash
-kubectl get pods -n softprobe
-kubectl port-forward -n softprobe svc/softprobe-sp-backend 8090:8090
+kubectl get pods -n "$NAMESPACE"
+kubectl port-forward -n "$NAMESPACE" svc/softprobe-sp-backend 8090:8090
 curl -s http://127.0.0.1:8090/actuator/health
 ```
 

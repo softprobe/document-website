@@ -36,17 +36,25 @@ helm repo add softprobe \
   https://storage.googleapis.com/softprobe-published-files/helm/sp-backend
 helm repo update
 
-kubectl create namespace softprobe
+# Define target namespace (default is softprobe, or use your existing custom namespace):
+export NAMESPACE="<YOUR_NAMESPACE>"
+kubectl create namespace "$NAMESPACE"   # omit if namespace already exists
 ```
 
+::: tip Custom or Pre-existing Namespaces
+If installing into your own existing namespace, set `createNamespace: false` in your `values.yaml` (or pass `--set createNamespace=false` to `helm install`) so Helm does not attempt to create a namespace that already exists.
+:::
+
 ### 2. GCR pull secret
+
+Create the image pull secret in your target namespace:
 
 ```bash
 kubectl create secret docker-registry softprobe-gcr-pull \
   --docker-server=https://gcr.io \
   --docker-username=_json_key \
   --docker-password="$(cat softprobe-registry-puller.json)" \
-  --namespace softprobe
+  --namespace "$NAMESPACE"
 ```
 
 ::: warning
@@ -146,24 +154,61 @@ encryption:
   secretKey: "CHANGE_ME_base64_32_byte_key"
 ```
 
+#### Custom Image Overrides (busybox, aws-cli, mirrors)
+
+For air-gapped environments or private internal registries, you can override any container image used by the chart:
+
+```yaml
+# Override busybox used by sp-backend & spwebui wait-for-deps init containers:
+initContainer:
+  image: "my-registry.internal/busybox:1.37.0"
+
+# Override images in the unified log pipeline:
+logPipeline:
+  # Override aws-cli used by compaction minute pruning and retention TTL CronJobs:
+  maintenance:
+    image: "my-registry.internal/amazon/aws-cli:2.36.39"
+  # Override Vector OTLP ingest image:
+  vector:
+    image: "my-registry.internal/timberio/vector:0.56.0-debian"
+  # Override rclone S3 gateway (local/azure modes):
+  rclone:
+    image: "my-registry.internal/rclone/rclone:1.75.0"
+  # Override DuckDB hour compaction merge image:
+  compaction:
+    image: "my-registry.internal/softprobe/duckdb:1.4.1"
+```
+
 ### 4. Helm install
 
-Use the chart version and image tag from your Softprobe release (`v4.3.10` → chart `4.3.10`, image `v4.3.10`).
+Use the chart version and image tag from your Softprobe release (`v4.4.1` → chart `4.4.1`, image `v4.4.1`).
 
+**Via Helm repository:**
 ```bash
+export NAMESPACE="<YOUR_NAMESPACE>"
+
 helm install softprobe softprobe/sp-backend \
-  --version 4.3.10 \
-  --namespace softprobe \
-  -f values.yaml \
-  --set image.tag=v4.3.10 \
-  --set createNamespace=false
+  --version 4.4.1 \
+  --namespace "$NAMESPACE" \
+  --set createNamespace=false \
+  -f values.yaml
+```
+
+**Or directly from the downloaded `.tgz` archive:**
+```bash
+curl -fLO https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.4.1/sp-backend-4.4.1.tgz
+
+helm install softprobe ./sp-backend-4.4.1.tgz \
+  --namespace "$NAMESPACE" \
+  --set createNamespace=false \
+  -f values.yaml
 ```
 
 ## Verify
 
 ```bash
-kubectl get pods -n softprobe
-kubectl port-forward -n softprobe svc/softprobe-sp-backend 8090:8090
+kubectl get pods -n "$NAMESPACE"
+kubectl port-forward -n "$NAMESPACE" svc/softprobe-sp-backend 8090:8090
 curl -s http://127.0.0.1:8090/actuator/health
 ```
 
