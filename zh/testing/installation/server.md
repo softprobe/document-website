@@ -4,7 +4,7 @@ title: 安装 Softprobe 服务端
 
 # 安装 Softprobe 服务端
 
-使用 Helm 在 Kubernetes 上安装统一的 Softprobe 后端。Chart 会在集群内部署 **Redis**，并选择部署**内置 MongoDB** 或连接您**已有的 MongoDB** 服务器。
+使用 Helm 在 Kubernetes 上安装统一的 Softprobe 后端。Chart 支持部署集群内**内置 MongoDB 与 Redis**，或无缝连接至**外部 MongoDB（单机/副本集）、外部 Redis（单机/Sentinel 集群）与外部 S3 存储桶**。
 
 Chart **v4.3.x+** 默认启用[统一日志管道](#unified-log-pipeline)（Vector、Parquet PVC、压缩）。全新安装只需配置下方的 MongoDB 与加密密钥——无需单独的 `logPipeline` 块。
 
@@ -96,6 +96,56 @@ encryption:
   secretKey: "CHANGE_ME_base64_32_byte_key"
 ```
 
+#### 模式 C — 外部数据存储（MongoDB 副本集、Redis Sentinel、S3 存储桶）
+
+适用于对接外部自建或云托管数据库、Redis Sentinel 高可用集群以及外部 S3 对象存储的企业级部署：
+
+```bash
+# 提前创建 S3 访问凭据 Secret：
+kubectl create secret generic softprobe-log-s3-credentials -n softprobe \
+  --from-literal=access-key-id='YOUR_S3_ACCESS_KEY_ID' \
+  --from-literal=secret-access-key='YOUR_S3_SECRET_ACCESS_KEY'
+```
+
+```yaml
+image:
+  tag: "v4.3.10"
+  pullSecrets:
+    - name: softprobe-gcr-pull
+
+# 1. 外部 MongoDB 副本集（自动禁用内置 MongoDB）
+mongodb:
+  connectionString: "mongodb://user:password@mongo-1:27017,mongo-2:27017,mongo-3:27017/your_release_sp_storage_db?replicaSet=rs0&authSource=admin&ssl=true"
+
+# 2. 外部 Redis Sentinel（自动禁用内置 Redis）
+redis:
+  enabled: false
+
+spBackend:
+  extraEnv:
+    # 格式: redis://<masterName>:<password>@<sentinelHost1>:<port>,<sentinelHost2>:<port>/<dbIndex>
+    # 若 Sentinel 无密码，省略密码部分: redis://mymaster@sentinel-1:26379,sentinel-2:26379/0
+    - name: SP_REDIS_SENTINELURL
+      value: "redis://mymaster:redisPassword@sentinel-1:26379,sentinel-2:26379,sentinel-3:26379/0"
+
+# 3. 外部 S3 存储桶用于统一日志流水线（自动禁用集群内 rclone 与本地 PVC）
+logPipeline:
+  enabled: true
+  storage:
+    backend: s3
+    s3:
+      bucket: my-softprobe-logs
+      endpoint: https://s3.amazonaws.com # 或 MinIO / Ceph 端点
+      region: us-east-1
+      forcePathStyle: false              # MinIO/Ceph 设为 true，AWS S3 设为 false
+      prefix: "logs/"                    # 存储桶内可选前缀
+      existingSecret: softprobe-log-s3-credentials
+
+encryption:
+  enabled: true
+  secretKey: "CHANGE_ME_base64_32_byte_key"
+```
+
 ### 4. Helm 安装
 
 使用 Softprobe 发布版本对应的 Chart 版本与镜像 tag（`v4.3.10` → Chart `4.3.10`，镜像 `v4.3.10`）。
@@ -117,9 +167,9 @@ kubectl port-forward -n softprobe svc/softprobe-sp-backend 8090:8090
 curl -s http://127.0.0.1:8090/actuator/health
 ```
 
-**内置模式：** 应看到 `mongodb`、`redis`、`sp-backend`，以及（Chart v4.3.x+）`log-vector` Pod。
-
-**外部模式：** 应看到 `redis`、`sp-backend` 与 `log-vector`（无 `{release}-mongo` Pod）。
+- **内置模式（模式 A）：** 应看到 `mongodb`、`redis`、`sp-backend`、`log-vector` 及 `log-rclone` Pod。
+- **外部 MongoDB 模式（模式 B）：** 应看到 `redis`、`sp-backend`、`log-vector` 及 `log-rclone`（无 `{release}-mongo` Pod）。
+- **全外部数据存储模式（模式 C）：** 应仅看到 `sp-backend` 与 `log-vector`（由于 MongoDB、Redis 及 S3 均由外部提供，不会部署 `{release}-mongo`、`{release}-redis` 及 `{release}-log-rclone` Pod）。
 
 ## 升级已有 Release {#upgrade-existing-release}
 

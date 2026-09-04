@@ -4,7 +4,7 @@ title: Install Softprobe Server
 
 # Install Softprobe Server
 
-Install the unified Softprobe backend on Kubernetes with Helm. The chart deploys **Redis** in-cluster and either **bundled MongoDB** or connects to your **existing MongoDB** server.
+Install the unified Softprobe backend on Kubernetes with Helm. The chart supports deploying in-cluster **bundled MongoDB and Redis**, or connecting to your **external MongoDB (standalone/replica set), external Redis (standalone/Sentinel), and external S3** data stores.
 
 Chart **v4.3.x+** also enables the [unified log pipeline](#unified-log-pipeline) by default (Vector, Parquet PVC, compaction). Fresh installs need only the MongoDB and encryption keys below — no separate `logPipeline` block required.
 
@@ -96,6 +96,56 @@ encryption:
   secretKey: "CHANGE_ME_base64_32_byte_key"
 ```
 
+#### Mode C — External Data Stores (MongoDB Replica Set, Redis Sentinel, S3 Bucket)
+
+For enterprise deployments connecting to external managed databases, Redis Sentinel high-availability clusters, and external S3 object storage for the log pipeline:
+
+```bash
+# Create the S3 credentials secret in advance:
+kubectl create secret generic softprobe-log-s3-credentials -n softprobe \
+  --from-literal=access-key-id='YOUR_S3_ACCESS_KEY_ID' \
+  --from-literal=secret-access-key='YOUR_S3_SECRET_ACCESS_KEY'
+```
+
+```yaml
+image:
+  tag: "v4.3.10"
+  pullSecrets:
+    - name: softprobe-gcr-pull
+
+# 1. External MongoDB Replica Set (bundled MongoDB disabled)
+mongodb:
+  connectionString: "mongodb://user:password@mongo-1:27017,mongo-2:27017,mongo-3:27017/your_release_sp_storage_db?replicaSet=rs0&authSource=admin&ssl=true"
+
+# 2. External Redis Sentinel (bundled Redis disabled)
+redis:
+  enabled: false
+
+spBackend:
+  extraEnv:
+    # Format: redis://<masterName>:<password>@<sentinelHost1>:<port>,<sentinelHost2>:<port>/<dbIndex>
+    # If no password is used on Sentinel, omit password: redis://mymaster@sentinel-1:26379,sentinel-2:26379/0
+    - name: SP_REDIS_SENTINELURL
+      value: "redis://mymaster:redisPassword@sentinel-1:26379,sentinel-2:26379,sentinel-3:26379/0"
+
+# 3. External S3 Bucket for Unified Log Pipeline (in-cluster rclone & local PVC disabled)
+logPipeline:
+  enabled: true
+  storage:
+    backend: s3
+    s3:
+      bucket: my-softprobe-logs
+      endpoint: https://s3.amazonaws.com # or MinIO / Ceph endpoint
+      region: us-east-1
+      forcePathStyle: false              # keep true for MinIO/Ceph, false for AWS S3
+      prefix: "logs/"                    # optional path prefix
+      existingSecret: softprobe-log-s3-credentials
+
+encryption:
+  enabled: true
+  secretKey: "CHANGE_ME_base64_32_byte_key"
+```
+
 ### 4. Helm install
 
 Use the chart version and image tag from your Softprobe release (`v4.3.10` → chart `4.3.10`, image `v4.3.10`).
@@ -117,9 +167,9 @@ kubectl port-forward -n softprobe svc/softprobe-sp-backend 8090:8090
 curl -s http://127.0.0.1:8090/actuator/health
 ```
 
-**Bundled mode:** expect pods for `mongodb`, `redis`, `sp-backend`, and (chart v4.3.x+) `log-vector`.
-
-**External mode:** expect `redis`, `sp-backend`, and `log-vector` (no `{release}-mongo` pod).
+- **Bundled mode (Mode A):** expect pods for `mongodb`, `redis`, `sp-backend`, `log-vector`, and `log-rclone`.
+- **External MongoDB mode (Mode B):** expect `redis`, `sp-backend`, `log-vector`, and `log-rclone` (no `{release}-mongo` pod).
+- **External Data Stores mode (Mode C):** expect only `sp-backend` and `log-vector` (no `{release}-mongo`, `{release}-redis`, or `{release}-log-rclone` pods since MongoDB, Redis, and S3 are managed externally).
 
 ## Upgrade an existing release
 
