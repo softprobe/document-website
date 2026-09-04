@@ -22,6 +22,18 @@ Webhooks and CI do not create cases for you. Walk the core workflow first — [R
 
 See [replay command](/en/testing/commands/replay) and [authentication](/en/testing/agents/authentication).
 
+## Recommended CI suite: manual `Pinned` cases
+
+For a repeatable post-deploy regression run, pin the cases you want in the Workbench and run the built-in `Pinned` suite:
+
+```text
+Pin cases in Workbench → Jenkins runs suite Pinned → SoftProbe reports the run
+```
+
+`Pinned` contains manual pinned cases for the selected application only. It excludes `AutoPinned` cases and does not use a recording time range. `--from` and `--to` are ignored for this suite, so an older pinned case remains eligible. The default command without `--suite` remains the Rolling, time-window-based selection.
+
+The v1 `Pinned` CLI flow uses the on-premise backend URL from `SP_API_URL` and does not require a SoftProbe user JWT. Install `sp` once on the Jenkins agent from the official source; the pipeline only supplies the backend URL and run inputs. If your corporate ingress requires credentials, keep those credentials in Jenkins and do not put them in command arguments or archived output.
+
 ## Architecture (brief)
 
 ```mermaid
@@ -96,12 +108,11 @@ Same as [Replay and diff](/en/testing/replay-and-diff):
 
 ```bash
 export SP_API_URL=https://your-tenant.softprobe.ai
-export SP_TOKEN="${SP_TOKEN}"
 
 sp replay run \
   --app YOUR_APP_ID \
   --env http://your-service.test:8080 \
-  --from -24h \
+  --suite Pinned \
   --name "ci-${GITHUB_SHA:-build}" \
   --watch \
   --json
@@ -159,7 +170,7 @@ Open the same `planId` in the workbench or dashboard for diff trees; automation 
 
 ## GitHub Actions example
 
-Run after the **test** deployment with the agent attached. Secrets: `SP_API_URL`, `SP_TOKEN`.
+Run after the **test** deployment with the agent attached. Configure `SP_API_URL` for the on-premise backend; the `Pinned` CLI flow does not require a SoftProbe JWT.
 
 ```yaml
 name: Softprobe replay gate
@@ -174,9 +185,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       SP_API_URL: ${{ secrets.SP_API_URL }}
-      SP_TOKEN: ${{ secrets.SP_TOKEN }}
       SP_APP_ID: ${{ vars.SP_APP_ID }}
-      SP_TARGET_ENV: http://my-service.test:8080
+      SP_TARGET_URL: http://my-service.test:8080
     steps:
       - name: Install sp
         run: |
@@ -193,8 +203,8 @@ jobs:
         run: |
           sp replay run \
             --app "$SP_APP_ID" \
-            --env "$SP_TARGET_ENV" \
-            --from -24h \
+            --env "$SP_TARGET_URL" \
+            --suite Pinned \
             --name "gha-${GITHUB_SHA}" \
             --watch \
             --json | tee replay.ndjson
@@ -219,7 +229,7 @@ Optional fire-and-forget webhook after deploy:
           curl -fsS -G "$SP_API_URL/api/createPlan" \
             -H "access-token: $SP_TOKEN" \
             --data-urlencode "appId=$SP_APP_ID" \
-            --data-urlencode "targetEnv=$SP_TARGET_ENV" \
+            --data-urlencode "targetEnv=$SP_TARGET_URL" \
             --data-urlencode "planName=deploy-${{ github.run_id }}"
 ```
 
@@ -227,16 +237,15 @@ Policy validation on PRs: [CI policy gate example](/en/testing/examples/ci-polic
 
 ## Jenkins example
 
-Bind `SP_TOKEN` as credentials:
+Install `sp` once on the Jenkins agent from the official SoftProbe source. The pipeline below runs only manual pinned cases and does not perform an interactive login:
 
 ```groovy
 pipeline {
   agent any
   environment {
-    SP_API_URL = credentials('sp-api-url')
-    SP_TOKEN   = credentials('sp-token')
+    SP_API_URL = 'https://softprobe.internal.example'
     SP_APP_ID  = 'YOUR_APP_ID'
-    SP_TARGET_ENV = 'http://my-service.test:8080'
+    SP_TARGET_URL = 'http://my-service.test:8080'
   }
   stages {
     stage('Replay') {
@@ -244,8 +253,8 @@ pipeline {
         sh '''
           sp replay run \
             --app "$SP_APP_ID" \
-            --env "$SP_TARGET_ENV" \
-            --from -24h \
+            --env "$SP_TARGET_URL" \
+            --suite Pinned \
             --name "jenkins-${BUILD_NUMBER}" \
             --watch \
             --json > replay.ndjson

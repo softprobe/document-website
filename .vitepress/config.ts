@@ -39,6 +39,7 @@ const testingSidebarEn = [
     collapsed: false,
     items: [
       { text: 'Record traffic', link: '/en/testing/recording' },
+      { text: 'Pin cases & test sets', link: '/en/testing/pinned-cases' },
       { text: 'Replay & diff', link: '/en/testing/replay-and-diff' },
       { text: 'Review diffs', link: '/en/testing/review-diffs-in-the-web-ui' },
       { text: 'Configure compare rules', link: '/en/testing/compare-rules-web-ui' },
@@ -115,6 +116,7 @@ const testingSidebarZh = [
     collapsed: false,
     items: [
       { text: '录制流量', link: '/zh/testing/recording' },
+      { text: '固化用例与测试集', link: '/zh/testing/pinned-cases' },
       { text: '回放与对比', link: '/zh/testing/replay-and-diff' },
       { text: '审查差异', link: '/zh/testing/review-diffs-in-the-web-ui' },
       { text: '配置对比规则', link: '/zh/testing/compare-rules-web-ui' },

@@ -45,7 +45,7 @@ CLI 不支持手工构造用例。想要更多用例，就让更多流量流过�
 sp record case list --app <你的 appId> --since -1h --json
 ```
 
-列表里出现用例，第 1 步就完成了——直接进入 [回放](/zh/testing/replay-and-diff)。
+列表里出现用例，第 1 步就完成了。如果希望用例在默认保留期后仍可使用，请先[固化用例并加入测试集](/zh/testing/pinned-cases)，再进入 [回放](/zh/testing/replay-and-diff)。
 
 需要按链路核对完整性时用 `sp record completeness <traceId> --json`。
 
@@ -89,4 +89,4 @@ sp policy recording apply -f recording.yaml --json
 
 ## 下一步
 
-用例已经躺在库里了 → **[回放与对比](/zh/testing/replay-and-diff)**：把它们变成一次回归运行。
+用例已经躺在库里了 → **[固化用例与测试集](/zh/testing/pinned-cases)** 保留选中的用例，或直接进入 **[回放与对比](/zh/testing/replay-and-diff)** 做一次时间窗口回放。
