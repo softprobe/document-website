@@ -34,6 +34,8 @@ export function navForLocale(locale: DocLocale): DefaultTheme.NavItem[] {
     { text: 'Home', link: `${p}/` },
     { text: 'Business Observability', link: `${p}/platform/getting-started/quick-start`, activeMatch: '/en/platform/' },
     { text: 'Testing', link: `${p}/testing/`, activeMatch: '/en/testing/' },
+    { text: 'Agent QA', link: `${p}/agent-qa/`, activeMatch: '/en/agent-qa/' },
+    { text: 'Agent Evaluation', link: `${p}/evaluation/`, activeMatch: '/en/evaluation/' },
   ]
 }
 
@@ -78,6 +80,8 @@ export function footerForLocale(locale: DocLocale): DefaultTheme.Footer {
             { text: 'Installation', link: `${p}/testing/installation/` },
             { text: 'sp-backend (Helm)', link: `${p}/testing/installation/server` },
             { text: 'Testing overview', link: `${p}/testing/` },
+            { text: 'Agent QA', link: `${p}/agent-qa/` },
+            { text: 'Agent Evaluation', link: `${p}/evaluation/` },
             { text: 'Commands', link: `${p}/testing/commands/` },
           ],
         },
