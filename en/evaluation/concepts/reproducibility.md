@@ -4,7 +4,7 @@ title: Reproducibility
 
 # Reproducibility
 
-Every run records an honest **reproducibility class** — Softprobe does not overclaim bit-for-bit replay of opaque hosted models.
+Every WorkflowRun records an honest **reproducibility class** — Softprobe does not overclaim bit-for-bit replay of opaque hosted models.
 
 ## Classes
 
@@ -17,19 +17,20 @@ Every run records an honest **reproducibility class** — Softprobe does not ove
 
 ## Recorded metadata
 
-RunManifest and events record:
+WorkflowVersion and events record:
 
-- lockfiles and image digests
-- evaluator prompts and model parameters
-- seed derivation, locale, timezone
+- FrameworkDefinition digest and closed file set
+- RunnerVersion package/lockfile/image digests
+- SubjectVersion and EnvironmentVersion digests
+- seed derivation (when declared), locale, timezone
 - concurrency, retries, redaction policy
-- content hashes of artifacts
+- content hashes of EvidenceArtifacts
 
 **Temperature 0 is not labeled deterministic** for LLM judges unless a hermetic fixture or recorded response scope applies.
 
 ## Cache eligibility
 
-Only pure hermetic DAG nodes cache by default. Pinned-external nodes may opt in with validity scope including provider response identity. Live/human/mutable-remote nodes are non-cacheable unless a verified reuse scope is declared.
+Opaque framework runners are **non-cacheable by default**. Pure Softprobe control-plane checks may cache when hermetic. Live/human/mutable-remote nodes are non-cacheable unless a verified reuse scope is declared.
 
 ## Fork PR CI
 

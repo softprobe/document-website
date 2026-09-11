@@ -1,35 +1,37 @@
 ---
-title: Production and online evaluators
+title: Production and online method family
 ---
 
-# Production and online evaluators
+# Production and online method family
 
-**Online evaluators** run under **EvaluationPolicyVersion** against production trace snapshots: filters, stable sampling, late-span watermarks, rate/cost limits.
+> **Softprobe role:** Softprobe does not implement this family as a Softprobe evaluator. Use a framework that already owns these checks, pin it as a **RunnerVersion**, and capture the native result bundle. See [Ecosystem method families](/en/evaluation/evaluators/).
 
-Same EvaluatorVersion definitions as offline runs; evidence is captured at snapshot time for re-scoring.
+**Online** workflows select production traces (filters, stable sampling, watermarks, budgets) and launch the **same framework runner** Softprobe uses offline. Softprobe supplies the online policy and evidence snapshot; the framework supplies the grading.
 
-## What they measure
+## What teams measure
 
 - Continuous quality on live traffic
 - Regression detection on production spans
-- Backfill re-scoring when evaluator versions change
+- Backfill re-scoring when framework suite versions change
 - Filtered subsets (e.g. diagnosis traces only)
 
-## Policy controls
+## Softprobe policy controls
 
 | Control | Purpose |
 |---------|---------|
 | Stable sampling | `hash(target_id + policy_version)` |
-| Watermarks | Wait for late spans before scoring |
-| Rate/cost limits | Cap model judge spend |
+| Watermarks | Wait for late spans before runner start |
+| Rate/cost limits | Cap spend |
 | Exclusion tags | Skip eval-execution traces (loop guard) |
 
-See [Online evaluation](/en/evaluation/concepts/online-evaluation) and [Production-to-eval loop](/en/evaluation/guides/production-to-eval-loop).
+See [Online evaluation](/en/evaluation/concepts/online-evaluation) and [Promptfoo on production OTEL](/en/evaluation/guides/promptfoo-online-otel).
 
 ## Resembles
 
-Langfuse live LLM-as-a-judge, Braintrust online scoring rules, continuous eval pipelines.
+Langfuse live LLM-as-a-judge, Braintrust online scoring rules, continuous eval pipelines — wired through Softprobe as runners + online policy, not Softprobe-native scorers.
 
 ## Extension rule
 
-EvaluationPolicyVersion compiles to scheduled runs over immutable snapshots — not mutable DB rows as source of truth.
+Ship or pin a **framework runner** that already owns this method family. Do **not** add Softprobe scorer plugins, Softprobe Measurement schemas, Softprobe reducers, or Softprobe human-evaluator runtimes.
+
+See [Ecosystem method families](/en/evaluation/evaluators/) and [Framework runners](/en/evaluation/reference/framework-adapters).

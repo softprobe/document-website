@@ -4,36 +4,41 @@ title: Human evaluation
 
 # Human evaluation
 
-Human review is an **asynchronous evaluator runtime** — not a separate score subsystem.
+Human review for **Agent Evaluation workflows** stays **framework-native or external**. Softprobe does **not** ship a Softprobe human-evaluator runtime, Softprobe annotation queues, or Softprobe pause/resume grader states.
 
-## Workflow states
+Softprobe’s job in that path is custody and governance: pin the framework/human-workflow artifacts, capture digests, project optional measurements, and apply release gates.
 
-The ledger records durable states:
+Separately, Softprobe LLM **session annotation** lets reviewers attach immutable **scores** to captured **observations** (spans) in thelake — see [Annotation](/en/evaluation/concepts/annotation) (glossary and binding). That path labels production traffic; it is not a Softprobe scorer DSL and not an Agent Evaluation grader runtime.
 
-- `waiting_for_assignment`
-- `waiting_for_review`
-- expiring leases, deadlines, reassignment, withdrawal
-- partial completion and adjudication links
+## Softprobe role
 
-Pause and resume are kernel transitions; the scheduler manages lease timing only.
+```mermaid
+flowchart LR
+  Human[Human / external review tool]
+  Native[Framework-native or export artifacts]
+  Ev[EvidenceArtifact digests]
+  Gate[GateDecision / promote]
+  Human --> Native --> Ev --> Gate
+```
 
-## Blinded assignment
+| Softprobe does | Softprobe does not |
+|----------------|--------------------|
+| Store approved human-result artifacts + provenance | Own assignment, leases, blinding UI |
+| Optional score projection of labeled fields | Softprobe “human evaluator” plugin ABI |
+| Digest-bound approve / publish / activate | Self-approval by proposing AI agents |
 
-Human evaluator descriptors request:
+## Typical patterns
 
-- randomized presentation order (pairwise)
-- rater pseudonymization
-- replication count and qualification rules
-- adjudication when raters disagree
-
-Results record rubric version, timing, and agreement metrics for meta-evaluation.
-
-## Measurements
-
-Human labels emit **measurements** like any evaluator — with targets, evidence refs, and status. They feed aggregates and gates the same way as automated scorers.
+1. **In-framework human steps** — Promptfoo/DeepEval/annotation product records labels in its native result bundle; Softprobe runs that suite via a pinned runner.
+2. **External review export** — A review tool exports a signed/labeled artifact; Softprobe commits it as EvidenceArtifact and may project selected fields.
+3. **Governed promotion** — Humans approve FrameworkDefinition / WorkflowVersion / gate-policy digests (see [Production-to-eval loop](/en/evaluation/guides/production-to-eval-loop)).
 
 ## AI proposals vs human approval
 
-AI agents may propose cases, rubrics, or evaluator changes. **Approval, publication, and gate activation** require configured human or independent policy authorization — digest-bound, server-enforced RBAC.
+AI agents may **propose** framework-definition or policy changes. **Approval, publication, and gate activation** require configured human or independent policy authorization — digest-bound, server-enforced RBAC.
 
-See [Human annotation evaluators](/en/evaluation/evaluators/human-annotation).
+## Related
+
+- [Annotation](/en/evaluation/concepts/annotation) — session / span scores on captured LLM traffic
+- [Ecosystem method family: human annotation](/en/evaluation/evaluators/human-annotation)
+- [Scores and gates](/en/evaluation/concepts/scores-and-gates)

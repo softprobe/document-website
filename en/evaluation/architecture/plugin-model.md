@@ -1,95 +1,75 @@
 ---
-title: Plugin model
+title: Extension model
 ---
 
-# Plugin model
+# Extension model
 
-Evaluators and environments extend the kernel through **capability descriptors** — not closed enum kinds.
+Softprobe extends through **versioned runners, environments, and host capabilities** — not a Softprobe-owned evaluator/scorer plugin marketplace.
 
-## Plugin pipeline
+(Older docs titled this “Plugin model.”)
+
+## What you extend
 
 ```mermaid
 flowchart TB
-  Gen[Generator]
-  Sub[Subject]
-  Env[Environment]
-  Adp[EvidenceAdapter]
-  Eval[Evaluator]
-  Red[Reducer]
-  Gate[Gate]
-  Rep[Reporter]
-  Gen --> Sub
-  Sub --> Env
-  Sub --> Adp
-  Adp --> Eval
-  Eval --> Red
-  Red --> Gate
-  Gate --> Rep
+  Def[FrameworkDefinition]
+  RunV[RunnerVersion]
+  Sub[SubjectVersion]
+  Env[EnvironmentVersion]
+  Host[Host primitives]
+  Att[FrameworkAttempt]
+  Ev[EvidenceArtifact]
+  Gate[Gate policy]
+  Def --> Att
+  RunV --> Att
+  Sub --> Att
+  Env --> Att
+  Host --> Att
+  Att --> Ev --> Gate
 ```
 
-## Plugin interfaces
+| Extension | Softprobe role |
+|-----------|----------------|
+| **Framework runner** | Pin package/image/command; capture native result schema |
+| **EnvironmentVersion** | Isolation topology and verify hooks the runner may use |
+| **SubjectVersion** | What the framework exercises |
+| **Host** | Process launch, CAS, secrets, clocks — no orchestration |
+| **Gate policy** | Outer release view over status + selected fields |
 
-```text
-Generator.generate(seed, cases)     → derived cases + lineage
-Subject.run(case, env, context)    → rollout + artifact refs
-Environment.reset/step/observe/verify → state artifacts
-EvidenceAdapter.materialize(selectors, snapshot) → evidence bundle
-Evaluator.evaluate(bundle | group | stream) → measurements + status
-Reducer.reduce(results, grouping, seed) → aggregates
-Gate.decide(aggregates, baseline)  → decision + reasons
-Reporter.consume(events)           → side effects (reports, webhooks)
-```
+## Capability descriptors (runners and environments)
 
-## Evaluator execution topologies
+Descriptors declare what a runner or environment **requires** so scheduling can reject incompatible WorkflowVersions before spending money:
+
+- protocol / implementation version
+- runtime: `oci`, `process`, …
+- required mounts, network, secrets, GPU, budgets
+- declared result-bundle schema / size limits
+- determinism / reproducibility class
+- data residency constraints
+
+Unknown **required** capabilities → `unsupported` at validate/plan. Softprobe does **not** use descriptors to invent Softprobe scorers.
+
+## Framework runners (not importers)
 
 ```mermaid
 flowchart LR
-  Item[item one case]
-  Pair[pair A vs B]
-  Group[group listwise]
-  Stream[stream partial]
-  Agg[aggregate reducer]
-  Item --> Eval1[Evaluator]
-  Pair --> Eval2[Comparative judge]
-  Group --> Eval3[Tournament]
-  Stream --> Eval4[Streaming judge]
-  Eval1 & Eval2 & Eval3 & Eval4 --> Agg
+  PF[Promptfoo files]
+  Pack[Closed FrameworkDefinition]
+  Node[Pinned runner node]
+  Bundle[Native result bundle]
+  PF --> Pack --> Node --> Bundle
 ```
 
-## Evaluator descriptor fields
+1. **Pack** — close and hash native files (no assertion translation).
+2. **Run** — one opaque FrameworkAttempt.
+3. **Optional projection** — loss-aware subset for `scores` queries.
 
-- protocol and implementation version
-- runtime: `wasm`, `oci`, `process`, `remote`, `builtin`
-- topology: `item`, `pair`, `group`, `stream`, `aggregate`
-- required evidence selectors and accepted MIME/schema versions
-- output measurement schema and target scopes
-- determinism level, seed support, batchability, cache policy
-- network, secret, filesystem, GPU, model, budget capabilities
-- data residency and content-sensitivity constraints
+## Control-plane checks (not evaluators)
 
-Planning rejects incompatible descriptors before spending money.
-
-## Framework adapters
-
-Promptfoo/DeepEval integrate as:
-
-```mermaid
-flowchart LR
-  PF[Promptfoo YAML]
-  Imp[Importer compiler]
-  Node[Sandboxed DAG node]
-  Leg[Legacy run importer]
-  PF --> Imp --> Manifest[RunManifest]
-  PF --> Node
-  PF --> Leg
-```
-
-1. **Importer** — YAML → manifest
-2. **Sandboxed evaluator node** — one DAG invocation; no nested orchestration
-3. **Opaque legacy importer** — whole run as non-cacheable external node
+Artifact integrity, secret redaction, capability admission, and release gates are **workflow policies**. They are not a Softprobe eval DSL and do not replace Promptfoo/DeepEval methods.
 
 ## Extension rule
 
-New evaluation methods should ship as new scorer, reducer, generator, environment, or evidence adapter — **not** new core result types.
+Support a new evaluation method by shipping or pinning a **framework runner** that already owns it — not by adding Softprobe Measurement kinds or Softprobe reducers.
 
 See [Capability descriptors](/en/evaluation/reference/capability-descriptors).

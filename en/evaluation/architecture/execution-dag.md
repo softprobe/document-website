@@ -4,82 +4,74 @@ title: Execution DAG
 
 # Execution DAG
 
-The compiler builds a **content-addressed DAG** — not a fixed “task then scores” loop.
+Softprobe plans a **content-addressed outer DAG** around one opaque **framework runner** node — not a Softprobe-owned “cases → Softprobe evaluators → Softprobe reducers” loop.
 
-## Full DAG
+## Outer DAG
 
 ```text
-resolve versions → generate/choose cases → allocate/reset environment
- → run subject trials → flush/wait for trace snapshot → normalize trajectory
- → materialize evidence → run item evaluators
- → run pair/group evaluators → human adjudication (optional)
- → aggregate + uncertainty → gates → publish/export
+resolve WorkflowVersion → admit capabilities → allocate environment
+ → FrameworkAttempt (opaque runner) → commit EvidenceArtifact
+ → optional score projection → GateDecision → publish/export
 ```
 
 ```mermaid
 flowchart TB
-  R[Resolve versions]
-  G[Generate / choose cases]
+  R[Resolve WorkflowVersion]
+  C[Capability admission]
   E[Allocate / reset environment]
-  S[Run subject trials]
-  T[Flush / wait trace snapshot]
-  N[Normalize trajectory]
-  V[Materialize evidence]
-  I[Item evaluators]
-  P[Pair / group evaluators]
-  H[Human adjudication optional]
-  A[Aggregate + uncertainty]
-  GT[Gates]
+  F[FrameworkAttempt opaque runner]
+  V[Commit EvidenceArtifact]
+  P[Optional projection]
+  GT[GateDecision]
   Pub[Publish / export]
-  R --> G --> E --> S --> T --> N --> V --> I --> P --> H --> A --> GT --> Pub
+  R --> C --> E --> F --> V --> P --> GT --> Pub
 ```
 
-## Parallelism model
+Inside the runner, the framework may expand cases, run trials, invoke judges, and write its own reports. Softprobe does **not** model those as Softprobe DAG nodes.
+
+## Parallelism
 
 ```mermaid
 flowchart TB
-  subgraph perCase [Per case run parallelizable]
-    CR1[CaseRun 1]
-    CR2[CaseRun 2]
-    CR3[CaseRun N]
+  subgraph outer [Softprobe outer]
+    WR[WorkflowRun]
+    FA1[FrameworkAttempt]
+    WR --> FA1
   end
-  subgraph serial [Serial within case run]
-    S1[Subject rollout]
-    S2[Evidence snapshot]
-    S3[Evaluators depend on evidence]
+  subgraph inside [Inside runner framework-owned]
+    T1[Case / trial 1]
+    T2[Case / trial N]
   end
-  CR1 --> S1 --> S2 --> S3
+  FA1 --> T1 & T2
 ```
 
-Case runs may execute concurrently subject to suite budgets; evaluators within a case run wait for evidence materialization.
+Softprobe may run multiple WorkflowRuns concurrently (budgets permitting). Framework-internal parallelism stays inside the runner process.
 
 ## Node identity
 
-Nodes are content-addressed where practical. Deterministic cache keys cover input digests, implementation digest, parameters, seed, and external-state fingerprint.
+Outer nodes are content-addressed where practical: WorkflowVersion digest, runner digest, environment digest, seed/fingerprint when declared.
 
-Cache hits are explicit reuse — never copied scores with rewritten provenance.
+Framework runners are **non-cacheable by default** unless a future runner contract proves a lossless finer-grained projection.
 
 ## Cache policy
 
 | Node kind | Default cache |
 |-----------|---------------|
-| Pure hermetic | Eligible |
-| Pinned external | Opt-in with response fingerprint scope |
+| Pure hermetic Softprobe control checks | Eligible |
+| Opaque framework runner | Non-cacheable (default) |
 | Live / human / side-effecting | Non-cacheable |
 
 ## Events per stage
 
-Each stage emits typed events (`case.started`, `rollout.completed`, `evaluation.attempted`, …). See [Events](/en/evaluation/reference/events).
+Outer stages emit typed events. Canonical names live in [Events](/en/evaluation/reference/events):
 
 ```mermaid
 flowchart LR
-  E1[run.planned]
-  E2[case.started]
-  E3[rollout.completed]
-  E4[artifact.committed]
-  E5[evaluation.attempted]
-  E6[measurement.emitted]
-  E7[gate.decided]
-  E8[run.completed]
-  E1 --> E2 --> E3 --> E4 --> E5 --> E6 --> E7 --> E8
+  E1[workflow.validated]
+  E2[framework.attempted]
+  E3[artifact.committed]
+  E4[framework.result.accepted]
+  E5[gate.decided]
+  E6[workflow.completed]
+  E1 --> E2 --> E3 --> E4 --> E5 --> E6
 ```

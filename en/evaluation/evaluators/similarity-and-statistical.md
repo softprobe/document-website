@@ -4,6 +4,8 @@ title: Similarity and statistical evaluators
 
 # Similarity and statistical evaluators
 
+> **Softprobe role:** Softprobe does not implement this family as a Softprobe evaluator. Use a framework that already owns these checks, pin it as a **RunnerVersion**, and capture the native result bundle. See [Ecosystem method families](/en/evaluation/evaluators/).
+
 **Similarity and statistical evaluators** grade outputs with edit distance, BLEU/ROUGE, embedding similarity, classifiers, and calibration metrics.
 
 They require **batchable** execution and pinned model/artifact digests when embeddings or classifiers participate.
@@ -19,7 +21,7 @@ They require **batchable** execution and pinned model/artifact digests when embe
 
 - Candidate text
 - Reference text from CaseVersion or dataset
-- Optional n-gram or embedding config in EvaluatorVersion parameters
+- Optional n-gram or embedding config in the framework suite
 
 ## Reproducibility
 
@@ -31,4 +33,6 @@ Traditional NLP benchmarks, embedding-based RAG evaluators in Langfuse experimen
 
 ## Extension rule
 
-Ship as batchable scorer plugins with declared MIME/schema acceptance in the capability descriptor.
+Ship or pin a **framework runner** that already owns this method family. Do **not** add Softprobe scorer plugins, Softprobe Measurement schemas, Softprobe reducers, or Softprobe human-evaluator runtimes.
+
+See [Ecosystem method families](/en/evaluation/evaluators/) and [Framework runners](/en/evaluation/reference/framework-adapters).

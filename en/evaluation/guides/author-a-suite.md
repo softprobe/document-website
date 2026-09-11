@@ -43,12 +43,13 @@ The bundle should contain all resolved files by digest.
 ## 3) Declare runner + environment policy
 
 ```yaml
-run_request:
+workflow:
+  framework_definition: .softprobe/promptfoo-definition.cas.json
   runner:
     id: promptfoo-runner@2.1.0
     runtime_image: ghcr.io/softprobe/promptfoo-runner@sha256:9c3...
-  definition_artifact: .softprobe/promptfoo-definition.cas.json
-  environment_policy:
+  subject: support-router@sha256:...
+  environment:
     network: off
     filesystem:
       workspace: ro
@@ -109,4 +110,4 @@ rules:
 
 - [Quick start](/en/evaluation/getting-started)
 - [Promptfoo integration](/en/evaluation/guides/promptfoo-integration)
-- [Framework adapters](/en/evaluation/reference/framework-adapters)
+- [Framework runners](/en/evaluation/reference/framework-adapters)

@@ -4,43 +4,44 @@ title: Result status
 
 # Result status
 
-Every evaluator **attempt** terminates with a typed **result status**. Status is not a score — errors never become implicit zero.
+Every **FrameworkAttempt** terminates with a typed **result status**. Status is not a score — errors never become implicit zero.
 
 ## Status values
 
 | Status | Meaning |
 |--------|---------|
-| `succeeded` | Attempt completed; zero or more measurements may follow |
-| `invalid_input` | Evaluator rejected bundle (schema, selector, policy) |
+| `succeeded` | Runner finished; zero or more projected measurements may follow |
+| `invalid_input` | Definition, result bundle, or capability input rejected |
 | `missing_evidence` | Required artifact absent — explicit, not silent skip |
 | `unsupported` | Capability not recognized at plan time or runtime |
 | `timed_out` | Attempt exceeded budget |
-| `cancelled` | Run or case cancelled |
+| `cancelled` | WorkflowRun cancelled |
 | `resource_exhausted` | Quota, memory, or cost cap hit |
-| `evaluator_error` | Evaluator runtime failure |
-| `subject_error` | Subject rollout failed before grading |
+| `runner_error` | Framework runner runtime failure |
+| `subject_error` | Subject failed before the runner could complete |
 
 ## Rules
 
-1. **`succeeded` with no measurements** is valid (e.g. filter evaluator found nothing to score).
+1. **`succeeded` with no measurements** is valid (projection optional; native bundle may still be rich).
 2. **Never map errors to score 0** — gate policies must treat missing/failed attempts explicitly.
-3. **Retries** create immutable Attempt records linked to the same logical slot; deterministic result keys prevent duplicate measurements.
-4. **Intentional re-evaluation** creates a new `evaluation_result_id`.
+3. **Outer retries** create immutable FrameworkAttempt records linked to the same WorkflowRun slot; deterministic result keys prevent duplicate projected measurements.
+4. Framework-internal retries/trials stay inside the **native result bundle** — Softprobe does not invent CaseRun IDs for them.
 
 ## Gate interaction
 
-GatePolicyVersion references measurements and aggregates — not raw attempt status alone. A common pattern:
+Gate policies reference outer status and **explicitly selected** runner-reported or projected fields. A common pattern:
 
 ```text
-routing.skill_match = pass
-AND evaluation.attempt_status != subject_error
+framework_attempt.status = succeeded
+AND native.summary.failedCount = 0
 ```
 
 ## Diagnostics
 
-`invalid_input`, `missing_evidence`, and `unsupported` include structured diagnostics in the event ledger (and `--json` validate output for import-time failures).
+`invalid_input`, `missing_evidence`, and `unsupported` include structured diagnostics in the event ledger (and `--json` validate output for pack-time failures).
 
 ## Related
 
-- [Events](/en/evaluation/reference/events) — `evaluation.attempted` carries status
-- [CLI](/en/evaluation/reference/cli) — run exit code vs attempt status
+- [Events](/en/evaluation/reference/events)
+- [CLI](/en/evaluation/reference/cli)
+- [Scores and gates](/en/evaluation/concepts/scores-and-gates)

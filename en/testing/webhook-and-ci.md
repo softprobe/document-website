@@ -118,6 +118,8 @@ sp replay run \
   --json
 ```
 
+Use the default Rolling selection with `--from`/`--to` when you intentionally want a time-bounded corpus. The `Pinned` command above ignores those flags.
+
 `--watch` polls `GET /api/progress?planId=…` until finished. The CLI may still exit **0** when compare failures exist — pipelines must check failed cases (below).
 
 REST equivalent:

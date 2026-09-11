@@ -4,6 +4,8 @@ title: LLM judge evaluators
 
 # LLM judge evaluators
 
+> **Softprobe role:** Softprobe does not implement this family as a Softprobe evaluator. Use a framework that already owns these checks, pin it as a **RunnerVersion**, and capture the native result bundle. See [Ecosystem method families](/en/evaluation/evaluators/).
+
 **LLM judge evaluators** apply rubrics, G-Eval-style criteria, factuality, style, and safety checks using a pinned model, prompt, and sampling policy.
 
 They return numeric, categorical, or boolean measurements plus optional reasoning text stored as artifacts.
@@ -18,7 +20,7 @@ They return numeric, categorical, or boolean measurements plus optional reasonin
 ## Required evidence
 
 - Subject output and optional context bundle
-- Rubric prompt pinned in EvaluatorVersion digest
+- Rubric prompt pinned in the framework suite / runner digest
 - Model/provider descriptor with version lock
 
 ## Example measurements
@@ -38,4 +40,6 @@ Langfuse LLM-as-a-judge templates, Braintrust autoevals, Promptfoo model-graded 
 
 ## Extension rule
 
-Pin prompt + model in EvaluatorVersion; emit standard Measurements — never a single opaque reward scalar replacing evidence.
+Ship or pin a **framework runner** that already owns this method family. Do **not** add Softprobe scorer plugins, Softprobe Measurement schemas, Softprobe reducers, or Softprobe human-evaluator runtimes.
+
+See [Ecosystem method families](/en/evaluation/evaluators/) and [Framework runners](/en/evaluation/reference/framework-adapters).

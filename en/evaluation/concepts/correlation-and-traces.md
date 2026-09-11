@@ -4,29 +4,31 @@ title: Correlation and traces
 
 # Correlation and traces
 
-Every case run creates or adopts a **W3C trace** so eval results drill down to OTLP evidence and link to production observability.
+Every **FrameworkAttempt** creates or adopts a **W3C trace** so Softprobe results drill down to OTLP evidence and link to production observability.
 
-## IDs on every span
+## IDs on Softprobe / runner spans
 
 | Field | Purpose |
 |-------|---------|
-| `run_id` | Evaluation run |
-| `case_run_id` | Case × subject × trial |
-| `case_version_id`, `subject_version_id`, `trial_id` | Pinned versions |
+| `workflow_run_id` | Softprobe WorkflowRun |
+| `framework_attempt_id` | Outer runner attempt |
+| `workflow_version_id`, `runner_version_id` | Pinned versions |
 | `trace_id`, root `span_id` | W3C correlation |
-| `traceparent` | Propagated to subject |
+| `traceparent` | Propagated to the subject under test |
 
-## Evaluator vs subject spans
+Framework-internal case IDs may appear in the native result bundle; Softprobe does not require Softprobe `case_run_id` for every framework test.
 
-Evaluator execution spans carry `evaluator_version_id` and `evaluation_result_id`. They grade subject spans — they are not mixed into subject trajectory assertions.
+## Runner vs subject spans
+
+Framework-runner execution spans carry `runner_version_id` and native result-bundle digest. They observe the subject — Softprobe does not invent Softprobe evaluator spans that re-score assertions.
 
 ## Score targets from traces
 
-Measurements may target `span`, `trace`, `session`, `rollout`, `case_run`, `run`, or `comparison_group`. Trace-level scores aggregate span-level evidence selectors.
+Projected measurements may target `span`, `trace`, `session`, `workflow_run`, or `framework_attempt`. See [Score targets](/en/evaluation/reference/score-targets).
 
 ## Loop prevention
 
-Eval-execution uses a reserved internal environment tag. **EvaluationPolicyVersion** excludes these traces from online rules by default — preventing evaluators from triggering infinite re-eval loops.
+Eval-execution uses a reserved internal environment tag. Online policies exclude these traces by default — preventing recursive evaluation loops.
 
 ## Softprobe Testing correlation
 

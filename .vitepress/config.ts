@@ -245,6 +245,23 @@ const platformSidebarZh = [
   },
 ]
 
+const agentQaSidebarEn = [
+  {
+    text: 'Get started',
+    items: [
+      { text: 'What is Agent QA', link: '/en/agent-qa/' },
+      { text: 'Quick start', link: '/en/agent-qa/getting-started' },
+      { text: 'Concepts', link: '/en/agent-qa/concepts' },
+    ],
+  },
+  {
+    text: 'Integrations',
+    items: [
+      { text: 'OpenCode', link: '/en/agent-qa/opencode' },
+    ],
+  },
+]
+
 const evaluationSidebarEn = [
   {
     text: 'Get started',
@@ -362,6 +379,7 @@ function sidebarForLocale(locale: DocLocale) {
     [testingBase]: testing,
   }
   if (locale === 'en') {
+    sidebars['/en/agent-qa/'] = agentQaSidebarEn
     sidebars['/en/evaluation/'] = evaluationSidebarEn
   }
   return sidebars
@@ -370,7 +388,7 @@ function sidebarForLocale(locale: DocLocale) {
 export default withMermaid(
   defineConfig({
   title: 'Softprobe',
-  description: 'Softprobe platform, Java record-replay testing, agent evaluation, and sp CLI documentation',
+  description: 'Softprobe platform, Java record-replay testing, Agent QA, agent evaluation, and sp CLI documentation',
   base: '/',
   appearance: true,
   lastUpdated: true,
@@ -388,7 +406,7 @@ export default withMermaid(
       llmstxt({
         ignoreFiles: ['**/implementer/**'],
         description:
-          'Softprobe — business observability (Istio/SESSIFY), Java record-replay testing, and agent evaluation driven by the sp CLI and AI agents.',
+          'Softprobe — business observability (Istio/SESSIFY), Java record-replay testing, Agent QA for coding agents, and agent evaluation driven by the sp CLI and AI agents.',
       }),
     ],
   },

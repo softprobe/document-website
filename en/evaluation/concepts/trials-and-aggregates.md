@@ -4,44 +4,44 @@ title: Trials and aggregates
 
 # Trials and aggregates
 
-Stochastic agents and models require **trials**, **aggregates**, and honest uncertainty — not single-shot pass/fail.
+Stochastic agents need **trials**, **aggregates**, and honest uncertainty — but those semantics stay **framework-native** (or appear only as optional Softprobe projections). Softprobe does not ship Softprobe reducers or Softprobe trial orchestration as product features.
 
-## Trials
+## Framework-owned trials
 
-A **trial** repeats the same case × subject with a derived seed policy:
+Promptfoo, DeepEval, and similar tools may repeat cases, vary seeds, and compute pass@k inside their own runners. Softprobe treats that as **one FrameworkAttempt** whose native result bundle already contains trial detail.
 
 ```yaml
+# Example: stays in Promptfoo / framework config — not Softprobe Suite YAML
+# (illustrative)
 trials:
   count: 5
   seed: 42
-  policy: derived_per_case_run
 ```
 
-Each trial produces its own CaseRun, Rollout, and measurements. Trials enable pass@k, pass^k, variance, and flaky detection.
+Softprobe stores the native bundle + outer status. It does not invent Softprobe `CaseRun` IDs for each framework-internal trial.
 
-## Aggregates
+## Aggregates Softprobe may see
 
-**Reducers** combine measurements across trials, cases, subjects, or comparison groups:
+Optional **score projection** may lift selected framework-reported aggregates for query:
 
-| Aggregate | Use |
-|-----------|-----|
-| `mean`, `quantiles` | Central tendency and tail latency |
-| `pass@k`, `pass^k` | Stochastic success rates |
-| `paired_delta` + bootstrap CI | Candidate vs baseline with uncertainty |
-| `inter_rater_agreement` | Human evaluation |
+| Aggregate (framework-reported) | Softprobe use |
+|--------------------------------|---------------|
+| pass rate / failed count | Gate input if explicitly selected |
+| pass@k / variance | Query projection when available |
+| paired deltas | Compare workflows when projected |
 
-Aggregates are ledger records with reducer provenance — not overloaded into score metadata.
+Native aggregate detail remains in the result bundle. Softprobe gate policies must not pretend Softprobe recomputed framework assertions.
 
-## Group evaluators
+## Comparative / tournament judges
 
-**Pairwise**, **listwise**, and **tournament** judges run at group topology: one evaluator invocation sees multiple candidates with position randomization to reduce bias.
-
-## Gates on aggregates
-
-Gate policies may reference aggregates (`routing.pass_rate >= 0.95`) as well as per-case measurements.
+Pairwise and listwise judges live in the **framework** (or a specialized runner). Softprobe’s role is the same: pin runner + environment, capture evidence, gate on outer status and selected fields.
 
 ## Flaky detection
 
-Repeated runs of deterministic cases with `<= 2%` outcome flip rate (configurable) flag infrastructure or subject instability before promotion.
+Repeat WorkflowRuns of a hermetic FrameworkDefinition. Large flips in outer status or selected native summaries indicate infrastructure or subject instability before promotion — Softprobe compares workflow runs, not Softprobe-owned reducer state.
 
-See [Stochastic and repeated evaluators](/en/evaluation/evaluators/stochastic-and-repeated).
+## Related
+
+- [Scores and gates](/en/evaluation/concepts/scores-and-gates)
+- [Ecosystem method families](/en/evaluation/evaluators/)
+- [Result status](/en/evaluation/reference/result-status)

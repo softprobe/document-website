@@ -4,6 +4,8 @@ title: Trajectory and tool evaluators
 
 # Trajectory and tool evaluators
 
+> **Softprobe role:** Softprobe does not implement this family as a Softprobe evaluator. Use a framework that already owns these checks, pin it as a **RunnerVersion**, and capture the native result bundle. See [Ecosystem method families](/en/evaluation/evaluators/).
+
 **Trajectory evaluators** assert on canonical OTLP steps: tools used, argument shapes, ordering, step count, efficiency, and goal-success proxies.
 
 ## What they measure
@@ -37,4 +39,6 @@ DeepEval trajectory metrics (via adapter), custom tool-use checks in agent bench
 
 ## Extension rule
 
-EvidenceAdapter materializes canonical steps; scorers consume the bundle — do not embed OTLP parsing in each evaluator.
+Ship or pin a **framework runner** that already owns this method family. Do **not** add Softprobe scorer plugins, Softprobe Measurement schemas, Softprobe reducers, or Softprobe human-evaluator runtimes.
+
+See [Ecosystem method families](/en/evaluation/evaluators/) and [Framework runners](/en/evaluation/reference/framework-adapters).

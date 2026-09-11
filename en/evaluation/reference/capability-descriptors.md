@@ -4,22 +4,20 @@ title: Capability descriptors
 
 # Capability descriptors
 
-Every **EvaluatorVersion** declares a **capability descriptor** — the kernel's future-proofing mechanism. Unknown methods fail at **plan** time with `unsupported`, not at gate time with silent pass.
+Every **RunnerVersion** and **EnvironmentVersion** declares a **capability descriptor** so Softprobe can reject incompatible WorkflowVersions at **plan/validate** time (`unsupported`) — never as a silent gate pass.
+
+Descriptors are **not** Softprobe evaluator ABIs. Softprobe does not ship a Softprobe scorer plugin surface.
 
 ## Descriptor fields
 
 | Field | Description |
 |-------|-------------|
-| Protocol / implementation version | Evaluator ABI level |
-| Runtime | `wasm`, `oci`, `process`, `remote`, `builtin` |
-| Topology | `item`, `pair`, `group`, `stream`, `aggregate` |
-| Evidence selectors | Required artifacts; MIME/schema versions |
-| Output schema | Measurement names, types, target scopes |
-| Determinism | Hermetic / pinned_external / recorded_external / live |
-| Seed support | Whether reducer/trial seeds apply |
-| Batchability | Can score N items in one invocation |
-| Cache policy | Eligibility for deterministic cache |
-| Resources | Network, secrets, filesystem, GPU, model, budgets |
+| Protocol / implementation version | Runner or environment ABI level |
+| Runtime | `oci`, `process`, … |
+| Result-bundle schema | Declared native output contract / size limits |
+| Required mounts / network / secrets | Least-privilege grants |
+| Determinism / reproducibility class | Hermetic / pinned_external / recorded_external / live |
+| Resources | CPU, memory, GPU, time, cost budgets |
 | Residency | Data sensitivity and region constraints |
 
 ## Protocol evolution
@@ -27,16 +25,14 @@ Every **EvaluatorVersion** declares a **capability descriptor** — the kernel's
 - Additive within a major version.
 - **Minimum/maximum kernel protocol** on every descriptor.
 - **Required capability IDs** — host executes only when all recognized.
-- **Optional opaque extensions** (`Any` with type URL) preserved byte-for-byte.
+- **Optional opaque extensions** preserved byte-for-byte.
 - Unknown optional fields ignored; unknown **required** capabilities → `unsupported` at validate.
 
-## Plugin roles
+## What attaches descriptors
 
-Descriptors attach to plugin kinds:
+RunnerVersion · EnvironmentVersion · (host placement constraints)
 
-Generator · Subject · Environment · EvidenceAdapter · Evaluator · Reducer · Gate · Reporter
-
-See [Plugin model](/en/evaluation/architecture/plugin-model).
+SubjectVersion pins digests and model/tool identity; it does not declare Softprobe evaluator topologies.
 
 ## Conformance
 
@@ -44,5 +40,6 @@ The corpus includes old-host/new-manifest, new-host/old-manifest, downgrade refu
 
 ## Related
 
-- [Evaluator taxonomy](/en/evaluation/evaluators/)
+- [Extension model](/en/evaluation/architecture/plugin-model)
+- [Framework runners](/en/evaluation/reference/framework-adapters)
 - [Result status](/en/evaluation/reference/result-status)

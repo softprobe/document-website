@@ -10,32 +10,33 @@ Managed Agent Evaluation exposes a versioned REST API on **sp-backend** (same te
 
 | Group | Operations |
 |-------|------------|
-| **Manifests** | Resolve, get by digest, validate |
-| **Runs** | Create (from manifest), get, list, cancel |
-| **Measurements** | Query by run, case_run, target, evaluator |
-| **Aggregates** | Get reducer outputs for a run |
-| **Gates** | Evaluate GatePolicyVersion against run; get decision |
+| **Workflows** | Resolve WorkflowVersion, get by digest, validate |
+| **Runs** | Create (from WorkflowVersion), get, list, cancel |
+| **Attempts** | FrameworkAttempt status and linkage |
 | **Artifacts** | Get metadata by digest; fetch bytes (signed URL) |
+| **Gates** | Get GateDecision for a WorkflowRun |
 | **Events** | Append-only stream read (cursor pagination) |
-| **Policies** | EvaluationPolicyVersion CRUD (online eval) |
+| **Scores** | Query optional projected measurements |
+| **Online policies** | CRUD for production sampling / backfill policies |
 
-## Public compile API
+## Public resolve API
 
-The ergonomic entry compiles user intent to a manifest:
+The ergonomic entry resolves user intent to a WorkflowVersion:
 
 ```http
-POST /api/v1/eval/compile
+POST /api/v1/eval/resolve
 Content-Type: application/json
 
 {
-  "data": { "dataset_version": "sha256:..." },
+  "framework_definition": { "digest": "sha256:..." },
+  "runner": { "version": "sha256:..." },
   "subject": { "version": "sha256:..." },
-  "evaluators": [{ "version": "sha256:..." }],
-  "environment": { "version": "sha256:..." }
+  "environment": { "version": "sha256:..." },
+  "gate_policy": { "version": "sha256:..." }
 }
 ```
 
-Response: fully resolved **RunManifest** with reproducibility class and capability negotiation result.
+Response: fully resolved **WorkflowVersion** with reproducibility class and capability negotiation result.
 
 ## Start a run (managed)
 
@@ -43,10 +44,10 @@ Response: fully resolved **RunManifest** with reproducibility class and capabili
 POST /api/v1/eval/runs
 Content-Type: application/json
 
-{ "manifest_digest": "sha256:..." }
+{ "workflow_version_digest": "sha256:..." }
 ```
 
-Returns `run_id` and streams events to the tenant eval ledger. Local CLI (`sp eval run`) uses the same manifest semantics without this HTTP hop.
+Returns `workflow_run_id` and streams events to the tenant eval ledger. Local CLI (`sp eval run`) uses the same WorkflowVersion semantics without this HTTP hop.
 
 ## Score writes (v2)
 
@@ -56,9 +57,9 @@ POST /api/v2/scores
 
 Accepts canonical `target_type` + `target_id`:
 
-`span | trace | session | rollout | case_run | run | comparison_group`
+`span | trace | session | workflow_run | framework_attempt`
 
-**Eval run measurements** are emitted only by the kernel during `evaluation.attempted` — public clients do not synthesize scorer output. The v2 write API remains for legacy telemetry, human-annotation ingest, and non-eval score paths; eval automation should use `sp eval run` / publish + query APIs instead.
+**Eval projections** during a WorkflowRun are emitted only by trusted hosts after a FrameworkAttempt — public clients do not synthesize Softprobe scorer output. The v2 write API remains for legacy telemetry, human-annotation ingest, and non-eval score paths; eval automation should use `sp eval run` / publish + query APIs instead.
 
 v1 APIs remain for span/trace/session only. See [Score targets](/en/evaluation/reference/score-targets) and [Trust boundaries](/en/evaluation/architecture/trust-boundaries).
 

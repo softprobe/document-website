@@ -127,5 +127,5 @@ runner_policy:
 ## Next steps
 
 - [Promptfoo integration](/en/evaluation/guides/promptfoo-integration)
-- [Framework adapters](/en/evaluation/reference/framework-adapters)
+- [Framework runners](/en/evaluation/reference/framework-adapters)
 - [Native model and framework runners](/en/evaluation/concepts/native-model-and-adapters)

@@ -1,50 +1,44 @@
 ---
-title: Evaluator taxonomy
+title: Ecosystem method families
 ---
 
-# Evaluator taxonomy
+# Ecosystem method families
 
-The kernel represents evaluation methods through **capability descriptors** — not a closed list of metric names. New methods normally ship as plugins without changing core result schemas.
+Softprobe does **not** implement these methods as Softprobe evaluators. They are how **frameworks** (Promptfoo, DeepEval, judges, human review tools, …) grade agents. Softprobe’s job is to **run** those frameworks via pinned runners, capture evidence, and gate workflow outcomes.
+
+Use this hub to choose which **framework capability** you need — then package it as a FrameworkDefinition + RunnerVersion.
 
 ## Method families
 
-| Family | Examples | Kernel capability |
-|--------|----------|-------------------|
-| [Deterministic](/en/evaluation/evaluators/deterministic) | exact match, contains, regex, JSON Schema, AST, unit tests | Pure scorer over typed artifacts |
-| [Similarity and statistical](/en/evaluation/evaluators/similarity-and-statistical) | edit distance, BLEU/ROUGE, embeddings, classifiers | Batchable scorer; model digest |
-| [Reference-based quality](/en/evaluation/evaluators/reference-based-quality) | correctness, groundedness, citation, RAG faithfulness | Dataset references + retrieved context |
-| [LLM judge](/en/evaluation/evaluators/llm-judge) | rubric, G-Eval, factuality, style, safety | Model-backed scorer; pinned prompt/policy |
-| [Comparative judge](/en/evaluation/evaluators/comparative-judge) | pairwise, listwise, tournament, baseline | Group scorer; position randomization |
-| [Trajectory and tools](/en/evaluation/evaluators/trajectory-and-tools) | tool-used, args, ordering, step count, efficiency | Canonical trajectory + span selection |
-| [Environment outcome](/en/evaluation/evaluators/environment-outcome) | tests pass, DB/API/UI state, task completion | Stateful env verify contract |
-| [Multi-turn and multi-agent](/en/evaluation/evaluators/multi-turn-and-multi-agent) | dialogue quality, handoffs, simulated users | Stateful rollout protocol |
-| [Human annotation](/en/evaluation/evaluators/human-annotation) | rubric, pairwise preference, adjudication | Async human evaluator runtime |
-| [Production and online](/en/evaluation/evaluators/production-online) | sampling, filters, continuous rules, backfill | Scheduler over trace snapshots |
-| [Robustness and security](/en/evaluation/evaluators/robustness-and-security) | perturbation, metamorphic, fuzzing, red-team | Case generators + safety sandbox |
-| [Stochastic and repeated](/en/evaluation/evaluators/stochastic-and-repeated) | pass@k, pass^k, best-of-n, variance | Trial groups + reducers |
-| [Meta-evaluation](/en/evaluation/evaluators/meta-evaluation) | judge calibration, agreement, leakage checks | Evaluators consume prior result sets |
+| Family | Examples | Typically owned by |
+|--------|----------|--------------------|
+| [Deterministic](/en/evaluation/evaluators/deterministic) | exact match, contains, regex, JSON Schema | Promptfoo asserts, unit tests |
+| [Similarity and statistical](/en/evaluation/evaluators/similarity-and-statistical) | edit distance, BLEU/ROUGE, embeddings | Framework metrics / libs |
+| [Reference-based quality](/en/evaluation/evaluators/reference-based-quality) | groundedness, citation, RAG faithfulness | DeepEval / RAG frameworks |
+| [LLM judge](/en/evaluation/evaluators/llm-judge) | rubric, G-Eval, factuality, style | Framework LLM-as-judge |
+| [Comparative judge](/en/evaluation/evaluators/comparative-judge) | pairwise, listwise, tournament | Framework comparative flows |
+| [Trajectory and tools](/en/evaluation/evaluators/trajectory-and-tools) | tool-used, args, ordering, efficiency | Trajectory metrics + OTEL |
+| [Environment outcome](/en/evaluation/evaluators/environment-outcome) | tests pass, DB/API/UI state | Env verify in-framework + Softprobe EnvironmentVersion |
+| [Multi-turn and multi-agent](/en/evaluation/evaluators/multi-turn-and-multi-agent) | dialogue quality, handoffs | Multi-turn framework suites |
+| [Human annotation](/en/evaluation/evaluators/human-annotation) | rubric, preference, adjudication | Human workflow tools / framework hooks |
+| [Production and online](/en/evaluation/evaluators/production-online) | sampling, continuous rules, backfill | Softprobe online policy + framework runner |
+| [Robustness and security](/en/evaluation/evaluators/robustness-and-security) | perturbation, red-team | Security suites in-framework |
+| [Stochastic and repeated](/en/evaluation/evaluators/stochastic-and-repeated) | pass@k, variance | Framework trials (see [Trials](/en/evaluation/concepts/trials-and-aggregates)) |
+| [Meta-evaluation](/en/evaluation/evaluators/meta-evaluation) | judge calibration, leakage | Separate framework suites over prior exports |
 
-Combinations (judge ensembles, causal comparisons, multimodal judges) use group execution, generators, typed evidence, environments, and reducers — **not** new core result types.
+## Softprobe role for every family
 
-## Topology
-
-| Topology | When |
-|----------|------|
-| `item` | One case run, one candidate |
-| `pair` | Two candidates compared |
-| `group` | Listwise / tournament |
-| `stream` | Streaming partial outputs |
-| `aggregate` | Cross-run reducers |
-
-## Example measurements
-
-| Eval type | Typical evaluators |
-|-----------|-------------------|
-| Prompt-only router | Deterministic contains + confidentiality |
-| Sandbox agent | Environment outcome + trajectory + LLM judge |
+```text
+FrameworkDefinition + RunnerVersion + SubjectVersion + EnvironmentVersion
+→ FrameworkAttempt → EvidenceArtifact → optional projection → GateDecision
+```
 
 ## Extension rule
 
-Add a scorer, reducer, generator, environment, or evidence adapter — not a new Measurement schema — unless the computational topology is genuinely new.
+Add or pin a **framework runner** that already owns the method. Do **not** add Softprobe Measurement schemas or Softprobe scorers unless you are building an internal control-plane check (integrity, redaction, capability) — those are not eval authoring.
 
-See [Capability descriptors](/en/evaluation/reference/capability-descriptors).
+## Related
+
+- [Mental model](/en/evaluation/mental-model)
+- [Framework runners](/en/evaluation/reference/framework-adapters)
+- [Capability descriptors](/en/evaluation/reference/capability-descriptors)

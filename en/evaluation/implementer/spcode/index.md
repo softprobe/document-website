@@ -35,7 +35,7 @@ Recorded/synthetic episodes (~30+ cases): replay failure, empty window, trace re
 
 ## Release gating
 
-spcode PRs gate on pinned suite digest + **GatePolicyVersion**. Routing gates first; episode gates tighten as corpus matures.
+spcode PRs gate on pinned FrameworkDefinition digest + gate policy in WorkflowVersion. Routing gates first; episode gates tighten as corpus matures.
 
 ## Internal engine naming
 

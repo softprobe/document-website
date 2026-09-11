@@ -4,87 +4,91 @@ title: Native model and framework runners
 
 # Native model and framework runners
 
-Softprobe Agent Evaluation is **framework-agnostic**, but interoperability is **runner-first** (per design): frameworks keep their own DSL and semantics; Softprobe owns workflow, environment, evidence custody, and release gates.
+Softprobe Agent Evaluation is **framework-agnostic** and **runner-first**: frameworks keep their own DSL and semantics; Softprobe owns workflow, environment, evidence custody, comparison, and release gates.
+
+Softprobe does **not** ship a native eval authoring language, Softprobe-owned scorers, or a 1:1 importer that rewrites every Promptfoo/DeepEval feature into Softprobe JSON.
 
 ## Ownership boundary
 
 ```mermaid
 flowchart TB
   subgraph fw [Framework owns]
-    Def[Native definition files]
-    Sem[Assertions and internal semantics]
+    Def[FrameworkDefinition files]
+    Sem[Assertions / judges / reducers]
     Res[Native result bundle]
   end
   subgraph sp [Softprobe owns]
-    Life[Run and attempt lifecycle]
-    Env[Environment isolation and capabilities]
-    Ev[Evidence and artifact visibility]
-    Gate[Gate policies and decisions]
-    SoR[thelake ledger as SoR]
+    Life[WorkflowRun / FrameworkAttempt lifecycle]
+    Env[EnvironmentVersion isolation]
+    Ev[EvidenceArtifact custody]
+    Gate[GateDecision]
+    SoR[thelake ledger]
   end
   fw --> sp
 ```
 
-Framework-native IDs and pass/fail values are preserved as provenance. They do not become kernel identities unless a later explicit projection contract supports it.
+## Default integration: opaque framework runner
 
-## Three integration modes
-
-### 1) Opaque framework runner (default interop)
-
-Run Promptfoo/DeepEval as a pinned framework execution node, without translating every framework feature into Softprobe schema.
+Run Promptfoo/DeepEval (or another tool) as a pinned execution node — no assertion translation.
 
 ```mermaid
 flowchart LR
-  Def[Promptfoo files and lockfile]
-  Pack[Runner package and pin]
-  Run[Framework runner node]
+  Def[FrameworkDefinition]
+  RunV[RunnerVersion]
+  Sub[SubjectVersion]
+  Env[EnvironmentVersion]
+  WV[WorkflowVersion]
+  Att[FrameworkAttempt]
   Native[Native result bundle]
-  Outer[Outer kernel outcome + gate]
-  Def --> Pack --> Run --> Native --> Outer
+  Gate[GateDecision]
+  Def --> WV
+  RunV --> WV
+  Sub --> WV
+  Env --> WV
+  WV --> Att --> Native --> Gate
 ```
 
 **Concrete example**
 
 ```yaml
-# suite excerpt
-subject:
-  type: framework_runner
-  runner:
-    id: promptfoo-runner@2.1.0
-    runtime_image: ghcr.io/softprobe/promptfoo-runner@sha256:abc...
-  definition_artifact:
-    ref: cas://sha256:promptfoo-config-bundle
-  capabilities:
-    network: off
-    filesystem: [workspace:ro, artifacts:rw]
-    secrets: [OPENAI_API_KEY_REF]
+framework_definition: cas://sha256:promptfoo-config-bundle
+runner:
+  id: promptfoo-runner@2.1.0
+  runtime_image: ghcr.io/softprobe/promptfoo-runner@sha256:abc...
+subject: support-router@sha256:...
+environment:
+  network: off
+  filesystem: [workspace:ro, artifacts:rw]
+  secrets: [OPENAI_API_KEY_REF]
+gate_policy: support-router-v1
 ```
 
-Softprobe records:
-- definition digest bundle,
-- runner/runtime digest,
-- native result bundle (`results.json`, logs),
-- outer typed terminal status,
-- optional projected measurements.
+Softprobe records definition digest, runner/runtime digest, native result bundle, outer typed terminal status, and optional projected measurements.
 
-### 2) Sandboxed kernel component
+## Optional loss-aware projection
 
-Use a deliberately small kernel-owned evaluator for primitives Softprobe intentionally owns (confidentiality scans, tool-policy checks, end-state verification).
+Map a **supported subset** of native results into first-class score rows. Unsupported fields remain in native artifacts and never block execution.
 
-### 3) Optional loss-aware projection
-
-Map a supported subset of native framework results into first-class measurements. Unsupported fields remain in native artifacts and never block execution.
+There is **no** separate Softprobe “kernel evaluator mode” for product grading. Control-plane checks (artifact integrity, redaction, capability admission, release gates) are workflow policies — not an eval DSL.
 
 ## Why runner-first beats full translation
 
 | Approach | Problem |
 |----------|---------|
 | Full DSL translation | Constant catch-up with framework features |
+| Softprobe-native suite authoring | Reinvents mature ecosystems |
 | Runner-first | Stable workflow/environment contract + preserved native semantics |
 
-This avoids a brittle “Promptfoo-as-JSON” model while still enabling migration and cross-framework gates.
+## Public product API
 
-## Pre/post acceptance rules (important)
+```text
+framework suite + subject + environment + runner
+        → WorkflowVersion
+        → WorkflowRun / FrameworkAttempt
+        → evidence + GateDecision
+```
+
+## Pre/post acceptance rules
 
 ```mermaid
 sequenceDiagram
@@ -93,34 +97,21 @@ sequenceDiagram
   participant K as Kernel
   participant L as thelake
 
-  V->>K: verify pinned definition artifact set
-  V->>K: verify runner/runtime identity
+  V->>K: verify closed FrameworkDefinition
+  V->>K: verify RunnerVersion / runtime identity
   R->>K: execute with declared capabilities
   R-->>K: native result bundle + logs
   K->>K: schema/version + size/path checks
-  K->>L: commit artifacts and typed outcome
+  K->>L: commit EvidenceArtifact + typed outcome
 ```
 
 - Pre-run: all file refs resolved and hashed; runner/runtime pinned.
 - Post-run: malformed/oversized bundles rejected; no path traversal.
 - No ambient network/secrets; only declared capabilities.
 
-## What stays universal
-
-Even with runners, the product API remains:
-
-```text
-data + subject + evaluators + environment  →  RunManifest
-```
-
-And the workflow remains:
-
-```text
-validate → run → evidence → measurements/aggregates → gate
-```
-
 ## Related
 
-- [Framework adapters](/en/evaluation/reference/framework-adapters)
+- [Framework runners](/en/evaluation/reference/framework-adapters)
 - [Promptfoo integration](/en/evaluation/guides/promptfoo-integration)
+- [Mental model](/en/evaluation/mental-model)
 - [Quick start](/en/evaluation/getting-started)

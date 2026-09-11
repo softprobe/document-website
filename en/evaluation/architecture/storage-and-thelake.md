@@ -4,7 +4,7 @@ title: Storage and thelake
 
 # Storage and thelake
 
-Managed Agent Evaluation uses **thelake as the sole system of record** for eval domain data.
+Managed Agent Evaluation uses **thelake as the sole system of record** for Softprobe workflow domain data. Framework-native result detail remains in content-addressed **EvidenceArtifact** bytes.
 
 ## Data flow
 
@@ -15,7 +15,7 @@ flowchart TB
   Art[Artifact bytes]
   Obj[Object storage tenant-scoped]
   Ledger[thelake eval ledger authoritative]
-  Proj[Score / run projections derived]
+  Proj[Optional score / run projections]
   Query[API queries]
   Kernel --> Ev --> Ledger
   Kernel --> Art --> Obj
@@ -27,17 +27,18 @@ flowchart TB
 
 Append-only tables store:
 
-- RunManifest snapshots
+- WorkflowVersion snapshots
 - Events and state transitions
-- Attempts and typed failures
+- FrameworkAttempt records and typed failures
 - Artifact metadata and content hashes
-- Measurements, aggregates, gate decisions
+- GateDecision records
+- Optional projected measurements (not a Softprobe evaluator contract)
 
 The work **queue** is disposable coordination state — rebuildable from nonterminal ledger records.
 
 ## Object storage
 
-Large immutable bytes live in tenant-scoped object storage. thelake stores digest, size, media type, encryption/ACL metadata, residency, retention class, and committed location.
+Large immutable bytes live in tenant-scoped object storage (native result bundles, logs, traces). thelake stores digest, size, media type, encryption/ACL metadata, residency, retention class, and committed location.
 
 ```mermaid
 sequenceDiagram
@@ -48,40 +49,16 @@ sequenceDiagram
   Host->>Obj: upload bytes
   Obj-->>Host: hash verified
   Host->>Lake: artifact.committed event
-  Note over Lake: No reference before commit
 ```
 
-**Commit-before-reference:** bytes upload and hash-verify before `artifact.committed` events reference them.
+Commit-before-reference: ledger never points at unverified bytes.
 
-## Projections (derived)
+## Projections
 
-Score/run-view projectors consume committed events asynchronously:
-
-- Idempotent by event ID and logical measurement ID
-- May lag behind ledger; cannot become source of truth
-- Rebuildable from ledger + checkpoints
-
-Existing **scores** table remains the query-friendly measurement projection, extended with score target v2.
-
-## Local vs managed paths
-
-```mermaid
-flowchart LR
-  Local[Local run]
-  JSONL[JSONL + CAS dir]
-  Pub[sp eval publish]
-  Ingest[Validated ingestion]
-  Lake[thelake ledger]
-  Local --> JSONL --> Pub --> Ingest --> Lake
-```
-
-Local runs write JSONL + CAS artifacts. **Publish** validates signatures, manifest identity, and artifact hashes before append through managed ingestion — distinct from arbitrary client event injection.
-
-## Retention
-
-Artifact bytes may expire per policy; tombstones and digests remain. Ledger events follow declared retention for audit.
+Score and run views are **rebuildable** from the ledger + artifacts. They may lag and may be lossy relative to native bundles. Rebuild from events; do not treat projections as SoR.
 
 ## Related
 
-- [Events reference](/en/evaluation/reference/events)
-- [Score targets](/en/evaluation/reference/score-targets)
+- [Data model](/en/evaluation/concepts/data-model)
+- [Events](/en/evaluation/reference/events)
+- [Scores and gates](/en/evaluation/concepts/scores-and-gates)

@@ -4,9 +4,11 @@ title: Reference-based quality evaluators
 
 # Reference-based quality evaluators
 
+> **Softprobe role:** Softprobe does not implement this family as a Softprobe evaluator. Use a framework that already owns these checks, pin it as a **RunnerVersion**, and capture the native result bundle. See [Ecosystem method families](/en/evaluation/evaluators/).
+
 **Reference-based quality evaluators** grade against dataset references: correctness, groundedness, citation coverage, RAG relevance, and faithfulness.
 
-They require CaseVersion expected refs plus retrieved context artifacts in the evidence bundle.
+They require expected refs and retrieved context in the **framework** suite / native evidence bundle.
 
 ## What they measure
 
@@ -20,7 +22,7 @@ They require CaseVersion expected refs plus retrieved context artifacts in the e
 ## Required evidence
 
 - Model output
-- Expected references on CaseVersion
+- Expected references in the framework definition
 - Retrieved context chunks (content-addressed)
 - Optional citation spans
 
@@ -34,4 +36,6 @@ Langfuse dataset experiments with `expected_output`, Braintrust scorers over `ex
 
 ## Extension rule
 
-Use evidence selectors for `reference`, `context`, and `citation` — fail with `missing_evidence` when selectors cannot resolve.
+Ship or pin a **framework runner** that already owns this method family. Do **not** add Softprobe scorer plugins, Softprobe Measurement schemas, Softprobe reducers, or Softprobe human-evaluator runtimes.
+
+See [Ecosystem method families](/en/evaluation/evaluators/) and [Framework runners](/en/evaluation/reference/framework-adapters).

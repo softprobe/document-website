@@ -4,7 +4,7 @@ title: Trust boundaries
 
 # Trust boundaries
 
-Agent Evaluation separates **public clients** (your CI, SDK, agents) from **trusted kernel hosts** that alone produce authoritative events and measurements.
+Agent Evaluation separates **public clients** (your CI, SDK, agents) from **trusted kernel hosts** that alone produce authoritative Softprobe lifecycle events and GateDecisions.
 
 ## Trust zones
 
@@ -16,7 +16,7 @@ flowchart TB
     Agent[AI coding agents]
   end
   subgraph trusted [Trusted execution]
-    Host[Host adapter]
+    Host[Host]
     Kernel[sp-eval-kernel]
     Ingest[Signed ingestion]
   end
@@ -24,7 +24,7 @@ flowchart TB
     Ledger[thelake ledger]
     Obj[Object storage]
   end
-  public -->|compile run query| Host
+  public -->|resolve run query| Host
   Host --> Kernel
   Kernel --> Ingest --> Ledger
   Kernel --> Obj
@@ -34,22 +34,22 @@ flowchart TB
 
 Humans, SDKs, CLIs, UIs, and AI agents may:
 
-- Create/resolve suites
-- Request/cancel runs
-- Query/compare results
-- Propose cases (with policy)
+- Pack / resolve FrameworkDefinition + WorkflowVersion
+- Request/cancel WorkflowRuns
+- Query/compare results and artifacts
+- Propose framework-definition or policy changes (with policy)
 
 They **cannot**:
 
 - Append raw kernel events
-- Invoke state transitions directly
-- Synthesize attempts or measurements
+- Invoke Softprobe state transitions directly
+- Synthesize FrameworkAttempts, GateDecisions, or projected measurements
 
-Eval **measurements** are kernel-produced during `evaluation.attempted`. The legacy `POST /api/v2/scores` path remains for non-eval telemetry and governed human-annotation ingest — not for fabricating automated eval scores. See [REST API](/en/evaluation/reference/api).
+Trusted hosts emit lifecycle events after FrameworkAttempt (see [Events](/en/evaluation/reference/events)). The legacy `POST /api/v2/scores` path remains for non-eval telemetry and governed human-label ingest — not for fabricating Softprobe automated scores. See [REST API](/en/evaluation/reference/api).
 
 ## Trusted host ingestion (internal)
 
-Accepts only kernel-produced envelopes bound to authenticated tenant, host, manifest, and run identities. Validates signatures, sequence, idempotency, artifact commits, and protocol compatibility.
+Accepts only kernel-produced envelopes bound to authenticated tenant, host, WorkflowVersion, and WorkflowRun identities. Validates signatures, sequence, idempotency, artifact commits, and protocol compatibility.
 
 Illegal or skipped transitions are **rejected** — not repaired or reinterpreted.
 
@@ -62,29 +62,29 @@ sequenceDiagram
   participant Val as Validation
   participant Lake as thelake
 
-  Local->>Pub: manifest + events + artifact hashes
+  Local->>Pub: workflow + events + artifact hashes
   Pub->>Val: signatures + chain + commits
   Val->>Lake: append if valid
   Note over Val: Reject arbitrary synthesis
 ```
 
-Publishing a local JSONL bundle is a validated import: manifest identity, event chain, signatures, artifact hashes — not arbitrary event synthesis.
+Publishing a local JSONL bundle is a validated import: WorkflowVersion identity, event chain, signatures, artifact hashes — not arbitrary event synthesis.
 
 ## Credential zones
 
 | Zone | Holds |
 |------|-------|
 | Subject | Agent runtime credentials |
-| Evaluator | Model provider keys for judges |
+| Framework runner | Model/provider keys the runner declares |
 | Control plane | Tenancy, ingestion, scheduling |
 
 Sandboxes receive short-lived least-privilege handles — not shared raw secrets.
 
 ## Framework trust
 
-External evaluators (Promptfoo node, remote webhook) run with explicit filesystem, network, and secret capabilities plus conformance/security tests.
+Pinned **framework runners** (Promptfoo, DeepEval, …) run with explicit filesystem, network, and secret capabilities plus conformance/security tests. They cannot append Softprobe lifecycle events or publish authoritative gates.
 
-Remote evaluators use tenant-bound signed requests, nonce/idempotency keys, expiry, and response signature verification.
+Remote runners use tenant-bound signed requests, nonce/idempotency keys, expiry, and response signature verification.
 
 ## AI governance
 

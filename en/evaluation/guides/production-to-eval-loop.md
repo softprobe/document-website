@@ -4,29 +4,31 @@ title: Production-to-eval loop
 
 # Production-to-eval loop
 
-Turn real failures into **immutable regression cases** with governance — not silent copy-paste from production.
+Turn real failures into **immutable framework-native regression artifacts** with governance — not silent copy-paste from production into a Softprobe DSL.
 
 ```mermaid
 flowchart LR
-  Prod[Production trace]
+  Prod[Production session / trace]
+  Annotate[Optional annotation scores]
   Snap[Snapshot redact]
-  Propose[AI or human propose]
+  Propose[Propose FrameworkDefinition change]
   Review[Independent review]
-  Publish[Publish CaseVersion]
-  Run[Regression run]
+  Publish[Publish definition digest]
+  Run[Regression WorkflowRun]
   Gate[Release gate]
-  Prod --> Snap --> Propose --> Review --> Publish --> Run --> Gate
+  Prod --> Annotate --> Snap --> Propose --> Review --> Publish --> Run --> Gate
 ```
 
 ## Steps
 
-1. **Observe** — Online policy or manual selection identifies a failed production trace
-2. **Snapshot** — Capture evidence with consent, redaction, sensitivity tags
-3. **Propose** — Create candidate CaseVersion + optional rubric/evaluator changes (`derived_from` lineage)
-4. **Review** — Human or independent policy approves exact digest
-5. **Publish** — Immutable CaseVersion joins `regression` split
-6. **Activate** — Suite/gate references updated in authorized action
-7. **Gate** — Next agent build must pass expanded suite
+1. **Observe** — Online policy or manual selection identifies a failed production **trace** (or **session**)
+2. **Annotate** (optional) — Humans attach **scores** to the relevant **observation** (**span**); see [Annotation](/en/evaluation/concepts/annotation)
+3. **Snapshot** — Capture evidence with consent, redaction, sensitivity tags
+4. **Propose** — Candidate **FrameworkDefinition** (or runner/env/gate) change with `derived_from` lineage — still framework-native files
+5. **Review** — Human or independent policy approves exact digests
+6. **Publish** — Immutable FrameworkDefinition joins the regression pack
+7. **Activate** — WorkflowVersion / gate references updated in an authorized action
+8. **Gate** — Next agent build must pass the expanded workflow
 
 ## Authorization
 
@@ -40,6 +42,6 @@ Approval binds exact content digest; any mutation invalidates it.
 
 ## Relationship to Testing
 
-Java record/replay cases in [Testing](/en/testing/) remain separate. Eval cases may **reference** trace IDs as lineage without merging replay mock semantics into eval manifests.
+Java record/replay cases in [Testing](/en/testing/) remain separate. Eval artifacts may **reference** trace IDs as lineage without merging replay mock semantics into eval workflows.
 
 See [Evaluation loop](/en/evaluation/concepts/evaluation-loop).

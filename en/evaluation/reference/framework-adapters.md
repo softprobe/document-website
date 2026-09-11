@@ -1,62 +1,68 @@
 ---
-title: Framework adapters
+title: Framework runners
 ---
 
-# Framework adapters
+# Framework runners
 
-Framework interoperability is **runner-first**. Softprobe does not promise full DSL translation for Promptfoo/DeepEval.
+Framework interoperability is **runner-first**. Softprobe does not promise full DSL translation for Promptfoo, DeepEval, or future tools.
 
-## Adapter model
+(Older docs may say “framework adapters.” Prefer **framework runner**.)
+
+## Runner model
 
 ```mermaid
 flowchart TB
-  subgraph inputs [Inputs]
-    Native[Native suite YAML]
-    FW[Framework native files]
+  subgraph inputs [Pinned inputs]
+    Def[FrameworkDefinition]
+    RunV[RunnerVersion]
+    Sub[SubjectVersion]
+    Env[EnvironmentVersion]
   end
   subgraph sp [Softprobe]
     Val[validate]
-    Run[run]
-    Gate[gate]
+    WV[WorkflowVersion]
+    Att[FrameworkAttempt]
+    Gate[GateDecision]
   end
-  subgraph fw [Framework runner]
-    Exec[framework execution]
-    Bundle[native result bundle]
+  subgraph fw [Framework]
+    Exec[Native execution]
+    Bundle[Native result bundle]
   end
-  Native --> Val
-  FW --> Val
-  Val --> Run
-  Run --> Exec --> Bundle --> Gate
+  Def --> Val
+  RunV --> Val
+  Sub --> Val
+  Env --> Val
+  Val --> WV --> Att --> Exec --> Bundle --> Gate
 ```
 
-## Modes and when to use them
+## What Softprobe runs vs owns
 
-| Mode | Best for | Guarantees |
-|------|----------|------------|
-| Opaque framework runner | Keep full Promptfoo/DeepEval semantics | Native definitions/results preserved byte-for-byte |
-| Sandboxed kernel component | Small kernel-owned checks | Stable evaluator contract inside kernel DAG |
-| Optional projection | Query/report on common subset | Explicitly loss-aware; unsupported fields stay native |
+| Softprobe does | Softprobe does not |
+|----------------|--------------------|
+| Pin definition, runner, subject, environment | Translate assertions into Softprobe JSON |
+| Enforce capabilities and isolation | Implement Promptfoo/DeepEval scorers |
+| Capture native result + evidence | Expand framework-internal case matrices |
+| Outer lifecycle + GateDecision | Own trials/reducers as Softprobe plugins |
 
-## Example: Promptfoo runner descriptor
+## Example: Promptfoo runner pin
 
 ```yaml
-subject:
-  type: framework_runner
-  runner:
-    id: promptfoo-runner@2.1.0
-    runtime_image: ghcr.io/softprobe/promptfoo-runner@sha256:9c3...
-  definition_artifact:
-    ref: cas://sha256:42a...
-  capabilities:
-    network: off
-    filesystem: [workspace:ro, artifacts:rw]
-    secrets: [OPENAI_API_KEY_REF]
+framework_definition: cas://sha256:42a...
+runner:
+  id: promptfoo-runner@2.1.0
+  runtime_image: ghcr.io/softprobe/promptfoo-runner@sha256:9c3...
+subject: support-router@sha256:...
+environment:
+  network: off
+  filesystem: [workspace:ro, artifacts:rw]
+  secrets: [OPENAI_API_KEY_REF]
   limits:
     timeout_s: 300
     max_result_mb: 50
+gate_policy: support-router-v1
 ```
 
-## Example: validation diagnostics
+## Validation diagnostics
 
 ```json
 {
@@ -78,9 +84,9 @@ subject:
 }
 ```
 
-## Optional projection example
+## Optional projection
 
-Framework-native result remains authoritative artifact:
+Framework-native result remains the authoritative artifact:
 
 ```json
 {
@@ -92,11 +98,11 @@ Framework-native result remains authoritative artifact:
 }
 ```
 
-If projection cannot represent a field, it is retained in native artifacts and flagged in diagnostics.
+Unsupported fields stay in native artifacts and are flagged in diagnostics.
 
 ## Security and trust
 
-- Runner cannot append kernel lifecycle events directly.
+- Runner cannot append Softprobe lifecycle events directly.
 - Runner cannot publish authoritative gates.
 - All uploads validated before commit.
 - Capability grants are explicit and least-privilege.

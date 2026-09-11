@@ -4,65 +4,63 @@ title: Data model
 
 # Data model
 
-Agent Evaluation separates **framework-native artifacts** from **workflow records**.
+Agent Evaluation separates **framework-native artifacts** from **Softprobe workflow records**. Softprobe does not model cases, assertions, scorers, or reducers — those remain inside the framework definition and result bundle.
 
 ## Core flow
 
 ```text
-framework-native suite + subject + environment policy
-→ framework runner
-→ native result bundle + evidence
-→ Softprobe lifecycle + compare + gate
+FrameworkDefinition + SubjectVersion + EnvironmentVersion + RunnerVersion
+→ WorkflowVersion
+→ framework runner (FrameworkAttempt)
+→ native result bundle + EvidenceArtifact
+→ Softprobe lifecycle + compare + GateDecision
 ```
 
 ```mermaid
 flowchart LR
-  In[Framework files + runner config]
-  Run[Runner execution]
+  In[FrameworkDefinition + runner + subject + env]
+  WV[WorkflowVersion]
+  Run[WorkflowRun / FrameworkAttempt]
   Native[Native result bundle]
-  Outer[Outer workflow records]
-  Gate[Gate decision]
-  In --> Run --> Native --> Outer --> Gate
+  Gate[GateDecision]
+  In --> WV --> Run --> Native --> Gate
 ```
 
-## Layer A — Pinned inputs (before execution)
+## Layer A — Immutable resources (before execution)
 
 | Entity | Description | Example |
 |--------|-------------|---------|
-| **DefinitionArtifactVersion** | Content-addressed framework definition bundle | Promptfoo config/tests/prompts bundle digest |
-| **RunnerVersion** | Runner id, runtime image digest, framework version | `promptfoo-runner@2.1.0` + image sha |
-| **SubjectVersion** | The target system under test identity | `support-agent@sha256:...` or hosted model route |
-| **EnvironmentPolicyVersion** | Capability and isolation policy | network off, mounts, secret refs, limits |
-| **RunRequestVersion** | The pinned request object referencing all above | request digest used in CI |
-| **GatePolicyVersion** | Release policy over outer status and projected measurements | `status=succeeded` and selected checks |
+| **FrameworkDefinition** | Closed, content-addressed native suite + dependencies | Promptfoo config/tests/prompts bundle digest |
+| **RunnerVersion** | Framework name, package/lockfile/image digests, command, result-bundle schema, capabilities | `promptfoo-runner@2.1.0` + image sha |
+| **SubjectVersion** | Code, image, model config, prompts, tools, or deployment under test | `support-agent@sha256:…` |
+| **EnvironmentVersion** | Sandbox topology, mounts, secret refs, network policy, limits, time policy | network off, workspace ro |
+| **WorkflowVersion** | Resolved FrameworkDefinition + RunnerVersion + SubjectVersion + EnvironmentVersion + gate policy | CI-pinned workflow digest |
 
 ## Layer B — Runtime records (during/after execution)
 
 | Entity | Description |
 |--------|-------------|
-| **Run** | One execution of one RunRequestVersion |
-| **Attempt** | One runner attempt with retry linkage |
-| **NativeResultArtifact** | Full framework-native result files |
-| **EvidenceArtifact** | Logs, traces, usage/cost, stdout/stderr, attachments |
-| **ProjectionResult** | Optional projected measurements and loss diagnostics |
-| **GateDecision** | Policy outcome for release/governance |
-| **Event** | Outer lifecycle events (`requested`, `validated`, `running`, `terminal`) |
+| **WorkflowRun** | One execution of one WorkflowVersion (outer lifecycle) |
+| **FrameworkAttempt** | One runner invocation; framework-internal retries stay in the native bundle |
+| **EvidenceArtifact** | Native definition, native result bundle, logs, traces, usage, environment evidence |
+| **GateDecision** | Versioned workflow policy over outer status, provenance, and optionally runner-reported fields |
+| **Event** | Append-only outer lifecycle events — see [Events](/en/evaluation/reference/events) (`workflow.validated`, `framework.attempted`, `artifact.committed`, `framework.result.accepted`, `gate.decided`, `workflow.completed`) |
+
+Optional **score projection**: framework-reported measurements may land in thelake `scores` for query. Native aggregate detail stays in the result bundle; gate decisions are ledger-only unless a gate emits a separately configured boolean measurement.
 
 ## ER diagram
 
 ```mermaid
 erDiagram
-  RunRequestVersion ||--|| DefinitionArtifactVersion : references
-  RunRequestVersion ||--|| RunnerVersion : uses
-  RunRequestVersion ||--|| SubjectVersion : targets
-  RunRequestVersion ||--|| EnvironmentPolicyVersion : enforces
-  Run ||--|| RunRequestVersion : executes
-  Run ||--o{ Attempt : contains
-  Attempt ||--o{ NativeResultArtifact : writes
-  Attempt ||--o{ EvidenceArtifact : writes
-  Attempt ||--o| ProjectionResult : may_emit
-  Run ||--o| GateDecision : decides
-  Run ||--o{ Event : appends
+  WorkflowVersion ||--|| FrameworkDefinition : references
+  WorkflowVersion ||--|| RunnerVersion : uses
+  WorkflowVersion ||--|| SubjectVersion : targets
+  WorkflowVersion ||--|| EnvironmentVersion : enforces
+  WorkflowRun ||--|| WorkflowVersion : executes
+  WorkflowRun ||--o{ FrameworkAttempt : contains
+  FrameworkAttempt ||--o{ EvidenceArtifact : writes
+  WorkflowRun ||--o| GateDecision : decides
+  WorkflowRun ||--o{ Event : appends
 ```
 
 ## Worked example (Promptfoo runner)
@@ -71,9 +69,9 @@ erDiagram
 
 ```yaml
 runner: promptfoo-runner@2.1.0
-definition_artifact: cas://sha256:promptfoo-def-bundle
+framework_definition: cas://sha256:promptfoo-def-bundle
 subject: support-router-prod
-environment_policy:
+environment:
   network: off
   secrets: [OPENAI_API_KEY_REF]
   limits: { timeout_s: 300, max_result_mb: 50 }
@@ -83,24 +81,31 @@ gate_policy: support-router-v1
 **After execution**
 
 ```text
-Run.status = succeeded
-NativeResultArtifact = cas://sha256:promptfoo-results
-ProjectionResult.status = lossy
+WorkflowRun.status = succeeded
+FrameworkAttempt.status = succeeded
+EvidenceArtifact.native_result = cas://sha256:promptfoo-results
+score_projection = optional / may be lossy
 GateDecision = pass
 ```
 
-**Lifecycle events**
+**Lifecycle events** (see [Events](/en/evaluation/reference/events))
 
 ```text
-run.requested → run.validated → run.running → run.terminal
+workflow.validated → framework.attempted → artifact.committed
+  → framework.result.accepted → gate.decided → workflow.completed
 ```
 
-## Projection note
+## Score target v2 (projection only)
 
-Projection is optional. Unsupported framework fields remain in native artifacts and are represented as diagnostics. Softprobe does not require full DSL parity mapping.
+Projected measurements attach to one canonical target:
+
+`span | trace | session | workflow_run | framework_attempt`
+
+Legacy `span_id` / `trace_id` / `session_id` remain for v1 APIs. See [Score targets](/en/evaluation/reference/score-targets).
 
 ## Related
 
-- [Framework adapters](/en/evaluation/reference/framework-adapters)
+- [Mental model](/en/evaluation/mental-model)
+- [Framework runners](/en/evaluation/reference/framework-adapters)
 - [Promptfoo integration](/en/evaluation/guides/promptfoo-integration)
 - [Scores and gates](/en/evaluation/concepts/scores-and-gates)

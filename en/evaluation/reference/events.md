@@ -6,27 +6,41 @@ title: Events
 
 The evaluation kernel appends **typed events** to an immutable ledger. Local runs write JSONL; managed runs append to thelake atomically with state transitions.
 
+Canonical names (design contract):
+
+```text
+workflow.validated
+framework.attempted
+artifact.committed
+framework.result.accepted
+gate.decided
+workflow.completed
+```
+
+Other pages must link here — do not invent parallel Softprobe event vocabularies.
+
 ## Core event types
 
 | Event | When |
 |-------|------|
-| `run.planned` | Manifest validated; DAG scheduled |
-| `case.started` | CaseRun begins |
-| `rollout.completed` | Subject finished; trace finalized |
+| `workflow.validated` | WorkflowVersion validated; outer attempt may start |
+| `framework.attempted` | FrameworkAttempt began or progressed (payload carries status) |
 | `artifact.committed` | Content-addressed bytes verified and registered |
-| `evaluation.attempted` | Evaluator attempt finished (see [Result status](/en/evaluation/reference/result-status)) |
-| `measurement.emitted` | Typed measurement recorded |
-| `aggregate.emitted` | Reducer output recorded |
-| `gate.decided` | GatePolicyVersion applied |
-| `run.completed` | Terminal run state |
+| `framework.result.accepted` | Native result bundle accepted against declared schema/limits |
+| `gate.decided` | Gate policy applied → GateDecision |
+| `workflow.completed` | WorkflowRun reached a terminal state |
+
+Framework-internal case/trial events stay inside the **native result bundle**.
+
+Optional projected measurements may appear as ledger/projection records after `framework.result.accepted`; they are not Softprobe evaluator attempts.
 
 ## Event envelope
 
 Each event includes:
 
-- `event_id`, `run_id`, monotonic sequence
+- `event_id`, `workflow_run_id`, monotonic sequence
 - `type`, `timestamp`, `schema_version`
-- Payload specific to type (e.g. measurement refs, artifact digests)
+- Payload specific to type (artifact digests, status, gate reasons)
 - Tenant/project context on managed ingestion
 
 ## Consistency
@@ -38,15 +52,16 @@ Each event includes:
 ## Local bundle layout
 
 ```text
-.sp-work/runs/<run_id>/
+.sp-work/runs/<workflow_run_id>/
   events.jsonl
   artifacts/<digest>/...
-  manifest.resolved.json
+  workflow.resolved.json
 ```
 
-Publishing validates signatures, manifest identity, and artifact hashes before managed append.
+Publishing validates signatures, WorkflowVersion identity, and artifact hashes before managed append.
 
 ## Related
 
 - [Storage and thelake](/en/evaluation/architecture/storage-and-thelake)
 - [How it works](/en/evaluation/how-it-works)
+- [Result status](/en/evaluation/reference/result-status)

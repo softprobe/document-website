@@ -4,7 +4,7 @@ title: How agent evaluation works
 
 # How agent evaluation works
 
-An evaluation run is a **content-addressed pipeline**: compile a manifest, execute a DAG, append events, project scores, apply gates.
+An evaluation run is a **framework-runner workflow**: resolve a pinned workflow, execute one opaque runner in a controlled environment, commit native evidence, optionally project scores, then apply gates.
 
 ## End-to-end lifecycle
 
@@ -12,159 +12,136 @@ An evaluation run is a **content-addressed pipeline**: compile a manifest, execu
 sequenceDiagram
   participant Author as Author
   participant API as Public API
-  participant Compiler as Manifest compiler
   participant Kernel as sp-eval-kernel
   participant Host as Local or managed host
-  participant Subject as Subject agent
+  participant Runner as Framework runner
+  participant Subject as Subject under test
   participant Lake as thelake ledger
-  participant Proj as Projections
 
-  Author->>API: create suite / import Promptfoo
-  API->>Compiler: resolve digests
-  Compiler->>Kernel: RunManifest
-  Kernel->>Host: plan DAG + execute
-  Host->>Subject: case + environment + trace context
-  Subject-->>Host: rollout + OTLP trace
-  Host->>Kernel: evidence materialized
-  Kernel->>Kernel: evaluators + reducers + gates
-  Kernel->>Lake: append events
-  Lake->>Proj: async score/run views
-  Proj->>API: query / compare / promote
+  Author->>API: pack FrameworkDefinition + pin runner/subject/env
+  API->>Kernel: resolve WorkflowVersion
+  Kernel->>Host: validate capabilities + plan
+  Host->>Runner: invoke pinned runner
+  Runner->>Subject: framework-owned cases / providers
+  Subject-->>Runner: framework-native results
+  Runner-->>Host: native result bundle + logs
+  Host->>Kernel: commit EvidenceArtifact + terminal status
+  Kernel->>Lake: append workflow.* events
+  Kernel->>Kernel: GateDecision
+  Lake-->>API: query / compare / promote
 ```
 
 ## Pipeline overview
 
 ```mermaid
 flowchart TB
-  subgraph phase1 [1 Author and resolve]
-    A1[data + subject + evaluators + environment]
-    A2[SuiteVersion]
-    A3[RunManifest]
-    A1 --> A2 --> A3
+  subgraph phase1 [1 Pack and resolve]
+    A1[framework suite + subject + environment + runner]
+    A2[WorkflowVersion]
+    A1 --> A2
   end
-  subgraph phase2 [2 Plan and execute DAG]
-    D1[Resolve cases]
-    D2[Reset environment]
-    D3[Run subject trials]
-    D4[Snapshot trace]
-    D5[Run evaluators]
-    D6[Aggregate + gate]
-    D1 --> D2 --> D3 --> D4 --> D5 --> D6
+  subgraph phase2 [2 Execute outer attempt]
+    D1[Validate pins and capabilities]
+    D2[Launch FrameworkAttempt]
+    D3[Collect native result + traces]
+    D4[Commit EvidenceArtifact]
+    D1 --> D2 --> D3 --> D4
   end
-  subgraph phase3 [3 Persist and query]
-    P1[events.jsonl / ledger]
-    P2[artifacts CAS]
-    P3[score projections]
-    P1 --> P3
-    P2 --> P1
+  subgraph phase3 [3 Persist and gate]
+    P1[WorkflowRun ledger / JSONL]
+    P2[Optional score projection]
+    P3[GateDecision]
+    P1 --> P2 --> P3
   end
   phase1 --> phase2 --> phase3
 ```
 
-## Phase 1 — Author and resolve
+## Phase 1 — Pack and resolve
 
-Authors work with mutable names; execution uses immutable versions:
+Authors keep **framework-native** files. Softprobe resolves immutable versions:
 
 ```text
-data + subject + evaluators + environment
+framework suite + subject + environment + runner
         ↓
-   SuiteVersion (cases, evaluators, trials, gates)
+   FrameworkDefinition + RunnerVersion + SubjectVersion + EnvironmentVersion
         ↓
-   RunManifest (+ initiator, secrets-by-ref, reproducibility class)
+   WorkflowVersion (+ gate policy)
 ```
 
-`sp eval validate` performs this compile step without executing the subject — ideal for CI lint.
+`sp eval validate` checks closed artifact sets, runner pins, and capability compatibility **without** translating assertions or calling the subject.
 
-## Phase 2 — Plan and execute DAG
+## Phase 2 — FrameworkAttempt
 
-The kernel builds a **content-addressed DAG** (not a fixed “prompt then assert” loop):
+The kernel treats the runner as **one opaque execution node**. Softprobe does not expand cases, run assertions, or aggregate framework-internal trials.
 
 ```mermaid
 flowchart LR
-  R[Resolve versions]
-  G[Generate / choose cases]
-  E[Allocate / reset env]
-  S[Run subject trials]
-  T[Trace snapshot]
-  N[Normalize trajectory]
-  V[Materialize evidence]
-  I[Item evaluators]
-  P[Group evaluators]
-  A[Aggregates]
-  GT[Gates]
-  Pub[Publish / export]
-  R --> G --> E --> S --> T --> N --> V --> I --> P --> A --> GT --> Pub
+  R[Resolve WorkflowVersion]
+  C[Capability admission]
+  F[FrameworkAttempt]
+  E[Evidence commit]
+  T[Typed terminal status]
+  R --> C --> F --> E --> T
 ```
 
-See [Execution DAG](/en/evaluation/architecture/execution-dag).
+Inside the runner, Promptfoo/DeepEval (or another framework) owns matrix expansion, providers, assertions, and its own report formats. Softprobe records digests and outer status only.
 
-## Phase 3 — Subject produces rollout
+See [Execution DAG](/en/evaluation/architecture/execution-dag) for host planning around that opaque node.
 
-The **subject** (your model, API wrapper, or full agent process) runs against the **environment**:
+## Phase 3 — Subject and observation
+
+The **subject** is whatever the framework exercises (model route, agent process, …) under the **EnvironmentVersion** Softprobe enforces:
 
 ```mermaid
 flowchart LR
-  Case[CaseVersion input]
+  Def[FrameworkDefinition]
   Sub[SubjectVersion]
   Env[EnvironmentVersion]
-  Roll[Rollout turns + tools]
   Trace[W3C OTLP trace]
-  Case --> Sub
-  Sub --> Env
-  Sub --> Roll
-  Roll --> Trace
+  Def --> Sub
+  Env --> Sub
+  Sub --> Trace
 ```
 
-- Emits ordered turns, tool calls, observations
-- Creates or adopts a **W3C trace** (`traceparent` propagated)
-- Records `run_id`, `case_run_id`, `trial_id` on spans
+Each FrameworkAttempt creates or adopts a W3C trace and records `workflow_run_id`, `framework_attempt_id`, `workflow_version_id`, and `runner_version_id`. Eval-execution traces use a reserved internal environment and are excluded from online rules by default.
 
-OTLP is the observation boundary — trajectories normalize to a canonical step view shared by all evaluators.
-
-## Phase 4 — Evaluators grade evidence
+## Phase 4 — Evidence and optional projection
 
 ```mermaid
 flowchart TB
-  Snap[Evidence snapshot]
-  Sel[Selectors]
-  Bund[Evidence bundle]
-  Ev1[Deterministic]
-  Ev2[LLM judge]
-  Ev3[Environment oracle]
-  Meas[Measurements]
-  Snap --> Sel --> Bund
-  Bund --> Ev1 & Ev2 & Ev3 --> Meas
+  Bundle[Native result bundle]
+  Logs[stdout / stderr / logs]
+  Trace[OTLP traces / usage]
+  Ev[EvidenceArtifact]
+  Proj[Optional score projection]
+  Bundle --> Ev
+  Logs --> Ev
+  Trace --> Ev
+  Ev --> Proj
 ```
 
-Each **evaluator** reads selected evidence and returns:
+- **Native bundle** is authoritative for framework semantics.
+- **Projection** may emit lossy measurements for query — never a Softprobe re-score of assertions.
+- Malformed or oversized bundles map to typed failures (`invalid_input`, `missing_evidence`, …), never score `0`.
 
-- **Status** — how the attempt ended (`succeeded`, `missing_evidence`, …)
-- **Measurements** — zero or more typed facts with evidence refs
+## Phase 5 — Gates
 
-Evaluators never mutate source traces or prior measurements.
-
-## Phase 5 — Reducers and gates
-
-**Reducers** combine measurements across trials, cases, or subjects (mean, pass@k, confidence intervals).
-
-**Gates** apply a versioned **GatePolicyVersion** to aggregates and measurements. Gate failure does not delete underlying facts.
+**Gates** apply the policy pinned in WorkflowVersion to outer status, provenance, and optionally selected runner-reported fields. Gate failure does not delete evidence.
 
 ```mermaid
 flowchart LR
-  Meas[Measurements]
-  Agg[Aggregates]
-  GP[GatePolicyVersion]
+  Status[FrameworkAttempt status]
+  Native[Selected native fields]
+  GP[Gate policy]
   GD[GateDecision]
-  Meas --> Agg --> GP --> GD
+  Status --> GP
+  Native --> GP
+  GP --> GD
 ```
 
-## Phase 6 — Persist and project
+## Phase 6 — Persist
 
-Managed execution appends to the **thelake eval ledger** (system of record). Large bytes live in object storage; ledger stores digests and metadata (commit-before-reference).
-
-**Projections** (scores table, run views) consume events asynchronously and are rebuildable — they are not the source of truth.
-
-Local runs write the same event stream to JSONL; publish to thelake via validated bundle import.
+Managed execution appends to the **thelake** eval ledger. Large bytes live in object storage; the ledger stores digests (commit-before-reference). Local runs write the same event stream to JSONL and may publish via validated bundle import.
 
 ## Local vs managed — same semantics
 
@@ -182,39 +159,38 @@ flowchart TB
 
 | Mode | Host | Storage |
 |------|------|---------|
-| Local / CI | CLI host adapter | JSONL + CAS artifacts |
+| Local / CI | CLI host | JSONL + CAS artifacts |
 | Managed | Queued workers + sandboxes | thelake ledger + object storage |
 | Federated | Customer worker | Policy-filtered export only |
 
-One conformance corpus ensures identical legal transitions and measurement IDs across hosts.
-
 ## Prompt-only vs environment-backed
 
-| Slice | Subject | Environment | What it proves |
-|-------|---------|-------------|----------------|
-| **Prompt-only** | Pinned model + prompt | noop | Output policy, routing text, safety strings |
-| **Environment-backed** | Full agent process | Fixture + verify | Oracles, tools, task completion |
+| Slice | What Softprobe pins | What the framework does |
+|-------|---------------------|-------------------------|
+| **Prompt-only** | Model/prompt subject + noop/light env | Assertions on text outputs |
+| **Environment-backed** | Full agent subject + fixture env | Tool/trajectory/outcome checks in-framework |
 
-Same envelope; different subject and environment versions. See [Prompt-only vs environment eval](/en/evaluation/guides/eval-modes).
+Same Softprobe envelope; different SubjectVersion and EnvironmentVersion. See [Prompt-only vs environment eval](/en/evaluation/guides/eval-modes).
 
 ## Online evaluation
 
-**EvaluationPolicyVersion** selects traces from production by filter + stable sampling, snapshots evidence, and runs the same evaluator semantics as offline runs. Eval-execution traces are excluded by default to prevent recursive loops.
+An online **policy** selects production traces (filter + stable sampling), snapshots evidence, and launches the **same framework runner** workflow — Softprobe does not switch to a parallel Softprobe-owned grader. Eval-execution traces are excluded by default.
 
 ```mermaid
 flowchart LR
-  Prod[Production traces]
-  Pol[EvaluationPolicyVersion]
+  Prod[Production OTEL traces]
+  Pol[Online policy]
   Snap[Evidence snapshot]
-  Eval[Same evaluator versions]
-  Meas[Measurements]
-  Prod --> Pol --> Snap --> Eval --> Meas
+  Runner[Pinned framework runner]
+  Native[Native result + GateDecision]
+  Prod --> Pol --> Snap --> Runner --> Native
 ```
 
-See [Online evaluation](/en/evaluation/concepts/online-evaluation).
+See [Online vs offline](/en/evaluation/concepts/online-vs-offline) and [Promptfoo on production OTEL](/en/evaluation/guides/promptfoo-online-otel).
 
 ## Next steps
 
+- [Mental model](/en/evaluation/mental-model)
 - [Architecture overview](/en/evaluation/architecture/)
 - [Scores and gates](/en/evaluation/concepts/scores-and-gates)
 - [Production-to-eval loop](/en/evaluation/guides/production-to-eval-loop)

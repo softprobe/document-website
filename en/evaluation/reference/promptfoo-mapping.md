@@ -11,7 +11,7 @@ Instead, Promptfoo runs through a pinned framework runner and preserves native r
 
 Use these pages:
 
-- [Framework adapters](/en/evaluation/reference/framework-adapters)
+- [Framework runners](/en/evaluation/reference/framework-adapters)
 - [Promptfoo integration](/en/evaluation/guides/promptfoo-integration)
 - [Quick start](/en/evaluation/getting-started)
 

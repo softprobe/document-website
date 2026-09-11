@@ -4,6 +4,8 @@ title: Deterministic evaluators
 
 # Deterministic evaluators
 
+> **Softprobe role:** Softprobe does not implement this family as a Softprobe evaluator. Use a framework that already owns these checks, pin it as a **RunnerVersion**, and capture the native result bundle. See [Ecosystem method families](/en/evaluation/evaluators/).
+
 **Deterministic evaluators** compare artifacts with exact rules: `equals`, `contains`, `not-contains`, regex, JSON Schema, AST match, policy rules, and unit tests.
 
 They are pure scorers over typed artifacts — fast, hermetic, and ideal for CI.
@@ -21,7 +23,7 @@ They are pure scorers over typed artifacts — fast, hermetic, and ideal for CI.
 ## Required evidence
 
 - Model output text or structured JSON
-- Optional reference text from CaseVersion
+- Optional reference text from the framework case
 - Environment state snapshots when rules target oracle fields
 
 ## Example measurements
@@ -31,7 +33,7 @@ They are pure scorers over typed artifacts — fast, hermetic, and ideal for CI.
 | `router.skill_match` | `icontains` → `billing-support` |
 | `confidentiality.no_internal_terms` | `not-icontains` → `internal_db_schema` |
 
-Promptfoo `icontains` / `not-icontains` may be imported via adapter — native authoring uses capability descriptors. See [Framework adapters](/en/evaluation/reference/framework-adapters).
+Promptfoo `icontains` / `not-icontains` stay in the **FrameworkDefinition**. Softprobe runs them via a pinned runner — it does not re-author them as Softprobe evaluators. See [Framework runners](/en/evaluation/reference/framework-adapters).
 
 ## Resembles
 
@@ -39,4 +41,6 @@ Promptfoo assertions, Langfuse CODE evaluators, Braintrust custom scorers with p
 
 ## Extension rule
 
-Add a new deterministic scorer plugin — not a new core Measurement schema.
+Ship or pin a **framework runner** that already owns this method family. Do **not** add Softprobe scorer plugins, Softprobe Measurement schemas, Softprobe reducers, or Softprobe human-evaluator runtimes.
+
+See [Ecosystem method families](/en/evaluation/evaluators/) and [Framework runners](/en/evaluation/reference/framework-adapters).

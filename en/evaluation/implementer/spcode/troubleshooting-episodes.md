@@ -40,7 +40,7 @@ Attested at launch (mismatch rejects case before execution):
 | `agent.trajectory_efficiency` | Turns, calls, tokens, latency, cost |
 | `agent.task_success` | Environment verifier over response + artifacts |
 
-Measurements stay separate; **GatePolicyVersion** decides release fitness.
+Measurements stay separate; gate policy (pinned in WorkflowVersion) decides release fitness.
 
 ## Corpus
 
@@ -50,7 +50,7 @@ Exit targets (baseline-recorded): ≥80% correct diagnosis, ≥90% evidence cita
 
 ## Promptfoo role
 
-Promptfoo assertions may run as **sandboxed evaluator nodes** for text checks; kernel IDs, statuses, and gates remain authoritative.
+Promptfoo assertions run inside the **pinned Promptfoo runner** (opaque FrameworkAttempt) for text checks; kernel IDs, statuses, and gates remain authoritative.
 
 ## Outcomes beat transcripts
 

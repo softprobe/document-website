@@ -4,61 +4,63 @@ title: Scores and gates
 
 # Scores and gates
 
-**Scores are facts; gates are views.** This separation keeps history honest and lets you change release policy without rewriting measurements.
+**Native results are authoritative; scores are optional projections; gates are workflow views.** Softprobe does not re-implement framework assertions to produce scores.
 
-## Measurements (facts)
+## Framework-reported facts
 
-Evaluators emit **measurements** — typed values with:
+The framework runner emits a **native result bundle**. Softprobe may optionally **project** selected framework-reported measurements into thelake `scores` for query:
 
-- name (e.g. `router.skill_match`, `task.root_cause_correct`)
+- name (e.g. `router.skill_match`)
 - value (boolean, number, string, …)
 - target (see [Score targets](/en/evaluation/reference/score-targets))
-- evaluator version + evidence references
-- optional uncertainty, cost, latency, token usage
+- runner / workflow identity + evidence references
+- optional cost, latency, token usage
 
-Measurements append to the eval ledger and **project** to thelake **scores** for querying.
+Projection is **lossy by design**. Unsupported fields stay in the native bundle and never block execution merely because Softprobe does not model them.
 
-## What is not a measurement
+## What is not a score
 
 | Outcome | Meaning |
 |---------|---------|
-| `missing_evidence` | Grader could not find required inputs — **not** score 0 |
-| `evaluator_error` | Judge crashed or timed out — **not** low quality |
+| `missing_evidence` | Required artifact absent — **not** score 0 |
+| `runner_error` | Runner crashed or failed — **not** low quality |
 | `unsupported` | Capability not available on this host |
+| `subject_error` | Subject failed before the framework finished |
 
 See [Result status](/en/evaluation/reference/result-status).
 
-## GatePolicyVersion (views)
+## Gates (views)
 
-A **gate** applies a versioned policy to measurements and aggregates:
+A **gate policy** (pinned into **WorkflowVersion**) applies to:
+
+1. outer lifecycle / FrameworkAttempt status,
+2. declared provenance (definition digest, runner digest, …),
+3. optionally **explicitly selected** runner-reported or projected fields.
 
 ```yaml
 # Conceptual gate policy routing-v2
 rules:
-  - measurement: router.skill_match
-    op: all
-    threshold: true
-  - measurement: confidentiality.no_internal_terms
-    op: all
-    threshold: true
-  - aggregate: router.pass_rate
+  - field: framework_attempt.status
+    op: eq
+    value: succeeded
+  - field: native.summary.pass_rate   # selected runner-reported field
     op: gte
     threshold: 0.95
 ```
 
-**GateDecision** records pass/fail + reasons at run time for policy version `routing-v2`.
+**GateDecision** records pass/fail + reasons for that policy version.
 
-Re-evaluating an old run with `routing-v3` recomputes the decision; underlying measurements unchanged.
+Re-evaluating an old WorkflowRun with a newer gate policy recomputes the decision; underlying native artifacts and projected measurements stay unchanged.
 
 ## Framework pass/fail flags
 
-Promptfoo cell pass/fail may be imported as a **measurement** or diagnostic artifact. It is **not** the authoritative release gate — the kernel recomputes gates from its own measurements.
+Promptfoo cell pass/fail (and similar) remain in the **native result bundle**. Softprobe may project them for convenience. They are **not** automatically Softprobe release gates — a gate policy must select them explicitly.
 
 ## Score target v2
 
-Measurements attach to one canonical target:
+Projected measurements attach to one canonical target:
 
-`span | trace | session | rollout | case_run | run | comparison_group`
+`span | trace | session | workflow_run | framework_attempt`
 
 Legacy span/trace/session columns remain populated for v1 API compatibility.
 
@@ -66,14 +68,20 @@ Legacy span/trace/session columns remain populated for v1 API compatibility.
 
 ```mermaid
 flowchart TB
-  Eval[Evaluators]
-  Meas[Measurements immutable facts]
-  Agg[Aggregates]
-  GateP[GatePolicyVersion]
-  Dec[GateDecision]
-  Proj[Score projection]
-  Eval --> Meas
-  Meas --> Agg
-  Meas --> Proj
-  Agg --> GateP --> Dec
+  Runner[Framework runner]
+  Native[Native result bundle]
+  Proj[Optional score projection]
+  GateP[Gate policy in WorkflowVersion]
+  GD[GateDecision]
+  Runner --> Native
+  Native --> Proj
+  Native --> GateP
+  Proj --> GateP
+  GateP --> GD
 ```
+
+## Related
+
+- [Mental model](/en/evaluation/mental-model)
+- [Data model](/en/evaluation/concepts/data-model)
+- [Result status](/en/evaluation/reference/result-status)

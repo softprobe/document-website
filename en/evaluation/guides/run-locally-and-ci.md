@@ -7,27 +7,32 @@ title: Run locally and in CI
 ## Local run
 
 ```bash
-sp eval validate --manifest suite.json --out manifest.resolved.json
-sp eval run --manifest manifest.resolved.json --out-dir .softprobe/runs/$RUN_ID
+sp eval pack --dir ./promptfoo-suite --out .softprobe/definition.json
+sp eval validate \
+  --definition .softprobe/definition.json \
+  --runner promptfoo-runner@2.1.0 \
+  --out .softprobe/workflow.resolved.json
+sp eval run --workflow .softprobe/workflow.resolved.json --out-dir .softprobe/runs/$RUN_ID
 ```
 
 Artifacts:
 
 | File | CI use |
 |------|--------|
-| `junit.xml` | Test report ingestion |
-| `report.md` | Human review |
-| `events.jsonl` | Audit / replay |
-| `artifacts/` | Evidence drill-down |
+| Native JUnit / Markdown (from framework) | Test report ingestion |
+| `events.jsonl` | Softprobe audit / replay |
+| `artifacts/` | Evidence drill-down (incl. native result bundle) |
 
 ## GitHub Actions pattern
 
 ```yaml
-- name: Validate eval suite
-  run: sp eval validate --import promptfoo --config promptfooconfig.yaml --tests tests.yaml --out manifest.json
+- name: Pack and validate framework suite
+  run: |
+    sp eval pack --dir ./promptfoo-suite --out .softprobe/definition.json
+    sp eval validate --definition .softprobe/definition.json --runner promptfoo-runner@2.1.0 --out .softprobe/workflow.json
 
 - name: Run prompt-only eval
-  run: sp eval run --manifest manifest.json --gate routing-v1 --out-dir run-output
+  run: sp eval run --workflow .softprobe/workflow.json --gate routing-v1 --out-dir run-output
 
 - name: Upload eval artifacts
   uses: actions/upload-artifact@v4
@@ -42,12 +47,12 @@ Artifacts:
 Untrusted fork PRs:
 
 - Run `sp eval validate` (always)
-- Run `sp eval run --subject fixture:mock` only — no live provider secrets
+- Run `sp eval run` only with secret-free / fixture subjects — no live provider secrets
 
 Trusted branches run pinned-provider comparison with recorded stochastic adjudication.
 
 ## Gate failure behavior
 
-Non-zero exit when **GatePolicyVersion** fails. Measurements and events remain for debugging — gate is recomputed, not deleted.
+Non-zero exit when **GateDecision** fails. Evidence and events remain for debugging — the gate is recomputed under a new policy, not deleted.
 
 See [Compare and promote](/en/evaluation/guides/compare-and-promote).

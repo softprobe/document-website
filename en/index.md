@@ -33,8 +33,12 @@ features:
     details: Author suites, run deterministic and outcome-based evals in CI, compare runs, and gate releases — Promptfoo-compatible imports with kernel-owned manifests and thelake storage.
     link: /en/evaluation/
     linkText: Agent Evaluation
+  - title: I QA AI agents in production
+    details: Connect OpenCode with one pasteable prompt, capture Sessions and Steps, review Findings, and optionally route alerts to Slack.
+    link: /en/agent-qa/
+    linkText: Agent QA
 ---
 
 ::: info
-Three product areas, one site — **Testing** (Java record/replay plus `sp` automation), **Business Observability** (Istio/SESSIFY), and **Agent Evaluation** (suites, evaluators, gates for coding agents). Pick the path that matches your role above.
+Four product areas, one site — **Testing** (Java record/replay plus `sp` automation), **Business Observability** (Istio/SESSIFY), **Agent QA** (online capture and review for coding agents), and **Agent Evaluation** (suites, evaluators, gates). Pick the path that matches your role above.
 :::

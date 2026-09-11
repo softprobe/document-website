@@ -4,6 +4,8 @@ title: Meta-evaluation evaluators
 
 # Meta-evaluation evaluators
 
+> **Softprobe role:** Softprobe does not implement this family as a Softprobe evaluator. Use a framework that already owns these checks, pin it as a **RunnerVersion**, and capture the native result bundle. See [Ecosystem method families](/en/evaluation/evaluators/).
+
 **Meta-evaluators** judge other judges: calibration vs human labels, inter-rater agreement, position bias, benchmark leakage, and contamination detection.
 
 They may consume prior result sets as datasets — still emit standard measurements with full provenance.
@@ -26,7 +28,7 @@ They may consume prior result sets as datasets — still emit standard measureme
 
 ## Workflow
 
-Meta-eval runs as separate SuiteVersion over exported ledger snapshots — not inline during subject rollout.
+Meta-eval runs as a **separate FrameworkDefinition** over exported snapshots — not inline inside Softprobe subject rollout.
 
 ## Resembles
 
@@ -34,4 +36,6 @@ Judge evaluation literature, Braintrust meta-experiments, benchmark hygiene tool
 
 ## Extension rule
 
-Evaluators reading prior results use evidence selectors on ledger exports — no hidden reward channel bypassing Measurements.
+Ship or pin a **framework runner** that already owns this method family. Do **not** add Softprobe scorer plugins, Softprobe Measurement schemas, Softprobe reducers, or Softprobe human-evaluator runtimes.
+
+See [Ecosystem method families](/en/evaluation/evaluators/) and [Framework runners](/en/evaluation/reference/framework-adapters).

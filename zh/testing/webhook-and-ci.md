@@ -118,6 +118,8 @@ sp replay run \
   --json
 ```
 
+如果明确需要时间范围，请使用默认 Rolling 模式并传入 `--from`/`--to`。上面的 `Pinned` 命令会忽略这两个参数。
+
 `--watch` 会在创建计划后轮询 `GET /api/progress?planId=…`，直到进度结束。回放**对比失败**时 CLI 仍可能以 **0** 退出 — 流水线必须再检查失败用例（见下节）。
 
 等价的 REST 创建（需 `access-token` 头）：
