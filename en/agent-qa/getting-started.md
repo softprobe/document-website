@@ -26,11 +26,11 @@ In Softprobe Explorer, open **Agents** and click **+ Connect agent**.
 
 Copy the short install prompt from the modal and paste it into an OpenCode chat. The prompt tells OpenCode to:
 
-1. Enable OpenTelemetry and add `@softprobe/opencode-plugin@latest`
-2. Write credentials to `~/.config/opencode/opencode-softprobe.json`
+1. Merge OpenTelemetry + `@softprobe/opencode-plugin@latest` into `opencode.json` or `opencode.jsonc` (project or `~/.config/opencode`)
+2. Write Softprobe credentials to `~/.config/opencode/opencode-softprobe.json`
 3. Restart and run one real chat turn
 
-Full details: [OpenCode install](/en/agent-qa/opencode).
+Full details: [OpenCode install](/en/agent-qa/opencode). Official OpenCode references: [Config](https://opencode.ai/docs/config/), [Plugins](https://opencode.ai/docs/plugins/).
 
 ## 3. Verify capture
 
