@@ -6,9 +6,21 @@ title: OpenCode
 
 Install Softprobe Agent QA for [OpenCode](https://opencode.ai) with the `@softprobe/opencode-plugin` package. Prefer the **copy/paste prompt** from Explorer ([Quick start](/en/agent-qa/getting-started)); this page is the full reference.
 
+OpenCode loads plugins in two official ways: **npm packages** listed in config, or **local files** under a plugins directory. Softprobe uses the npm path. See OpenCode’s docs:
+
+- [Config](https://opencode.ai/docs/config/) — `opencode.json` / `opencode.jsonc`, merge order, locations
+- [Plugins](https://opencode.ai/docs/plugins/) — npm `plugin` field, Bun install on startup, local plugin dirs
+
 ## 1. Enable the plugin
 
-In `opencode.json` or `opencode.jsonc`:
+Merge into your existing OpenCode config (**JSON or JSONC**). Prefer a project file if present; otherwise use the global config:
+
+| Scope | Files |
+|-------|--------|
+| Project | `./opencode.json` or `./opencode.jsonc` |
+| Global | `~/.config/opencode/opencode.json` or `~/.config/opencode/opencode.jsonc` |
+
+OpenCode **merges** config sources (later sources override conflicting keys). Keep existing keys; if `plugin` already exists, append `@softprobe/opencode-plugin@latest` to that array.
 
 ```json
 {
@@ -19,17 +31,14 @@ In `opencode.json` or `opencode.jsonc`:
 }
 ```
 
-Restart OpenCode after changing the config.
+OpenCode installs npm plugins automatically with Bun at startup (cached under `~/.cache/opencode/node_modules/`). Restart OpenCode after changing the config.
 
 ## 2. Credentials
 
-Create `opencode-softprobe.json` in the OpenCode config directory:
+Create `opencode-softprobe.json` in the OpenCode config directory (this is a **Softprobe** credentials file, not part of the OpenCode schema):
 
-- OpenCode: `$XDG_CONFIG_HOME/opencode` (or `~/.config/opencode`)
-- Softprobe spcode: `$XDG_CONFIG_HOME/spcode` (or `~/.config/spcode`)
+- Default: `$XDG_CONFIG_HOME/opencode` (or `~/.config/opencode`)
 - Override directory with `OPENCODE_CONFIG_DIR`
-
-When both `spcode` and `opencode` credential files exist, **spcode wins**.
 
 ```json
 {
@@ -76,9 +85,10 @@ Explorer’s Connect prompt currently embeds the Softprobe production smoke toke
 
 | Symptom | Check |
 |---------|--------|
-| No Sessions appear | Plugin listed in `opencode.json`, `experimental.openTelemetry` true, OpenCode restarted |
+| No Sessions appear | Plugin listed in `opencode.json` / `opencode.jsonc`, `experimental.openTelemetry` true, OpenCode restarted |
 | Auth / ingest errors | `publicKey` and `baseUrl` in `opencode-softprobe.json` or `SOFTPROBE_*` env |
-| Wrong config file | Confirm path under `~/.config/opencode` (or `spcode`); env overrides file when both key and base URL are set |
+| Wrong OpenCode config file | Edit the file you already use (`opencode.json` or `opencode.jsonc` under project or `~/.config/opencode`); see [OpenCode config](https://opencode.ai/docs/config/) |
+| Wrong Softprobe credentials path | Confirm `~/.config/opencode/opencode-softprobe.json` (or `OPENCODE_CONFIG_DIR`); env overrides file when both key and base URL are set |
 | Partial traces | Ensure the process stays alive long enough to flush; serverless/short-lived hosts may need an explicit flush |
 
 Package source: [`@softprobe/opencode-plugin`](https://www.npmjs.com/package/@softprobe/opencode-plugin).
