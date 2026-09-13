@@ -10,7 +10,7 @@ Agent QA connects coding agents (starting with OpenCode) to Softprobe so every t
 
 ## What Agent QA does
 
-- **Install with one OpenCode prompt** — paste from Explorer; the agent installs `@softprobe/opencode-plugin` and writes credentials (agent API key + Explorer gateway URLs)
+- **Install with one OpenCode prompt** — paste from Explorer; the agent installs `@softprobe/opencode-plugin` and credentials
 - **Capture full Sessions** — user turns, generations, tools, retries, and errors
 - **Review in Explorer** — Sessions, Steps, and Findings for production behavior
 - **Optional Slack** — attach a channel after capture is verified

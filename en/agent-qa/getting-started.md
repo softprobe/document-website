@@ -20,22 +20,15 @@ flowchart LR
 
 ## 1. Open Connect agent
 
-In Softprobe Explorer, open **Agents** and click **+ Connect agent**. Name the Agent and choose an environment. Softprobe mints a per-agent API key (`spk_…`) used only for that Agent’s capture.
+In Softprobe Explorer, open **Agents** and click **+ Connect agent**. Name the Agent and choose an environment. Softprobe mints a per-agent API key (`spk_…`) used for that Agent’s capture.
 
 ## 2. Paste the install prompt into OpenCode
 
 Copy the short install prompt from the modal and paste it into an OpenCode chat. The prompt tells OpenCode to:
 
 1. Merge OpenTelemetry + `@softprobe/opencode-plugin@latest` into `opencode.json` or `opencode.jsonc` (project or `~/.config/opencode`)
-2. Write Softprobe credentials to `~/.config/opencode/opencode-softprobe.json` with:
-   - `publicKey` = your **agent** API key (`spk_…`)
-   - `baseUrl` = `https://explorer.softprobe.ai/api/thelake`
-   - `otlpEndpoint` = `https://explorer.softprobe.ai/api/thelake/v1/traces`
+2. Write Softprobe credentials to `~/.config/opencode/opencode-softprobe.json`
 3. Restart and run one real chat turn
-
-::: warning Do not point OpenCode at thelake directly
-Use the Explorer gateway URLs above. `https://thelake.softprobe.ai` and shared smoke tokens will not work for Agent QA connect.
-:::
 
 Full details: [OpenCode install](/en/agent-qa/opencode). Official OpenCode references: [Config](https://opencode.ai/docs/config/), [Plugins](https://opencode.ai/docs/plugins/).
 
