@@ -28,7 +28,7 @@ A **Finding** is a policy or review signal attached to a Session (or Steps withi
 
 ## Agent (product entity)
 
-In Explorer, an **Agent** is the named capture source you connect: framework (e.g. OpenCode), environment, capture status, optional Slack channel, and assigned Policies.
+In Explorer, an **Agent** is the named capture source you connect: framework (e.g. OpenCode), environment, capture status, optional Slack channel, assigned Policies, and a per-agent API key (`spk_…`) used for ingest through the Explorer gateway (`https://explorer.softprobe.ai/api/thelake`).
 
 ## Related products
 
