@@ -11,15 +11,6 @@ OpenCode loads plugins in two official ways: **npm packages** listed in config, 
 - [Config](https://opencode.ai/docs/config/) — `opencode.json` / `opencode.jsonc`, merge order, locations
 - [Plugins](https://opencode.ai/docs/plugins/) — npm `plugin` field, Bun install on startup, local plugin dirs
 
-::: warning Use the Explorer gateway — not thelake directly
-Ingest and OTLP must go through **Explorer**:
-
-- Base: `https://explorer.softprobe.ai/api/thelake`
-- Traces: `https://explorer.softprobe.ai/api/thelake/v1/traces`
-
-Do **not** set `baseUrl` / `otlpEndpoint` to `https://thelake.softprobe.ai`. Do **not** use a shared smoke token. Auth is your **agent API key** (`spk_…`) from Connect Agent.
-:::
-
 ## 1. Enable the plugin
 
 Merge into your existing OpenCode config (**JSON or JSONC**). Prefer a project file if present; otherwise use the global config:
@@ -60,8 +51,8 @@ Create `opencode-softprobe.json` in the OpenCode config directory (this is a **S
 
 | Field | Required | Meaning |
 |-------|----------|---------|
-| `publicKey` | Yes | **Agent API key** (`spk_…`) from Explorer **Agents → + Connect agent**. Shown once when the agent is created (or after Rotate). |
-| `baseUrl` | Yes | Explorer thelake gateway: `https://explorer.softprobe.ai/api/thelake` |
+| `publicKey` | Yes | Agent API key (`spk_…`) from Explorer **Agents → + Connect agent** |
+| `baseUrl` | Yes | `https://explorer.softprobe.ai/api/thelake` |
 | `otlpEndpoint` | No | Defaults to `{baseUrl}/v1/traces` |
 | `environment` | No | Label matching the Agent environment in Explorer (e.g. `Production`) |
 | `userId` | No | Optional end-user id on spans |
@@ -75,9 +66,7 @@ export SOFTPROBE_OTLP_ENDPOINT="https://explorer.softprobe.ai/api/thelake/v1/tra
 export SOFTPROBE_ENVIRONMENT="Production"
 ```
 
-::: tip Copy from Explorer
-The Connect Agent install prompt embeds your agent API key and the correct gateway URLs. Paste that prompt into OpenCode rather than hand-editing URLs. Do not commit credentials to source control.
-:::
+The Connect Agent install prompt embeds your agent API key and these URLs. Do not commit credentials to source control.
 
 ## 3. Verify
 
@@ -85,7 +74,7 @@ The Connect Agent install prompt embeds your agent API key and the correct gatew
 2. Run one real chat turn (with tools if you use them).
 3. In Explorer, open **Agents → + Connect agent** and **Check connection**, or browse **Sessions** for the new Session (range filter defaults to the last 7 days).
 
-For Sessions to filter by Agent name, set span attribute **`sp.agent.name`** to the same name as the Explorer Agent (the OpenCode plugin should set this when credentials come from Connect).
+For Sessions to filter by Agent name, set span attribute **`sp.agent.name`** to the same name as the Explorer Agent.
 
 ## What is traced
 
@@ -101,8 +90,7 @@ For Sessions to filter by Agent name, set span attribute **`sp.agent.name`** to 
 | Symptom | Check |
 |---------|--------|
 | No Sessions appear | Plugin listed in `opencode.json` / `opencode.jsonc`, `experimental.openTelemetry` true, OpenCode restarted, then one real chat turn |
-| Auth / ingest errors | `publicKey` is an **agent** `spk_…` key; `baseUrl` is `https://explorer.softprobe.ai/api/thelake` (not `thelake.softprobe.ai`) |
-| 401 / wrong tenant | You used a smoke token, an old bearer, or a key from a different agent — create/rotate the key under Connect Agent |
+| Auth / ingest errors | `publicKey` and `baseUrl` match the values from Connect Agent; key was not rotated without updating the file |
 | Wrong OpenCode config file | Edit the file you already use (`opencode.json` or `opencode.jsonc` under project or `~/.config/opencode`); see [OpenCode config](https://opencode.ai/docs/config/) |
 | Wrong Softprobe credentials path | Confirm `~/.config/opencode/opencode-softprobe.json` (or `OPENCODE_CONFIG_DIR`); env overrides file when both key and base URL are set |
 | Partial traces | Ensure the process stays alive long enough to flush; serverless/short-lived hosts may need an explicit flush |
