@@ -4,7 +4,7 @@ title: OpenCode
 
 # OpenCode install
 
-Install Softprobe Agent QA for [OpenCode](https://opencode.ai) with the `@softprobe/opencode-plugin` package. Prefer the **copy/paste prompt** from Explorer ([Quick start](/en/agent-qa/getting-started)); this page is the full reference.
+Install Softprobe Agent QA for [OpenCode](https://opencode.ai) with the `@softprobe/opencode-plugin` package. Prefer the **copy/paste prompt** from Explorer ([Quick start](/en/agent-qa/getting-started)); this page is the full reference. That prompt tells the coding agent to complete the config steps directly and to fetch docs or inspect packages/binaries only when stuck.
 
 OpenCode loads plugins in two official ways: **npm packages** listed in config, or **local files** under a plugins directory. Softprobe uses the npm path. See OpenCode’s docs:
 
@@ -74,7 +74,7 @@ The Connect Agent install prompt embeds your agent API key and these URLs. Do no
 2. Run one real chat turn (with tools if you use them).
 3. In Explorer, open **Agents → + Connect agent** and **Check connection**, or browse **Sessions** for the new Session (range filter defaults to the last 7 days).
 
-For Sessions to filter by Agent name, set span attribute **`sp.agent.name`** to the same name as the Explorer Agent.
+Sessions are matched to the Explorer Agent via the agent API key (`publicKey`); you do not set an agent name in credentials.
 
 ## What is traced
 
