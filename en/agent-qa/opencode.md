@@ -70,8 +70,8 @@ The Connect Agent install prompt embeds your agent API key and these URLs. Do no
 
 ## 3. Verify
 
-1. Restart OpenCode.
-2. Run one real chat turn (with tools if you use them).
+1. **You** restart OpenCode (required so the plugin loads in your interactive session). Restart is a user step — the Connect Agent paste prompt does not ask the coding agent to restart.
+2. Ensure a Session was traced: the install prompt has OpenCode run `opencode run "What is 1+2?"`, or run one real chat turn yourself (with tools if you use them).
 3. In Explorer, open **Agents → + Connect agent** and **Check connection**, or browse **Sessions** for the new Session (range filter defaults to the last 7 days).
 
 Sessions are matched to the Explorer Agent via the agent API key (`publicKey`); you do not set an agent name in credentials.
@@ -83,13 +83,14 @@ Sessions are matched to the Explorer Agent via the agent API key (`publicKey`); 
 - Tool executions with arguments and results
 - Retries, reasoning, compaction events
 - Failed steps and session errors / aborts
-- Sub-agent (`task`) sessions nested under the parent turn when linkage is unambiguous
+- Sub-agent (`task`) work nested under the parent turn (same product session id;
+  span parent links to the dispatching task when linkage is unambiguous)
 
 ## Troubleshooting
 
 | Symptom | Check |
 |---------|--------|
-| No Sessions appear | Plugin listed in `opencode.json` / `opencode.jsonc`, `experimental.openTelemetry` true, OpenCode restarted, then one real chat turn |
+| No Sessions appear | Plugin listed in `opencode.json` / `opencode.jsonc`, `experimental.openTelemetry` true, you restarted OpenCode, then `opencode run "What is 1+2?"` or one real chat turn |
 | Auth / ingest errors | `publicKey` and `baseUrl` match the values from Connect Agent; key was not rotated without updating the file |
 | Wrong OpenCode config file | Edit the file you already use (`opencode.json` or `opencode.jsonc` under project or `~/.config/opencode`); see [OpenCode config](https://opencode.ai/docs/config/) |
 | Wrong Softprobe credentials path | Confirm `~/.config/opencode/opencode-softprobe.json` (or `OPENCODE_CONFIG_DIR`); env overrides file when both key and base URL are set |
