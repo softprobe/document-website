@@ -46,7 +46,7 @@ The Connect Agent install prompt embeds your agent API key and these URLs. Do no
 
 ## 3. Attach the handler (keep your ids)
 
-Create a handler with **no Softprobe identity args**. Pass your existing thread/chat/user ids the way you already do for LangChain / LangGraph.
+Create a handler with **no Softprobe identity args**. **Append** it to any callbacks you already use — do not replace LangSmith, Langfuse, or custom handlers. Pass your existing thread/chat/user ids the way you already do for LangChain / LangGraph.
 
 **Python**
 
@@ -58,7 +58,8 @@ handler = CallbackHandler()  # credentials from SOFTPROBE_* env
 result = agent.invoke(
     inputs,
     config={
-        "callbacks": [handler],
+        # Append Softprobe; keep any existing callbacks.
+        "callbacks": [*existing_callbacks, handler],
         # Your existing ids — Softprobe reads these:
         "configurable": {"thread_id": chat_id, "user_id": user_id},
     },
@@ -74,13 +75,15 @@ import { CallbackHandler } from "@softprobe/langchain";
 const handler = new CallbackHandler(); // credentials from SOFTPROBE_* env
 
 await agent.invoke(input, {
-  callbacks: [handler],
+  // Append Softprobe; keep any existing callbacks.
+  callbacks: [...existingCallbacks, handler],
   // Your existing ids — Softprobe reads these:
   configurable: { thread_id: chatId, user_id: userId },
 });
 await handler.flush();
 ```
 
+If the app has no callbacks yet, `callbacks: [handler]` is fine. Softprobe never owns or replaces the agent’s callback manager.
 Identity resolution (first match wins):
 
 1. Run metadata / `configurable` — `thread_id`, `session_id`, `conversation_id`, `chat_id` (+ camelCase); `user_id` / `userId`
