@@ -44,19 +44,20 @@ The Connect Agent install prompt embeds your agent API key and these URLs. Do no
 
 ## 3. Attach the handler and invoke
 
+Pass a **product conversation id** on the handler. Softprobe groups Steps into one Explorer Session via that id (`sp.session.id`). Mint a new id when the user starts a new chat; **reuse the same id** for every turn in that chat (do not hardcode a literal like `"sess-1"` in production).
+
 **Python**
 
 ```python
+import uuid
 from softprobe import SoftprobeClient
 from softprobe.langchain import CallbackHandler
 
 sp = SoftprobeClient.from_env()
-handler = CallbackHandler(
-    softprobe_client=sp,
-    session_id="sess-1",  # keep constant for the whole conversation
-)
+# Persist this for the lifetime of the conversation (e.g. your app's thread/chat id).
+session_id = str(uuid.uuid4())
+handler = CallbackHandler(softprobe_client=sp, session_id=session_id)
 
-# LangChain / LangGraph:
 result = agent.invoke(inputs, config={"callbacks": [handler]})
 sp.flush()
 ```
@@ -70,10 +71,9 @@ import { CallbackHandler } from "@softprobe/langchain";
 const cfg = resolveSoftprobeConfigFromEnv();
 if (!cfg) throw new Error("Set SOFTPROBE_PUBLIC_KEY and SOFTPROBE_BASE_URL");
 const sp = new SoftprobeClient(cfg);
-const handler = new CallbackHandler({
-  softprobeClient: sp,
-  sessionId: "sess-1",
-});
+// Persist this for the lifetime of the conversation (e.g. your app's thread/chat id).
+const sessionId = crypto.randomUUID();
+const handler = new CallbackHandler({ softprobeClient: sp, sessionId });
 
 await agent.invoke(input, { callbacks: [handler] });
 await sp.flush();
@@ -106,6 +106,6 @@ Softprobe maps LangChain / LangGraph callbacks to typed observations:
 | No Sessions appear | Env vars set in the **same process** as the agent; handler passed on `invoke` / `graph.invoke`; process stayed alive long enough to `flush()` |
 | Auth / ingest errors | `SOFTPROBE_PUBLIC_KEY` and `SOFTPROBE_BASE_URL` match Connect Agent values; key was not rotated without updating env |
 | Only generations, no tools | Run a turn that actually calls a tool |
-| Split / orphaned Sessions | Reuse one `session_id` / `sessionId` for the whole conversation |
+| Split / orphaned Sessions | Reuse one `session_id` / `sessionId` for the whole conversation; do not mint a new UUID on every turn |
 
 Packages: [`softprobe`](https://pypi.org/project/softprobe/) (Python), [`@softprobe/langchain`](https://www.npmjs.com/package/@softprobe/langchain) (TypeScript).
