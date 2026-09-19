@@ -8,7 +8,7 @@ Short vocabulary for Softprobe Agent QA Sessions and observations.
 
 ## Session
 
-A **Session** is one agent run as seen in Explorer: identity (agent name, environment), timing, and an ordered list of **Steps**. OpenCode maps a coding-agent conversation (including nested sub-agents when linked) into a Session.
+A **Session** is one agent run as seen in Explorer: identity (agent name, environment), timing, and an ordered list of **Steps**. OpenCode maps a coding-agent conversation (including nested sub-agents when linked) into a Session. LangChain / LangGraph maps a conversation from **your** thread/chat/session id (e.g. LangGraph `configurable.thread_id`) — Softprobe does not invent one.
 
 ## Observation / Step
 
@@ -28,9 +28,10 @@ A **Finding** is a policy or review signal attached to a Session (or Steps withi
 
 ## Agent (product entity)
 
-In Explorer, an **Agent** is the named capture source you connect: framework (e.g. OpenCode), environment, capture status, optional Slack channel, assigned Policies, and a per-agent API key (`spk_…`).
+In Explorer, an **Agent** is the named capture source you connect: framework (e.g. OpenCode or LangChain), environment, capture status, optional Slack channel, assigned Policies, and a per-agent API key (`spk_…`).
 
 ## Related products
 
 - [Agent Evaluation](/en/evaluation/) — offline/CI suites and gates over evidence
-- [OpenCode install](/en/agent-qa/opencode) — how capture is installed
+- [OpenCode install](/en/agent-qa/opencode) — OpenCode plugin capture
+- [LangChain install](/en/agent-qa/langchain) — LangChain / LangGraph callback capture
