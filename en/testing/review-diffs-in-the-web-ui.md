@@ -34,7 +34,7 @@ A compare rule doesn't touch a run that already finished. To apply a new rule to
 
 The diff opens: the recorded response on the left, the replayed response on the right. Fields that differ are highlighted; the header shows how many differences the case has.
 
-![The diff drawer open next to the call tree](/img/docs/replay/trace-diff-open.png)
+![Opening a case and inspecting differences walk-through](/img/docs/testing/trace-diff-open.gif)
 
 ## Ignore a field
 
@@ -46,7 +46,7 @@ The diff opens: the recorded response on the left, the replayed response on the 
 
 The field is struck through, the difference is gone, and the case's pass rate updates.
 
-![The ignore menu](/img/docs/replay/ignore-menu.png)
+![Ignoring a field for this case walk-through](/img/docs/testing/review-diffs.gif)
 
 ### Ignore it more widely
 
@@ -74,7 +74,7 @@ Sometimes a difference is real but you're OK with it — an intentional change, 
 
 The case moves to passed and the pass rate updates. Your reason and note are kept for later review.
 
-![The mark-as-passed form](/img/docs/replay/mark-passed.png)
+![Marking a case as passed walk-through](/img/docs/testing/mark-passed.gif)
 
 ## Recompare: apply rules to this run {#recompare-apply-rules-to-this-run}
 
@@ -82,7 +82,7 @@ A rule you just wrote only kicks in on the **next** replay — it doesn't change
 
 When you add or remove a rule from the diff, a **Recompare** button appears in the run header. Click it. Softprobe re-checks the run and updates the case list, counts, and pass rate together.
 
-![Recompare done, showing how many cases changed](/img/docs/replay/recompare-done.png)
+![Recompare run walk-through](/img/docs/testing/recompare.gif)
 
 ::: warning Recompare is not replay
 Replay re-sends traffic to your service. Recompare only re-judges responses that are already stored, against your current rules — nothing hits your service.
@@ -98,7 +98,7 @@ You don't need to remember how you ignored it — Softprobe removes whatever is 
 
 To see everything ignored on a case without opening each span, click the **"N ignored"** chip at the top of the case. A panel lists every ignored field, grouped by call, with the rule that caught it. Hover any row to un-ignore it right there.
 
-![The ignored-summary panel](/img/docs/replay/ignored-summary.png)
+![Viewing ignored summary panel walk-through](/img/docs/testing/ignored-summary.gif)
 
 ## Next
 

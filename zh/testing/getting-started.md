@@ -95,6 +95,8 @@ Softprobe Agent 会自动拦截并捕捉这一连串的调用流量。
 3. 从应用下拉菜单中选择 `travel-ota`。
 4. 直观地浏览刚刚捕获的调用链 (Trace) 及深层依赖关系。
 
+![查看录制数据操作演示](/img/docs/testing/view-recorded-data.gif)
+
 </Interface>
 <Interface id="cli">
 
@@ -117,6 +119,8 @@ sp record case list --app <您的应用ID> --since -10m
 2. 选择 `travel-ota` 应用。
 3. 选择要回放的测试用例。
 4. 设置目标环境为 `http://localhost:8080` 并点击 **Run**。
+
+![回放录制数据操作演示](/img/docs/testing/replay-recordings.gif)
 
 </Interface>
 <Interface id="cli">

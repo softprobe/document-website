@@ -41,13 +41,32 @@ CLI 不支持手工构造用例。想要更多用例，就让更多流量流过�
 
 ## 第 3 步 · 确认录到了
 
+<InterfaceTabs :tabs="['ui','cli']">
+<Interface id="ui">
+
+1. 在 Softprobe 控制台打开对应应用的 **工作台（Workbench）**。
+2. 在左侧导航中展开 **滚动录制**，选择对应的 API 接口，查看捕获的录制用例列表与上报时间。
+3. 点击任意一条用例进入链路详情，可核对入口请求内容及数据库、Redis、HTTP 等下游依赖调用。
+
+![工作台查看录制用例演示](/img/docs/testing/view-recorded-data.gif)
+
+</Interface>
+<Interface id="cli">
+
 ```bash
 sp record case list --app <你的 appId> --since -1h --json
 ```
 
-列表里出现用例，第 1 步就完成了。如果希望用例在默认保留期后仍可使用，请先[固化用例并加入测试集](/zh/testing/pinned-cases)，再进入 [回放](/zh/testing/replay-and-diff)。
+需要按链路核对完整性时用：
 
-需要按链路核对完整性时用 `sp record completeness <traceId> --json`。
+```bash
+sp record completeness <traceId> --json
+```
+
+</Interface>
+</InterfaceTabs>
+
+列表里出现用例，第 1 步就完成了。如果希望用例在默认保留期后仍可使用，请先[固化用例并加入测试集](/zh/testing/pinned-cases)，再进入 [回放](/zh/testing/replay-and-diff)。
 
 ## 没录到？按这张表排查
 

@@ -30,9 +30,7 @@ The recordings list shows the endpoint-level recording inventory before you open
 4. Optionally enter a name and note, then select **Pin** again.
 5. Select **View case**, or open **Recording → Pinned cases** later.
 
-![The Workbench pin dialog](/img/docs/testing/pinned-cases-pin-dialog.png)
-
-The pin dialog confirms the source trace and its downstream calls. Retention is **Forever** for the pinned copy.
+![Pinning a recording walk-through](/img/docs/testing/pinned-cases.gif)
 
 The name and note help you identify the case when you build a test set. If the case is already pinned, the operation is idempotent: it remains one pinned case rather than creating a duplicate.
 
@@ -57,17 +55,37 @@ The pinned-case library keeps the saved trace available after the rolling record
 
 ## Create and run a test set
 
+<InterfaceTabs :tabs="['ui','cli']">
+<Interface id="ui">
+
 1. Open the **Replay** tab and select **New plan**.
 2. Choose the replay target environment. This is the test service that receives the recorded entry requests.
 3. For replay scope, choose **Pinned cases**.
 4. Select the cases for this test set. All eligible pinned cases are selected initially; search, select all, or deselect individual cases as needed.
-5. Create the plan, wait for it to finish, and review the results and diffs.
+5. Click **Create plan**, wait for it to finish, and review the results and diffs.
+
+![Selecting Pinned cases for a replay plan walk-through](/img/docs/testing/replay-pinned-scope.gif)
 
 The selected pinned cases are the test set for that replay plan. You can create another plan later with a different selection without changing the pinned library.
 
-![Selecting Pinned cases for a replay plan](/img/docs/testing/pinned-cases-replay-scope.png)
+</Interface>
+<Interface id="cli">
 
-Choose **Pinned cases** to turn the selected permanent cases into the test set for this plan.
+Trigger a regression test run directly for your pinned suite using `--suite Pinned`:
+
+```bash
+sp replay run \
+  --app <your appId> \
+  --env http://order-service.test:8080 \
+  --suite Pinned \
+  --watch \
+  --json
+```
+
+If the manual pinned set is empty, the command returns `NO_PINNED_CASES`.
+
+</Interface>
+</InterfaceTabs>
 
 ::: warning Replay only against a non-production target
 Replay sends real entry requests to the target environment. Recorded downstream calls are mocked, but the application under test still executes its entry path. Use a test or staging target and turn recording off, or set it to a minimal level, on the replay host. See [Replay and diff](/en/testing/replay-and-diff#step-1-prepare-the-test-instance).

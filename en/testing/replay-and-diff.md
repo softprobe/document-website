@@ -27,6 +27,18 @@ Replay sends **real HTTP requests** to `targetEnv` (only downstream dependencies
 
 ## Step 2 · Start the replay
 
+<InterfaceTabs :tabs="['ui','cli']">
+<Interface id="ui">
+
+1. Open the application's Workbench and navigate to **Replay** in the left sidebar.
+2. Click **+ New Plan**, and enter the test service URL in **Target Environment (targetEnv)** (e.g. `http://order-service.test:8080`).
+3. Choose the replay scope (All endpoints, Select endpoints, or Pinned cases), then click **Create Plan** to monitor real-time execution progress.
+
+![Starting a replay run in the Workbench](/img/docs/testing/replay-recordings.gif)
+
+</Interface>
+<Interface id="cli">
+
 ```bash
 sp replay run --app <your appId> --env http://order-service.test:8080 --json
 ```
@@ -36,6 +48,9 @@ The command returns a `planId`. Watch it to completion:
 ```bash
 sp replay status <planId> --watch
 ```
+
+</Interface>
+</InterfaceTabs>
 
 ::: tip Don't mix up the two URLs
 `--env` (`targetEnv`) is the address of the **service under test**; `SP_API_URL` is the address of the **sp-backend service**. Confusing them is the most common integration mistake — see [CLI concepts](/en/testing/agents/concepts#replay-target-url-targetenv).
@@ -53,6 +68,18 @@ A case **passes** when compare finds no material differences. **Failed** cases s
 - **Missing call** — a dependency called during record was not called during replay
 - **Main response diff** — the entry response differs from the recording
 
+<InterfaceTabs :tabs="['ui','cli']">
+<Interface id="ui">
+
+1. Click into the plan details from the replay list to inspect the overall pass rate and per-endpoint test statistics.
+2. Select a failed case on the left to reveal the side-by-side Diff comparison drawer (recorded vs. replayed response).
+3. Hover over differences to ignore dynamic noise fields or use **Recompare** in the header to re-evaluate immediately.
+
+![Reviewing replay results and diffs in the Workbench](/img/docs/testing/review-diffs.gif)
+
+</Interface>
+<Interface id="cli">
+
 Quick triage from the command line:
 
 ```bash
@@ -61,6 +88,9 @@ sp diagnose replay <planId> --failed-only --out-dir .sp-work --json   # failure 
 ```
 
 Once you have a difference's `diffId`, inspect the full single diff: `sp replay diff get <diffId> --out-dir .sp-work --json`.
+
+</Interface>
+</InterfaceTabs>
 
 ## Failures? Don't call them bugs yet
 

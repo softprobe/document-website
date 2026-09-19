@@ -30,9 +30,7 @@ title: 固化用例并建立测试集
 4. 可选填写名称和备注，然后再次选择 **Pin（固化）**。
 5. 选择 **View case（查看用例）**，或稍后打开 **Recording → Pinned cases（录制 → 固化用例）**。
 
-![工作台固化对话框](/img/docs/testing/pinned-cases-pin-dialog.png)
-
-固化对话框会显示源链路及其下游调用；固化副本的保留期为 **Forever（永久）**。
+![固化用例操作演示](/img/docs/testing/pinned-cases.gif)
 
 名称和备注可以帮助您在建立测试集时识别用例。如果用例已经固化，重复操作不会产生副本：同一条固化用例仍然只有一份。
 
@@ -57,17 +55,37 @@ title: 固化用例并建立测试集
 
 ## 创建并运行测试集
 
-1. 打开 **Replay（回放）** 标签页，选择 **New plan（新建计划）**。
-2. 选择回放目标环境，即接收录制入口请求的测试服务。
-3. 在回放范围中选择 **Pinned cases（固化用例）**。
+<InterfaceTabs :tabs="['ui','cli']">
+<Interface id="ui">
+
+1. 打开 **Replay（回放）** 标签页，选择 **新建回放计划（New Plan）**。
+2. 输入回放目标环境（Target Env），即接收录制入口请求的测试服务地址。
+3. 在回放范围中选择 **固化用例（Pinned cases）**。
 4. 选择测试集中的用例。默认会选中所有可用的固化用例；您可以搜索、全选或取消选择单条用例。
-5. 创建计划，等待运行结束，然后查看结果和差异。
+5. 点击 **创建计划**，等待运行结束，然后查看结果和差异。
+
+![为回放计划选择固化用例演示](/img/docs/testing/replay-pinned-scope.gif)
 
 本次回放计划中选中的固化用例就是该测试集。之后可以用不同的选择创建另一份计划，不会修改固化用例库。
 
-![为回放计划选择固化用例](/img/docs/testing/pinned-cases-replay-scope.png)
+</Interface>
+<Interface id="cli">
 
-选择 **Pinned cases（固化用例）**，再勾选要作为本次测试集的永久用例。
+使用 `--suite Pinned` 参数直接触发固化用例回归测试集：
+
+```bash
+sp replay run \
+  --app <你的 appId> \
+  --env http://order-service.test:8080 \
+  --suite Pinned \
+  --watch \
+  --json
+```
+
+如果手动固化集合为空，命令会返回 `NO_PINNED_CASES`。
+
+</Interface>
+</InterfaceTabs>
 
 ::: warning 只对非生产环境回放
 回放会向目标环境发送真实入口请求。虽然下游调用使用录制数据 Mock，但被测应用仍会执行入口业务逻辑。请使用测试或预发环境作为目标，并在回放机上关闭录制或将采样调到最低。详见[回放与对比](/zh/testing/replay-and-diff#第-1-步-准备测试实例)。

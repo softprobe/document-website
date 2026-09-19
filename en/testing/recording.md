@@ -41,13 +41,32 @@ The CLI cannot author cases manually. Want more cases? Send more traffic through
 
 ## Step 3 · Confirm cases exist
 
+<InterfaceTabs :tabs="['ui','cli']">
+<Interface id="ui">
+
+1. Open the application's **Workbench** in the Softprobe console.
+2. Expand **Rolling recordings** in the left sidebar, select an API operation, and inspect the captured case list.
+3. Click any case to open trace details, verifying the entry request payload and mocked downstream calls (DB, Redis, HTTP).
+
+![Reviewing recorded cases in the Workbench](/img/docs/testing/view-recorded-data.gif)
+
+</Interface>
+<Interface id="cli">
+
 ```bash
 sp record case list --app <your appId> --since -1h --json
 ```
 
-Cases showing up in the list means step 1 of the workflow is done. If a case should survive the default retention window, [pin it and add it to a test set](/en/testing/pinned-cases) before moving on to [Replay](/en/testing/replay-and-diff).
+To check completeness per trace, use:
 
-To check completeness per trace, use `sp record completeness <traceId> --json`.
+```bash
+sp record completeness <traceId> --json
+```
+
+</Interface>
+</InterfaceTabs>
+
+Cases showing up in the list means step 1 of the workflow is done. If a case should survive the default retention window, [pin it and add it to a test set](/en/testing/pinned-cases) before moving on to [Replay](/en/testing/replay-and-diff).
 
 ## No cases? Check this table
 

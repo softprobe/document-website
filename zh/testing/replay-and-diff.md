@@ -27,6 +27,18 @@ java -javaagent:sp-agent.jar \
 
 ## 第 2 步 · 发起回放
 
+<InterfaceTabs :tabs="['ui','cli']">
+<Interface id="ui">
+
+1. 进入应用工作台，在左侧导航切换至 **回放** 模块。
+2. 点击 **+ 新建回放计划**，在「目标环境（targetEnv）」中填入测试服务地址（如 `http://order-service.test:8080`）。
+3. 选择回放范围（全量接口、选择接口或固化用例），点击 **创建计划**，系统将实时显示各用例的调度与执行进度。
+
+![网页控制台发起回放演示](/img/docs/testing/replay-recordings.gif)
+
+</Interface>
+<Interface id="cli">
+
 ```bash
 sp replay run --app <你的 appId> --env http://order-service.test:8080 --json
 ```
@@ -36,6 +48,9 @@ sp replay run --app <你的 appId> --env http://order-service.test:8080 --json
 ```bash
 sp replay status <planId> --watch
 ```
+
+</Interface>
+</InterfaceTabs>
 
 ::: tip 两个 URL 别混
 `--env`（`targetEnv`）是**被测服务**的地址；`SP_API_URL` 是 **sp-backend 后端服务**的地址。混淆二者是最常见的集成错误——见 [CLI 概念](/zh/testing/agents/concepts#replay-target-url-targetenv)。
@@ -47,11 +62,23 @@ sp-backend 在每次入口请求发出前记录 **`Replay send start`**，发出
 
 ## 第 3 步 · 读结果
 
-对比没有发现实质差异的用例**通过**。**失败**的用例会给出差异场景：
+对比例行没有发现实质差异的用例**通过**。**失败**的用例会给出差异场景：
 
 - **值差异** — 依赖调了，但响应体不同
 - **缺调用** — 录制时调过的依赖，回放时没调
 - **主响应差异** — 入口响应与录制不一致
+
+<InterfaceTabs :tabs="['ui','cli']">
+<Interface id="ui">
+
+1. 在回放列表中点击进入目标计划详情，查看整体通过率与各接口用例列表。
+2. 选中左侧标记为失败的用例，右侧调用树即刻展开并排 Diff 视图（左侧为录制响应，右侧为回放响应）。
+3. 悬停差异行可快速添加忽略规则，并使用顶部的 **重新比对** 立即刷新判定结果。
+
+![网页控制台审查回放结果与差异演示](/img/docs/testing/review-diffs.gif)
+
+</Interface>
+<Interface id="cli">
 
 命令行快速排查：
 
@@ -61,6 +88,9 @@ sp diagnose replay <planId> --failed-only --out-dir .sp-work --json   # 失败�
 ```
 
 拿到某条差异的 `diffId` 后，看单条完整 diff：`sp replay diff get <diffId> --out-dir .sp-work --json`。
+
+</Interface>
+</InterfaceTabs>
 
 ## 有失败？先别当 bug
 
