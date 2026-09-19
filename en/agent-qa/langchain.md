@@ -123,3 +123,14 @@ Sessions match the Agent via `SOFTPROBE_PUBLIC_KEY`. Softprobe groups Steps by *
 | Split Sessions | Reuse the same app thread/chat id across turns |
 
 Packages: [`softprobe`](https://pypi.org/project/softprobe/) (Python), [`@softprobe/langchain`](https://www.npmjs.com/package/@softprobe/langchain) (TypeScript).
+
+## Examples
+
+Runnable samples that follow this page:
+
+| Language | Location |
+|----------|----------|
+| TypeScript | [`softprobe-js/examples/langchain`](https://github.com/softprobe/softprobe-js/tree/main/examples/langchain) |
+| Python | [`softprobe-js/examples/python`](https://github.com/softprobe/softprobe-js/tree/main/examples/python) (run with `pip install 'softprobe[langchain]'`) |
+
+Also: [`examples/basic`](https://github.com/softprobe/softprobe-js/tree/main/examples/basic) for `SoftprobeClient.fromEnv()` / `from_env()` without LangChain.
