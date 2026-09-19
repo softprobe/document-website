@@ -131,6 +131,6 @@ Runnable samples that follow this page:
 | Language | Location |
 |----------|----------|
 | TypeScript | [`softprobe-js/examples/langchain`](https://github.com/softprobe/softprobe-js/tree/main/examples/langchain) |
-| Python | [`softprobe-js/examples/python`](https://github.com/softprobe/softprobe-js/tree/main/examples/python) (run with `pip install 'softprobe[langchain]'`) |
+| Python | [`softprobe-py/examples`](https://github.com/softprobe/softprobe-py/tree/main/examples) |
 
 Also: [`examples/basic`](https://github.com/softprobe/softprobe-js/tree/main/examples/basic) for `SoftprobeClient.fromEnv()` / `from_env()` without LangChain.

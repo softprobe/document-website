@@ -48,4 +48,5 @@ Choose a Slack channel for Findings, or **Skip for now**. Workspace OAuth stays 
 - [OpenCode install reference](/en/agent-qa/opencode)
 - [LangChain install reference](/en/agent-qa/langchain)
 - [Concepts](/en/agent-qa/concepts)
-- [Public SDK examples](https://github.com/softprobe/softprobe-js/tree/main/examples)
+- [Public SDK examples (JS)](https://github.com/softprobe/softprobe-js/tree/main/examples)
+- [Public SDK examples (Python)](https://github.com/softprobe/softprobe-py/tree/main/examples)
