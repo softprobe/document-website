@@ -8,7 +8,7 @@ Short vocabulary for Softprobe Agent QA Sessions and observations.
 
 ## Session
 
-A **Session** is one agent run as seen in Explorer: identity (agent name, environment), timing, and an ordered list of **Steps**. OpenCode maps a coding-agent conversation (including nested sub-agents when linked) into a Session. LangChain / LangGraph maps a conversation via a stable Softprobe `session_id` on the callback handler.
+A **Session** is one agent run as seen in Explorer: identity (agent name, environment), timing, and an ordered list of **Steps**. OpenCode maps a coding-agent conversation (including nested sub-agents when linked) into a Session. LangChain / LangGraph maps a conversation from **your** thread/chat/session id (e.g. LangGraph `configurable.thread_id`) — Softprobe does not invent one.
 
 ## Observation / Step
 
