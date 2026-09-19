@@ -258,6 +258,7 @@ const agentQaSidebarEn = [
     text: 'Integrations',
     items: [
       { text: 'OpenCode', link: '/en/agent-qa/opencode' },
+      { text: 'LangChain', link: '/en/agent-qa/langchain' },
     ],
   },
 ]
