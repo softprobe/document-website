@@ -34,7 +34,7 @@ java -javaagent:sp-agent.jar \
 2. 点击 **+ 新建回放计划**，在「目标环境（targetEnv）」中填入测试服务地址（如 `http://order-service.test:8080`）。
 3. 选择回放范围（全量接口、选择接口或固化用例），点击 **创建计划**，系统将实时显示各用例的调度与执行进度。
 
-![网页控制台发起回放演示](/img/docs/testing/replay-recordings.gif)
+![网页控制台发起回放演示](/img/docs/testing/zh/replay-recordings.gif)
 
 </Interface>
 <Interface id="cli">
@@ -75,7 +75,7 @@ sp-backend 在每次入口请求发出前记录 **`Replay send start`**，发出
 2. 选中左侧标记为失败的用例，右侧调用树即刻展开并排 Diff 视图（左侧为录制响应，右侧为回放响应）。
 3. 悬停差异行可快速添加忽略规则，并使用顶部的 **重新比对** 立即刷新判定结果。
 
-![网页控制台审查回放结果与差异演示](/img/docs/testing/review-diffs.gif)
+![网页控制台审查回放结果与差异演示](/img/docs/testing/zh/review-diffs.gif)
 
 </Interface>
 <Interface id="cli">

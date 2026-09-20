@@ -48,7 +48,7 @@ CLI 不支持手工构造用例。想要更多用例，就让更多流量流过�
 2. 在左侧导航中展开 **滚动录制**，选择对应的 API 接口，查看捕获的录制用例列表与上报时间。
 3. 点击任意一条用例进入链路详情，可核对入口请求内容及数据库、Redis、HTTP 等下游依赖调用。
 
-![工作台查看录制用例演示](/img/docs/testing/view-recorded-data.gif)
+![工作台查看录制用例演示](/img/docs/testing/zh/view-recorded-data.gif)
 
 </Interface>
 <Interface id="cli">

@@ -34,7 +34,7 @@ Replay sends **real HTTP requests** to `targetEnv` (only downstream dependencies
 2. Click **+ New Plan**, and enter the test service URL in **Target Environment (targetEnv)** (e.g. `http://order-service.test:8080`).
 3. Choose the replay scope (All endpoints, Select endpoints, or Pinned cases), then click **Create Plan** to monitor real-time execution progress.
 
-![Starting a replay run in the Workbench](/img/docs/testing/replay-recordings.gif)
+![Starting a replay run in the Workbench](/img/docs/testing/en/replay-recordings.gif)
 
 </Interface>
 <Interface id="cli">
@@ -75,7 +75,7 @@ A case **passes** when compare finds no material differences. **Failed** cases s
 2. Select a failed case on the left to reveal the side-by-side Diff comparison drawer (recorded vs. replayed response).
 3. Hover over differences to ignore dynamic noise fields or use **Recompare** in the header to re-evaluate immediately.
 
-![Reviewing replay results and diffs in the Workbench](/img/docs/testing/review-diffs.gif)
+![Reviewing replay results and diffs in the Workbench](/img/docs/testing/en/review-diffs.gif)
 
 </Interface>
 <Interface id="cli">

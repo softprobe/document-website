@@ -95,7 +95,7 @@ The Softprobe agent automatically intercepts and captures this entire transactio
 3. Select `travel-ota` from the app dropdown.
 4. Browse the recorded traces and inspect the deep dependency graphs.
 
-![View recorded data demo](/img/docs/testing/view-recorded-data.gif)
+![View recorded data demo](/img/docs/testing/en/view-recorded-data.gif)
 
 </Interface>
 <Interface id="cli">
@@ -120,7 +120,7 @@ Replay executes recorded transactions against a target environment with automate
 3. Choose the cases to replay.
 4. Set the target environment to `http://localhost:8080` and click **Run**.
 
-![Replay recordings demo](/img/docs/testing/replay-recordings.gif)
+![Replay recordings demo](/img/docs/testing/en/replay-recordings.gif)
 
 </Interface>
 <Interface id="cli">

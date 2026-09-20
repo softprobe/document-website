@@ -34,7 +34,7 @@ title: 审查回放差异
 
 diff 打开：左边是录制响应，右边是回放响应。不一致的字段被高亮；头部显示这条用例有几处差异。
 
-![打开用例并读取差异操作演示](/img/docs/testing/trace-diff-open.gif)
+![打开用例并读取差异操作演示](/img/docs/testing/zh/trace-diff-open.gif)
 
 ## 忽略一个字段 {#ignore-a-field}
 
@@ -46,7 +46,7 @@ diff 打开：左边是录制响应，右边是回放响应。不一致的字段
 
 字段被划上删除线、差异消失、用例通过率更新。
 
-![在 diff 中忽略当前用例字段差异演示](/img/docs/testing/review-diffs.gif)
+![在 diff 中忽略当前用例字段差异演示](/img/docs/testing/zh/review-diffs.gif)
 
 ### 忽略得更大范围
 
@@ -74,7 +74,7 @@ diff 打开：左边是录制响应，右边是回放响应。不一致的字段
 
 用例移到通过、通过率更新。你的原因和备注会存下来供日后查看。
 
-![标记一条用例通过演示](/img/docs/testing/mark-passed.gif)
+![标记一条用例通过演示](/img/docs/testing/zh/mark-passed.gif)
 
 ## 重新比对：把规则应用到本次回放 {#recompare-apply-rules-to-this-run}
 
@@ -82,7 +82,7 @@ diff 打开：左边是录制响应，右边是回放响应。不一致的字段
 
 当你从 diff 里加了或删了一条规则，run 头部会出现一个 **重新比对** 按钮。点它。Softprobe 重新检查这次回放，把用例列表、计数、通过率一起更新。
 
-![重新比对操作演示](/img/docs/testing/recompare.gif)
+![重新比对操作演示](/img/docs/testing/zh/recompare.gif)
 
 ::: warning 重新比对不是回放
 回放会把流量重新发到你的服务。重新比对只对已经存下的响应、按你当前的规则重新判定——什么都不会打到你的服务。
@@ -98,7 +98,7 @@ diff 打开：左边是录制响应，右边是回放响应。不一致的字段
 
 不用逐个打开 span，就能看到一条用例上忽略了什么：点用例顶部的 **「N 处已忽略」** chip。一个面板会按调用分组，列出每个被忽略字段和挡下它的规则。悬停任一行就能就地取消忽略。
 
-![查看已忽略总览演示](/img/docs/testing/ignored-summary.gif)
+![查看已忽略总览演示](/img/docs/testing/zh/ignored-summary.gif)
 
 ## 下一步
 

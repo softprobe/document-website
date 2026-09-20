@@ -30,7 +30,7 @@ The recordings list shows the endpoint-level recording inventory before you open
 4. Optionally enter a name and note, then select **Pin** again.
 5. Select **View case**, or open **Recording → Pinned cases** later.
 
-![Pinning a recording walk-through](/img/docs/testing/pinned-cases.gif)
+![Pinning a recording walk-through](/img/docs/testing/en/pinned-cases.gif)
 
 The name and note help you identify the case when you build a test set. If the case is already pinned, the operation is idempotent: it remains one pinned case rather than creating a duplicate.
 
@@ -64,7 +64,7 @@ The pinned-case library keeps the saved trace available after the rolling record
 4. Select the cases for this test set. All eligible pinned cases are selected initially; search, select all, or deselect individual cases as needed.
 5. Click **Create plan**, wait for it to finish, and review the results and diffs.
 
-![Selecting Pinned cases for a replay plan walk-through](/img/docs/testing/replay-pinned-scope.gif)
+![Selecting Pinned cases for a replay plan walk-through](/img/docs/testing/en/replay-pinned-scope.gif)
 
 The selected pinned cases are the test set for that replay plan. You can create another plan later with a different selection without changing the pinned library.
 

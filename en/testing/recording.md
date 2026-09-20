@@ -48,7 +48,7 @@ The CLI cannot author cases manually. Want more cases? Send more traffic through
 2. Expand **Rolling recordings** in the left sidebar, select an API operation, and inspect the captured case list.
 3. Click any case to open trace details, verifying the entry request payload and mocked downstream calls (DB, Redis, HTTP).
 
-![Reviewing recorded cases in the Workbench](/img/docs/testing/view-recorded-data.gif)
+![Reviewing recorded cases in the Workbench](/img/docs/testing/en/view-recorded-data.gif)
 
 </Interface>
 <Interface id="cli">
