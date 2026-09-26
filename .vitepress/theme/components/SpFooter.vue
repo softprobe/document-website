@@ -56,7 +56,7 @@ const show = () => {
   margin-top: auto;
   box-sizing: border-box;
   width: 100%;
-  padding: 48px 24px 32px;
+  padding: 48px var(--sp-content-gutter, 24px) 32px;
   background-color: var(--vp-c-bg-alt);
   color: var(--vp-c-text-2);
   border-top: 1px solid var(--vp-c-divider);
@@ -66,8 +66,8 @@ const show = () => {
 .SpFooter-container {
   margin: 0 auto;
   width: 100%;
-  max-width: var(--vp-layout-max-width);
-  padding: 0 8px;
+  max-width: var(--sp-content-max, 1152px);
+  padding: 0;
   text-align: center;
 }
 
@@ -79,14 +79,6 @@ const show = () => {
 }
 
 @media (min-width: 768px) {
-  .SpFooter {
-    padding: 48px 32px 32px;
-  }
-
-  .SpFooter-container {
-    padding: 0;
-  }
-
   .SpFooter-links {
     grid-template-columns: repeat(3, 1fr);
     gap: 2.5rem;

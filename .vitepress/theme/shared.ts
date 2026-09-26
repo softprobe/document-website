@@ -17,27 +17,29 @@ export const sharedChrome: Pick<
   // Wordmark already includes the name; keep title empty to avoid duplication.
   siteTitle: false,
   socialLinks: [
-    { icon: 'github', link: 'https://github.com/softprobe/softprobe' },
+    { icon: 'github', link: 'https://github.com/softprobe/thelake' },
     { icon: 'x', link: 'https://x.com/softprobeai' },
   ],
 }
 
-/** Top nav: Home · Business Observability · Testing — locale-aware links */
+/** Top nav: Agent QA first, then Evaluation · Testing · Observability */
 export function navForLocale(locale: DocLocale): DefaultTheme.NavItem[] {
   const p = locale === 'zh' ? '/zh' : '/en'
   if (locale === 'zh') {
     return [
       { text: '首页', link: `${p}/` },
-      { text: '业务观测', link: `${p}/platform/getting-started/quick-start`, activeMatch: '/zh/platform/' },
+      { text: 'Agent QA', link: `${p}/agent-qa/`, activeMatch: '/zh/agent-qa/' },
+      { text: 'Agent Evaluation', link: `${p}/evaluation/`, activeMatch: '/zh/evaluation/' },
       { text: '测试', link: `${p}/testing/`, activeMatch: '/zh/testing/' },
+      { text: '业务观测', link: `${p}/platform/getting-started/quick-start`, activeMatch: '/zh/platform/' },
     ]
   }
   return [
     { text: 'Home', link: `${p}/` },
-    { text: 'Business Observability', link: `${p}/platform/getting-started/quick-start`, activeMatch: '/en/platform/' },
-    { text: 'Testing', link: `${p}/testing/`, activeMatch: '/en/testing/' },
     { text: 'Agent QA', link: `${p}/agent-qa/`, activeMatch: '/en/agent-qa/' },
     { text: 'Agent Evaluation', link: `${p}/evaluation/`, activeMatch: '/en/evaluation/' },
+    { text: 'Testing', link: `${p}/testing/`, activeMatch: '/en/testing/' },
+    { text: 'Business Observability', link: `${p}/platform/getting-started/quick-start`, activeMatch: '/en/platform/' },
   ]
 }
 
@@ -46,15 +48,17 @@ export function footerForLocale(locale: DocLocale): DefaultTheme.Footer {
   const p = locale === 'zh' ? '/zh' : '/en'
   if (locale === 'zh') {
     return {
-      message: '零代码改动 · 全上下文可见性 · 成本优化',
+      message: '捕获 Session · 审查 Steps · 改进关键所在',
       copyright: `Copyright © ${year} Softprobe`,
       links: [
         {
           title: '文档',
           items: [
+            { text: 'Agent QA', link: `${p}/agent-qa/` },
+            { text: 'Agent Evaluation', link: `${p}/evaluation/` },
+            { text: '测试概览', link: `${p}/testing/` },
             { text: '安装指南', link: `${p}/testing/installation/` },
             { text: 'sp-backend（Helm）', link: `${p}/testing/installation/server` },
-            { text: '测试概览', link: `${p}/testing/` },
             { text: '命令', link: `${p}/testing/commands/` },
           ],
         },
@@ -73,17 +77,17 @@ export function footerForLocale(locale: DocLocale): DefaultTheme.Footer {
     }
   }
   return {
-    message: 'Zero code changes · Full-context visibility · Cost optimization',
+    message: 'Capture Sessions · Review Steps · Improve what matters',
     copyright: `Copyright © ${year} Softprobe`,
     links: [
         {
           title: 'Docs',
           items: [
-            { text: 'Installation', link: `${p}/testing/installation/` },
-            { text: 'sp-backend (Helm)', link: `${p}/testing/installation/server` },
-            { text: 'Testing overview', link: `${p}/testing/` },
             { text: 'Agent QA', link: `${p}/agent-qa/` },
             { text: 'Agent Evaluation', link: `${p}/evaluation/` },
+            { text: 'Testing overview', link: `${p}/testing/` },
+            { text: 'Installation', link: `${p}/testing/installation/` },
+            { text: 'sp-backend (Helm)', link: `${p}/testing/installation/server` },
             { text: 'Commands', link: `${p}/testing/commands/` },
           ],
         },

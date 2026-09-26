@@ -4,19 +4,27 @@ title: Softprobe
 titleTemplate: false
 hero:
   name: Softprobe
-  text: 录制真实流量，用自动 Mock 回放，无需编写测试即可对比
-  tagline: 零代码改动 · 全上下文可见性 · 成本优化
+  text: 面向 AI Agent 的绩效审查
+  tagline: 捕获 Session · 审查 Steps · 改进关键所在
   actions:
     - theme: brand
-      text: 从测试开始
+      text: 连接你的 Agent
+      link: /zh/agent-qa/getting-started
+    - theme: alt
+      text: 用编码 Agent 排查
+      link: /zh/agent-qa/coding-agent-skills
+    - theme: alt
+      text: 测试
       link: /zh/testing/getting-started
-    - theme: alt
-      text: 工作原理
-      link: /zh/testing/how-it-works
-    - theme: alt
-      text: 业务观测
-      link: /zh/platform/getting-started/quick-start
 features:
+  - title: 我在生产中做 AI Agent QA
+    details: 用一条可粘贴提示连接 OpenCode 或 LangChain，捕获 Session 与 Steps，审查 Findings，并可选择把告警路由到 Slack。
+    link: /zh/agent-qa/
+    linkText: Agent QA
+  - title: 我做 AI Agent 评估
+    details: 编写套件，在 CI 中跑确定性与基于结果的评估，对比运行并设置发布门禁 — 兼容 Promptfoo 导入，清单由内核拥有，存储走 thelake。
+    link: /zh/evaluation/
+    linkText: Agent Evaluation
   - title: 我是开发者
     details: 给服务挂上 Java Agent，录制真实流量，把它作为回归测试回放，依赖自动 Mock。
     link: /zh/testing/getting-started
@@ -30,7 +38,3 @@ features:
     link: /zh/platform/getting-started/quick-start
     linkText: 业务观测
 ---
-
-::: info
-同一站点包含 **测试**（Java 录制/回放和 `sp` 自动化）与 **业务观测**（Istio/SESSIFY）两类产品区域，请按上方角色选择路径。
-:::
