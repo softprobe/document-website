@@ -35,3 +35,4 @@ In Explorer, an **Agent** is the named capture source you connect: framework (e.
 - [Agent Evaluation](/en/evaluation/) — offline/CI suites and gates over evidence
 - [OpenCode install](/en/agent-qa/opencode) — OpenCode plugin capture
 - [LangChain install](/en/agent-qa/langchain) — LangChain / LangGraph callback capture
+- [Investigate with a coding agent](/en/agent-qa/coding-agent-skills) — diagnose Sessions from Cursor, Claude Code, Codex, OpenCode

@@ -39,6 +39,8 @@ After one real agent turn (prefer a turn that uses a **tool** for LangChain), cl
 
 Open **Sessions** to browse captures. Use the range control (default last 7 days, rolling) and the Agent filter; both update the address bar so the view is shareable.
 
+To diagnose a Session from Cursor, Claude Code, Codex, or OpenCode, see [Investigate with a coding agent](/en/agent-qa/coding-agent-skills).
+
 ## 4. Slack last (optional)
 
 Choose a Slack channel for Findings, or **Skip for now**. Workspace OAuth stays under **Integrations**; this step only attaches a channel to the Agent.
