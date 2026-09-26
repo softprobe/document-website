@@ -373,6 +373,132 @@ const evaluationSidebarEn = [
   },
 ]
 
+const agentQaSidebarZh = [
+  {
+    text: '开始使用',
+    items: [
+      { text: '什么是 Agent QA', link: '/zh/agent-qa/' },
+      { text: '快速开始', link: '/zh/agent-qa/getting-started' },
+      { text: '概念', link: '/zh/agent-qa/concepts' },
+      { text: '用编码 Agent 排查', link: '/zh/agent-qa/coding-agent-skills' },
+    ],
+  },
+  {
+    text: '集成',
+    items: [
+      { text: 'OpenCode', link: '/zh/agent-qa/opencode' },
+      { text: 'LangChain', link: '/zh/agent-qa/langchain' },
+    ],
+  },
+]
+
+const evaluationSidebarZh = [
+  {
+    text: '开始使用',
+    items: [
+      { text: '什么是 Agent Evaluation', link: '/zh/evaluation/' },
+      { text: '心智模型', link: '/zh/evaluation/mental-model' },
+      { text: '快速开始', link: '/zh/evaluation/getting-started' },
+      { text: '工作原理', link: '/zh/evaluation/how-it-works' },
+    ],
+  },
+  {
+    text: '概念',
+    collapsed: false,
+    items: [
+      { text: '概念概览', link: '/zh/evaluation/concepts/' },
+      { text: '原生模型与框架运行器', link: '/zh/evaluation/concepts/native-model-and-adapters' },
+      { text: '术语', link: '/zh/evaluation/concepts/terminology' },
+      { text: '数据模型', link: '/zh/evaluation/concepts/data-model' },
+      { text: '生态映射', link: '/zh/evaluation/concepts/ecosystem-mapping' },
+      { text: '评估循环', link: '/zh/evaluation/concepts/evaluation-loop' },
+      { text: '分数与门禁', link: '/zh/evaluation/concepts/scores-and-gates' },
+      { text: '证据与轨迹', link: '/zh/evaluation/concepts/evidence-and-trajectories' },
+      { text: '试验与聚合', link: '/zh/evaluation/concepts/trials-and-aggregates' },
+      { text: '关联与 Trace', link: '/zh/evaluation/concepts/correlation-and-traces' },
+      { text: '在线与离线评估', link: '/zh/evaluation/concepts/online-vs-offline' },
+      { text: '在线评估', link: '/zh/evaluation/concepts/online-evaluation' },
+      { text: '标注', link: '/zh/evaluation/concepts/annotation' },
+      { text: '人工评估', link: '/zh/evaluation/concepts/human-evaluation' },
+      { text: '可复现性', link: '/zh/evaluation/concepts/reproducibility' },
+      { text: '产物可见性', link: '/zh/evaluation/concepts/artifact-visibility' },
+      { text: '环境包与磁带', link: '/zh/evaluation/concepts/environment-bundles' },
+    ],
+  },
+  {
+    text: '架构',
+    collapsed: false,
+    items: [
+      { text: '架构概览', link: '/zh/evaluation/architecture/' },
+      { text: '内核与宿主', link: '/zh/evaluation/architecture/kernel-and-hosts' },
+      { text: '执行 DAG', link: '/zh/evaluation/architecture/execution-dag' },
+      { text: '扩展模型', link: '/zh/evaluation/architecture/plugin-model' },
+      { text: '存储与 thelake', link: '/zh/evaluation/architecture/storage-and-thelake' },
+      { text: '信任边界', link: '/zh/evaluation/architecture/trust-boundaries' },
+    ],
+  },
+  {
+    text: '指南',
+    collapsed: false,
+    items: [
+      { text: '准备框架运行', link: '/zh/evaluation/guides/author-a-suite' },
+      { text: '本地与 CI 运行', link: '/zh/evaluation/guides/run-locally-and-ci' },
+      { text: '对比与晋级', link: '/zh/evaluation/guides/compare-and-promote' },
+      { text: 'Promptfoo 集成', link: '/zh/evaluation/guides/promptfoo-integration' },
+      { text: 'Langfuse 与 Braintrust 采纳', link: '/zh/evaluation/guides/langfuse-and-braintrust-adoption' },
+      { text: '生产到评估闭环', link: '/zh/evaluation/guides/production-to-eval-loop' },
+      { text: '在生产 OTEL Trace 上跑 Promptfoo', link: '/zh/evaluation/guides/promptfoo-online-otel' },
+      { text: '仅提示词 vs 环境评估', link: '/zh/evaluation/guides/eval-modes' },
+      { text: '录制与回放 Agent 环境', link: '/zh/evaluation/guides/record-replay-agent-environment' },
+      { text: '用 Promptfoo 为 Episode 打分', link: '/zh/evaluation/guides/score-episode-with-promptfoo' },
+      { text: 'Gym Episode 与训练 rollout', link: '/zh/evaluation/guides/gym-and-training-rollouts' },
+    ],
+  },
+  {
+    text: '生态方法',
+    collapsed: false,
+    items: [
+      { text: '方法族', link: '/zh/evaluation/evaluators/' },
+      { text: '确定性', link: '/zh/evaluation/evaluators/deterministic' },
+      { text: '相似度与统计', link: '/zh/evaluation/evaluators/similarity-and-statistical' },
+      { text: '基于参考的质量', link: '/zh/evaluation/evaluators/reference-based-quality' },
+      { text: 'LLM Judge', link: '/zh/evaluation/evaluators/llm-judge' },
+      { text: '对比 Judge', link: '/zh/evaluation/evaluators/comparative-judge' },
+      { text: '轨迹与工具', link: '/zh/evaluation/evaluators/trajectory-and-tools' },
+      { text: '环境结果', link: '/zh/evaluation/evaluators/environment-outcome' },
+      { text: '多轮与多 Agent', link: '/zh/evaluation/evaluators/multi-turn-and-multi-agent' },
+      { text: '人工标注', link: '/zh/evaluation/evaluators/human-annotation' },
+      { text: '生产与在线', link: '/zh/evaluation/evaluators/production-online' },
+      { text: '鲁棒性与安全', link: '/zh/evaluation/evaluators/robustness-and-security' },
+      { text: '随机与重复', link: '/zh/evaluation/evaluators/stochastic-and-repeated' },
+      { text: '元评估', link: '/zh/evaluation/evaluators/meta-evaluation' },
+    ],
+  },
+  {
+    text: '参考',
+    collapsed: false,
+    items: [
+      { text: 'CLI', link: '/zh/evaluation/reference/cli' },
+      { text: 'REST API', link: '/zh/evaluation/reference/api' },
+      { text: '结果状态', link: '/zh/evaluation/reference/result-status' },
+      { text: '事件', link: '/zh/evaluation/reference/events' },
+      { text: '分数目标', link: '/zh/evaluation/reference/score-targets' },
+      { text: '能力描述符', link: '/zh/evaluation/reference/capability-descriptors' },
+      { text: '框架运行器', link: '/zh/evaluation/reference/framework-adapters' },
+      { text: 'Promptfoo 映射（旧）', link: '/zh/evaluation/reference/promptfoo-mapping' },
+      { text: 'Node 包（Agent 环境）', link: '/zh/evaluation/reference/node-packages' },
+    ],
+  },
+  {
+    text: '面向 AI Agent',
+    collapsed: false,
+    items: [
+      { text: '概览', link: '/zh/evaluation/agents/overview' },
+      { text: '输出约定', link: '/zh/evaluation/agents/output-contract' },
+    ],
+  },
+]
+
 function sidebarForLocale(locale: DocLocale) {
   const platform = locale === 'zh' ? platformSidebarZh : platformSidebarEn
   const testing = locale === 'zh' ? testingSidebarZh : testingSidebarEn
@@ -385,6 +511,9 @@ function sidebarForLocale(locale: DocLocale) {
   if (locale === 'en') {
     sidebars['/en/agent-qa/'] = agentQaSidebarEn
     sidebars['/en/evaluation/'] = evaluationSidebarEn
+  } else {
+    sidebars['/zh/agent-qa/'] = agentQaSidebarZh
+    sidebars['/zh/evaluation/'] = evaluationSidebarZh
   }
   return sidebars
 }

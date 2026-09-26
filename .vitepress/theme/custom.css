@@ -76,9 +76,29 @@
   );
   --vp-home-hero-image-filter: none;
 
-  /* Wordmark is wide; keep nav logo readable */
-  --vp-nav-logo-height: 22px;
+  /* Explorer sidebar wordmark is 148px wide (~48px tall at this aspect) */
+  --vp-nav-logo-height: 48px;
   --vp-nav-bg-color: rgba(251, 249, 244, 0.92);
+
+  /*
+   * One content column for full-bleed shells (home / page / footer).
+   * Gutters step with VitePress home breakpoints so every section shares
+   * the same left/right edge — do not invent per-section max-widths.
+   */
+  --sp-content-max: 1152px;
+  --sp-content-gutter: 24px;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --sp-content-gutter: 48px;
+  }
+}
+
+@media (min-width: 960px) {
+  :root {
+    --sp-content-gutter: 64px;
+  }
 }
 
 .dark {
@@ -136,8 +156,10 @@
 }
 
 .VPNavBar .logo {
-  height: var(--vp-nav-logo-height);
-  width: auto;
+  /* Beat VitePress scoped height; match Explorer .brand-logo-full */
+  width: 148px !important;
+  height: auto !important;
+  margin-right: 0;
 }
 
 .VPNavBarMenuLink.active,
@@ -226,6 +248,48 @@ footer.VPFooter {
   font-size: 3rem;
   font-weight: 700;
   line-height: 1.15;
+}
+
+/* Full-bleed shell: nav · hero · features · home markdown · footer */
+.VPNavBar:not(.has-sidebar) .wrapper {
+  padding-left: var(--sp-content-gutter);
+  padding-right: var(--sp-content-gutter);
+}
+
+.VPNavBar:not(.has-sidebar) .container {
+  max-width: var(--sp-content-max);
+}
+
+.VPHome .VPHero {
+  padding-left: var(--sp-content-gutter);
+  padding-right: var(--sp-content-gutter);
+}
+
+.VPHome .VPHero .container,
+.VPHome .VPFeatures .container,
+.VPHome .vp-doc.container {
+  max-width: var(--sp-content-max);
+}
+
+.VPHome .VPFeatures {
+  padding-left: var(--sp-content-gutter);
+  padding-right: var(--sp-content-gutter);
+}
+
+.VPHome .vp-doc.container {
+  padding-left: var(--sp-content-gutter);
+  padding-right: var(--sp-content-gutter);
+}
+
+.SpFooter {
+  padding-left: var(--sp-content-gutter);
+  padding-right: var(--sp-content-gutter);
+}
+
+.SpFooter .SpFooter-container {
+  max-width: var(--sp-content-max);
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .VPHomeHero .text {
