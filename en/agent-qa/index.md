@@ -30,4 +30,5 @@ Agent QA is the **online capture and review** path for AI agents. Evaluation con
 1. [Quick start](/en/agent-qa/getting-started) — connect from Explorer
 2. [OpenCode install](/en/agent-qa/opencode) — plugin, credentials, troubleshooting
 3. [LangChain install](/en/agent-qa/langchain) — callback handler (Python / TypeScript)
-4. [Concepts](/en/agent-qa/concepts) — Session and observation shape
+4. [Investigate with a coding agent](/en/agent-qa/coding-agent-skills) — diagnose Sessions in Cursor, Claude Code, Codex, OpenCode
+5. [Concepts](/en/agent-qa/concepts) — Session and observation shape

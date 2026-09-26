@@ -252,6 +252,7 @@ const agentQaSidebarEn = [
       { text: 'What is Agent QA', link: '/en/agent-qa/' },
       { text: 'Quick start', link: '/en/agent-qa/getting-started' },
       { text: 'Concepts', link: '/en/agent-qa/concepts' },
+      { text: 'Coding agent skills', link: '/en/agent-qa/coding-agent-skills' },
     ],
   },
   {
