@@ -118,7 +118,7 @@ const show = () => {
 }
 
 .SpFooter-group a:hover {
-  color: var(--sp-brand, #a14eff);
+  color: var(--sp-brand, #b8724e);
   text-decoration: underline;
 }
 

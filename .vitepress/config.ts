@@ -412,8 +412,16 @@ export default withMermaid(
     ],
   },
   head: [
-    ['link', { rel: 'icon', href: '/img/sp-logo-trans.ico' }],
-    ['meta', { name: 'theme-color', content: '#A14EFF' }],
+    ['link', { rel: 'icon', href: '/img/favicon.svg', type: 'image/svg+xml' }],
+    ['link', { rel: 'alternate icon', href: '/img/favicon.png', type: 'image/png' }],
+    [
+      'link',
+      {
+        rel: 'stylesheet',
+        href: 'https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap',
+      },
+    ],
+    ['meta', { name: 'theme-color', content: '#B8724E' }],
   ],
   // Dead links fail the build. Localhost examples in guides are intentional, not dead.
   ignoreDeadLinks: [/^https?:\/\/localhost/],

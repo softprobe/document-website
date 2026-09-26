@@ -1,32 +1,56 @@
 /**
- * Softprobe brand theme — ported from document-website Docusaurus (Infima).
- * Primary: #A14EFF
+ * Softprobe brand theme — aligned with Explorer product shell
+ * (cream canvas, terracotta accent, Archivo + IBM Plex Mono).
  */
 
 :root {
-  --sp-brand: #a14eff;
-  --sp-brand-dark: #8b3aff;
-  --sp-brand-darker: #7a2eff;
-  --sp-brand-darkest: #5a1fcc;
-  --sp-brand-light: #b366ff;
-  --sp-brand-lighter: #c280ff;
-  --sp-brand-lightest: #d199ff;
+  /* Explorer light tokens */
+  --sp-canvas: #f4f1ea;
+  --sp-surface: #fbf9f4;
+  --sp-surface-2: #ede9df;
+  --sp-ink: #14130f;
+  --sp-body: #3c3931;
+  --sp-muted: #625d52;
+  --sp-border: #dbd5c7;
 
-  /* Body-text link color. Brand #a14eff is only ~4.2:1 on white (fails WCAG AA);
-     use a darker purple for inline links so text stays legible. Large UI (hero,
-     buttons) keeps the brand purple. */
-  --sp-brand-link: #7a2eff;
+  --sp-brand: #b8724e;
+  --sp-brand-dark: #9a5d3c;
+  --sp-brand-darker: #7e4a2f;
+  --sp-brand-darkest: #5c3522;
+  --sp-brand-light: #d48b68;
+  --sp-brand-lighter: #e0a588;
+  --sp-brand-lightest: #f0d4c4;
 
-  /* Narrower sidebar than the 272px default. After trimming the longest labels
-     ("Softprobe Server (Helm)" → "Server (Helm)", etc.) the widest item is
-     "什么是 Softprobe 测试" at ~144px; a 220px track with tighter 20px side
-     padding leaves a ~180px text column and hands 52px back to the content. */
+  /* Body-text link: darker terracotta for WCAG AA on cream/white */
+  --sp-brand-link: #8a5235;
+
+  --sp-font-sans: 'Archivo', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    sans-serif;
+  --sp-font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    monospace;
+
   --vp-sidebar-width: 220px;
+
+  --vp-font-family-base: var(--sp-font-sans);
+  --vp-font-family-mono: var(--sp-font-mono);
+
+  --vp-c-bg: var(--sp-canvas);
+  --vp-c-bg-alt: var(--sp-surface-2);
+  --vp-c-bg-elv: var(--sp-surface);
+  --vp-c-bg-soft: var(--sp-surface);
+
+  --vp-c-border: var(--sp-border);
+  --vp-c-divider: var(--sp-border);
+  --vp-c-gutter: var(--sp-border);
+
+  --vp-c-text-1: var(--sp-ink);
+  --vp-c-text-2: var(--sp-body);
+  --vp-c-text-3: var(--sp-muted);
 
   --vp-c-brand-1: var(--sp-brand);
   --vp-c-brand-2: var(--sp-brand-dark);
   --vp-c-brand-3: var(--sp-brand-darker);
-  --vp-c-brand-soft: rgba(161, 78, 255, 0.14);
+  --vp-c-brand-soft: rgba(184, 114, 78, 0.14);
 
   --vp-c-indigo-1: var(--sp-brand);
   --vp-c-indigo-2: var(--sp-brand-dark);
@@ -41,6 +65,7 @@
   --vp-button-brand-hover-bg: var(--sp-brand-dark);
   --vp-button-brand-active-bg: var(--sp-brand-darker);
   --vp-button-brand-border: var(--sp-brand);
+  --vp-button-brand-text: #fbf9f4;
 
   --vp-home-hero-name-color: transparent;
   --vp-home-hero-name-background: linear-gradient(
@@ -51,25 +76,47 @@
   );
   --vp-home-hero-image-filter: none;
 
-  --vp-nav-logo-height: 28px;
+  /* Wordmark is wide; keep nav logo readable */
+  --vp-nav-logo-height: 22px;
+  --vp-nav-bg-color: rgba(251, 249, 244, 0.92);
 }
 
 .dark {
-  --sp-brand: #b366ff;
-  --sp-brand-dark: #a14eff;
-  --sp-brand-darker: #8b3aff;
-  --sp-brand-darkest: #7a2eff;
-  --sp-brand-light: #c280ff;
-  --sp-brand-lighter: #d199ff;
-  --sp-brand-lightest: #e0b3ff;
+  --sp-canvas: #121316;
+  --sp-surface: #1a1b20;
+  --sp-surface-2: #22232a;
+  --sp-ink: #eceef2;
+  --sp-body: #c5c9d3;
+  --sp-muted: #8d92a0;
+  --sp-border: #2e303b;
 
-  /* On the dark background a lighter purple is what passes AA. */
-  --sp-brand-link: #c99dff;
+  --sp-brand: #d48b68;
+  --sp-brand-dark: #b8724e;
+  --sp-brand-darker: #9a5d3c;
+  --sp-brand-darkest: #7e4a2f;
+  --sp-brand-light: #e0a588;
+  --sp-brand-lighter: #ecc4a8;
+  --sp-brand-lightest: #f5decc;
+
+  --sp-brand-link: #e0a588;
+
+  --vp-c-bg: var(--sp-canvas);
+  --vp-c-bg-alt: var(--sp-surface-2);
+  --vp-c-bg-elv: var(--sp-surface);
+  --vp-c-bg-soft: var(--sp-surface);
+
+  --vp-c-border: var(--sp-border);
+  --vp-c-divider: var(--sp-border);
+  --vp-c-gutter: var(--sp-border);
+
+  --vp-c-text-1: var(--sp-ink);
+  --vp-c-text-2: var(--sp-body);
+  --vp-c-text-3: var(--sp-muted);
 
   --vp-c-brand-1: var(--sp-brand);
   --vp-c-brand-2: var(--sp-brand-dark);
   --vp-c-brand-3: var(--sp-brand-darker);
-  --vp-c-brand-soft: rgba(179, 102, 255, 0.16);
+  --vp-c-brand-soft: rgba(212, 139, 104, 0.16);
 
   --vp-c-indigo-1: var(--sp-brand);
   --vp-c-indigo-2: var(--sp-brand-dark);
@@ -77,11 +124,20 @@
 
   --vp-button-brand-bg: var(--sp-brand-dark);
   --vp-button-brand-hover-bg: var(--sp-brand);
+  --vp-button-brand-text: #121316;
+
+  --vp-nav-bg-color: rgba(18, 19, 22, 0.94);
 }
 
-/* Nav — purple brand accent (old .navbar__brand) */
+/* Nav — terracotta brand accent */
 .VPNavBar .title {
   font-weight: 600;
+  font-family: var(--sp-font-sans);
+}
+
+.VPNavBar .logo {
+  height: var(--vp-nav-logo-height);
+  width: auto;
 }
 
 .VPNavBarMenuLink.active,
@@ -95,8 +151,6 @@
   background-color: var(--sp-brand);
 }
 
-/* Tighten the sidebar's 32px side padding so the 220px track has more room
-   for the label text (VitePress default wastes 64px on padding alone). */
 @media (min-width: 960px) {
   .VPSidebar.VPSidebar {
     padding-left: 20px;
@@ -104,21 +158,12 @@
   }
 }
 
-/* Widen the content column so the prose sits a normal ~32px from the outline
-   instead of VitePress's 688px cap (which reads left-heavy on wide screens). */
 @media (min-width: 1280px) {
   .VPDoc.has-aside.has-aside .content-container {
     max-width: 848px;
   }
 }
 
-/* Wide-screen layout (≥1440px) — take over VitePress's centering scheme.
-   By default it pads the content by (100vw − layout-max-width)/2 + sidebar-width,
-   which on a 1920px window pushes everything 240px right and makes the sidebar
-   read ~456px wide. Instead: pin the sidebar flush-left at its real width, pad
-   the content by exactly that width, and center the whole doc container (capped
-   at 1180px) so the three columns stay one tight group with symmetric page
-   margins at any window width. */
 @media (min-width: 1440px) {
   .VPSidebar.VPSidebar {
     width: var(--vp-sidebar-width);
@@ -129,10 +174,6 @@
     padding-left: var(--vp-sidebar-width);
   }
 
-  /* Nav logo/title block uses the SAME centering formula as the sidebar by
-     default — override it in lockstep so the logo stays aligned flush-left with
-     the sidebar instead of floating out to ~181px. Doubled class raises
-     specificity above VitePress's own equal-specificity rule. */
   .VPNavBar.has-sidebar.has-sidebar .title {
     width: var(--vp-sidebar-width);
     padding-left: 20px;
@@ -148,7 +189,7 @@
   background-color: var(--sp-brand);
 }
 
-/* Global shell — same header/footer on home, platform, and CLI pages */
+/* Global shell */
 .VPNav {
   border-bottom: 1px solid var(--vp-c-divider);
 }
@@ -157,19 +198,30 @@
   background-color: var(--vp-nav-bg-color);
 }
 
-/* Hide the default VitePress footer; SpFooter (home/page layouts) replaces it */
 footer.VPFooter {
   display: none !important;
 }
 
-/* Layout is a flex column so SpFooter sits at the bottom on short pages */
 .Layout {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  font-family: var(--sp-font-sans);
 }
 
-/* Home hero — old .hero__title / .hero__subtitle */
+.vp-doc,
+.VPSidebar,
+.VPNavBar {
+  font-family: var(--sp-font-sans);
+}
+
+.vp-doc :not(pre) > code,
+.vp-doc pre,
+.vp-doc kbd {
+  font-family: var(--sp-font-mono);
+}
+
+/* Home hero */
 .VPHomeHero .name {
   font-size: 3rem;
   font-weight: 700;
@@ -189,6 +241,7 @@ footer.VPFooter {
 .VPHomeHero .action .VPButton.brand {
   background-color: var(--sp-brand);
   border-color: var(--sp-brand);
+  color: var(--vp-button-brand-text);
 }
 
 .VPHomeHero .action .VPButton.brand:hover {
@@ -208,27 +261,26 @@ footer.VPFooter {
 }
 
 .dark .VPHomeHero .action .VPButton.alt:hover {
-  background-color: rgba(161, 78, 255, 0.2);
+  background-color: rgba(212, 139, 104, 0.2);
   color: var(--sp-brand-light);
 }
 
-/* Feature cards on home */
 .VPFeature {
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  border-radius: 4px;
+  box-shadow: 0 4px 20px rgba(20, 19, 15, 0.05);
   transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  background: var(--sp-surface);
 }
 
 .VPFeature:hover {
   border-color: var(--sp-brand-lighter);
-  box-shadow: 0 8px 24px rgba(161, 78, 255, 0.12);
+  box-shadow: 0 8px 24px rgba(184, 114, 78, 0.12);
 }
 
 .VPFeature .icon {
   color: var(--sp-brand);
 }
 
-/* Mermaid diagrams */
 .mermaid,
 pre.mermaid,
 div[class*='mermaid'] {
@@ -242,7 +294,6 @@ div[class*='mermaid'] {
   height: auto;
 }
 
-/* Content — links, blockquotes, tables (old custom.css) */
 .vp-doc a {
   color: var(--sp-brand-link);
   transition: color 0.2s ease;
@@ -258,7 +309,7 @@ div[class*='mermaid'] {
 
 .vp-doc blockquote {
   border-left: 4px solid var(--sp-brand);
-  border-radius: 0 8px 8px 0;
+  border-radius: 0 4px 4px 0;
   background-color: var(--vp-c-brand-soft);
   padding: 1rem;
   font-style: italic;
@@ -286,7 +337,6 @@ div[class*='mermaid'] {
   font-size: 0.95em;
 }
 
-/* Custom blocks — brand-tinted tip/info */
 .custom-block.tip,
 .custom-block.info {
   border-color: var(--sp-brand);
@@ -303,7 +353,6 @@ div[class*='mermaid'] {
   color: var(--sp-brand-lighter);
 }
 
-/* Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -322,7 +371,7 @@ div[class*='mermaid'] {
   background: var(--vp-c-text-3);
 }
 
-/* --- Platform page components (Docusaurus sp-* / Infima) --- */
+/* --- Platform page components --- */
 
 .sp-img {
   text-align: center;
@@ -333,8 +382,8 @@ div[class*='mermaid'] {
 .sp-img video {
   max-width: 100%;
   height: auto;
-  border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  border-radius: 4px;
+  box-shadow: 0 8px 24px rgba(20, 19, 15, 0.06);
   display: block;
   margin: 0 auto;
 }
@@ -359,7 +408,7 @@ div[class*='mermaid'] {
 a.button {
   display: inline-block;
   padding: 0.6rem 1rem;
-  border-radius: 6px;
+  border-radius: 2px;
   font-weight: 600;
   text-decoration: none !important;
   transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
@@ -372,14 +421,14 @@ a.button {
 .sp-hero-buttons .button--primary {
   background-color: var(--sp-brand);
   border: 1px solid var(--sp-brand);
-  color: #fff !important;
+  color: #fbf9f4 !important;
 }
 
 .button--primary:hover,
 .sp-hero-buttons .button--primary:hover {
   background-color: var(--sp-brand-dark);
   border-color: var(--sp-brand-dark);
-  color: #fff !important;
+  color: #fbf9f4 !important;
 }
 
 .button--secondary,
@@ -399,7 +448,7 @@ a.button {
 
 .dark .button--secondary:hover,
 .dark .sp-hero-buttons .button--secondary:hover {
-  background-color: rgba(161, 78, 255, 0.2);
+  background-color: rgba(212, 139, 104, 0.2);
   color: var(--sp-brand-light) !important;
 }
 
@@ -427,14 +476,14 @@ a.button {
 .sp-card-grid .card,
 .sp-card {
   border: 1px solid var(--vp-c-divider);
-  border-radius: 10px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  border-radius: 4px;
+  box-shadow: 0 4px 20px rgba(20, 19, 15, 0.05);
   height: 100%;
   width: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: var(--vp-c-bg);
+  background: var(--sp-surface);
 }
 
 .sp-card-grid .card__header {
@@ -457,14 +506,14 @@ a.button {
 .badge {
   display: inline-block;
   padding: 0.2rem 0.5rem;
-  border-radius: 4px;
+  border-radius: 2px;
   font-size: 0.8rem;
   font-weight: 600;
-  color: #fff;
+  color: #fbf9f4;
 }
 
 .badge--success {
-  background: var(--vp-c-green-1, #10b981);
+  background: var(--vp-c-green-1, #1f6b4a);
 }
 
 .badge--primary {
@@ -492,7 +541,7 @@ a.button {
   display: inline-block;
   padding: 2px 8px;
   margin-left: 6px;
-  border-radius: 999px;
+  border-radius: 2px;
   border: 1px solid var(--sp-brand);
   color: var(--sp-brand);
   background: transparent;
@@ -507,7 +556,7 @@ a.button {
 }
 
 .dark .sp-link-pill:hover {
-  background: rgba(161, 78, 255, 0.2);
+  background: rgba(212, 139, 104, 0.2);
   color: var(--sp-brand-light);
 }
 
