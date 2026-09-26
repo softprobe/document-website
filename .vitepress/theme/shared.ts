@@ -10,10 +10,12 @@ export const sharedChrome: Pick<
   'logo' | 'siteTitle' | 'socialLinks'
 > = {
   logo: {
-    src: '/img/sp-logo-trans.png',
+    light: '/img/softprobe-wordmark.svg',
+    dark: '/img/softprobe-wordmark-dark.svg',
     alt: 'Softprobe',
   },
-  siteTitle: 'Softprobe',
+  // Wordmark already includes the name; keep title empty to avoid duplication.
+  siteTitle: false,
   socialLinks: [
     { icon: 'github', link: 'https://github.com/softprobe/softprobe' },
     { icon: 'x', link: 'https://x.com/softprobeai' },
