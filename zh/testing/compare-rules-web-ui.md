@@ -32,7 +32,7 @@ title: 配置对比规则
 
 **怎么加：** 打开 **按路径忽略** tab，在 **忽略字段** 里填字段路径，点 **添加**。
 
-![路径 tab](/img/docs/replay/rule-exclude-path.png)
+![配置对比规则操作演示](/img/docs/testing/zh/compare-rules.gif)
 
 **填什么：** 一个字段路径。`data.traceId`（点号形态）和 `/data/traceId`（JSON Pointer）都行。用 `*` 匹配一层、`**` 匹配任意深度，如 `/data/*/updatedAt`。
 
@@ -46,7 +46,7 @@ title: 配置对比规则
 
 **怎么加：** 打开 **依赖类型** tab。填 **类型**（如 `Redis`、`Database`、`Dubbo`、`HttpClient`），可选再填某个具体依赖 **名字**。名字留空=忽略整类。
 
-![依赖类型 tab](/img/docs/replay/rule-ignore-category.png)
+![按依赖类型忽略操作演示](/img/docs/testing/zh/rule-ignore-category.gif)
 
 在回放里，被这样忽略的调用显示一个 **「本类已整类忽略」** chip，而不是逐字段删除线——整个调用被一次性挡下了。
 
@@ -56,7 +56,7 @@ title: 配置对比规则
 
 **怎么加：** 打开 **按条件忽略（CEL）** tab，点 **添加规则**，可选起个名字，写条件。模板选择提供现成条件。
 
-![CEL 规则 tab，含示例规则](/img/docs/replay/rule-cel.png)
+![按条件忽略（CEL）操作演示](/img/docs/testing/zh/rule-cel.gif)
 
 可用变量：`left` / `right`（录制值 / 回放值）、`path` / `pointer`（字段路径）、`fieldName`、`category`、`time_tolerance_ms`。辅助函数：`isUUID`、`isIP`、`isTimestamp`、`toTimestamp`、`toNumber`。
 
@@ -71,7 +71,7 @@ title: 配置对比规则
 
 **怎么加：** 打开 **值转换** tab，填字段 **路径** 和一个作用于值的 CEL **表达式**（`value` 是该字段原始值），点 **添加转换规则**。
 
-![值转换 tab](/img/docs/replay/rule-transform.png)
+![值转换规则配置演示](/img/docs/testing/zh/rule-transform.gif)
 
 示例——四舍五入到两位小数：路径 `/data/orders/*/total`，表达式 `math.round(value * 100) / 100`。
 
@@ -81,7 +81,7 @@ title: 配置对比规则
 
 **怎么加：** 打开 **解压配置** tab，填字段 **路径**，选 **编码格式**（`Base64 + JSON`、`Gzip + Base64 + JSON`、`Plain JSON`）。
 
-![解压配置 tab](/img/docs/replay/rule-decompress.png)
+![解压配置规则演示](/img/docs/testing/zh/rule-decompress.gif)
 
 ## 顺序会变时匹配数组元素
 
@@ -89,7 +89,7 @@ title: 配置对比规则
 
 **怎么加：** 打开 **数组匹配** tab，填数组 **路径**，选 **策略**，（对「按主键」）填 **主键字段**。点 **添加数组配置**。
 
-![数组匹配 tab](/img/docs/replay/rule-arrays.png)
+![数组匹配规则配置演示](/img/docs/testing/zh/rule-arrays.gif)
 
 | 策略 | 什么时候用 |
 |---|---|

@@ -32,7 +32,7 @@ The global page groups the rule types into six tabs — one per type below.
 
 **How to add it:** open the **Ignore by path** tab, type the field path in **Ignore fields**, and click **Add**.
 
-![The path tab](/img/docs/replay/rule-exclude-path.png)
+![Configuring compare rules walk-through](/img/docs/testing/en/compare-rules.gif)
 
 **What to type:** a field path. Both `data.traceId` (dot form) and `/data/traceId` (JSON Pointer) work. Use `*` for one level and `**` for any depth, e.g. `/data/*/updatedAt`.
 
@@ -46,7 +46,7 @@ The same tab has an **Include paths (whitelist)** input at the top. Add anything
 
 **How to add it:** open the **Dependency types** tab. Enter the **type** (e.g. `Redis`, `Database`, `Dubbo`, `HttpClient`) and, optionally, a specific dependency **name**. Leave the name empty to ignore the whole type.
 
-![The dependency types tab](/img/docs/replay/rule-ignore-category.png)
+![Ignoring a dependency type walk-through](/img/docs/testing/en/rule-ignore-category.gif)
 
 In a run, a call ignored this way shows an **"Entire category ignored"** chip instead of per-field strikethroughs — the whole call is dropped at once.
 
@@ -56,7 +56,7 @@ In a run, a call ignored this way shows an **"Entire category ignored"** chip in
 
 **How to add it:** open the **Ignore by condition (CEL)** tab, click **Add rule**, optionally name it, and write the condition. A template picker offers ready-made conditions.
 
-![The CEL rules tab with example rules](/img/docs/replay/rule-cel.png)
+![Configuring CEL condition rule walk-through](/img/docs/testing/en/rule-cel.gif)
 
 Variables you can use: `left` / `right` (recorded / replayed value), `path` / `pointer` (field path), `fieldName`, `category`, `time_tolerance_ms`. Helpers: `isUUID`, `isIP`, `isTimestamp`, `toTimestamp`, `toNumber`.
 
@@ -71,7 +71,7 @@ Examples:
 
 **How to add it:** open the **Value transform** tab, enter the field **path** and a CEL **expression** on the value (`value` is the field's original value), then click **Add transform**.
 
-![The value transform tab](/img/docs/replay/rule-transform.png)
+![Value transform rule walk-through](/img/docs/testing/en/rule-transform.gif)
 
 Example — round to two decimals: path `/data/orders/*/total`, expression `math.round(value * 100) / 100`.
 
@@ -81,7 +81,7 @@ Example — round to two decimals: path `/data/orders/*/total`, expression `math
 
 **How to add it:** open the **Decompress** tab, enter the field **path**, and pick the **codec** (`Base64 + JSON`, `Gzip + Base64 + JSON`, or `Plain JSON`).
 
-![The decompress tab](/img/docs/replay/rule-decompress.png)
+![Decompress rule walk-through](/img/docs/testing/en/rule-decompress.gif)
 
 ## Match array elements when order varies
 
@@ -89,7 +89,7 @@ Example — round to two decimals: path `/data/orders/*/total`, expression `math
 
 **How to add it:** open the **Array matching** tab, enter the array **path**, pick a **strategy**, and (for `By key`) enter the **key field(s)**. Click **Add array config**.
 
-![The array matching tab](/img/docs/replay/rule-arrays.png)
+![Array matching rule walk-through](/img/docs/testing/en/rule-arrays.gif)
 
 | Strategy | When to use |
 |---|---|
