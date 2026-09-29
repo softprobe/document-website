@@ -75,7 +75,7 @@ Click **Save & clone**, and the platform clones the code onto the platform serve
 The AI reads the bound branch. SoftProbe doesn't check that this code matches the version actually running in the service under test; the report records which branch and commit the analysis read.
 
 ::: info When the platform can't reach your repositories
-If your repositories are on a network the platform can't reach (for example with SoftProbe Cloud), use the [desktop client](/en/testing/installation/deployment#desktop): under **Applications**, bind the application to a local source folder that points at code already cloned on your computer. The AI reads the code on that computer, and the code never leaves it.
+If your repositories are on a network the platform can't reach (for example with SoftProbe Cloud), use the [desktop client](/en/testing/installation/deployment#desktop): under **Applications**, click **Bind folder** on the application and point it at code already cloned on your computer. The AI reads the code on that computer, and the code never leaves it.
 :::
 
 ## Running without AI {#disable}

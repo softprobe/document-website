@@ -72,11 +72,15 @@ Next, [attach the Java agent](/en/testing/java-agent).
 In the `softprobe/` directory:
 
 ```bash
-./stop.sh     # stop the services; data is kept
-./start.sh    # start the services
+COMPOSE_PROFILES=bundled docker compose -f docker-compose.yml down   # stop every service; data is kept
+./start.sh                                                           # start the services
 ```
 
-The Docker installed by the package starts on boot, and the platform containers restart with Docker: after a reboot the platform comes back on its own, without `./start.sh`. Services stopped with `./stop.sh` stay stopped.
+::: warning Don't stop with stop.sh
+In current packages, `./stop.sh` only stops the platform container; the database, cache and log components keep running. Use the command above instead.
+:::
+
+The Docker installed by the package starts on boot, and the platform containers restart with Docker: after a reboot the platform comes back on its own, without `./start.sh`. Services stopped with the command above stay stopped.
 
 ## Configure {#configure}
 

@@ -43,6 +43,8 @@ JDK 8、11、17、21。JDK 17、21 要在启动参数里加一组 `--add-opens`�
 
 Apache HttpClient 5.x 暂不支持。
 
+在「回放配置」的 Mock 例外、对比规则的「依赖类型」和策略 YAML 里，依赖调用按类型名区分（如 `HttpClient`、`Database`、`Redis`、`DubboConsumer`），类型名对照见 [策略 YAML 参考 — 依赖分类](/zh/testing/policy-yaml-guide#mock-categories)。
+
 ## 本地缓存、时间与动态类 {#dynamic}
 
 回放时，下面这些调用的结果也要和录制时一致，否则同样的请求会得到不同的结果：

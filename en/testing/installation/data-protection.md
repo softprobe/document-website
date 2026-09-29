@@ -73,7 +73,7 @@ Masking changes what's displayed, not what's stored:
 
 ## Who can see it {#access}
 
-The console of a self-hosted deployment has no user login yet: anyone who can reach port 8090 on the platform server can see every application's recordings. Control access with network rules:
+A self-hosted deployment has no user accounts or permissions yet, and the platform's interfaces don't authenticate callers: anyone who can reach port 8090 on the platform server can see every application's recordings. Control access with network rules:
 
 - Open port 8090 only to the people who use SoftProbe and to the application servers; see [Before you deploy — Network rules](/en/testing/installation/preparation#network).
 - Keep the platform server's other ports closed.

@@ -75,7 +75,7 @@ AI 分析时读代码，需要一个能访问代码仓库的账号。打开「�
 AI 读取这里绑定的分支。SoftProbe 不核对这份代码和被测服务实际运行的版本是否一致；报告里会注明分析时读取的分支和提交。
 
 ::: info 代码仓库平台访问不到时
-代码仓库在平台访问不到的网络里（例如使用 SoftProbe Cloud），可以用[桌面客户端](/zh/testing/installation/deployment#desktop)：在「应用管理」里给应用「绑定本地目录」，指向办公电脑上已经克隆好的代码，AI 在本机读代码，代码不离开这台电脑。
+代码仓库在平台访问不到的网络里（例如使用 SoftProbe Cloud），可以用[桌面客户端](/zh/testing/installation/deployment#desktop)：在「应用管理」里给应用点「绑定目录」，指向办公电脑上已经克隆好的代码，AI 在本机读代码，代码不离开这台电脑。
 :::
 
 ## 不使用 AI {#disable}

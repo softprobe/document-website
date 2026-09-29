@@ -72,11 +72,15 @@ title: 单机部署（All-in-One）
 在 `softprobe/` 目录里：
 
 ```bash
-./stop.sh     # 停止服务，数据保留
-./start.sh    # 启动服务
+COMPOSE_PROFILES=bundled docker compose -f docker-compose.yml down   # 停止全部服务，数据保留
+./start.sh                                                           # 启动服务
 ```
 
-安装包自带的 Docker 设置了开机自启，平台的容器也会随 Docker 自动重启：服务器重启后平台会自己起来，不需要手动执行 `./start.sh`。用 `./stop.sh` 停掉的服务除外。
+::: warning 不要用 stop.sh 停止
+当前安装包里的 `./stop.sh` 只停得掉平台容器，数据库、缓存和日志组件会继续运行。请用上面的命令停止。
+:::
+
+安装包自带的 Docker 设置了开机自启，平台的容器也会随 Docker 自动重启：服务器重启后平台会自己起来，不需要手动执行 `./start.sh`。用上面的命令停掉的服务除外。
 
 ## 修改配置 {#configure}
 
