@@ -52,7 +52,7 @@ JSON 输出示例（`diagnose replay`）：
 }
 ```
 
-这个例子里，目标连不上，所有用例都回放失败（`invalidCaseCount`），没有差异，所以 `artifacts` 为 `null`。用例有差异时，`artifacts` 会列出能找到差异内容的那些用例的文件。目前后端的进度接口不返回计划状态，所以 `status` 为空；查进度请用 [sp replay status](./replay)。
+这个例子里，目标连不上，所有用例都回放失败（`invalidCaseCount`），没有差异，所以 `artifacts` 为 `null`。用例有差异时，`artifacts` 会列出差异文件（只含能找到差异内容的用例）。目前后端的进度接口不返回计划状态，所以 `status` 为空；查进度请用 [sp replay status](./replay)。
 
 `classification` 取值之一：`empty_window`、`invalid_target`、`assertion_failure`、`mixed`、`other`。`message` 来自后端的 `errorMessage` 或用例发送错误（如有），不是 CLI 自己编的文案。
 
