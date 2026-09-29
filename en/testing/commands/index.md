@@ -1,6 +1,20 @@
-# Commands
+---
+title: Command reference
+---
 
-Reference for public `sp` subcommands. Use `--json` on API-backed commands. See [Output contract](/en/testing/agents/output-contract).
+# Command reference
+
+Every public `sp` command. Use `--json` on API-backed commands; see [Output contract](/en/testing/agents/output-contract). `sp --help` and `sp <command> --help` list the same commands from the installed binary.
+
+## Install and set up
+
+| Command | Synopsis |
+|---------|----------|
+| `version` | Print the CLI version. `sp -v` and `sp --version` do the same; `sp version --json` gives an envelope |
+| [setup](./setup) | Point `sp` at a backend; optionally install the shared web workbench (Linux) |
+| `doctor` | Check the backend, the workbench engine and the shared web workbench — see [Install — check the installation](/en/testing/installation/#doctor) |
+| `upgrade` | Upgrade the CLI, the Java agent and the workbench engine — see [Install — upgrade](/en/testing/installation/#upgrade) |
+| `code` | Start the workbench in the terminal, or `sp code web` in the browser — see [Install — web workbench](/en/testing/installation/#web-ui) |
 
 ## Lifecycle (recommended)
 
@@ -8,7 +22,6 @@ Job-oriented commands that follow record-and-replay order:
 
 | Command | Synopsis |
 |---------|----------|
-| [setup](./setup) | Configure self-hosted backend URL; optional Spcode Service (Linux) |
 | [demo](./demo) | `start`, `traffic`, `replay`, `status`, `stop` — [Travel OTA demo](https://github.com/softprobe/demo-ota) stack |
 | [agent](./agent) | `download`, `command` — install jar and JVM flags |
 | [record](./record) | `case list` — recorded entry cases before replay |
@@ -24,9 +37,10 @@ Connect, authenticate, manage apps and policies, run replay plans.
 | [auth](./auth) | Login, whoami, refresh |
 | [app](./app) | List, create, agent status, recent replays |
 | [policy](./policy) | Recording, mock, compare YAML policies |
-| [replay](./replay) | Run, status, stop, rerun plans |
+| [replay](./replay) | Run, status, statistics, report, stop, rerun plans |
 | [health](./health) | Cluster health |
-| `version` | CLI version string |
+| [tenant](./tenant) | Softprobe Cloud: tenant API key for agents |
+| [tunnel](./tunnel) | Softprobe Cloud: reverse tunnel so replays reach a service on your machine |
 
 ## Investigation
 
@@ -36,7 +50,7 @@ Recorded data, traces, and replay failures.
 |---------|----------|
 | [record](./record) | Query recordings and completeness |
 | [trace](./trace) | Find traces by business attributes |
-| [logs](./logs) | Correlated logs by `trace_id` — see [Log correlation IDs](/en/testing/reference/log-correlation-ids) |
+| [logs](./logs) | Correlated logs by `trace_id` — see [Concepts and IDs](/en/testing/agents/concepts#ids) |
 | [replay case](./replay-case) | List cases, metadata, mock tree |
 | [replay diff](./replay-diff) | Diff artifacts, compare results |
 | [extraction-rule](./extraction-rule) | Business attribute extraction rules |
@@ -45,7 +59,7 @@ Investigation commands support `--out-dir`, `--page`, and `--limit` unless noted
 
 ## Administration
 
-Groups, system config, diagnostics, legacy APIs.
+Groups, system config, diagnostics.
 
 | Command | Synopsis |
 |---------|----------|
@@ -53,7 +67,8 @@ Groups, system config, diagnostics, legacy APIs.
 | [grant](./group) | App grant listing (`grant list`) |
 | [system](./system) | System config keys |
 | [ops](./ops) | Storage and schedule diagnostics |
-| [config legacy](./config-legacy) | Legacy `/api/config/*` (deprecated) |
+
+`sp recorder` and `sp config legacy` no longer exist; see [sp logs — removed commands](./logs#legacy) and [sp config](./config).
 
 ## Global flags
 
@@ -80,12 +95,11 @@ sp agent command --app <appId> --agent-jar ./sp-agent.jar --json   # copy startC
 sp record case list --app <appId> --since -1h --json
 sp replay run --app <appId> --env http://your-service:8080 --from -24h --json
 sp replay status <planId> --watch --json
-sp diagnose replay <planId> --failed-only --out-dir .sp-work --json
+sp diagnose replay <planId> --out-dir .sp-work --json
 ```
 
 ## Related
 
-- [Quickstart](/en/testing/getting-started)
-- [For AI agents](/en/testing/agents/overview)
-- [Examples](/en/testing/examples/agent-diagnose-replay)
-- [API mapping](/en/testing/reference/api-mapping)
+- [Choose how to integrate](/en/testing/agents/overview)
+- [Diagnose a failed replay](/en/testing/examples/agent-diagnose-replay)
+- [CLI to backend API mapping](/en/testing/reference/api-mapping)

@@ -112,4 +112,4 @@ sp trace stats --app my-app --json
 
 ## Related
 
-- [Attr → trace lookup](/en/testing/examples/agent-attr-trace-lookup)
+- [Start from a business ID](/en/testing/examples/agent-diagnose-replay#business-id)

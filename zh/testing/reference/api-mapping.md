@@ -1,8 +1,18 @@
-# API mapping
+---
+title: 命令与后端接口对照
+---
 
-Authoritative **REST ↔ CLI** reference for sp-backend (default port **8090**). Header `access-token` required on console APIs unless noted.
+# 命令与后端接口对照
 
-**Legend:** Category `platform` | `investigation` | `admin` | `—` (not exposed)
+每条 `sp` 命令调用的是哪个后端 HTTP 接口。自己写程序对接后端、或排查命令行为时查这张表。
+
+::: info 本页保留英文
+表中的接口路径和命令名与程序逐字对应，因此保留英文。
+:::
+
+后端默认端口为 **8090**。除特别注明外，控制台接口需要带 `access-token` 请求头。
+
+**分类**：`platform`（平台）、`investigation`（排查）、`admin`（管理）、`—`（不对外开放）。
 
 ## Auth
 
@@ -80,19 +90,21 @@ Authoritative **REST ↔ CLI** reference for sp-backend (default port **8090**).
 
 | Method | Path | CLI | Category |
 |--------|------|-----|-------|
-| GET | `/api/record-logs/overview` | `sp record logs overview` | investigation |
-| GET | `/api/record-logs/download` | `sp record logs download` | investigation |
-| GET | `/api/replay-logs/overview` | `sp replay logs overview` | investigation |
-| GET | `/api/replay-logs/download` | `sp replay logs download` | investigation |
+| GET | `/api/recorder/logs` | `sp logs` | investigation |
+
+旧的 `/api/record-logs/*` 和 `/api/replay-logs/*` 接口以及 `sp record logs` / `sp replay logs` 命令已移除，见 [sp logs](/zh/testing/commands/logs)。
 
 ## Reports (subset)
 
 | Method | Path | CLI | Category |
 |--------|------|-----|-------|
-| GET | `/api/report/queryDiffMsgById/{id}` | `sp replay diff get` | investigation |
-| POST | `/api/report/queryReplayCase` | `sp replay case list` | investigation |
-| POST | `/api/report/init` | `sp replay report init` | investigation |
-| * | `/api/report/*` (others) | partial / future | investigation |
+| GET | `/api/report/queryDiffMsgById/{id}` | `sp replay diff get`, `sp diagnose replay` | investigation |
+| POST | `/api/report/queryPlanFailCase` | `sp replay case list --plan` (without `--plan-item`), `sp diagnose replay` | investigation |
+| POST | `/api/report/queryReplayCase` | `sp replay case list --plan-item`, `sp replay case get` | investigation |
+| POST | `/api/report/queryPlanStatistics` | `sp replay statistics` | investigation |
+| POST | `/api/report/queryPlanStatistic` | `sp replay report` | investigation |
+| POST | `/api/report/init` | — (not exposed) | investigation |
+| * | `/api/report/*` (others) | — (not exposed) | investigation |
 
 ## Agent config
 
@@ -105,7 +117,7 @@ Authoritative **REST ↔ CLI** reference for sp-backend (default port **8090**).
 
 | Method | Path | CLI | Category |
 |--------|------|-----|-------|
-| GET/POST | `/api/config/{resource}/*` | `sp config legacy …` | investigation |
+| GET/POST | `/api/config/{resource}/*` | — (not exposed; `sp config legacy` was removed) | investigation |
 
 ## User groups
 
@@ -130,4 +142,4 @@ Authoritative **REST ↔ CLI** reference for sp-backend (default port **8090**).
 | POST | `/api/storage/record/save` | Agent write |
 | * | `/api/replay/local/*` | Local runner |
 
-Controller source: `sp-tr-api/sp-web-api`, `sp-storage/sp-storage-web-api`, `sp-replay-schedule/sp-schedule-web-api`.
+Controller 源码：`sp-tr-api/sp-web-api`, `sp-storage/sp-storage-web-api`, `sp-replay-schedule/sp-schedule-web-api`.

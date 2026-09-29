@@ -1,21 +1,25 @@
-# sp ops
+---
+title: sp ops：运维诊断
+---
 
-**When agents use this:** SRE-style diagnostics for storage and schedule health.
+# sp ops：运维诊断
 
-## Synopsis
+**AI 代理何时使用：** 面向 SRE 的存储与调度健康诊断。
 
-Operational endpoints under `/vi/storage` and `/vi/schedule`.
+## 概要 {#synopsis}
 
-## Subcommands
+`/vi/storage` 和 `/vi/schedule` 下的运维接口。
 
-| Subcommand | Method | Path |
+## 子命令 {#subcommands}
+
+| 子命令 | 方法 | 路径 |
 |------------|--------|------|
 | `storage overview` | GET | `/vi/storage/overview` |
 | `storage diagnostics` | GET | `/vi/storage/diagnostics` |
 | `storage monitor` | GET | `/vi/storage/monitor` |
 | `schedule monitor` | GET | `/vi/schedule/monitor` |
 
-## Examples
+## 示例 {#examples}
 
 ```bash
 sp ops storage overview --json
@@ -23,7 +27,7 @@ sp ops storage diagnostics --json
 sp ops schedule monitor --json
 ```
 
-### JSON output (`storage overview`)
+### JSON 输出（`storage overview`） {#json-output-storage-overview}
 
 ```json
 {
@@ -36,7 +40,7 @@ sp ops schedule monitor --json
 }
 ```
 
-### JSON output (`schedule monitor`)
+### JSON 输出（`schedule monitor`） {#json-output-schedule-monitor}
 
 ```json
 {
@@ -48,4 +52,3 @@ sp ops schedule monitor --json
   }
 }
 ```
-

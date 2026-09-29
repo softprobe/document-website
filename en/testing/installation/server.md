@@ -402,7 +402,7 @@ logPipeline:
     ttlDays: 4               # set "" to disable retention CronJob
     cleanupSchedule: "0 3 * * *"
   compaction:
-    enabled: true            # local storage only
+    enabled: true            # works with local, S3 and Azure Blob storage
     schedule: "15 * * * *"   # previous closed UTC hour
   # Pin Vector + maintenance jobs to the same node pool as sp-backend when using taints:
   placement:
@@ -657,4 +657,4 @@ After sp-backend is healthy, install Softprobe on developer machines: [Install S
 
 For a shared team web workbench on Linux, see [Spcode Service](./index#spcode-service) on the client install page.
 
-Related: [`sp logs`](/en/testing/commands/logs) · [Log correlation IDs](/en/testing/reference/log-correlation-ids)
+Related: [`sp logs`](/en/testing/commands/logs) · [Concepts and IDs](/en/testing/agents/concepts#ids)

@@ -76,9 +76,9 @@ Example success shape:
 
 Error bodies must not expose Parquet paths, bucket names, or storage credentials.
 
-## Backend P0 catalog (R1)
+## Built-in backend metrics
 
-Softprobe emits these series from the log ingest/forward path:
+The backend emits these series from the log ingest and forward path:
 
 | Name | Meaning |
 |------|---------|
@@ -87,11 +87,10 @@ Softprobe emits these series from the log ingest/forward path:
 | `sp.logs.forward.results` | Export outcome (`success` / `failure` / `skipped_*`) |
 | `sp.logs.forward.duration_ms` | Export timing histogram |
 
-After Vector’s one-minute aggregate, expect queryable rows within about a minute (CI polls up to **70 seconds**).
+Metrics are aggregated per minute, so new rows can usually be queried within about a minute.
 
-## Out of scope
+## Not provided
 
-- Prometheus scrape, Grafana, or PromQL as the Softprobe product path
-- `sp metrics` CLI (HTTP API is the R1 contract)
-- Agent-side `sp.agent.logs.*` emitters (later round)
-- Direct Parquet or storage credentials for end users
+- Prometheus scraping, Grafana or PromQL
+- An `sp metrics` command — use the HTTP API above
+- Direct access to the underlying files or storage credentials

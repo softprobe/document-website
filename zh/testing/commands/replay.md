@@ -1,41 +1,49 @@
-# sp replay
+---
+title: sp replay：回放计划
+---
 
-**When agents use this:** Start and monitor replay plans. For failed cases and diffs, see [replay case](./replay-case) and [replay diff](./replay-diff).
+# sp replay：回放计划
 
-## Synopsis
+**AI 代理何时使用：** 发起回放计划并跟踪进度。失败用例和差异见 [replay case](./replay-case) 和 [replay diff](./replay-diff)。
 
-Create, monitor, stop, and rerun replay plans against recorded cases.
+## 概要 {#synopsis}
 
-## Subcommands
+基于已录制的用例，创建、跟踪进度、停止和重跑回放计划。
 
-| Subcommand | Description |
+## 子命令 {#subcommands}
+
+| 子命令 | 说明 |
 |------------|-------------|
-| `run` | Create plan (`POST /api/createPlan`) |
-| `status <planId>` | Poll progress (`GET /api/progress`) |
-| `stop <planId>` | Stop plan |
-| `rerun <planId>` | Re-run plan |
+| `run` | 创建回放计划（`POST /api/createPlan`） |
+| `status <planId>` | 轮询进度（`GET /api/progress`） |
+| `statistics <planId> --app <appId>` | 回放计划的汇总行，含各类用例数 |
+| `report <planId> --app <appId>` | 回放计划的统计报告 |
+| `stop <planId>` | 停止计划 |
+| `rerun <planId>` | 重跑计划 |
 
-## Flags (`run`)
+用例列表、差异和元数据见 [replay case](./replay-case) 和 [replay diff](./replay-diff)。
 
-| Flag | API field | Description |
+## 参数（`run`） {#flags-run}
+
+| 参数 | API 字段 | 说明 |
 |------|-----------|-------------|
-| `--app` | `appId` | Application id (required) |
-| `--env` | `targetEnv` | **Replay target base URL** (required), not a symbolic name. Must include `http://` or `https://` and a host, e.g. `http://travel-ota:8080`. The CLI rejects values like `staging` or `dev`. |
-| `--suite` | — | 用例套件。设置为 `Pinned` 时只选择手动置顶的用例，不支持选择 `AutoPinned`。 |
-| `--from` | `caseSourceFrom` | Rolling 选择的开始时间（如 `-24h` 或 RFC3339）。使用 `--suite Pinned` 时忽略。 |
-| `--to` | `caseSourceTo` | Rolling 选择的结束时间（默认当前时间）。使用 `--suite Pinned` 时忽略。 |
-| `--limit` | `caseCountLimit` | Max cases |
-| `--name` | `planName` | Display name |
-| `--operation` | `operationIds` | Repeatable; filter operations |
-| `--enable-mock` | `enableMock` | Mock during replay (default true) |
-| `--no-mock` | `enableMock` | Disable mock (`enableMock=false`; overrides `--enable-mock`) |
-| `--allow-empty` | — | Rolling 在时间窗内没有录制用例时仍创建计划（默认 false）。不能用它让空的 `Pinned` 套件运行。 |
-| `--watch` | — | On `run`: create plan then poll until terminal; on `status`: poll an existing plan |
+| `--app` | `appId` | 应用 ID（必填） |
+| `--env` | `targetEnv` | **回放目标的 base URL**（必填），不是环境别名。必须带 `http://` 或 `https://` 和主机名，如 `http://travel-ota:8080`。CLI 会拒绝 `staging`、`dev` 这类值。 |
+| `--suite` | — | 回放哪一类用例。设为 `Pinned` 时只回放手动固化的用例。`AutoPinned` 不可选。 |
+| `--from` | `caseSourceFrom` | 滚动选取的起始时间（时长如 `-24h`，或 RFC3339）。`--suite Pinned` 时忽略。 |
+| `--to` | `caseSourceTo` | 滚动选取的结束时间（默认：现在）。`--suite Pinned` 时忽略。 |
+| `--limit` | `caseCountLimit` | 最大用例数 |
+| `--name` | `planName` | 显示名 |
+| `--operation` | `operationIds` | 可重复；按接口过滤 |
+| `--enable-mock` | `enableMock` | 回放时 Mock（默认 true） |
+| `--no-mock` | `enableMock` | 关闭 Mock（`enableMock=false`；覆盖 `--enable-mock`） |
+| `--allow-empty` | — | 窗口内没有录制用例时也创建滚动计划（默认 false）。固化用例为空时，`--suite Pinned` 仍会失败。 |
+| `--watch` | — | `run` 时：创建计划后轮询到结束；`status` 时：轮询已有计划 |
 
-## Examples
+## 示例 {#examples}
 
 ```bash
-sp record case list --app my-app --since -24h --json   # verify cases exist first
+sp record case list --app my-app --since -24h --json   # 先确认有用例
 sp replay run --app my-app --env http://travel-ota:8080 --from -24h --enable-mock --json
 sp replay run --app my-app --env http://travel-ota:8080 --suite Pinned --watch --json
 sp replay run --app my-app --env http://travel-ota:8080 --from -24h --no-mock --watch --json
@@ -44,11 +52,11 @@ sp replay stop plan-xyz --json
 sp replay rerun plan-xyz --json
 ```
 
-### 用例选择
+### 用例选择 {#case-selection}
 
-默认选择模式是 **Rolling**：根据 `--from`/`--to` 时间窗选择用例（省略参数时使用最近 24 小时的默认滚动窗口）。
+默认选择方式是**滚动**：从 `--from`/`--to` 时间窗里选用例（不带这两个参数时，默认窗口是最近 24 小时）。
 
-`--suite Pinned` 选择应用明确保存的手动 **Pinned** 用例集合。这不是时间窗查询，因此会忽略 `--from` 和 `--to`。即使用例早于普通录制窗口，也仍然可以回放。自动管理的 `AutoPinned` 用例不会被包含。
+`--suite Pinned` 回放该应用手动固化的全部用例。它不是时间窗查询，所以 `--from` 和 `--to` 会被忽略。用例超出滚动时间窗后仍可回放。自动管理的 `AutoPinned` 用例不包含在内。
 
 ```bash
 sp replay run \
@@ -59,9 +67,9 @@ sp replay run \
   --json
 ```
 
-### Preflight（`run`，Rolling）
+### 预检（`run`，滚动计划） {#preflight-run-rolling}
 
-Before `POST /api/createPlan`, the CLI queries `POST /api/storage/replay/query/replayCase` for the same `--app`, `--from`, and `--to` window. If no entry cases exist and `--allow-empty` is not set:
+在 `POST /api/createPlan` 之前，CLI 会用相同的 `--app`、`--from`、`--to` 窗口先查一次 `POST /api/storage/replay/query/replayCase`。如果没有入口用例且没带 `--allow-empty`：
 
 ```json
 {
@@ -74,9 +82,9 @@ Before `POST /api/createPlan`, the CLI queries `POST /api/storage/replay/query/r
 }
 ```
 
-使用 `--suite Pinned` 时，CLI 会改为检查手动 Pinned 集合。如果集合为空，命令会返回 `NO_PINNED_CASES`；`--allow-empty` 不能覆盖这项安全检查。
+`--suite Pinned` 时，CLI 改为检查有没有手动固化的用例。为空则以 `NO_PINNED_CASES` 失败；`--allow-empty` 不能跳过这个安全检查。
 
-### JSON output (`run`)
+### JSON 输出（`run`） {#json-output-run}
 
 ```json
 {
@@ -90,30 +98,30 @@ Before `POST /api/createPlan`, the CLI queries `POST /api/storage/replay/query/r
 }
 ```
 
-### JSON output (`run --watch`)
+### JSON 输出（`run --watch`） {#json-output-run---watch}
 
-With `--json`, stdout is newline-delimited envelopes:
+带 `--json` 时，stdout 是按行分隔的封装：
 
-1. One success envelope for plan creation (`command`: `replay run`).
-2. One or more progress envelopes (`command`: `replay status`).
-3. The final progress envelope includes `"finished": true` in `data`.
+1. 一条计划创建成功的封装（`command`：`replay run`）。
+2. 一条或多条进度封装（`command`：`replay status`）。
+3. 最后一条进度封装的 `data` 里带 `"finished": true`。
 
-### JSON output (`status`)
+### JSON 输出（`status`） {#json-output-status}
 
 ```json
 {
   "ok": true,
   "command": "replay status",
   "data": {
-    "planId": "plan-xyz",
-    "status": "RUNNING",
     "percent": 42,
-    "finished": false
+    "lastUpdateTime": "2026-06-27 10:00:05"
   }
 }
 ```
 
-### JSON output (`stop`)
+`status` 原样返回调度服务的进度：`percent` 和 `lastUpdateTime`，没有计划状态。带 `--watch` 时每轮查询输出一条这样的信封，最后一条加上 `"finished": true`；`run --watch` 的最后一条也可能是这个计划的统计行（同样带 `"finished": true`）。10 分钟后计划仍未结束时，以 `API_ERROR` 结束（退出码 `1`）。
+
+### JSON 输出（`stop`） {#json-output-stop}
 
 ```json
 {
@@ -126,7 +134,20 @@ With `--json`, stdout is newline-delimited envelopes:
 }
 ```
 
-### JSON output (`rerun`)
+### `statistics` 和 `report` {#statistics-and-report}
+
+两个命令都要同时给回放计划 ID 和 `--app`：
+
+```bash
+sp replay statistics <planId> --app <appId> --json
+sp replay report <planId> --app <appId> --json
+```
+
+`statistics` 按应用和回放计划 ID 查这个计划的统计行，查不到时报 `no statistics for plan <planId>`。`report` 原样返回后端对这个计划的统计报告。
+
+流水线用来判断能否发版的结论（`findings.state`）来自 [Open API](/zh/testing/reference/replay-openapi)，不是这两个命令。
+
+### JSON 输出（`rerun`） {#json-output-rerun}
 
 ```json
 {
@@ -140,22 +161,24 @@ With `--json`, stdout is newline-delimited envelopes:
 }
 ```
 
-## REST mapping
+## REST 接口对照 {#rest-mapping}
 
-| Subcommand | Method | Path |
+| 子命令 | 方法 | 路径 |
 |------------|--------|------|
 | `run` | POST | `/api/createPlan` |
-| `run` (webhook style) | GET | `/api/createPlan?appId=…` (discouraged for CLI; use POST) |
+| `run`（webhook 风格） | GET | `/api/createPlan?appId=…`（CLI 不建议用；请用 POST） |
 | `status` | GET | `/api/progress?planId=` |
 | `stop` | GET | `/api/stopPlan?planId=` |
 | `rerun` | POST | `/api/reRunPlan` |
+| `statistics` | POST | `/api/report/queryPlanStatistics` |
+| `report` | POST | `/api/report/queryPlanStatistic` |
 
-Body for `run`: `BuildReplayPlanRequest` (schedule module).
+`run` 的请求体：`BuildReplayPlanRequest`（schedule 模块）。
 
-Response envelope: `CommonResponse` (`result`, `desc`, `data`).
+响应封装：`CommonResponse`（`result`、`desc`、`data`）。
 
-## Related
+## 相关文档 {#related}
 
 - [replay case](./replay-case)
 - [replay diff](./replay-diff)
-- [Diagnose replay failure](/zh/testing/examples/agent-diagnose-replay)
+- [诊断回放失败](/zh/testing/examples/agent-diagnose-replay)

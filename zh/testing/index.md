@@ -1,16 +1,16 @@
 ---
-title: Softprobe 测试
+title: SoftProbe 测试
 ---
 
-# Softprobe 测试
+# SoftProbe 测试
 
 **录制真实流量。回放时自动 Mock。无需手写用例即可对比。**
 
 ::: tip 准备开始？
-🚀 如果您是首次接触 Softprobe，建议直接阅读 **[快速开始](/zh/testing/getting-started)** 指南！在 5 分钟内通过预构建的 JAR 快速体验，并无缝接入您自己的应用程序。
+🚀 如果您是首次接触 SoftProbe，建议直接阅读 **[快速开始](/zh/testing/getting-started)** 指南！在 5 分钟内通过预构建的 JAR 快速体验，并无缝接入您自己的应用程序。
 :::
 
-Softprobe 测试面向 **Java** 服务的**录制回放**回归。以 `-javaagent` 挂载 Softprobe Java Agent，在后台采集入口 API 流量与对外依赖调用，随后在测试环境回放已录制用例：依赖由存储数据 Mock，结果自动对比。
+SoftProbe 测试面向 **Java** 服务的**录制回放**回归。以 `-javaagent` 挂载 SoftProbe Java Agent，在后台采集入口 API 流量与对外依赖调用，随后在测试环境回放已录制用例：依赖由存储数据 Mock，结果自动对比。
 
 ::: info 本站产品区域
 | 区域 | 适用场景 |
@@ -21,7 +21,7 @@ Softprobe 测试面向 **Java** 服务的**录制回放**回归。以 `-javaagen
 
 ## 为什么选择录制回放
 
-传统集成测试需要维护环境、造数与手写用例。Softprobe 测试则：
+传统集成测试需要维护环境、造数与手写用例。SoftProbe 测试则：
 
 - **零业务代码改动** — 通过 `sp-agent.jar` 做字节码织入
 - **真实流量带来高覆盖** — 生产或预发请求直接成为回放用例
@@ -34,8 +34,8 @@ Softprobe 测试面向 **Java** 服务的**录制回放**回归。以 `-javaagen
 | 组件 | 作用 |
 |------|------|
 | **你的 Java 服务** | 被测应用，以 `-javaagent:…/sp-agent.jar` 启动 |
-| **Softprobe Java Agent** | 运行时录制与回放；回放阶段 Mock 依赖 |
-| **Softprobe 后端**（`:8090`） | 通过 Helm 部署。存储用例（MongoDB）、下发策略、执行回放计划、计算差异 |
+| **SoftProbe Java Agent** | 运行时录制与回放；回放阶段 Mock 依赖 |
+| **SoftProbe 后端**（`:8090`） | 通过 Helm 部署。存储用例（MongoDB）、下发策略、执行回放计划、计算差异 |
 | **`sp` 命令**（可选） | 注册应用、应用策略、发起回放、排查失败 — 见 [命令](/zh/testing/commands/) |
 | **仪表盘 / 工作台**（可选） | 可视化差异与链路查看 |
 
@@ -59,7 +59,7 @@ flowchart LR
 
 ## 平台 Agent ≠ Java Agent
 
-[平台](/zh/platform/advanced-guides/agent-architecture) 的 **SP-Istio Agent** 运行在 Envoy 侧车，采集网格 HTTP 流量。**Softprobe 测试**使用以 `-javaagent` 挂载的 **JVM Agent**。二者解决的问题不同；在 SaaS 部署中可同时接入同一后端做关联分析。
+[平台](/zh/platform/advanced-guides/agent-architecture) 的 **SP-Istio Agent** 运行在 Envoy 侧车，采集网格 HTTP 流量。**SoftProbe 测试**使用以 `-javaagent` 挂载的 **JVM Agent**。二者解决的问题不同；在 SaaS 部署中可同时接入同一后端做关联分析。
 
 ## 适合阅读本节的人
 
@@ -71,7 +71,7 @@ flowchart LR
 ## 快速链接
 
 - [快速开始](/zh/testing/getting-started) — 5分钟内体验 [Travel OTA](https://github.com/softprobe/demo-ota) 演示并快速接入您自己的应用。
-- [安装 Softprobe](/zh/testing/installation/) — 使用 `sp` 安装、设置、启动编码、诊断与升级。
+- [安装 SoftProbe](/zh/testing/installation/) — 使用 `sp` 安装、设置、启动编码、诊断与升级。
 - [录制流量](/zh/testing/recording) — 核心流程第 1 步：产生用例。
 - [固化用例与测试集](/zh/testing/pinned-cases) — 让选中的录制数据超出保留期后仍可用，并作为可复用测试集回放。
 - [Java Agent](/zh/testing/java-agent) — 挂载、JVM 参数与生产安全。

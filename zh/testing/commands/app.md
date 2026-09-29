@@ -1,21 +1,25 @@
-# sp app
+---
+title: sp app：应用管理
+---
 
-**When agents use this:** Resolve `appId`, check agent connectivity, register a service, or list recent replay plans for an app.
+# sp app：应用管理
 
-## Synopsis
+**AI 代理何时使用：** 解析 `appId`、检查 Agent 连通性、注册服务，或列出应用最近的回放计划。
 
-List, create, and inspect SoftProbe **applications**. An application is a registered service; recording, replay, and policies are scoped by `appId`. See [Concepts — Application](/zh/testing/agents/concepts#application-appid).
+## 概要 {#synopsis}
 
-Use `--json` on all subcommands. See [Output contract](/zh/testing/agents/output-contract).
+列出、创建和查看 SoftProbe **应用**。应用就是一个已注册的服务；录制、回放和策略都按 `appId` 划分。见 [概念 —— 应用](/zh/testing/agents/concepts#application-appid)。
 
-## Subcommands
+所有子命令都请带 `--json`。见 [输出约定](/zh/testing/agents/output-contract)。
 
-| Subcommand | Args | Description |
+## 子命令 {#subcommands}
+
+| 子命令 | 参数 | 说明 |
 |------------|------|-------------|
-| `list` | — | Applications visible to the caller, with agent status |
-| `create` | `<appName>` | Register a new application (server assigns `appId`) |
-| `status` | `<appId>` | Agent connectivity for one application |
-| `replays` | `<appId>` | Recent replay plans (`--limit`) |
+| `list` | — | 当前调用方可见的应用，附 Agent 状态 |
+| `create` | `<appName>` | 注册新应用（`appId` 由服务端分配） |
+| `status` | `<appId>` | 单个应用的 Agent 连通性 |
+| `replays` | `<appId>` | 最近的回放计划（`--limit`） |
 
 ## `list`
 
@@ -23,24 +27,24 @@ Use `--json` on all subcommands. See [Output contract](/zh/testing/agents/output
 sp app list --json
 ```
 
-**REST:** `GET /api/applications/list`
+**REST：** `GET /api/applications/list`
 
-Requires a token when `--json` is set (CLI exits with an auth error if `SP_TOKEN` is unset). Results are filtered by user group, ownership, and cross-group grants; see [Authentication](/zh/testing/agents/authentication).
+带 `--json` 时需要有 token（未设置 `SP_TOKEN` 时 CLI 会以认证错误退出）。结果按用户组、归属关系和跨组授权过滤，见 [认证](/zh/testing/agents/authentication)。
 
-### JSON output
+### JSON 输出 {#json-output}
 
-`data.items` is an array of list rows. Each row merges app config with live agent status (heartbeat threshold defaults to 60s → `offline`).
+`data.items` 是列表行的数组。每行合并了应用配置和 Agent 实时状态（心跳阈值默认 60 秒，超时即为 `offline`）。
 
-| Field | Description |
+| 字段 | 说明 |
 |-------|-------------|
-| `appId` | Stable id for agent config and other `sp` commands |
-| `appName`, `name` | Display name |
-| `agentStatus` | `online`, `offline`, or `never` |
-| `lastSeenAt` | Unix ms, freshest instance heartbeat |
-| `agentVersion` | Agent build string |
-| `env` | Primary env tag, or `production` |
-| `tags` | Flattened tag values |
-| `worktreeDirectory` | Optional workspace path |
+| `appId` | 稳定的 id，用于 Agent 配置和其他 `sp` 命令 |
+| `appName`、`name` | 显示名 |
+| `agentStatus` | `online`、`degraded`、`offline` 或 `never`，含义见 [status](#status) |
+| `lastSeenAt` | Unix 毫秒，最新一次实例心跳 |
+| `agentVersion` | Agent 构建版本字符串 |
+| `env` | 主环境标签，缺省为 `production` |
+| `tags` | 打平后的标签值 |
+| `worktreeDirectory` | 可选的工作区路径 |
 
 ```json
 {
@@ -65,26 +69,26 @@ Requires a token when `--json` is set (CLI exits with an auth error if `SP_TOKEN
 sp app create order-service-staging --json
 ```
 
-**REST:** `POST /api/applications/create`
+**REST：** `POST /api/applications/create`
 
-`appName` must be unique. The CLI sends `{ "appName": "<arg>" }`; the server may set `owners` from the JWT when omitted.
+`appName` 必须唯一。CLI 发送 `{ "appName": "<arg>" }`；未提供 `owners` 时，服务端会从 JWT 中取当前用户填入。
 
-### Request body (REST)
+### 请求体（REST） {#request-body-rest}
 
-| Field | Required | Description |
+| 字段 | 必填 | 说明 |
 |-------|----------|-------------|
-| `appName` | Yes | Unique name (CLI positional) |
-| `owners` | No | Owner user names; defaults to current user |
-| `visibilityLevel` | No | `0` public, `1` private |
-| `groupId`, `groupName` | No | User group assignment |
+| `appName` | 是 | 唯一名称（CLI 位置参数） |
+| `owners` | 否 | 所有者用户名；默认为当前用户 |
+| `visibilityLevel` | 否 | `0` 公开，`1` 私有 |
+| `groupId`、`groupName` | 否 | 所属用户组 |
 
-### JSON output
+### JSON 输出 {#json-output-1}
 
-| Field | Description |
+| 字段 | 说明 |
 |-------|-------------|
-| `success` | Whether creation succeeded |
-| `appId` | Generated id — use in agent and `sp replay run --app` |
-| `msg` | Detail when `success` is false |
+| `success` | 是否创建成功 |
+| `appId` | 生成的 id —— 用于 Agent 配置和 `sp replay run --app` |
+| `msg` | `success` 为 false 时的详情 |
 
 ```json
 {
@@ -103,23 +107,24 @@ sp app create order-service-staging --json
 sp app status f3e2d1c0b9a87654 --json
 ```
 
-**REST:** `GET /api/applications/{appId}/agent-status`
+**REST：** `GET /api/applications/{appId}/agent-status`
 
-Aggregates JVM instance heartbeats for the app. `status` reflects the **freshest** instance:
+汇总该应用各 JVM 实例的心跳。`status` 以**最新**的实例为准：
 
-| Value | Meaning |
+| 取值 | 含义 |
 |-------|---------|
-| `never` | No instances reported |
-| `online` | Latest heartbeat within threshold |
-| `offline` | Instances exist but heartbeat is stale |
+| `never` | 当前没有实例记录（实例记录在最后一次心跳约 3 分钟后过期） |
+| `online` | 最新心跳在阈值内（默认 60 秒） |
+| `degraded` | 在线，但至少有一个心跳正常的实例处于限流或降级状态 |
+| `offline` | 有实例记录，但阈值内没有心跳 |
 
-| Field | Description |
+| 字段 | 说明 |
 |-------|-------------|
-| `appId` | Application id |
-| `status` | `never`, `online`, or `offline` |
-| `instanceCount` | Registered instances |
-| `lastSeenAt` | Unix ms |
-| `agentVersion` | From freshest instance |
+| `appId` | 应用 ID |
+| `status` | `never`、`online`、`degraded` 或 `offline` |
+| `instanceCount` | 阈值内有心跳的实例数 |
+| `lastSeenAt` | Unix 毫秒 |
+| `agentVersion` | 来自最新的实例 |
 
 ```json
 {
@@ -140,15 +145,15 @@ Aggregates JVM instance heartbeats for the app. `status` reflects the **freshest
 sp app replays f3e2d1c0b9a87654 --limit 10 --json
 ```
 
-**REST:** `GET /api/applications/{appId}/replays/recent?limit=N`
+**REST：** `GET /api/applications/{appId}/replays/recent?limit=N`
 
-| Flag | Default | Description |
+| 参数 | 默认值 | 说明 |
 |------|---------|-------------|
-| `--limit` | `5` | Max plans (CLI rejects &lt; 1; values above 100 are clamped to 100; server also clamps 1–100) |
+| `--limit` | `5` | 最大计划条数（CLI 拒绝小于 1 的值；大于 100 的值截断为 100；服务端同样截断到 1–100） |
 
-`data` is an array of plan summaries (`planId`, `planName`, `status`, case counts, `createTime`, `triggeredBy`, …). Use `planId` with [sp replay](replay.md) and [replay case](/zh/testing/commands/replay-case).
+`data` 是回放计划摘要的数组（`planId`、`planName`、`status`、用例数、`createTime`、`triggeredBy` 等）。拿到 `planId` 后可配合 [sp replay](replay.md) 和 [replay case](/zh/testing/commands/replay-case) 使用。
 
-### JSON output
+### JSON 输出 {#json-output-2}
 
 ```json
 {
@@ -172,30 +177,30 @@ sp app replays f3e2d1c0b9a87654 --limit 10 --json
 }
 ```
 
-## REST mapping
+## REST 接口对照 {#rest-mapping}
 
-| Subcommand | Method | Path |
+| 子命令 | 方法 | 路径 |
 |------------|--------|------|
 | `list` | GET | `/api/applications/list` |
 | `create` | POST | `/api/applications/create` |
 | `status` | GET | `/api/applications/{appId}/agent-status` |
 | `replays` | GET | `/api/applications/{appId}/replays/recent` |
 
-Header: `access-token: <JWT>`.
+请求头：`access-token: <JWT>`。
 
-## Replaces `sp_api`
+## 替代 `sp_api` {#replaces-sp_api}
 
-| sp_api endpoint | sp command |
+| sp_api 接口 | sp 命令 |
 |-----------------|------------|
 | `list_applications` | `sp app list` |
 | `agent_status` | `sp app status` |
 | `recent_replays` | `sp app replays` |
 
-## Related
+## 相关文档 {#related}
 
-- [Concepts — Application](/zh/testing/agents/concepts#application-appid)
-- [Quickstart](/zh/testing/getting-started)
+- [概念 —— 应用](/zh/testing/agents/concepts#application-appid)
+- [快速上手](/zh/testing/getting-started)
 - [sp replay](replay.md)
-- [Diagnose replay failure](/zh/testing/examples/agent-diagnose-replay)
-- [JSON types — ApplicationListItem](/zh/testing/reference/json-types#applicationlistitem)
-- [API mapping](/zh/testing/reference/api-mapping)
+- [诊断回放失败](/zh/testing/examples/agent-diagnose-replay)
+- [输出约定 —— ApplicationListItem](/zh/testing/agents/output-contract#applicationlistitem)
+- [API 对照](/zh/testing/reference/api-mapping)

@@ -1,12 +1,12 @@
 # sp agent
 
-**When agents use this:** Install a backend-compatible `sp-agent.jar` and get copy-paste JVM flags after `sp app create`.
+**When agents use this:** Download `sp-agent.jar` and get copy-paste JVM flags after `sp app create`.
 
 ## Synopsis
 
 | Subcommand | Description |
 |------------|-------------|
-| `download [version]` | Download `sp-agent.jar` matching this backend release |
+| `download [version]` | Download `sp-agent.jar`: the given version, or `latest` |
 | `command` | Emit `-javaagent` and `sp.*` system properties for record mode |
 
 ## `agent download`
@@ -21,7 +21,9 @@ sp agent download 2.0.0 --out-dir ./libs --json
 | Flag | Description |
 |------|-------------|
 | `--out-dir` | Install directory (default: `${XDG_DATA_HOME}/softprobe/agent`) |
-| `--version` | Specific agent version tag (default: latest) |
+| `--version` | Agent version to download. Same as passing it as the argument, e.g. `sp agent download 2.0.0`. Default: `SOFTPROBE_AGENT_DOWNLOAD_VERSION` if set, otherwise `latest` |
+
+The version is not matched to your backend automatically. If your backend needs a specific agent version, pass it explicitly.
 
 ### JSON output (`download`)
 
@@ -56,7 +58,7 @@ sp agent command --app a1b2c3d4e5f67890 --agent-jar ./sp-agent.jar --app-jar tar
 | `--app-jar` | Optional. Trailing `-jar …` in `startCommand` |
 | `--format` | `json` (default), `shell`, `docker`, `maven` |
 
-Download `sp-agent.jar` from [Download Java agent](/en/testing/download-java-agent). Available immutable versions are published under `https://install.softprobe.ai/artifacts/agent/<version>/sp-agent.jar`.
+Download `sp-agent.jar` from [Attach the Java agent — download](/en/testing/java-agent#download). Available immutable versions are published under `https://install.softprobe.ai/artifacts/agent/<version>/sp-agent.jar`.
 
 `apiUrl` in the JSON output comes from the resolved CLI profile (`api_url` / `SP_API_URL`). Override with `sp config set-url`, `SP_API_URL`, or the global `--api-url` flag before `agent command`.
 
@@ -117,7 +119,7 @@ Example success JSON output:
 
 ## Related
 
-- [Doctor](/en/testing/installation/doctor) — `sp doctor`
+- [Check the installation](/en/testing/installation/#doctor) — `sp doctor`
 - [app](./app) — create app and check heartbeat
 - [record](./record) — list recorded cases
 - [Concepts: Java agent](/en/testing/agents/concepts)

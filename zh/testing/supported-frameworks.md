@@ -4,7 +4,7 @@ title: 支持的框架
 
 # 支持的框架（Java）
 
-Softprobe 测试通过 Agent 模块插件织入常见 Java 技术栈。下列为当前文档记载的覆盖范围；[`sp-agent-java`](https://github.com/softprobe/softprobe/tree/main/backend/sp-agent-java) 中会持续新增集成。
+SoftProbe 测试通过 Agent 模块插件织入常见 Java 技术栈。下列为当前文档记载的覆盖范围；[`sp-agent-java`](https://github.com/softprobe/softprobe/tree/main/backend/sp-agent-java) 中会持续新增集成。
 
 ::: tip
 若未列出你的栈，请确认是否使用已支持的客户端（例如基于 MyBatis 或 Hibernate 的 JDBC 层）。入口必须由 Agent 已织入的 HTTP/RPC Provider 模块承接。

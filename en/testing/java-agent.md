@@ -2,6 +2,24 @@
 title: Java agent
 ---
 
+<script setup>
+import { onMounted, ref } from 'vue'
+
+const agentVersions = ref([])
+const agentVersionError = ref('')
+
+onMounted(async () => {
+  try {
+    const response = await fetch('https://install.softprobe.ai/artifacts/agent/versions.json')
+    if (!response.ok) throw new Error(`HTTP ${response.status}`)
+    const body = await response.json()
+    agentVersions.value = Array.isArray(body.versions) ? body.versions : []
+  } catch {
+    agentVersionError.value = 'Version list is temporarily unavailable.'
+  }
+})
+</script>
+
 # Softprobe Java agent
 
 The Softprobe Java agent (`sp-agent.jar`) attaches to your JVM with `-javaagent`. It instruments frameworks at bytecode level (similar in *deployment* to an OpenTelemetry Java agent) but its purpose is **test data capture and replay-time mocking**, not generic distributed tracing.
@@ -14,7 +32,39 @@ Mesh capture is documented under [Platform agent architecture](/en/platform/adva
 
 - Java service you can restart with JVM flags
 - **sp-backend** reachable from the agent host (default `http://127.0.0.1:8090` locally)
-- Registered **`appId`** — create with `sp app create` and pin the same id on every instance
+- An **`appId`** — either create one with `sp app create` (or **Applications** in the console), or pick a stable name the agent will register on first start; use the same ID on every instance
+
+## Download the agent {#download}
+
+With internet access, download the latest agent:
+
+```bash
+curl -fsSL -o sp-agent.jar https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar
+```
+
+`latest` always points at the newest release. For anything you deliver or run in production, pin a version by replacing `latest`:
+
+```bash
+curl -fsSL -o sp-agent.jar https://install.softprobe.ai/artifacts/agent/v4.3.9/sp-agent.jar
+```
+
+On a machine without internet access, use the agent JAR delivered with your installation package, or ask your SoftProbe implementation team.
+
+Available versions:
+
+<ul v-if="agentVersions.length">
+  <li v-for="version in agentVersions" :key="version">
+    <a :href="`https://install.softprobe.ai/artifacts/agent/${version}/sp-agent.jar`">{{ version }}</a>
+  </li>
+</ul>
+<p v-else-if="agentVersionError">{{ agentVersionError }}</p>
+<p v-else>Loading versions...</p>
+
+The same list for scripts:
+
+```bash
+curl -fsSL https://install.softprobe.ai/artifacts/agent/versions.json
+```
 
 ## Startup command
 
@@ -32,8 +82,8 @@ The agent may also resolve an app id automatically from jar name or environment;
 
 | Property | Points to | Purpose |
 |----------|-----------|---------|
-| `-Dsp.app.id` | — | Registered application id (16-char hex from `sp app create`). **Pin this** in every environment that shares recordings. |
-| `-Dsp.api.url` | **sp-backend** (e.g. `:8090`) | **Required** — sp-backend base URL (must include `http://` or `https://`). Env fallback: `SP_API_URL`. Record, replay, mock, compare, **and correlated log export** (`{sp.api.url}/v1/logs`). |
+| `-Dsp.app.id` | — | Application ID: the one `sp app create` returns, or any stable non-empty name such as `order-service` (an unknown ID is normally registered automatically when the agent first loads its config; see [Concepts — Application](/en/testing/agents/concepts#application-appid)). **Pin this** in every environment that shares recordings. |
+| `-Dsp.api.url` | **sp-backend** (e.g. `:8090`) | **Required** — sp-backend base URL (must include `http://` or `https://`). Looked up in this order: `-Dsp.api.url`, the `SP_API_URL` environment variable, then `sp.api.url` baked into the agent jar. Used for record, replay, mock, compare **and correlated log export** (`{sp.api.url}/v1/logs`). |
 
 When `sp.api.url` is set and the server [unified log pipeline](./installation/server.md#unified-log-pipeline) is enabled, logs are proxied to Vector internally — you do **not** need a separate Vector URL on the agent.
 
@@ -47,7 +97,7 @@ For advanced setups (bypassing the backend proxy), set:
 
 This JVM property wins over `{sp.api.url}/v1/logs`.
 
-Without `sp.api.url` (and without the override above), record and replay still work, but application logs are not exported and `sp logs` will be empty for that trace.
+If no backend URL can be found in any of those places, the agent reports that it failed to start and does nothing: no recording, no replay, no log export. The log endpoint override above does not replace the backend URL. The agent source now also converts the old `-Dsp.api.service.host` start flag into `sp.api.url` when neither `-Dsp.api.url` nor `SP_API_URL` is set, but that change isn't in a released version yet (as of 4.3.36). Use `sp.api.url`.
 
 ## Execution-path deduplication
 
@@ -97,8 +147,10 @@ The key is the execution path, not the request body alone. Therefore different i
 Tag recorded traffic for filtering and replay scope:
 
 ```bash
--Dsp.mocker.tags=env=staging
+-Dsp.tags.env=staging
 ```
+
+Each `-Dsp.tags.<key>=<value>` adds one tag; for several tags, repeat it (`-Dsp.tags.region=east`). Don't set `sp.mocker.tags` yourself — the agent builds it from the `sp.tags.*` properties and overwrites it.
 
 Recorded mockers carry `env=<value>` so you can replay only traffic from a given environment. Match the same tag in a policy via `selector.envTags` — see [Policy YAML guide · Common fields](/en/testing/policy-yaml-guide#common-fields).
 
@@ -135,7 +187,7 @@ Comma-separate multiple prefixes.
 
 ## Agent status
 
-`sp app status <appId>` reports **`online`**, **`offline`**, or **`never`** from instance heartbeats (default offline threshold ~60 seconds). Status reflects running agents, not merely app registration.
+`sp app status <appId>` reports **`online`**, **`degraded`**, **`offline`** or **`never`** from instance heartbeats (default threshold 60 seconds; see [Concepts — Application](/en/testing/agents/concepts#application-appid)). Status reflects running agents, not merely app registration.
 
 During recording, legacy UIs showed **WORKING** / **SLEEPING** / **UNSTART** per instance; the same idea applies: the agent must be injected and recording enabled to produce cases.
 
@@ -153,21 +205,26 @@ List cases after traffic: `sp record case list --app <appId> --json`.
 
 To limit impact on live traffic, the agent implements **backpressure** when overloaded or when storage is unhealthy.
 
-### Queue overflow
+### When the recording queue is full {#queue-overflow}
 
-Recording tasks enter an in-memory queue (default capacity **1024**).
-2. If the queue is full, recording stops immediately.
-3. After ~30s, a health task lowers sampling (~20%) and retries.
-4. If still full after ~5 minutes, frequency drops again until a minimum (~once per hour).
-5. When the queue recovers (~10 minutes later), normal recording resumes.
+1. Recorded data goes into a bounded in-memory ring buffer: 2048 slots by default, holding up to 2047 batches (a batch is one group of recorded calls handed to the uploader). `-Dsp.buffer.size` can raise it; smaller values still get 2048.
+2. When the buffer is full, the new batch is dropped and its case is marked invalid, and the agent switches to **fast-reject**: new recordings are dropped, apart from about one probe per second.
+3. After 30 seconds it leaves fast-reject and records again, at a lower rate.
+4. It checks after 5 minutes, then every 10 minutes, whether uploads keep up: the check passes when nothing was queued in the period, or when fewer than 3 batches were rejected and at least 99% of batches waited in the queue for no more than 3 seconds. If it passes, the configured rate is restored; if not, the rate is lowered again.
 
-### Storage health
+Each reduction takes the current rate of each interface, caps it at 20 per minute and uses 80% of that, but never goes below 0.03 per minute (about once every 33 minutes). For example, 100 per minute becomes 16.
 
-1. If sp-storage calls fail or time out, recording stops immediately.
-2. After ~10s, recording resumes while health is sampled.
-3. If metrics stay unhealthy for ~3 minutes, frequency is reduced in steps like queue overflow until storage recovers.
+When the queue is full, the agent drops the current batch instead of waiting for space.
 
-Combined with [recording policy](/en/testing/policies) sampling and desensitization, this keeps production risk bounded.
+### When the backend fails {#storage-health}
+
+1. If sending recorded data fails 10 times in a row, or more than 80% of at least 30 sends within 10 seconds fail, the agent switches to fast-reject.
+2. After 5 seconds it lowers the sampling rate, checks after 3 minutes, then every 10 minutes, lowering the rate again each time until the backend recovers.
+3. If the agent can't load its configuration from the backend, it stops recording until the configuration loads again.
+
+High CPU or memory on the host also switches the agent to fast-reject and lowers the rate, until usage drops.
+
+Combined with [recording policy](/en/testing/policies) sampling, this keeps production risk bounded.
 
 ## Replay-side agent
 
@@ -177,4 +234,4 @@ The **same** agent JAR must be attached on the instance that receives replay tra
 
 Agent attached and `sp app status` shows online? Onboarding is done → head into the core workflow with **[Record traffic](/en/testing/recording)**.
 
-Related: [Download Java agent](/en/testing/download-java-agent) · [Supported frameworks](/en/testing/supported-frameworks) · [Getting started](/en/testing/getting-started)
+Related: [Supported frameworks](/en/testing/supported-frameworks) · [Getting started](/en/testing/getting-started)

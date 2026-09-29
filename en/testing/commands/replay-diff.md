@@ -29,6 +29,7 @@ sp replay mock-tree replay-uuid --json
   "ok": true,
   "command": "replay diff get",
   "data": {
+    "diffId": "abc",
     "artifact": ".sp-work/diff-abc.json",
     "summary": {
       "diffId": "abc",
@@ -78,17 +79,13 @@ When `--plan-item` is provided, full-link compare detail is persisted to `--out-
   "ok": true,
   "command": "replay mock-tree",
   "data": {
-    "tree": [
-      {
-        "category": "Database",
-        "operation": "SELECT",
-        "matchStatus": "MATCHED",
-        "invocations": 1
-      }
-    ]
+    "replayId": "replay-uuid",
+    "artifact": ".sp-work/mock-tree-replay-uuid.json"
   }
 }
 ```
+
+The tree is always written to the file in `data.artifact`, never inline.
 
 ### JSON output (`noise query`)
 

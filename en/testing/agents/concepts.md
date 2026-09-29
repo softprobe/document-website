@@ -1,125 +1,101 @@
-# Concepts
+---
+title: Concepts and IDs
+---
 
-For the Java record-and-replay product (agent, policies, replay semantics), see [Softprobe Testing](/en/testing/).
+# Concepts and IDs
 
-For Istio/Envoy mesh capture and SESSIFY session context (separate from the Java agent), see [Platform core concepts](/en/platform/advanced-guides/concepts).
+The objects you meet when you script SoftProbe, and the IDs that tie recording, replay, diffs and logs together. For how record and replay work end to end, see [How it works](/en/testing/how-it-works).
 
-## Application (`appId`)
+## Application (`appId`) {#application-appid}
 
-A registered service under test. Recording, replay, policies, and extraction rules are all scoped by **`appId`**.
+A service under test. Recordings, replays, policies and extraction rules all belong to one `appId`.
 
 | Field | Role |
 |-------|------|
-| `appName` | Unique label supplied at registration (`sp app create <appName>`). |
-| `appId` | System-generated id (16-character hex). Configure the Java agent and CLI with this value. |
+| `appName` | The name you register with `sp app create <appName>` |
+| `appId` | The application's ID. Configure the Java agent and the CLI with it |
 
-After registration, save `data.appId` from the create response. Attach the SoftProbe Java agent to your JVM with that id and your sp-backend URL, then confirm connectivity with `sp app status <appId>` or `sp app list --json`.
+`sp app create` returns a generated 16-character hex `appId`. That format is not required: the agent can also use any stable, non-empty name such as `order-service`, and an unknown `appId` is normally registered automatically the first time the agent loads its config (the app name is then the same as the ID). The exception is an ID that is already used by a scheduled replay task. All instances of one service must use the same `appId`; if it changes between recording and replay, SoftProbe can't find the original cases.
 
-**Agent status** (`online`, `offline`, `never`) is derived from instance heartbeats, not from the app document alone. The server marks an app `offline` when the freshest heartbeat is older than the configured threshold (default 60 seconds).
+**Agent status** comes from the agents' heartbeats:
 
-**CLI reference:** [sp app](/en/testing/commands/app)
+| Status | Meaning |
+|--------|---------|
+| `online` | At least one instance sent a heartbeat within the threshold (60 seconds by default) |
+| `degraded` | Online, but at least one fresh instance is rate-limited or degraded |
+| `offline` | Heartbeats were seen before, but none within the threshold |
+| `never` | No instance record right now. Instance records expire about 3 minutes after the last heartbeat, so an app whose agents stopped long ago also shows `never` |
 
-## Java agent
+Check it with `sp app status <appId>` or `sp app list --json`. Command reference: [sp app](/en/testing/commands/app).
 
-The SoftProbe Java agent is attached to the service under test with `-javaagent:/path/to/sp-agent.jar`. It operates like an observability agent operationally, but its purpose is test data capture and replay:
+## Java agent {#java-agent}
 
-- During **recording**, it observes real requests and dependency interactions and uploads mocker data keyed by `appId` and trace/case ids.
-- During **replay**, it restores recorded dependency behavior according to mock policy and emits replay data for comparison.
-- It reports heartbeat/status so `sp app status <appId>` can tell whether an app is `online`, `offline`, or `never`.
+Attached to the service with `-javaagent:/path/to/sp-agent.jar`.
 
-Minimum startup flags:
+- While **recording**, it captures real requests and the calls they make to databases, caches and other services.
+- While **replaying**, it answers those calls from the recording instead of the real dependency, according to the mock policy.
+- It sends heartbeats, which is how `sp app status` knows whether the app is online.
 
-```bash
-java \
-  -javaagent:/opt/softprobe/sp-agent.jar \
-  -Dsp.app.id=<appId> \
-  -Dsp.api.url=http://<sp-backend-host>:8090 \
-  -jar app.jar
-```
+How to attach it: [Attach the Java agent](/en/testing/java-agent).
 
-Pin `sp.app.id` for every production-like deployment. If the id changes between recording and replay, SoftProbe cannot reliably find the original cases or mock data.
+## Replay target URL (`targetEnv`) {#replay-target-url-targetenv}
 
-## Replay target URL (`targetEnv`)
+Replay does not take an environment label such as `staging` or `prod`. `targetEnv` is the **base URL of the running service** that receives the replayed requests, for example `http://order-service:8080` or `https://order-service.internal:8443`.
 
-Replay does not use a symbolic environment label such as `staging` or `prod`. The schedule service field **`targetEnv`** is the **base URL of the running service** that will receive replayed HTTP traffic.
+- `sp replay run --env <url>` sends it as `targetEnv`.
+- It must include the scheme and host (and the port if it isn't the default). Without a host, plan creation fails with *requested target env unable load active instance*.
+- It has nothing to do with `SP_API_URL`, which points at sp-backend.
 
-When you run `sp replay run --env <url>`, the CLI sends that value as `targetEnv` on `POST /api/createPlan`. The schedule module parses it as a URI (`DefaultDeploymentEnvironmentProviderImpl`) and builds a `ServiceInstance` whose `url` is that string. Replay senders then issue requests to that URL (for example `DefaultHttpReplaySender` uses `instanceRunner.getUrl()`).
+Command reference: [sp replay](/en/testing/commands/replay).
 
-Requirements:
+## Policies {#policies}
 
-- Use a reachable base URL for the app under test, including scheme and host (and port when not default), for example `http://travel-ota:8080` or `https://order-service.internal:8443`.
-- The URL must parse as a URI with a non-empty host; otherwise plan validation fails with *requested target env unable load active instance*.
-- This is independent of **`SP_API_URL`** / `api_url` in CLI config, which points at sp-backend (storage, report, schedule APIs), not at the service being replayed.
+Three kinds of declarative YAML policy:
 
-Optional **`sourceEnv`** on the same request is a separate URI used only when you need a non-default source deployment; the demo stack often leaves it as `pro`.
+| Kind | Controls | Commands |
+|------|----------|----------|
+| `RecordingPolicy` | What the agent records: sampling rate, which operations, time windows, serialization skips | `sp policy recording` |
+| `MockPolicy` | What is mocked during replay, and how tolerant mock matching is | `sp policy mock` |
+| `CompareRulePolicy` | How responses are compared: ignored fields, array matching, decoding | `sp policy compare` |
 
-**CLI reference:** [sp replay](/en/testing/commands/replay) (`--env` → `targetEnv`)
+Several policies can match one app; they are merged by `metadata.priority`. Built-in defaults have priority `0`. Field reference: [Policy YAML reference](/en/testing/policy-yaml-guide).
 
-## Recording policy
+## Replay plan {#replay-plan}
 
-Declarative YAML (`kind: RecordingPolicy`) controlling what the agent records: sampling, operation include/exclude, time windows, sensitive-field scrubbing.
+One replay run, identified by a `planId`. Created with `sp replay run` (or the console, a schedule, or the [Open API](/en/testing/reference/replay-openapi)) and followed with `sp replay status`. A plan replays cases that were already recorded, so an app that has never received traffic with the agent attached has nothing to replay. Cases come only from recording; you can't write them by hand.
 
-- Managed via `sp policy recording`
-- Schema: [Policy YAML guide](/en/testing/policy-yaml-guide)
+## IDs {#ids}
 
-## Mock policy
+<a id="trace-replay-and-plan-ids"></a>
 
-Declarative YAML (`kind: MockPolicy`) controlling replay-time mocking: skip/force mock, tolerance, dependencies.
+| ID | What it identifies | Used for |
+|----|--------------------|----------|
+| `traceId` | One request flow (W3C trace ID). A replayed case reuses the recorded `traceId` | **Log lookup** ([sp logs](/en/testing/commands/logs)), trace and record queries |
+| `replayId` | One replay of one case | Diffs and diagnosis; narrows a log lookup to one run |
+| `planId` | A replay plan | Case lists, reports, diagnosis |
+| `planItemId` | One interface inside a plan | Case lists |
+| `diffId` | One comparison result | `sp replay diff get`; `sp diagnose replay` finds and downloads the diffs for you |
 
-- `sp policy mock`
-
-## Compare rules
-
-Declarative YAML (`kind: CompareRulePolicy`) controlling diff behavior during replay comparison.
-
-- `sp policy compare`
-
-Policies merge by `metadata.priority`; global defaults ship in `sp-policy-rules` JAR resources.
-
-## Replay plan
-
-A batch replay job with a `planId`. Created by `sp replay run`, tracked with `sp replay status`. Replay plans consume cases already recorded by an instrumented app; a fresh app with no recorded traffic has nothing meaningful to replay.
-
-Schedule service endpoints: `/api/createPlan`, `/api/progress`, `/api/stopPlan`.
-
-## Trace, replay, and plan ids {#trace-replay-and-plan-ids}
-
-Platform ids tie together recording, replay, diff, and **correlated log search**. For a full reference — what each id means, where to find it, and how to triage unified logs — see **[Log correlation IDs](/en/testing/reference/log-correlation-ids)**.
-
-| ID | Meaning | Log lookup (v1) |
-|----|---------|-----------------|
-| `traceId` | W3C trace id for a recorded or replayed request flow | **`sp logs --trace-id …`** or `GET /api/recorder/logs?trace_id=…` — **only v1 key** |
-| `replayId` | One replay **attempt** of a case | Diff/diagnose only — copy **`traceId`** from the same case row for logs |
-| `planId` | Replay plan container from `sp replay run` | Case list / diagnose — per-case **`traceId`** for logs |
-| `planItemId` | Operation-level item within a plan | Same — not a log lookup key |
-| `diffId` | Comparison result row for deep diff fetch | Use `sp replay diff get` — not a log lookup key |
-
-**Where ids appear in CLI output**
+### Where the IDs appear {#where-ids-appear}
 
 | Command | Fields |
 |---------|--------|
 | `sp replay run --json` | `planId` |
-| `sp replay case list --plan … --json` | `replayId`, `traceId`, plan item ids |
-| `sp replay metadata <replayId> --json` | `traceId`, linked recording metadata |
-| `sp trace find … --json` | `traceId` when resolving business attributes |
-| `sp diagnose replay <planId> --json` | Failed cases with ids for follow-up |
+| `sp replay case list --plan <planId> --failed --json` | `caseId`, `replayId`, `traceId`, `operationId`, per case |
+| `sp replay metadata <replayId> --json` | `traceId` and the linked recording |
+| `sp record case list --app <appId> --since -24h --json` | `traceId` of each recorded entry request |
+| `sp trace find --app <appId> --attr-name <rule> --attr-value <value> --json` | `traceId` for a business ID such as an order number |
+| `sp diagnose replay <planId> --json` | A summary and the diff files; no case IDs (use `case list`) |
 
-Agents should obtain `traceId` via `sp trace find` when users supply business attributes (orderId, caseId) instead of trace ids. For log diagnosis after a replay failure, use **`traceId`** from the failed replay case or the e2e **Softprobe correlation** block (`trace_id` field) — not `replayId` as a log query key.
+### Which `traceId` to use for logs {#which-traceid}
 
-## Historical coupling: schedule ↔ recording
+For a failed replay, take the `traceId` from the **failed replay case**. Recording and replay of that case share it, so one lookup returns both sides. Don't take a trace from the newest recordings or from health-check traffic (`/`, `/index.html`) — those are unrelated requests.
 
-Replay operation include/exclude lists on schedule configuration are **populated from recording policy at read time**, not stored independently on the schedule document.
+If the user gives you a business ID (order number, policy number) instead of a trace, resolve it first — see [Start from a business ID](/en/testing/examples/agent-diagnose-replay#business-id).
 
-Implications:
-
-- Changing recording policy can change which operations appear in replay scope without editing schedule config.
-- Diagnosis skills must not assume schedule Mongo documents are the sole source of operation filters.
-
-See server comments on `ScheduleConfigurableHandler` in sp-tr-api.
-
-Test cases are created only via **recording** (instrumented app traffic). Manual case authoring is not part of the CLI workflow.
+`replayId`, `planId` and `planItemId` are not lookup keys for logs; on the HTTP API they are optional filters on top of `trace_id` ([sp logs — HTTP API](/en/testing/commands/logs#http-api)).
 
 ## Related
 
-- [For agents](./overview)
-- [Commands](/en/testing/commands/)
+- [Choose how to integrate](./overview)
+- [Command reference](/en/testing/commands/)

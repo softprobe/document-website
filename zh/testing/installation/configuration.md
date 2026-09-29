@@ -4,11 +4,11 @@ title: 客户端配置
 
 # 客户端配置
 
-本页是客户端（`sp` CLI、Java Agent、编码引擎）配置文件与高级选项的参考。Softprobe 使用一个共享的 XDG 配置命名空间。
+本页是客户端（`sp` CLI、Java Agent、编码引擎）配置文件与高级选项的参考。SoftProbe 使用一个共享的 XDG 配置命名空间。
 
 | 路径 | 用途 |
 |------|------|
-| `~/.config/softprobe/config.jsonc` | 共享后端 URL 和凭证 |
+| `~/.config/softprobe/config.jsonc` | 共享后端 URL 和凭据 |
 | `~/.config/softprobe/sp.jsonc` | CLI 配置和 profile |
 | `~/.config/softprobe/spcode.jsonc` | 内部编码引擎设置 |
 | `~/.local/share/softprobe/agent/sp-agent.jar` | 已安装的 Java agent |
@@ -18,9 +18,9 @@ title: 客户端配置
 
 ## Spcode Service（Linux systemd）
 
-通过 [`sp setup --install-spcode-service`](./#spcode-service) 安装后，共享工作台使用**执行安装的那个账号**的同一套 Softprobe 设置（后端 URL、MCP、Agent 说明、skills）。
+通过 [`sp setup --install-spcode-service`](./#spcode-service) 安装后，共享工作台使用**执行安装的那个账号**的同一套 SoftProbe 设置（后端 URL、MCP、Agent 说明、skills）。
 
-请用该安装账号配置 Softprobe。修改后如需服务生效，重启：
+请用该安装账号配置 SoftProbe。修改后如需服务生效，重启：
 
 ```bash
 sudo systemctl restart spcode-web.service
@@ -40,7 +40,7 @@ sudo systemctl restart spcode-web.service
 ### 示例：飞书 / Lark MCP + `AGENTS.md`
 
 ::: warning 前置条件：Node.js
-本 MCP 示例通过 **`npx`** 启动 `@larksuiteoapi/lark-mcp`，因此主机必须已安装 **Node.js**（自带 `npx`）。Softprobe 安装**不会**自动安装 Node.js。
+本 MCP 示例通过 **`npx`** 启动 `@larksuiteoapi/lark-mcp`，因此主机必须已安装 **Node.js**（自带 `npx`）。SoftProbe 安装**不会**自动安装 Node.js。
 
 检查：
 
@@ -52,7 +52,7 @@ npx -v
 若命令不存在，请从 [nodejs.org](https://nodejs.org/) 安装 Node.js（LTS），或使用系统包管理器安装（例如 Debian/Ubuntu：`apt install nodejs npm`；RHEL/Fedora：`dnf install nodejs`）。若使用 Spcode Service，请再确认 root 下可用：`sudo npx -v`（服务进程以 root 运行）。
 :::
 
-1. 创建 `~/.config/spcode/opencode.jsonc`（将占位符替换为你的应用凭证；**不要**把真实密钥提交到仓库）：
+1. 创建 `~/.config/spcode/opencode.jsonc`（将占位符替换为你的应用凭据；**不要**把真实密钥提交到仓库）：
 
 ```jsonc
 {
@@ -102,7 +102,7 @@ https://example.feishu.cn/docx/YOUR_DOC_TOKEN
 
 ## Skills {#skills}
 
-Skill 是包含 `SKILL.md` 的目录。Softprobe 会自动从以下位置加载：
+Skill 是包含 `SKILL.md` 的目录。SoftProbe 会自动从以下位置加载：
 
 | 位置 | 路径 |
 |------|------|

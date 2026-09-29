@@ -1,33 +1,38 @@
-# sp diagnose
+---
+title: sp diagnose：一键排查
+---
 
-**When agents use this:** One-shot workflows that combine progress, report, storage, and trace APIs — fewer manual steps than chaining low-level commands.
+# sp diagnose：一键排查
 
-## Synopsis
+**AI 代理何时使用：** 一条命令完成进度、报告、存储和 trace 的组合查询，比手工串接底层命令省步骤。
 
-| Subcommand | Description |
+## 概要 {#synopsis}
+
+| 子命令 | 说明 |
 |------------|-------------|
-| `replay <planId>` | Plan progress, failed cases, diff artifacts on disk |
-| `trace <traceId>` | Record trace, completeness, summary artifacts |
+| `replay <planId>` | 回放计划进度、失败用例、落盘的差异产物 |
+| `trace <traceId>` | 录制 trace、完整性、摘要产物 |
 
 ## `diagnose replay`
 
-Replaces the manual sequence in [Diagnose replay failure](/zh/testing/examples/agent-diagnose-replay):
+收集排查一个失败回放计划所需的信息：
 
 ```bash
-sp diagnose replay plan-abc123 --failed-only --out-dir .sp-work --json
+sp diagnose replay plan-abc123 --out-dir .sp-work --json
 ```
 
-| Flag | Default | Description |
+| 参数 | 默认值 | 说明 |
 |------|---------|-------------|
-| `--failed-only` | `true` | Filter to cases with compare failures |
-| `--out-dir` | `.sp-work` | Write `{planId}/{planItemId}-diff.json` files |
-| `--page` / `--limit` | global | Pagination for case query |
+| `--failed-only` | `true` | 只看没有通过的用例 |
+| `--out-dir` | `.sp-work` | 差异文件写到 `<out-dir>/<planId>/` 下 |
 
-Steps performed:
+执行步骤：
 
-1. `GET /api/progress?planId=…`
-2. `POST /api/report/queryReplayCase` with `diffResultCode=1` when `--failed-only`
-3. For each failed case with `diffId`: `GET /api/report/queryDiffMsgById/{id}` → artifact file
+1. `GET /api/progress?planId=…`，查回放计划的进度。
+2. `POST /api/report/queryPlanFailCase`，查这个计划里有差异或回放失败的用例（`diffResultCode` 为 1 和 2）；带 `--failed-only=false` 时查全部用例。
+3. 对每个有差异的用例，查出可读的差异（`GET /api/report/queryDiffMsgById/{id}`）并写成 JSON 文件。回放失败的用例没有差异，只计数。
+
+`data` 只是汇总，不列出用例。要拿用例编号（`replayId`、`traceId`），用 `sp replay case list --plan <planId> --failed --json`。
 
 JSON 输出示例（`diagnose replay`）：
 
@@ -37,21 +42,21 @@ JSON 输出示例（`diagnose replay`）：
   "command": "diagnose replay",
   "data": {
     "planId": "plan-abc123",
-    "status": "FINISHED",
+    "status": "",
     "classification": "invalid_target",
     "message": "Connection refused: travel-ota:9999",
     "failedCaseCount": 0,
     "invalidCaseCount": 12,
-    "artifacts": [
-      ".sp-work/plan-abc123/item-1-diff.json"
-    ]
+    "artifacts": null
   }
 }
 ```
 
-`classification` 取值之一：`empty_window`、`invalid_target`、`assertion_failure`、`mixed`、`other`。`message` 在可用时来自后端 `errorMessage` 或 case 发送错误——不是客户端伪造的固定文案。
+这个例子里，目标连不上，所有用例都回放失败（`invalidCaseCount`），没有差异，所以 `artifacts` 为 `null`。用例有差异时，`artifacts` 会列出差异文件（只含能找到差异内容的用例）。目前后端的进度接口不返回计划状态，所以 `status` 为空；查进度请用 [sp replay status](./replay)。
 
-**注意：** `nextActions` 已从 `diagnose replay --json` 输出中移除（feature 007）。请改用 `classification` + `message` 做自动化。
+`classification` 取值之一：`empty_window`、`invalid_target`、`assertion_failure`、`mixed`、`other`。`message` 来自后端的 `errorMessage` 或用例发送错误（如有），不是 CLI 自己编的文案。
+
+`diagnose replay` 的输出没有 `nextActions` 字段（只有 `diagnose trace` 有）。自动化请用 `classification` 和 `message`。
 
 ## `diagnose trace`
 
@@ -59,15 +64,15 @@ JSON 输出示例（`diagnose replay`）：
 sp diagnose trace 4bf92f3577b34da6a3ce929d0e0e4736 --out-dir .sp-work --json
 ```
 
-执行步骤：
+拉取：
 
 - `GET /api/storage/record/trace/{traceId}`
 - `GET /api/storage/record/completeness?traceId=…`
-- Trace summary（可用时）
+- trace 摘要（如果有）
 
-将 JSON 写入 `{outDir}/trace-{traceId}/`，并返回摘要和 `nextActions`：
+JSON 写入 `{outDir}/trace-{traceId}/` 下，返回摘要和 `nextActions`：
 
-### JSON 输出 (`diagnose trace`)
+### JSON 输出（`diagnose trace`） {#json-output-diagnose-trace}
 
 ```json
 {
@@ -88,30 +93,14 @@ sp diagnose trace 4bf92f3577b34da6a3ce929d0e0e4736 --out-dir .sp-work --json
 }
 ```
 
-## diagnose 之后：统一日志
+## diagnose 之后：看日志 {#after-diagnose-logs}
 
-`diagnose replay` 返回 diff 产物，但不包含运行时日志行。对每个失败的 case：
+`diagnose replay` 只写差异文件，不含日志。要看某个失败用例的日志，先从 `sp replay case list --plan <planId> --failed --json` 取它的 `traceId`，再按 [排查回放失败 — 查看日志](/zh/testing/examples/agent-diagnose-replay#logs) 和 [sp logs](./logs) 查询。
 
-1. 从 `sp replay case list --plan <planId> --failed --json` 复制 **`traceId`**（v1 日志查询键——不是 `replayId`）。
-2. 查询统一日志：
+## 相关文档 {#related}
 
-```bash
-curl -s "${SP_API_URL}/api/recorder/logs?trace_id=${TRACE_ID}&since=${SINCE}&until=${UNTIL}" \
-  -H "Accept: application/json" -o .sp-work/unified-logs.json
-
-jq '.rows | length' .sp-work/unified-logs.json
-jq '[.rows[].source] | group_by(.) | map({source: .[0], n: length})' .sp-work/unified-logs.json
-```
-
-3. 分诊：rows 为空 + 有 `warnings` → reader/schema 问题；为空 + 无 warnings → 时间窗错误或摄入延迟；来自 `agent`、`app`、`backend` 的 rows → 管道正常，结合 `body` 与 diff 产物一起阅读。
-
-在 **`make e2e`** 失败时，pytest 会打印 **Softprobe correlation**（`trace_id`）和 **Unified logs** 摘要——先看这些，再扩大排查范围。
-
-参见 [日志关联 ID](/zh/testing/reference/log-correlation-ids) 和 [sp logs — 排查回放失败](./logs#troubleshooting-failed-replays)。
-
-## Related
-
-- [日志关联 ID](/zh/testing/reference/log-correlation-ids)
+- [sp logs](./logs)
+- [概念与编号](/zh/testing/agents/concepts#ids)
 - [replay](./replay)
 - [replay diff](./replay-diff)
 - [record](./record)

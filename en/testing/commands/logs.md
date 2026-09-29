@@ -1,18 +1,12 @@
 # sp logs
 
-**When agents use this:** Retrieve correlated application, agent, and sp-backend logs for a W3C trace within caller-provided time bounds — without direct access to Parquet files or storage credentials.
+Look up the application, Java agent and sp-backend log lines that belong to one request, by its `trace_id`. Use it after a replay fails to see what happened on both the recording and the replay side.
 
-**Prerequisite:** Unified log pipeline enabled (Vector ingest + Parquet storage + query wiring). See [Install sp-backend (server) — unified log pipeline](/en/testing/installation/server#unified-log-pipeline) and [Log correlation IDs](/en/testing/reference/log-correlation-ids).
+This needs the unified log pipeline to be enabled on the backend — see [Install sp-backend (server) — unified log pipeline](/en/testing/installation/server#unified-log-pipeline). When the pipeline is off or unavailable, lookups fail with an error instead of returning an empty result.
 
-v1 is **trace-id-only, canned lookup** — no SQL, no ad hoc query language, no `sp logs status` health command, and no replay/plan lookup keys.
-
-**API:** `GET /api/recorder/logs?trace_id=…&since=…&until=…` on sp-backend. Top-level **`sp logs`** uses the same contract.
-
----
+Where to get a `trace_id`: [Concepts and IDs — IDs](/en/testing/agents/concepts#ids).
 
 ## Synopsis
-
-Query unified log rows by **`trace_id`** within a caller-provided time window.
 
 ```bash
 sp logs --trace-id <id> --since <time> --until <time> [--json]
@@ -22,149 +16,112 @@ sp logs --trace-id <id> --since <time> --until <time> [--json]
 
 | Flag | Required | Description |
 |------|----------|-------------|
-| `--trace-id` | Yes | W3C trace id — **the only v1 lookup key** |
-| `--since` | Yes | Inclusive lower bound — ISO-8601 UTC (e.g. `2026-06-27T10:00:00Z`) |
-| `--until` | Yes | Exclusive upper bound — ISO-8601 UTC |
-| `--json` | No | Stable JSON envelope for automation and Agent Skills |
+| `--trace-id` | Yes | W3C trace ID of the request |
+| `--since` | Yes | Start of the window, inclusive — ISO-8601 UTC, e.g. `2026-06-27T10:00:00Z` |
+| `--until` | Yes | End of the window, exclusive — ISO-8601 UTC |
+| `--json` | No | Standard JSON envelope for scripts and AI agents |
 
-Rules:
-
-- **`--trace-id`**, **`--since`**, and **`--until`** are required for every lookup. Time range is half-open: `[since, until)`.
-- v1 does not expose `--limit` or row truncation — narrow the window or filter locally (`grep`, `tail`, redirect to a file).
-- Unsupported lookup keys (`--replay-id`, `--plan-id`, `--plan-item-id`, `--include-recording-log`) fail validation before reading Parquet.
-- No authentication is required for v1 log lookups when you can reach the deployment endpoint.
-- When the log pipeline is disabled or query dependencies are unavailable, the command fails fast with a clear error. It does not return an empty success result and does not fall back to legacy log storage.
-
----
+All three lookup flags are required. There is no `--limit`: redirect the output to a file and filter it locally. `sp logs` has no other filter flags; for filtering by replay run or phase, call the HTTP API below.
 
 ## Examples
 
 ```bash
-# Trace-scoped lookup after a failed replay (obtain trace_id from replay API or pytest output)
 sp logs \
   --trace-id 2057ad46a7ce03d3955385f2a4142d29 \
   --since 2026-06-27T10:00:00Z \
   --until 2026-06-27T10:05:00Z \
-  --json
+  --json > /tmp/trace-logs.json
 
-# Human-readable output
-sp logs \
-  --trace-id 2057ad46a7ce03d3955385f2a4142d29 \
-  --since 2026-06-27T10:00:00Z \
-  --until 2026-06-27T10:05:00Z
-
-# Large result — redirect or pipe (no --limit in v1)
-sp logs --trace-id 2057ad46a7ce03d3955385f2a4142d29 --since … --until … > /tmp/trace.log
-grep ERROR /tmp/trace.log | head -20
+jq '.data.rows | length' /tmp/trace-logs.json
+jq -r '.data.rows[] | select(.severity=="ERROR") | "\(.timestamp) \(.source) \(.body)"' /tmp/trace-logs.json | head -20
 ```
 
-Agent Skills workflow (CLI or API):
+Without `--json`, `sp logs` prints one line per row: timestamp, severity, `source`, `service_name` and the message.
+
+## HTTP API {#http-api}
+
+```http
+GET /api/recorder/logs?trace_id=<id>[&since=<ts>&until=<ts>][&replay_id=…][&plan_id=…][&plan_item_id=…][&mode=record|replay][&source=…]
+```
+
+The API does more than the command:
+
+- **`since` / `until` are optional, as a pair.** When you leave both out, the backend works out the windows from the trace itself, each padded by two minutes: one around the recording, and one around the replay given by `replay_id` — or, without `replay_id`, around each of the **eight most recent** replay runs of that trace (older runs are skipped, with a warning). Passing only one of the two is rejected.
+- **Very wide windows are replaced.** If you pass a window longer than three hours, the backend scans the trace's own windows instead, when it can work them out; if it can't, it scans your window as asked (with a warning), and refuses anything longer than seven days.
+- **A long request is scanned at both ends only.** If a window worked out from the trace is itself longer than three hours, only 90 minutes at each end are scanned (with a warning).
+- The windows actually scanned are always listed in `lookup.windows`.
+- **Optional filters:**
+
+| Parameter | Effect |
+|-----------|--------|
+| `replay_id` | Keep rows from this replay run, plus recording rows (which carry no `replay_id`). Add `mode=replay` to drop the recording rows |
+| `plan_id`, `plan_item_id` | Keep rows from this replay plan or plan item |
+| `mode` | `record` or `replay` |
+| `source` | `agent`, `app` or `backend` |
+
+Any other parameter is rejected, not ignored.
 
 ```bash
-# Canonical CLI
-sp logs --trace-id "$TRACE_ID" --since "$SINCE" --until "$UNTIL" > .spcode/unified-logs-"$TRACE_ID".log
-grep ERROR .spcode/unified-logs-"$TRACE_ID".log | head -20
+export SP_API_URL="${SP_API_URL:-http://127.0.0.1:8090}"
+TRACE_ID=2057ad46a7ce03d3955385f2a4142d29
 
-# HTTP API (same contract)
-curl -s "$SP_API_URL/api/recorder/logs?trace_id=$TRACE_ID&since=$SINCE&until=$UNTIL" > .spcode/unified-logs-"$TRACE_ID".json
+# Let the backend pick the windows
+curl -s "${SP_API_URL}/api/recorder/logs?trace_id=${TRACE_ID}" \
+  -H "Accept: application/json" -o /tmp/trace-logs.json
+
+# Only one replay run
+curl -s "${SP_API_URL}/api/recorder/logs?trace_id=${TRACE_ID}&replay_id=<replayId>&mode=replay" \
+  -H "Accept: application/json" -o /tmp/trace-logs-replay.json
 ```
 
----
+The API body is at the top level (`.rows`); `sp logs --json` wraps the same body in `.data` (`.data.rows`).
+
+### When the backend can't work out the window {#explicit-windows}
+
+<a id="case-scoped-lookup-dual-windows"></a>
+
+The backend can't place a replay window when the replay failed before its first dependency call. With `replay_id` it says so in `warnings`; without it there is no warning, so a missing replay window doesn't prove there were no replay logs. A large clock difference between the application and the backend can also put a worked-out window on the wrong minutes. In these cases, query the recording and the replay **separately**, each with an explicit window:
+
+1. From `sp replay case list --plan <planId> --failed --json`, take the case's `recordTime` (when it was recorded) and `requestDateTime` (when the replay request was sent; use `replayTime` if it's empty). Both are epoch milliseconds. If `recordTime` is empty, use the recording time shown for this trace under **Recordings → Rolling recordings**.
+2. Query about two minutes either side of each time, with `replay_id` so other replay runs stay out. If the two windows overlap, query them as one, so no line is fetched twice. Keep the windows and warnings of every response.
+
+Save this as a script (for example `case-logs.sh`) and run it with `bash`:
+
+```bash
+#!/usr/bin/env bash
+TRACE_ID=<traceId>; REPLAY_ID=<replayId>
+RECORD_MS=<recordTime>; REPLAY_MS=<requestDateTime>
+PAD=120000   # two minutes either side
+iso() { s=$(( $1 / 1000 )); date -u -d "@$s" +%FT%TZ 2>/dev/null || date -u -r "$s" +%FT%TZ; }
+for T in "$RECORD_MS" "$REPLAY_MS"; do
+  case "$T" in ''|*[!0-9]*|0) echo "missing timestamp: '$T'" >&2; exit 1;; esac
+done
+# Two windows, or one if they overlap, so no log line is fetched twice
+A=$(( RECORD_MS < REPLAY_MS ? RECORD_MS : REPLAY_MS )); B=$(( RECORD_MS < REPLAY_MS ? REPLAY_MS : RECORD_MS ))
+if [ $(( B - PAD )) -le $(( A + PAD )) ]; then WINDOWS=("$((A - PAD)):$((B + PAD))")
+else WINDOWS=("$((A - PAD)):$((A + PAD))" "$((B - PAD)):$((B + PAD))"); fi
+i=0; FILES=()
+for W in "${WINDOWS[@]}"; do
+  i=$((i+1)); out="/tmp/logs-${TRACE_ID}-${i}.json"; FILES+=("$out")
+  curl -sf "${SP_API_URL}/api/recorder/logs?trace_id=${TRACE_ID}&replay_id=${REPLAY_ID}&since=$(iso "${W%%:*}")&until=$(iso "${W##*:}")" \
+    -H "Accept: application/json" -o "$out" || { echo "request $i failed" >&2; exit 1; }
+  jq -e 'has("rows")' "$out" >/dev/null || { echo "request $i: $(jq -c . "$out")" >&2; exit 1; }
+done
+# Keep every window, warning and row
+jq -s '{windows: [.[].lookup.windows[]?], warnings: [.[].warnings[]?], rows: ([.[].rows[]] | sort_by(.timestamp))}' "${FILES[@]}"
+```
+
+If the application's clock differs from the backend's by more than a couple of minutes, shift the windows by the difference or widen them. For a request that itself ran for hours, query consecutive windows of at most three hours each rather than just its start and end.
+
+Don't pass one window that stretches from the recording time to the replay time: it spans every minute in between and is slow, or is refused.
 
 ## Output
 
-**Human (default):** Chronological log stream — one line per row with timestamp, severity, `source`, `service_name`, and body.
-
-**`--json`:** Same logical data in the standard CLI envelope (`ok`, `command`, `data`). Top-level `data` fields:
-
 | Field | Meaning |
 |-------|---------|
-| `lookup` | Lookup type (`trace`), value, and caller `[since, until)` bounds |
-| `rows` | Log lines — see [Log query fields](./log-query-fields) |
-| `warnings` | Non-fatal schema-skip or similar notices (may be empty) |
-
-v1 responses do **not** include `source_summary` or per-source row-count bucketing.
-
-Rows do **not** include pytest labels, suite names, or test node ids.
-
-Optional Softprobe labels (`replay_id`, `plan_id`, `plan_item_id`, …) may appear on individual rows when the emitter had that context — they are not filter keys.
-
----
-
-## Case-scoped lookup (dual windows)
-
-When diagnosing a **replay case**, you often have two timestamps:
-
-- **`recordTime`** — when the case was originally recorded (API field `recordTime`; older backends omit it — falling back to `requestDateTime` mis-anchors the record window, because that field is the **replay send time**, not the recording time)
-- **`replayTime`** — when the replay run executed
-
-**Do not** query from `recordTime` through `replayTime` in one request. That spans every minute partition in between and can scan hundreds of Parquet files.
-
-Instead, run **two** narrow lookups (±2 minutes around each anchor) and merge rows client-side:
-
-```bash
-export SP_API_URL="${SP_API_URL:-http://127.0.0.1:18090}"
-TRACE_ID="<32-hex from replay case traceId>"
-RECORD_TIME_MS=1714000000000   # recordTime from case row (requestDateTime only as legacy fallback)
-REPLAY_TIME_MS=1714046100000   # replayTime from case row
-PADDING_MS=$((2 * 60 * 1000))
-
-# Window 1: recording
-RECORD_SINCE=$(date -u -d "@$(( (RECORD_TIME_MS - PADDING_MS) / 1000 ))" +%Y-%m-%dT%H:%M:%SZ)
-RECORD_UNTIL=$(date -u -d "@$(( (RECORD_TIME_MS + PADDING_MS) / 1000 ))" +%Y-%m-%dT%H:%M:%SZ)
-
-curl -s "${SP_API_URL}/api/recorder/logs?trace_id=${TRACE_ID}&since=${RECORD_SINCE}&until=${RECORD_UNTIL}" \
-  -H "Accept: application/json" -o /tmp/sp-logs-record.json
-
-# Window 2: replay
-REPLAY_SINCE=$(date -u -d "@$(( (REPLAY_TIME_MS - PADDING_MS) / 1000 ))" +%Y-%m-%dT%H:%M:%SZ)
-REPLAY_UNTIL=$(date -u -d "@$(( (REPLAY_TIME_MS + PADDING_MS) / 1000 ))" +%Y-%m-%dT%H:%M:%SZ)
-
-curl -s "${SP_API_URL}/api/recorder/logs?trace_id=${TRACE_ID}&since=${REPLAY_SINCE}&until=${REPLAY_UNTIL}" \
-  -H "Accept: application/json" -o /tmp/sp-logs-replay.json
-
-# Merge and sort by timestamp (example with jq)
-jq -s '[.[].rows[]] | sort_by(.timestamp)' /tmp/sp-logs-record.json /tmp/sp-logs-replay.json
-```
-
-The SoftProbe workbench **View case logs** action uses the same dual-window pattern automatically. Both windows should normally contain rows: an empty record window means a bad anchor (`requestDateTime` fallback on an old backend) or genuinely missing recording logs — investigate it rather than treating it as normal. For replays that run longer than ~2 minutes, the two ±2m windows miss the middle — switch to explicit `since`/`until` covering the replay span.
-
-See [Log query fields](./log-query-fields) and [Log correlation IDs](/en/testing/reference/log-correlation-ids).
-
----
-
-## Troubleshooting failed replays
-
-Use this after `sp diagnose replay` or a pytest failure. See [Log correlation IDs](/en/testing/reference/log-correlation-ids) for id sources.
-
-```bash
-export SP_API_URL="${SP_API_URL:-http://127.0.0.1:18090}"
-TRACE_ID="<32-hex from replay case traceId or pytest correlation block>"
-SINCE="2026-06-27T10:00:00Z"
-UNTIL="2026-06-27T10:05:00Z"
-
-curl -s "${SP_API_URL}/api/recorder/logs?trace_id=${TRACE_ID}&since=${SINCE}&until=${UNTIL}" \
-  -H "Accept: application/json" -o /tmp/sp-logs.json
-
-jq '.rows | length' /tmp/sp-logs.json
-jq '[.rows[].source] | group_by(.) | map({source: .[0], n: length})' /tmp/sp-logs.json
-jq '.warnings' /tmp/sp-logs.json
-jq -r '.rows[] | select(.source=="backend" and .severity=="ERROR") | .body' /tmp/sp-logs.json | head -20
-```
-
-| Symptom | Likely cause |
-|---------|----------------|
-| 0 rows + non-empty `warnings` | Backend Parquet reader out of sync with schema — rebuild sp-backend image |
-| 0 rows, empty `warnings` | Wrong `trace_id`, time window, or ingest not flushed yet |
-| Rows from `agent`, `app`, and `backend` | Pipeline OK — inspect diff artifacts and log `body` for compare/mock timing |
-
-**Pytest:** read **Softprobe correlation** (`trace_id`) and **Unified logs** (row/source summary) in failure output.
-
-**Agent Skills:** shell first (`curl`, `jq`, `grep`) — do not implement Parquet readers in plugin code.
-
----
-
-### JSON output
+| `lookup` | `type` (`trace`), `value` (the trace ID) and `windows` — the time windows actually scanned |
+| `rows` | Log lines in time order — see [Log query fields](./log-query-fields) |
+| `warnings` | Notices that didn't stop the query but may mean the result is **incomplete**: a window that couldn't be worked out, replay runs that were skipped, a window that was replaced or cut short. Read them before concluding that logs are missing |
 
 ```json
 {
@@ -175,10 +132,7 @@ jq -r '.rows[] | select(.source=="backend" and .severity=="ERROR") | .body' /tmp
       "type": "trace",
       "value": "2057ad46a7ce03d3955385f2a4142d29",
       "windows": [
-        {
-          "since": "2026-06-27T10:00:00Z",
-          "until": "2026-06-27T10:02:00Z"
-        }
+        { "since": "2026-06-27T10:00:00Z", "until": "2026-06-27T10:05:00Z" }
       ]
     },
     "rows": [
@@ -190,7 +144,8 @@ jq -r '.rows[] | select(.source=="backend" and .severity=="ERROR") | .body' /tmp
         "source": "backend",
         "trace_id": "2057ad46a7ce03d3955385f2a4142d29",
         "span_id": "8d10c94a2a6f4e11",
-        "replay_id": "6891fd300c676b31"
+        "replay_id": "6891fd300c676b31",
+        "effective_mode": "replay"
       }
     ],
     "warnings": []
@@ -198,9 +153,31 @@ jq -r '.rows[] | select(.source=="backend" and .severity=="ERROR") | .body' /tmp
 }
 ```
 
-### JSON errors
+## Reading the result {#triage}
 
-Validation and API failures use the standard CLI stderr envelope:
+<a id="troubleshooting-failed-replays"></a>
+
+```bash
+# Rows per source
+jq '[.data.rows[].source] | group_by(.) | map({source: .[0], n: length})' /tmp/trace-logs.json
+# Notices
+jq '.data.warnings' /tmp/trace-logs.json
+# Backend errors first, then agent, then app
+jq -r '.data.rows[] | select(.source=="backend" and .severity=="ERROR") | "\(.timestamp) \(.body)"' /tmp/trace-logs.json | head -20
+```
+
+| What you see | Likely cause | Next step |
+|--------------|--------------|-----------|
+| No rows, `warnings` not empty | The window could not be derived, or the backend's log reader doesn't match the stored schema | Read the warning; pass `since`/`until` explicitly, or upgrade sp-backend |
+| No rows, no warnings | Wrong `trace_id`, wrong window, or the logs haven't been written yet | Take the `trace_id` from the failed replay case; widen the window; try again a few minutes later |
+| Only `backend` rows | The agent isn't exporting logs, or the app logs nothing for this request | Check that the agent is attached and can reach the backend; check the app's log levels |
+| Rows from `agent`, `app` and `backend` | The pipeline is fine | Read the ERROR/WARN lines, then look at the diff with [sp diagnose](./diagnose) |
+
+To see whether the backend actually sent the replayed request to your service, filter `backend` rows for `Replay send start` / `done` / `failed` — see [Replay send log markers](/en/testing/reference/replay-send-log-markers).
+
+## Errors
+
+Invalid input and backend errors use the standard stderr envelope (see [Output contract](/en/testing/agents/output-contract#cli-envelope-stderr-on-failure-exit-1)):
 
 ```json
 {
@@ -208,62 +185,31 @@ Validation and API failures use the standard CLI stderr envelope:
   "command": "logs",
   "error": {
     "code": "API_ERROR",
-    "message": "API error 1: trace_id is required",
+    "message": "API error 1: log pipeline is disabled",
     "httpStatus": 200,
-    "backend": {
-      "responseCode": 1,
-      "responseDesc": "trace_id is required"
-    }
+    "backend": { "responseCode": 1, "responseDesc": "log pipeline is disabled" }
   }
 }
 ```
 
-Example validation messages: `trace_id is required`, `unsupported logs query parameter: replay_id`, `since is required`, `until is required`, `since must be before until`, `since and until must be ISO-8601 UTC timestamps`, `unsupported logs query parameter: <name>`, `log pipeline is disabled`, `log pipeline is unavailable`.
+Messages you may see: `trace_id is required`, `since is required`, `until is required`, `since must be before until`, `since and until must be ISO-8601 UTC timestamps`, `unsupported logs query parameter: <name>`, `log pipeline is disabled`, `log pipeline is unavailable`.
 
----
+## Removed commands {#legacy}
 
-## REST mapping
+These older log commands and endpoints no longer exist:
 
-| CLI | Method | Path |
-|-----|--------|------|
-| `--trace-id` | GET | `/api/recorder/logs?trace_id=<id>&since=<ts>&until=<ts>` |
-
-Hosted on the same sp-backend base URL as other `sp` commands. v1 log lookups do not require authentication when you can reach the deployment endpoint.
-
----
-
-## Retired commands (v1)
-
-These pre-unified paths are removed, not shimmed:
-
-| Retired | Replacement |
+| Removed | Use instead |
 |---------|-------------|
-| `sp record logs overview` | `sp logs --trace-id <id> --since … --until …` |
-| `sp record logs download` | `sp logs --trace-id <id> …` (redirect to file) or `--json` with `jq` |
-| `sp replay logs` (including `--overview`) | `sp logs --trace-id <id> …` (redirect to file) or `--json` with `jq` |
-| `sp logs --replay-id`, `--plan-id`, `--plan-item-id` | **Rejected** — use `--trace-id` only |
-| `--include-recording-log` | **Removed** — no record-link query |
-| `GET /api/record-logs/*` | `GET /api/recorder/logs?trace_id=…` |
-| `GET /api/replay-logs/*` | `GET /api/recorder/logs?trace_id=…` |
-
----
-
-## Out of scope (v1)
-
-- `sp logs status` / pipeline health status commands
-- Replay-id, plan-id, or plan-item-id lookup keys
-- Direct Parquet paths, catalog URLs, object-store credentials, or SQL
-- `sp.session_id` in query results
-- `--limit` / row truncation — narrow time bounds or filter locally instead
-- Authentication for log lookups
-- Record trace tables, metrics tables, replay read migration, historical backfill, and non-replay-path service logs (dashboard, auth, etc.) — replay **data** stays on the legacy replay-compatible storage path
-
----
+| `sp recorder logs`, `sp recorder query`, `sp recorder info`, `sp query` | `sp logs`, or the HTTP API above |
+| `sp record logs overview`, `sp record logs download` | `sp logs … > file` |
+| `sp replay logs` (including `--overview`) | `sp logs`, or the API with `replay_id` |
+| `--include-recording-log` | Not needed: recording and replay share one `trace_id` |
+| `source_summary` in the response | `jq` grouping by `source` (see above) |
+| `GET /api/record-logs/*`, `GET /api/replay-logs/*` | `GET /api/recorder/logs?trace_id=…` |
 
 ## Related
 
-- [Log query fields](./log-query-fields) — row field reference (FR-042)
-- [Log correlation IDs — find and use ids](/en/testing/reference/log-correlation-ids)
-- [sp replay case](./replay-case)
-- [sp diagnose replay](./diagnose)
-- [Diagnose replay failure example](/en/testing/examples/agent-diagnose-replay)
+- [Log query fields](./log-query-fields)
+- [Concepts and IDs](/en/testing/agents/concepts#ids)
+- [Diagnose a failed replay](/en/testing/examples/agent-diagnose-replay)
+- [sp diagnose](./diagnose)

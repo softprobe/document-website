@@ -81,7 +81,7 @@ Large outputs (full event streams, trace bundles) write under `--out-dir`:
 
 ## Exit codes
 
-Same as Testing — see [exit codes](/en/testing/reference/exit-codes). Eval-specific: exit `1` when **GateDecision** fails after an otherwise successful run.
+Same as Testing — see [exit codes](/en/testing/agents/output-contract#exit-codes). Eval-specific: exit `1` when **GateDecision** fails after an otherwise successful run.
 
 ## Rules for agents
 

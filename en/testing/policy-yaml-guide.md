@@ -57,7 +57,7 @@ spec:
 | `selector.appIds` | string[] | one of\* | Exact app ids |
 | `selector.appIdPattern` | string | one of\* | Glob, e.g. `order-*` |
 | `selector.excludeAppIds` | string[] | no | Subtract from match |
-| `selector.envTags` | map | no | Tag key → list of allowed values, e.g. `env: [prod, staging]`. Matches agent tags from `-Dsp.mocker.tags=env=prod`. Conjunctive: every declared key must match. Omitted = all environments |
+| `selector.envTags` | map | no | Tag key → list of allowed values, e.g. `env: [prod, staging]`. Matches agent tags set with `-Dsp.tags.env=prod`. Conjunctive: every declared key must match. Omitted = all environments |
 | `selector.operationNames` | string[] | no | Exact operation names. **Recording and Mock only** — rejected on CompareRulePolicy selector |
 | `selector.operationNamePatterns` | string[] | no | Globs, e.g. `/api/order/*`. **Recording and Mock only** |
 
@@ -328,15 +328,15 @@ Do **not** put `operationNames` or `operationNamePatterns` on `selector` — the
 | Section | Field | Type | Semantics |
 |---------|-------|------|-----------|
 | `defaults` | `timeToleranceMs` | integer ≥ 0 | Used by CEL `time_tolerance_ms` and timestamp rules |
-| `defaults` | `ignoreHeaderPatterns` | string[] | Header name globs skipped in compare |
+| `defaults` | `ignoreHeaderPatterns` | string[] | Field-name globs whose differences are ignored; meant for header fields, but not limited to request headers |
 | | `includePaths` | string[] | JSON Pointer whitelist; empty = compare all |
 | | `excludePaths` | string[] | JSON Pointer blacklist (pre-filter) |
 | `decompress[]` | `path` | string | JSON Pointer or glob (`/data/**`) |
-| `decompress[]` | `codec` | enum | `PLAIN_JSON`, `BASE64_JSON`, `GZIP_BASE64_JSON` |
+| `decompress[]` | `codec` | enum | `PLAIN_JSON`, `BASE64_JSON`, `GZIP_BASE64_JSON`. **No effect in the current version**, see the note below |
 | `transforms[]` | `path` | string | JSON Pointer |
-| `transforms[]` | `expression` | string | CEL expression to normalize value before compare |
+| `transforms[]` | `expression` | string | CEL expression to normalize value before compare. **No effect in the current version**, see the note below |
 | `arrays[]` | `path` | string | Array field path |
-| `arrays[]` | `strategy` | enum | `BY_INDEX` (default) or `BY_KEY` |
+| `arrays[]` | `strategy` | enum | `BY_INDEX` (default) or `BY_KEY` (needs non-empty `keys`). `BY_LCS` (**LCS algorithm** in the console) is accepted but has no effect in the current version and behaves like `BY_INDEX` |
 | `arrays[]` | `keys` | string[] | Required when `BY_KEY` |
 | `arrays[]` | `references[]` | object | `field`, `target`, `targetKey` for FK-style array linking |
 | `validations[]` | `id` | string | Unique rule id |
@@ -349,6 +349,10 @@ Do **not** put `operationNames` or `operationNamePatterns` on `selector` — the
 | `operationSpecs[]` | `spec` | object | Same leaf fields as top-level spec (no nested `operationSpecs`) |
 
 Paths use **JSON Pointer** syntax (`/foo/bar`). Globs: `*` = one segment, `**` = any depth.
+
+::: warning decompress and transforms have no effect yet
+The backend currently registers no handler for `decompress` codecs or `transforms` expressions. These rules validate and save, but at comparison time they are skipped (with a message in the backend log), and the original values are compared.
+:::
 
 ### CEL variables and helpers
 

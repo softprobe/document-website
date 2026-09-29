@@ -12,8 +12,12 @@ Create, monitor, stop, and rerun replay plans against recorded cases.
 |------------|-------------|
 | `run` | Create plan (`POST /api/createPlan`) |
 | `status <planId>` | Poll progress (`GET /api/progress`) |
+| `statistics <planId> --app <appId>` | The plan's summary row, with its case counts |
+| `report <planId> --app <appId>` | The plan's statistic report |
 | `stop <planId>` | Stop plan |
 | `rerun <planId>` | Re-run plan |
+
+Case lists, diffs and metadata are under [replay case](./replay-case) and [replay diff](./replay-diff).
 
 ## Flags (`run`)
 
@@ -105,13 +109,13 @@ With `--json`, stdout is newline-delimited envelopes:
   "ok": true,
   "command": "replay status",
   "data": {
-    "planId": "plan-xyz",
-    "status": "RUNNING",
     "percent": 42,
-    "finished": false
+    "lastUpdateTime": "2026-06-27 10:00:05"
   }
 }
 ```
+
+`status` returns the scheduler's progress as is: `percent` and `lastUpdateTime`, no plan status. With `--watch`, it prints one such envelope per poll and adds `"finished": true` to the last one; `run --watch` may end with the plan's statistics row (with `"finished": true`) instead. A plan that hasn't finished after 10 minutes ends the watch with `API_ERROR` (exit `1`).
 
 ### JSON output (`stop`)
 
@@ -125,6 +129,19 @@ With `--json`, stdout is newline-delimited envelopes:
   }
 }
 ```
+
+### `statistics` and `report` {#statistics-and-report}
+
+Both need `--app` as well as the plan ID:
+
+```bash
+sp replay statistics <planId> --app <appId> --json
+sp replay report <planId> --app <appId> --json
+```
+
+`statistics` looks up the plan's statistics row by app and plan ID; if there is none, it fails with `no statistics for plan <planId>`. `report` returns the backend's statistic report for the plan unchanged.
+
+The verdict used to gate a pipeline — `findings.state` — comes from the [Open API](/en/testing/reference/replay-openapi), not from these commands.
 
 ### JSON output (`rerun`)
 
@@ -149,6 +166,8 @@ With `--json`, stdout is newline-delimited envelopes:
 | `status` | GET | `/api/progress?planId=` |
 | `stop` | GET | `/api/stopPlan?planId=` |
 | `rerun` | POST | `/api/reRunPlan` |
+| `statistics` | POST | `/api/report/queryPlanStatistics` |
+| `report` | POST | `/api/report/queryPlanStatistic` |
 
 Body for `run`: `BuildReplayPlanRequest` (schedule module).
 

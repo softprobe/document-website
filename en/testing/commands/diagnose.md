@@ -11,23 +11,24 @@
 
 ## `diagnose replay`
 
-Replaces the manual sequence in [Diagnose replay failure](/en/testing/examples/agent-diagnose-replay):
+Collects what you need to look at a failed replay plan:
 
 ```bash
-sp diagnose replay plan-abc123 --failed-only --out-dir .sp-work --json
+sp diagnose replay plan-abc123 --out-dir .sp-work --json
 ```
 
 | Flag | Default | Description |
 |------|---------|-------------|
-| `--failed-only` | `true` | Filter to cases with compare failures |
-| `--out-dir` | `.sp-work` | Write `{planId}/{planItemId}-diff.json` files |
-| `--page` / `--limit` | global | Pagination for case query |
+| `--failed-only` | `true` | Only cases that didn't pass |
+| `--out-dir` | `.sp-work` | Where the diff files are written (under `<out-dir>/<planId>/`) |
 
 Steps performed:
 
-1. `GET /api/progress?planId=…`
-2. `POST /api/report/queryReplayCase` with `diffResultCode=1` when `--failed-only`
-3. For each failed case with `diffId`: `GET /api/report/queryDiffMsgById/{id}` → artifact file
+1. `GET /api/progress?planId=…` for the plan's progress.
+2. `POST /api/report/queryPlanFailCase` for the plan's cases that have differences or failed to replay (`diffResultCode` 1 and 2); with `--failed-only=false`, all cases.
+3. For each case with differences, it looks up the readable diff (`GET /api/report/queryDiffMsgById/{id}`) and writes it to a JSON file. Cases that failed to replay have no diff and are only counted.
+
+`data` is a summary: it doesn't list the cases. For case IDs (`replayId`, `traceId`), use `sp replay case list --plan <planId> --failed --json`.
 
 Example JSON output (`diagnose replay`):
 
@@ -37,21 +38,21 @@ Example JSON output (`diagnose replay`):
   "command": "diagnose replay",
   "data": {
     "planId": "plan-abc123",
-    "status": "FINISHED",
+    "status": "",
     "classification": "invalid_target",
     "message": "Connection refused: travel-ota:9999",
     "failedCaseCount": 0,
     "invalidCaseCount": 12,
-    "artifacts": [
-      ".sp-work/plan-abc123/item-1-diff.json"
-    ]
+    "artifacts": null
   }
 }
 ```
 
+In this example every case failed to replay because the target was unreachable, so there are no diffs and `artifacts` is `null`. When cases have differences, `artifacts` lists the files for those whose diff could be found. `status` is empty with current backends (the progress API doesn't report a plan status); use [sp replay status](./replay) for progress.
+
 `classification` is one of: `empty_window`, `invalid_target`, `assertion_failure`, `mixed`, `other`. `message` comes from backend `errorMessage` or case send errors when available — not fabricated client copy.
 
-**Note:** `nextActions` was removed from `diagnose replay --json` output (feature 007). Use `classification` + `message` for automation.
+`diagnose replay` has no `nextActions` field (only `diagnose trace` does). Use `classification` and `message` for automation.
 
 ## `diagnose trace`
 
@@ -88,30 +89,14 @@ Writes JSON under `{outDir}/trace-{traceId}/` and returns a summary plus `nextAc
 }
 ```
 
-## After diagnose: unified logs
+## After diagnose: logs {#after-diagnose-logs}
 
-`diagnose replay` returns diff artifacts but not runtime log lines. For each failed case:
-
-1. Copy **`traceId`** from `sp replay case list --plan <planId> --failed --json` (v1 log lookup key — not `replayId`).
-2. Query unified logs:
-
-```bash
-curl -s "${SP_API_URL}/api/recorder/logs?trace_id=${TRACE_ID}&since=${SINCE}&until=${UNTIL}" \
-  -H "Accept: application/json" -o .sp-work/unified-logs.json
-
-jq '.rows | length' .sp-work/unified-logs.json
-jq '[.rows[].source] | group_by(.) | map({source: .[0], n: length})' .sp-work/unified-logs.json
-```
-
-3. Triage: empty rows + `warnings` → reader/schema issue; empty + no warnings → wrong window or ingest lag; rows from `agent`, `app`, and `backend` → pipeline OK, read `body` and diff artifacts together.
-
-On **`make e2e`** failures, pytest prints **Softprobe correlation** (`trace_id`) and **Unified logs** summaries — use those before widening the investigation.
-
-See [Log correlation IDs](/en/testing/reference/log-correlation-ids) and [sp logs — troubleshooting](./logs#troubleshooting-failed-replays).
+`diagnose replay` writes diff files but no log lines. For the logs of a failed case, take its `traceId` from `sp replay case list --plan <planId> --failed --json` and look them up — see [Diagnose a failed replay — logs](/en/testing/examples/agent-diagnose-replay#logs) and [sp logs](./logs).
 
 ## Related
 
-- [Log correlation IDs](/en/testing/reference/log-correlation-ids)
+- [sp logs](./logs)
+- [Concepts and IDs](/en/testing/agents/concepts#ids)
 - [replay](./replay)
 - [replay diff](./replay-diff)
 - [record](./record)
