@@ -104,7 +104,7 @@ Replay control (`createPlan`, `progress`, …) returns:
 }
 ```
 
-The CLI maps `result !== 1` to exit `1`. A non-2xx HTTP status is exit `1` too, except for replay operations sent with POST (such as creating a plan), which are judged by `result` only. Network and JSON parse errors always fail.
+The CLI maps `result !== 1` to exit `1`. A non-2xx HTTP status is exit `1` too, with one exception: `sp replay run`, `sp replay rerun`, `sp replay compare`, `sp replay noise exclude` and `sp replay realtime create` are judged by `result` only. Every other command, including `sp replay status` and `sp replay case list`, checks the HTTP status first. Network, read and JSON parse errors always fail.
 
 ## Large output: artifacts {#artifacts-large-output}
 

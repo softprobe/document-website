@@ -214,7 +214,7 @@ To limit impact on live traffic, the agent implements **backpressure** when over
 
 Each reduction takes the current rate of each interface, caps it at 20 per minute and uses 80% of that, but never goes below 0.03 per minute (about once every 33 minutes). For example, 100 per minute becomes 16.
 
-The agent never waits for space in the queue: a full queue costs recordings rather than holding up the request.
+When the queue is full, the agent drops the current batch instead of waiting for space.
 
 ### When the backend fails {#storage-health}
 
