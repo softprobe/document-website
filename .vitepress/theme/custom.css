@@ -1,17 +1,18 @@
 /**
- * Softprobe brand theme — aligned with Explorer product shell
- * (cream canvas, terracotta accent, Archivo + IBM Plex Mono).
+ * Softprobe brand theme — white canvas and warm-gray sidebar as in the
+ * Softprobe code web app; terracotta accent, Archivo + IBM Plex Mono.
  */
 
 :root {
-  /* Explorer light tokens */
-  --sp-canvas: #f4f1ea;
-  --sp-surface: #fbf9f4;
-  --sp-surface-2: #ede9df;
-  --sp-ink: #14130f;
-  --sp-body: #3c3931;
-  --sp-muted: #625d52;
-  --sp-border: #dbd5c7;
+  /* Light tokens — same as the Softprobe code web app: white main area,
+     very light warm gray (#f7f7f4) for the sidebar and raised surfaces. */
+  --sp-canvas: #ffffff;
+  --sp-surface: #f7f7f4;
+  --sp-surface-2: #f7f7f4;
+  --sp-ink: #251f19;
+  --sp-body: #463f39;
+  --sp-muted: #5a534c;
+  --sp-border: #ddd8d3;
 
   --sp-brand: #b8724e;
   --sp-brand-dark: #9a5d3c;
@@ -65,7 +66,7 @@
   --vp-button-brand-hover-bg: var(--sp-brand-dark);
   --vp-button-brand-active-bg: var(--sp-brand-darker);
   --vp-button-brand-border: var(--sp-brand);
-  --vp-button-brand-text: #fbf9f4;
+  --vp-button-brand-text: #ffffff;
 
   --vp-home-hero-name-color: transparent;
   --vp-home-hero-name-background: linear-gradient(
@@ -78,7 +79,7 @@
 
   /* Explorer sidebar wordmark is 148px wide (~48px tall at this aspect) */
   --vp-nav-logo-height: 48px;
-  --vp-nav-bg-color: rgba(251, 249, 244, 0.92);
+  --vp-nav-bg-color: rgba(255, 255, 255, 0.92);
 
   /*
    * One content column for full-bleed shells (home / page / footer).
@@ -485,14 +486,14 @@ a.button {
 .sp-hero-buttons .button--primary {
   background-color: var(--sp-brand);
   border: 1px solid var(--sp-brand);
-  color: #fbf9f4 !important;
+  color: #ffffff !important;
 }
 
 .button--primary:hover,
 .sp-hero-buttons .button--primary:hover {
   background-color: var(--sp-brand-dark);
   border-color: var(--sp-brand-dark);
-  color: #fbf9f4 !important;
+  color: #ffffff !important;
 }
 
 .button--secondary,
@@ -573,7 +574,7 @@ a.button {
   border-radius: 2px;
   font-size: 0.8rem;
   font-weight: 600;
-  color: #fbf9f4;
+  color: #ffffff;
 }
 
 .badge--success {
