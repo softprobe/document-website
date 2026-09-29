@@ -6,7 +6,7 @@ title: Install the sp command line
 
 `sp` is the SoftProbe command line. You need it to script SoftProbe, run it from CI, let AI agents drive it, or run the web workbench on your own machine. People who only use the web console that has already been set up for them don't need it.
 
-You need a reachable SoftProbe backend first — see [Install sp-backend](/en/testing/installation/server) if you don't have one.
+You need a reachable SoftProbe backend first — see [Choose a deployment](/en/testing/installation/deployment) if you don't have one.
 
 ## Install {#install}
 

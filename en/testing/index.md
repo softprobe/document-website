@@ -49,7 +49,7 @@ More detail: [How it works](/en/testing/how-it-works).
 | You are | Start here |
 |---------|-----------|
 | A tester or developer using SoftProbe for regression | [Your first record and replay](/en/testing/getting-started), then the "Everyday use" section |
-| An operator or platform admin deploying it | [Deploy the backend](/en/testing/installation/server), [Attach the Java agent](/en/testing/java-agent) |
+| An operator or platform admin deploying it | [Choose a deployment](/en/testing/installation/deployment), [Attach the Java agent](/en/testing/java-agent) |
 | Maintaining a pipeline that should replay after each deploy | [Replay after deployment](/en/testing/webhook-and-ci) |
 | Writing scripts or plugins, or wiring up an AI agent | [Choose how to integrate](/en/testing/agents/overview) |
 

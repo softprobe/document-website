@@ -53,7 +53,7 @@ title: 功能、适用范围与资源需求
 | 内存 | 16 GB | 不使用 AI 诊断时 8 GB 即可 |
 | 磁盘 | 100 GB | 主要存放录制数据和日志，按保留期自动清理；报文很大、接口很多或采样率很高时需要更多 |
 
-**Kubernetes 部署**的资源和配置见 [部署后端](/zh/testing/installation/server)。
+准备清单和网络策略见 [部署前准备](/zh/testing/installation/preparation)；**Kubernetes 部署**的资源需求见 [Kubernetes 部署（Helm）](/zh/testing/installation/server#resources)。
 
 ## 数据安全 {#data-security}
 

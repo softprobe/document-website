@@ -1,16 +1,30 @@
 ---
-title: 安装 SoftProbe 服务端
+title: Kubernetes 部署（Helm）
 ---
 
-# 安装 SoftProbe 服务端
+# Kubernetes 部署（Helm）
 
 使用 Helm 在 Kubernetes 上安装统一的 SoftProbe 后端。Chart 支持部署集群内**内置 MongoDB 与 Redis**，也可以连接**外部 MongoDB（单机/副本集）、外部 Redis（单机/Sentinel 集群）与外部 S3 存储桶**。
 
 Chart **v4.3.x+** 默认启用 [统一日志管道](#unified-log-pipeline)（Vector、Parquet PVC、压缩）。全新安装只需配置下方的 MongoDB 与加密密钥——无需单独的 `logPipeline` 块。
 
-**前置条件：** Kubernetes 1.24+、Helm 3.x、SoftProbe 提供的 GCR 拉取凭据，以及用于加密静态载荷的 `encryption.secretKey`。
+**前置条件：** Kubernetes 1.24+、Helm 3.x、SoftProbe 提供的 GCR 拉取凭据，以及用于加密报文的 `encryption.secretKey`（见 [数据保护与保留期](/zh/testing/installation/data-protection#encryption)）。网络策略与单机部署相同，见 [部署前准备](/zh/testing/installation/preparation#network)。
 
 若使用**内置** MongoDB，集群需有默认或已配置的 `StorageClass` 供 MongoDB PVC 使用。
+
+## 资源需求 {#resources}
+
+Chart 的默认值按两组专用节点设计，每个节点约 8 核、32 GiB：MongoDB 单独一组，后端和 Redis 一组。
+
+| 组件 | 默认 requests | 默认 limits | 其他 |
+|------|--------------|------------|------|
+| 后端（`spBackend`） | 6 核、24 GiB | 8 核、28 GiB | JVM 堆 `-Xms12g -Xmx22g`（`spBackend.javaOpts`） |
+| 内置 MongoDB（`mongodb.bundled`） | 6 核、24 GiB | 8 核、28 GiB | PVC 250 GiB |
+| Redis | 0.2 核、512 MiB | 1 核、4 GiB | |
+| 控制台（`spwebui`） | 0.5 核、1 GiB | 2 核、4 GiB | |
+| Vector（日志管道） | 0.1 核、256 MiB | 1 核、1 GiB | |
+
+用 `kubectl describe node | grep -A5 Allocatable` 查看节点可分配的资源。POC 或流量较小时，按比例调小各组件的 `resources` 和 `spBackend.javaOpts`，堆上限要低于容器的内存 limit。
 
 ## MongoDB 模式（二选一）
 
@@ -607,11 +621,6 @@ kubectl get cronjob,jobs -n "$NAMESPACE" -l 'app.kubernetes.io/component=log-pip
 kubectl logs -n "$NAMESPACE" job/<compaction-job-name>
 ```
 
-### v1 范围外
-
-- Iceberg、即席 SQL、终端用户直接访问 Parquet。
-- 本地 PVC 与 S3 双写。
-- 专用日志管道健康/状态 API。
 
 ## 卸载
 
@@ -651,8 +660,8 @@ kubectl delete pvc -n "$NAMESPACE" -l app.kubernetes.io/instance=softprobe
 
 ## 下一步
 
-sp-backend 正常运行后，在开发者机器上安装 SoftProbe 客户端：[安装 SoftProbe（客户端）](./)。
+- [接入 Java Agent](/zh/testing/java-agent)
+- [第一次录制回放](/zh/testing/getting-started)
+- [平台维护与故障排查](/zh/testing/installation/operations)
 
-Linux 上的共享网页工作台，见客户端安装页的 [Spcode Service](./index#spcode-service)。
-
-相关文档：[`sp logs`](/zh/testing/commands/logs) · [概念与编号](/zh/testing/agents/concepts#ids)
+相关文档：[`sp logs`](/zh/testing/commands/logs) · [应用、用例与回放编号](/zh/testing/agents/concepts#ids)

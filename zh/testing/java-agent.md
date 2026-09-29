@@ -1,5 +1,5 @@
 ---
-title: Java Agent
+title: 接入 Java Agent
 ---
 
 <script setup>
@@ -20,35 +20,42 @@ onMounted(async () => {
 })
 </script>
 
-# SoftProbe Java Agent
+# 接入 Java Agent
 
-SoftProbe Java Agent（`sp-agent.jar`）通过 `-javaagent` 挂载到 JVM。它在字节码层织入各类框架（*部署方式*上类似 OpenTelemetry Java Agent），但目的是**测试数据采集与回放时 Mock**，而非通用分布式追踪。
+SoftProbe Java Agent 是一个 jar 文件（`sp-agent.jar`），通过 `-javaagent` 参数随被测服务一起启动。录制时它记下入口请求和依赖调用，回放时它用录制结果应答依赖调用。接入不改业务代码，只改启动参数、重启一次服务。
 
-::: warning 不是 Istio/Envoy Agent
-网格采集见 [平台 Agent 架构](/zh/platform/advanced-guides/agent-architecture)。本节仅介绍 **JVM** Agent。
+::: info 不是网格 Agent
+「业务观测」里基于 Istio/Envoy 的采集见 [平台 Agent 架构](/zh/platform/advanced-guides/agent-architecture)，与本页无关。
 :::
 
-## 前置条件
+## 前提 {#prerequisites}
 
-- 可通过 JVM 参数重启的 Java 服务
-- Agent 主机可访问 **sp-backend**（本地默认 `http://127.0.0.1:8090`）
-- 一个 **`appId`**：用 `sp app create`（或控制台的「应用管理」）创建，或者取一个固定的名字，由 Agent 首次启动时自动注册；所有实例用同一个 ID
+- JDK 8、11、17 或 21。框架支持情况见 [支持的 Java 版本与框架](/zh/testing/supported-frameworks)。
+- 被测服务所在机器能访问 SoftProbe 后端（单机部署时是平台服务器的 `8090` 端口）。
+- 为被测服务预留约 512 MB 内存，Agent 与服务共用 JVM 内存。
+- 可以改启动参数、重启服务。生产环境请先按变更流程申请窗口。
 
-## 下载 Agent {#download}
+## 获取 Agent {#download}
 
-能访问互联网时，下载最新版：
+**私有化部署**：平台自带 Agent，在被测应用服务器上直接下载：
+
+```bash
+curl -fL -o sp-agent.jar http://<平台地址>:8090/api/agent/sp-agent.jar
+```
+
+也可以在控制台「应用管理 → 接入新应用」的向导里下载。
+
+**能访问互联网时**，也可以从 SoftProbe 官网下载：
 
 ```bash
 curl -fsSL -o sp-agent.jar https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar
 ```
 
-`latest` 始终指向最新版本。交付给客户或在生产使用时，请把 `latest` 换成具体版本号，固定版本：
+`latest` 始终指向最新版本。在生产环境使用时，把 `latest` 换成具体版本号，固定版本：
 
 ```bash
 curl -fsSL -o sp-agent.jar https://install.softprobe.ai/artifacts/agent/v4.3.9/sp-agent.jar
 ```
-
-无法访问互联网的机器，使用安装包中附带的 Agent JAR，或向 SoftProbe 实施人员索取。
 
 可用版本：
 
@@ -60,150 +67,111 @@ curl -fsSL -o sp-agent.jar https://install.softprobe.ai/artifacts/agent/v4.3.9/s
 <p v-else-if="agentVersionError">{{ agentVersionError }}</p>
 <p v-else>正在加载版本列表……</p>
 
-脚本中获取同一列表：
+脚本里获取同一份列表：`curl -fsSL https://install.softprobe.ai/artifacts/agent/versions.json`。
 
-```bash
-curl -fsSL https://install.softprobe.ai/artifacts/agent/versions.json
-```
+## 启动参数 {#startup-command}
 
-## 启动命令
-
-使用 `-javaagent` 及下列 JVM 参数挂载 Agent：
+在服务的启动命令里加上：
 
 ```bash
 java \
-  -javaagent:sp-agent.jar \
-  -Dsp.app.id=<appId> \
-  -Dsp.api.url=http://127.0.0.1:8090 \
-  -jar your-service.jar
+  -javaagent:/opt/softprobe/sp-agent.jar \
+  -Dsp.app.id=order-service \
+  -Dsp.api.url=http://10.0.0.5:8090 \
+  -jar order-service.jar
 ```
 
-| 参数 | 指向 | 含义 |
-|------|------|------|
-| `-Dsp.app.id` | — | 应用 ID：可以用 `sp app create` 返回的 ID，也可以用 `order-service` 这类固定、非空的名字（后端没见过的 ID 通常会在 Agent 第一次拉取配置时自动注册，见 [概念与编号 — 应用](/zh/testing/agents/concepts#application-appid)）。**请在共享录制的各环境固定此值。** |
-| `-Dsp.api.url` | **sp-backend**（如 `:8090`） | **必填** — sp-backend 根地址（须含 `http://` 或 `https://`）。按以下顺序查找：`-Dsp.api.url`、环境变量 `SP_API_URL`、Agent jar 内置的 `sp.api.url`。录制、回放、Mock、对比，**以及关联日志导出**（`{sp.api.url}/v1/logs`）都用它。 |
+| 参数 | 说明 |
+|------|------|
+| `-javaagent` | `sp-agent.jar` 的路径 |
+| `-Dsp.app.id` | 应用 ID。取一个固定的名字，同一个服务的所有实例、录制环境和回放环境都用同一个。后端没见过的 ID 会在 Agent 第一次拉取配置时自动注册，见 [应用、用例与回放编号](/zh/testing/agents/concepts#application-appid) |
+| `-Dsp.api.url` | 后端地址，必须带 `http://` 或 `https://`。录制、回放、日志上报都用它 |
 
-当 `sp.api.url` 已设置且服务端 [统一日志管道](./installation/server.md#unified-log-pipeline) 已启用时，日志由 sp-backend 内部代理到 Vector — Agent **无需**单独配置 Vector URL。
+后端地址按这个顺序查找：`-Dsp.api.url`、环境变量 `SP_API_URL`、jar 包里内置的 `sp.api.url`。都找不到时，Agent 报告启动失败，不录制、不回放，服务照常运行。请始终显式设置 `-Dsp.api.url`。
 
-### 可选：直连 Vector
+::: details 旧参数 sp.api.service.host
+Agent 源码里已经加入了旧参数兼容：没有设置 `-Dsp.api.url` 和 `SP_API_URL` 时，把旧的启动参数 `-Dsp.api.service.host` 转换成 `sp.api.url`。这项改动截至 4.3.36 还没有发布，请使用 `sp.api.url`。
+:::
 
-高级场景（绕过 backend 代理）可设置：
+### JDK 17、21 {#jdk17}
+
+JDK 16 起默认禁止反射访问 JDK 内部类，JDK 17、21 要再加下面这组参数。JDK 8 不需要；JDK 11 不加也能运行，只会打印告警。
 
 ```bash
--Dsp.otel.exporter.otlp.log.endpoint=http://<vector-host>:4320/v1/logs
+--add-opens java.base/java.lang=ALL-UNNAMED
+--add-opens java.base/java.lang.reflect=ALL-UNNAMED
+--add-opens java.base/java.util=ALL-UNNAMED
+--add-opens java.base/java.util.concurrent=ALL-UNNAMED
+--add-opens java.base/java.math=ALL-UNNAMED
+--add-opens java.base/java.net=ALL-UNNAMED
+--add-opens java.base/java.time=ALL-UNNAMED
+--add-opens java.base/sun.net.util=ALL-UNNAMED
+--add-opens java.base/jdk.internal.loader=ALL-UNNAMED
+--add-opens java.xml/com.sun.org.apache.xerces.internal.jaxp.datatype=ALL-UNNAMED
 ```
 
-该 JVM 属性优先于 `{sp.api.url}/v1/logs`。
+少了 `java.lang` 那一条，Agent 启动时会直接报错；少了其他几条，服务照常启动，但部分录制、回放能力会失效而且没有提示（例如回放时下游 HTTP 调用的状态码不对、部分集合类型序列化失败）。请整组加上。
 
-以上几处都找不到后端地址时，Agent 会报告启动失败，什么都不做：不录制、不回放、也不导出日志。上面的日志地址覆盖不能代替后端地址。Agent 源码里已经加入了旧参数兼容：没有设置 `-Dsp.api.url` 和 `SP_API_URL` 时，把旧的启动参数 `-Dsp.api.service.host` 转换成 `sp.api.url`；但这项改动截至 4.3.36 还没有发布。请使用 `sp.api.url`。
+### Tomcat 等应用服务器 {#app-server}
 
-## 基于执行路径的去重录制
-
-Java Agent 可以按应用代码实际走过的执行路径给录制用例去重；计算执行路径所用的插桩只是实现细节，不会生成独立的覆盖率报告。
-
-该能力已包含在标准的 `sp-agent.jar` 中。无需下载、构建或在扩展目录中放置单独的扩展 JAR。
-
-### 开启基于执行路径的去重
-
-主要功能开关是 `sp.dedup.enabled`，默认值为 `false`。因此，只有显式开启去重后，Agent 的行为才会改变。
-
-去重功能复用的 transformer 还要求配置 `sp.coverage.packages`。这个参数是必需的插桩范围白名单：它告诉 Agent 对哪些应用包前缀插桩，以收集执行路径。参数名中的 `coverage` 来自已有 transformer 配置；它不表示开启独立的覆盖率产品，也不会改变录制内容。多个包前缀使用英文逗号分隔：
+把上面的参数加到应用服务器的 JVM 参数里，例如 Tomcat 的 `bin/setenv.sh`：
 
 ```bash
-java \
-  -javaagent:sp-agent.jar \
-  -Dsp.app.id=<appId> \
-  -Dsp.api.url=http://127.0.0.1:8090 \
-  -Dsp.dedup.enabled=true \
-  -Dsp.coverage.packages=com.example.orders,com.example.payments \
-  -jar your-service.jar
+CATALINA_OPTS="$CATALINA_OPTS -javaagent:/opt/softprobe/sp-agent.jar -Dsp.app.id=order-service -Dsp.api.url=http://10.0.0.5:8090"
 ```
 
-两个参数同时配置才会开启去重。`sp.dedup.enabled` 未设置或设为 `false` 时，即使配置了包范围也不去重；只设 `sp.dedup.enabled=true` 而不设 `sp.coverage.packages`（或设为空）时，不会安装 transformer，Agent 其他行为不变。
+WebLogic、东方通等按各自的方式配置 JVM 参数。也可以用环境变量 `JAVA_TOOL_OPTIONS`，但它会作用于这台机器上所有的 Java 进程，注意不要影响无关的程序。
 
-如果要在保持 Agent 其他能力运行的同时关闭基于执行路径的去重，请省略主要开关或显式设置为 `false`：
+### 容器与 Kubernetes {#container}
+
+把 `sp-agent.jar` 放进镜像或挂载进容器，用 `JAVA_TOOL_OPTIONS` 或启动命令传参数：
+
+```yaml
+env:
+  - name: JAVA_TOOL_OPTIONS
+    value: "-javaagent:/opt/softprobe/sp-agent.jar -Dsp.app.id=order-service -Dsp.api.url=http://10.0.0.5:8090"
+```
+
+## 确认接入成功 {#verify}
+
+1. 服务启动日志里有 `[SoftProbe]` 开头的行，没有报错。
+2. 控制台「应用管理」里出现这个应用，状态为「Agent 在线」。也可以用命令行查：`sp app status order-service --json`，返回 `online`。
+3. 给服务发几个请求。默认每个接口大约每分钟录 1 条，等一两分钟后打开「录制 → 滚动录制」，能看到对应接口的录制。
+4. 打开一条录制，调用链里除了入口，还有数据库、缓存、下游接口等依赖调用。缺了某类调用，见 [查看录制 — 没录到？](/zh/testing/recording#troubleshooting)。
+
+「应用管理」里的状态：
+
+| 状态 | 含义 |
+|------|------|
+| Agent 在线 | 至少一个实例在 60 秒内发过心跳 |
+| 限流中 | 实例在线，但至少一个实例处于限流或降级状态，见 [对线上服务的保护](#production-safety) |
+| Agent 已离线 | 有实例记录，但都超过 60 秒没有心跳 |
+| 未接入 | 当前没有实例记录。实例记录在最后一次心跳约 3 分钟后过期，Agent 停掉很久的应用也显示为未接入 |
+
+## 环境标签 {#environment-tags}
+
+多个环境共用一个应用 ID 时，给各环境的实例打上标签：
 
 ```bash
--Dsp.dedup.enabled=false
+-Dsp.tags.env=prod
 ```
 
-这些参数在 JVM 启动时读取。修改后请重启服务。
+每个 `-Dsp.tags.<键>=<值>` 加一个标签，可以加多个（例如再加 `-Dsp.tags.region=east`）。录制会带上这些标签，在「录制配置」里可以按标签给不同环境设不同的采样规则，新建回放计划时可以按标签筛选用例。不要自己设置 `sp.mocker.tags`：Agent 根据 `sp.tags.*` 生成它，会覆盖你设的值。
 
-### 重复用例如何去重
+## 回放环境的 Agent {#replay-side-agent}
 
-基于执行路径的去重作用于最终保留的录制用例，而不是阻止 HTTP 响应返回。每个请求都会按已配置包范围内执行过的方法和分支生成一个执行路径键。后端在同一应用、同一接口下为每条不同路径保留一条用例：之后走相同路径的请求会被丢弃，走不同路径的则保留为另一条用例。
+接收回放请求的测试环境实例，也要挂同一个 Agent，使用相同的应用 ID：回放时由它用录制结果应答依赖调用。回放环境的录制请关掉或调到很低，避免把回放请求又录一遍。
 
-因此，两个完全相同的请求通常会得到：
+## 移除 Agent {#remove}
 
-- **去重启用（`sp.dedup.enabled=true` 且 `sp.coverage.packages` 非空）：** 保留一个用例和一条 Coverage 路径。
-- **去重关闭或未配置：** 保留两个用例，且没有 Coverage 路径。包括 `sp.dedup.enabled` 未设置或设为 `false`、`sp.coverage.packages` 未设置或为空的情况。
+1. 去掉启动参数里的 `-javaagent`、`-Dsp.*` 和为 Agent 加的 `--add-opens`，重启服务。服务回到接入前的状态。
+2. 删除 `sp-agent.jar`、它所在目录下的 `logs` 目录，以及系统临时目录下的 `sp` 目录。
 
-去重键是执行路径，而不只是请求体。因此，不同输入如果走过相同路径，也可能被去重；相同输入如果命中不同分支，则会保留为不同用例。`sp-force-record` 是强制按原始请求录制的开关，会绕过去重；验证去重行为时不要用它。
+Agent 不修改服务的任何文件，也不在服务器上留下常驻进程。
 
-Agent 也可能从 jar 名或环境自动解析 appId；显式设置 `-Dsp.app.id` 可避免录制与回放的 appId 不一致。旧文档中的 **`sp.service.name`** 在部分部署中仍作别名；新环境请优先使用 **`sp.app.id`**。
+## 对线上服务的保护 {#production-safety}
 
-## 环境标签
-
-为录制流量打标签，便于筛选与限定回放范围：
-
-```bash
--Dsp.tags.env=staging
-```
-
-每个 `-Dsp.tags.<键>=<值>` 加一个标签，多个标签就写多个（如再加 `-Dsp.tags.region=east`）。不要自己设置 `sp.mocker.tags`：Agent 会根据 `sp.tags.*` 生成它，并覆盖你设的值。
-
-录制数据会带上 `env=<值>`，从而只回放特定环境的用例。策略里用 `selector.envTags` 匹配同一标签——见 [策略 YAML 指南 · 通用字段](/zh/testing/policy-yaml-guide#common-fields)。
-
-## 其他部署方式
-
-### `sp.agent.conf` 配置文件
-
-```properties title="META-INF/sp/sp.agent.conf（打包进 agent JAR）"
-sp.api.url=http://127.0.0.1:8090
-```
-
-一体化与 Helm 部署会在打包时写入该配置；运维通常只需 `-javaagent` 与 `-Dsp.app.id`。指向其他后端时用 `SP_API_URL` 或 `-Dsp.api.url` 覆盖。
-
-### Tomcat / `JAVA_OPTS`
-
-在 `catalina.sh` 或 `JAVA_TOOL_OPTIONS` 中设置 Agent 参数，使每个工作 JVM 启动时自动加载。
-
-### 与 OpenTelemetry 共存
-
-若与其他 `-javaagent`（如 OpenTelemetry）冲突，可添加忽略前缀：
-
-```bash
--Dsp.ignore.type.prefixes=io.opentelemetry
--Dsp.ignore.classloader.prefixes=io.opentelemetry
-```
-
-多个前缀用英文逗号分隔。
-
-### 调试日志
-
-```bash
--Dsp.enable.debug=true
-```
-
-## Agent 状态
-
-`sp app status <appId>` 根据实例心跳返回 **`online`**、**`degraded`**、**`offline`** 或 **`never`**（默认阈值 60 秒，含义见 [概念与编号 — 应用](/zh/testing/agents/concepts#application-appid)）。状态反映 Agent 是否在运行，而非仅是否注册了应用。
-
-录制时，旧版界面曾用 **WORKING** / **SLEEPING** / **UNSTART** 表示实例状态；含义相同：必须注入 Agent 且开启录制才会产生用例。
-
-## 完整用例应包含什么
-
-健康的录制用例通常包括：
-
-- **Servlet**（或其他入口类型）— 主 API 请求/响应
-- **Database**、**Redis**、**HttpClient** 等 — 按调用顺序的依赖 mocker
-- **DynamicClass**（可选）— 已配置的缓存/时间/加解密方法
-
-有流量后列出用例：`sp record case list --app <appId> --json`。
-
-## 生产环境保护
-
-为降低对线上流量的影响，Agent 在过载或存储异常时会**背压**。
+录制数据由后台线程上报，业务请求不等待网络。上报跟不上或后端出问题时，Agent 会少录、降速，而不是拖住请求。
 
 ### 录制队列满时 {#queue-overflow}
 
@@ -224,14 +192,64 @@ sp.api.url=http://127.0.0.1:8090
 
 所在机器 CPU 或内存占用过高时，Agent 同样会进入快速拒绝状态并降低速率，直到占用回落。
 
-配合 [录制策略](/zh/testing/policies) 中的采样设置，可以把对生产的影响控制在可接受范围。
+## 高级参数 {#advanced}
 
-## 回放侧 Agent
+### 与其他 Agent 共存 {#coexistence}
 
-接收回放流量的实例也必须挂载**同一** Agent JAR。专用回放机上请将录制设为关闭或极低，避免在回放过程中误录大量新流量。
+与 OpenTelemetry 等其他 `-javaagent` 冲突时，让 SoftProbe 跳过它们的类：
 
-## 下一步
+```bash
+-Dsp.ignore.type.prefixes=io.opentelemetry
+-Dsp.ignore.classloader.prefixes=io.opentelemetry
+```
 
-Agent 挂上、`sp app status` 显示 online 之后，接入就完成了 → 进入核心流程 **[录制流量](/zh/testing/recording)**。
+多个前缀用英文逗号分隔。
 
-相关文档：[支持的框架](/zh/testing/supported-frameworks) · [快速开始](/zh/testing/getting-started)
+### 调试日志 {#debug}
+
+```bash
+-Dsp.enable.debug=true
+```
+
+排查完请去掉，调试日志量很大。
+
+### 日志直接发给 Vector {#vector}
+
+默认情况下，Agent 的日志经后端（`{sp.api.url}/v1/logs`）转给日志管道，不需要单独配置。要绕过后端直接发给 Vector 时：
+
+```bash
+-Dsp.otel.exporter.otlp.log.endpoint=http://<vector-host>:4320/v1/logs
+```
+
+它不能代替 `-Dsp.api.url`：没有后端地址时 Agent 仍然不会启动。
+
+### 按执行路径去重 {#execution-path-dedup}
+
+默认情况下，同一接口的录制按采样保留，内容重复的请求也会各录一条。开启按执行路径去重后，Agent 记录每个请求在指定包范围内实际走过的方法和分支，后端在同一应用、同一接口下，每条不同的执行路径只保留一条用例：之后走相同路径的请求被丢弃，走了新路径的保留下来。
+
+两个参数同时设置才会开启：
+
+```bash
+-Dsp.dedup.enabled=true
+-Dsp.coverage.packages=com.example.orders,com.example.payments
+```
+
+- `sp.dedup.enabled`：开关，默认 `false`。
+- `sp.coverage.packages`：要记录执行路径的业务代码包前缀，多个用英文逗号分隔。为空时不开启。
+
+判断重复看的是执行路径，不是请求内容：输入不同但走了相同路径的请求会被当作重复；输入相同但走了不同分支的会分别保留。带 `sp-force-record` 的请求不参与去重。参数在 JVM 启动时读取，修改后要重启服务。
+
+### jar 内置配置 {#agent-conf}
+
+jar 包里的 `META-INF/sp/sp.agent.conf` 可以内置后端地址：
+
+```properties
+sp.api.url=http://10.0.0.5:8090
+```
+
+优先级低于 `-Dsp.api.url` 和环境变量 `SP_API_URL`。
+
+## 下一步 {#next}
+
+- [查看录制](/zh/testing/recording)
+- [第一次录制回放](/zh/testing/getting-started)

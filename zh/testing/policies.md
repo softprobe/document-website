@@ -98,7 +98,7 @@ title: 录制配置与回放配置
 
 ## 脱敏规则 {#sensitive}
 
-在控制台**查看**录制和对比结果时，把身份证号、手机号等敏感字段打码显示。脱敏只影响页面展示，数据库里保存的是加密后的完整报文（回放需要原始报文）。报文落库加密的配置见 [部署后端](/zh/testing/installation/server)。
+在控制台**查看**录制和对比结果时，把身份证号、手机号等敏感字段打码显示。脱敏只影响页面展示，数据库里保存的是加密后的完整报文（回放需要原始报文）。报文落库加密见 [数据保护与保留期](/zh/testing/installation/data-protection#encryption)。
 
 ![脱敏规则](/img/docs/testing/zh/config-sensitive.png)
 

@@ -49,7 +49,7 @@ flowchart LR
 | 你是 | 从这里开始 |
 |------|-----------|
 | 测试、开发，要用 SoftProbe 做回归 | [第一次录制回放](/zh/testing/getting-started)，然后看「日常使用」这一组 |
-| 运维或平台管理员，要部署平台 | [部署后端](/zh/testing/installation/server)、[接入 Java Agent](/zh/testing/java-agent) |
+| 运维或平台管理员，要部署平台 | [选择部署方式](/zh/testing/installation/deployment)、[接入 Java Agent](/zh/testing/java-agent) |
 | 维护流水线，要在发版后自动回放 | [发版后自动回放](/zh/testing/webhook-and-ci) |
 | 写脚本、插件，或让 AI 代理对接 | [选择接入方式](/zh/testing/agents/overview) |
 
