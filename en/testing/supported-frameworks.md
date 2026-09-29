@@ -1,97 +1,72 @@
 ---
-title: Supported frameworks
+title: Supported Java versions and frameworks
 ---
 
-# Supported frameworks (Java)
+# Supported Java versions and frameworks
 
-Softprobe Testing instruments common Java stacks through the agent’s module plugins. The list below reflects currently documented support; new integrations are added continuously in [`sp-agent-java`](https://github.com/softprobe/softprobe/tree/main/backend/sp-agent-java).
+This page lists what Java agent 4.3.36 supports. Where no version is given, the agent doesn't restrict the version.
 
-::: tip
-If your stack is not listed, check whether it uses a supported client (for example any JDBC layer backed by MyBatis or Hibernate). Entry points must be one of the HTTP/RPC provider modules the agent weaves.
-:::
+If your stack isn't listed, or you're unsure about a version, send the service's `pom.xml` to SoftProbe for a compatibility check, ideally with the output of `mvn dependency:tree`. Only the dependency list is needed, not source code or application packages.
 
-## Foundation
+## Java versions {#jdk}
 
-- Java Executors
-- System time (`DynamicClass` — force-mocked on replay by default policy)
-- User-configured dynamic types
+JDK 8, 11, 17 and 21. JDK 17 and 21 need a set of `--add-opens` start-up flags; see [Attach the Java agent — JDK 17 and 21](/en/testing/java-agent#jdk17).
 
-## Cache
+## How the service runs {#runtime}
 
-- Caffeine Cache
-- Guava Cache
-- Spring Cache
+- Spring Boot executable jars
+- Servlet applications deployed in application servers such as Tomcat, WebLogic or TongWeb
+- Either of the above in containers or on Kubernetes
 
-## Spring / HTTP entry
+## Entry points: where a recording starts {#entry}
 
-- Spring Boot 1.4+, 2.x+
-- Servlet API 3+, 5+
+A recording starts with a request the service receives. The entry must be one of these:
 
-## HTTP clients
+| Type | Supported |
+|------|-----------|
+| HTTP | Servlet 3.0 and later, both `javax.servlet` and `jakarta.servlet`; Spring Cloud Gateway |
+| RPC | Apache Dubbo 2.7 and later, 3.x; Alibaba Dubbo; SOFA RPC 5.0 and later; Armeria |
+| Messaging | RabbitMQ consumers |
+| Netty | Netty 3.x, 4.x |
 
-- Apache HttpClient 4.0+
-- OkHttp 3.0 – 4.11
-- Spring WebClient 5.0+
-- Spring `RestTemplate`
-- Feign 9.0+
-- Elasticsearch Client 7.x
+## Dependency calls: recorded, and mocked during replay {#dependencies}
 
-## Redis
+| Type | Supported |
+|------|-----------|
+| HTTP clients | Apache HttpClient 3.x, 4.x; OkHttp 3.x, 4.x; JDK `HttpURLConnection`; Spring `RestTemplate` 5.x, 6.x; Spring `WebClient` 5.x, 6.x; Feign; AsyncHttpClient; RESTEasy 3.0 and later; Apache CXF 3.0 and later; Apache Axis, Axis2 |
+| Databases | JDBC; MyBatis 3.x (including frameworks built on it, such as MyBatis-Plus); iBATIS; Hibernate 4.x, 5.x, 6.0–6.4 |
+| Redis | Jedis 2.0–3.5, 4.0 and later; Lettuce 5.0–6.0, 6.1 and later; Redisson 3.x; Spring Data Redis (`RedisTemplate`) |
+| NoSQL and search | MongoDB Java driver; Elasticsearch REST client; SolrJ |
+| RPC clients | Dubbo and SOFA RPC callers; gRPC; Thrift; Armeria |
+| Sending messages | Kafka producers; RabbitMQ publishing; IBM MQ |
+| Other | SFTP (JSch); Seata distributed transactions |
 
-- `RedisTemplate`
-- Jedis 2.10+, 4+
-- Redisson 3.0+
-- Lettuce 5.x, 6.x
+Apache HttpClient 5.x isn't supported yet.
 
-## Persistence
+**Mock exceptions** under **Replay**, the dependency-type rules in diff rules, and policy YAML refer to dependency calls by category name (such as `HttpClient`, `Database`, `Redis`, `DubboConsumer`); the names are listed in [Policy YAML reference — dependency categories](/en/testing/policy-yaml-guide#dependency-categories).
 
-- MyBatis 3.x, MyBatis-Plus, TkMyBatis
-- Hibernate 5.x
+## Local caches, time and dynamic classes {#dynamic}
 
-## NoSQL
+During replay, the results of these calls must also match the recording, or the same request can take a different path:
 
-- MongoDB driver 3.x, 4.x
+| Type | Supported | Notes |
+|------|-----------|-------|
+| Local caches | Caffeine, Guava Cache, Spring Cache (`@Cacheable`) | Needs **Coverage packages** set under **Config → Recording**; see [Recording and replay settings](/en/testing/policies#app-wide) |
+| System time | `System.currentTimeMillis()` and similar | Returns the recorded time during replay |
+| Encryption and decryption | Symmetric ciphers | |
+| Methods you choose | Any Java method | Register them under **Config → Dynamic classes**; see [Dynamic classes](/en/testing/policies#dynamic-classes) |
 
-## RPC
+## Other frameworks {#other}
 
-- Apache Dubbo 2.x, 3.x
-- Alibaba Dubbo 2.x
-- SOFA RPC (provider/consumer categories in backend model)
+| Type | Supported | What it does |
+|------|-----------|--------------|
+| Authentication | Spring Security, Apache Shiro, jCasbin, JWT (Auth0, JJWT) | During replay the recorded request's login has expired; the agent lets authentication pass as it did when recorded |
+| Configuration | Apollo, Nacos, Spring configuration | Configuration read during recording returns the recorded values during replay |
+| Thread pools | Java `Executor`, Disruptor | When a request continues on another thread, recording and mocking stay linked to the original request |
+| Logging | Logback, Log4j2, `java.util.logging` | Service logs carry the trace ID, so you can look up logs per request in SoftProbe |
 
-## Auth
+## Related {#related}
 
-- Spring Security 5.x
-- Apache Shiro 1.x
-- jCasbin 1.x
-- Auth0 JWT 3.x
-- JJWT 0.1+, jjwt-api 0.10+
-
-## Netty
-
-- Netty server 3.x, 4.x
-
-## Config
-
-- Apollo Config 1.x, 2.x
-
-## Backend dependency categories
-
-Replay matching uses **dependency** categories (not entry types) in mock policy. Common names aligned with [`MockCategoryType`](https://github.com/softprobe/softprobe):
-
-| Category | Typical use |
-|----------|-------------|
-| `HttpClient` | Outbound HTTP |
-| `Database` | JDBC / ORM SQL |
-| `Redis` | Redis commands |
-| `DubboConsumer` / `SofaConsumer` | RPC client |
-| `QMessageProducer` | Message publish |
-| `DynamicClass` | Time, random, cache, encryption helpers |
-| `ConfigFile` | Config reads (often skipped in compare) |
-
-Entry categories (`Servlet`, `DubboProvider`, …) define what was recorded as the **main** API under test.
-
-## Related
-
-- [Java agent](/en/testing/java-agent)
-- [Mock policy](/en/testing/policies#mock-policy)
+- [Attach the Java agent](/en/testing/java-agent)
+- [Recording and replay settings](/en/testing/policies)
 - [How it works](/en/testing/how-it-works)

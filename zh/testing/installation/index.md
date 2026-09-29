@@ -6,7 +6,7 @@ title: 安装 sp 命令行
 
 `sp` 是 SoftProbe 的命令行工具。用脚本操作 SoftProbe、在 CI 中调用、让 AI 代理驱动，或在自己电脑上运行网页工作台时才需要安装。网页工作台就是在浏览器里打开的 SoftProbe 控制台；只用已经部署好的控制台的人，不需要安装。
 
-安装前需要一个可以访问的 SoftProbe 后端；还没有的话，先看 [部署后端](/zh/testing/installation/server)。
+安装前需要一个可以访问的 SoftProbe 后端；还没有的话，先看 [选择部署方式](/zh/testing/installation/deployment)。
 
 ## 安装 {#install}
 
@@ -90,7 +90,7 @@ sudo sp setup --api-url http://sp-backend.corp:8090 --install-spcode-service
 
 `--install-spcode-service` 和 `--uninstall-spcode-service` 不能同时使用。
 
-请用负责这台机器 SoftProbe 设置的账号运行 `sp setup` 完成安装。服务使用同一套设置（后端地址、MCP、代理说明、技能），修改设置后需要重启服务。
+请用负责这台机器上 SoftProbe 设置的账号运行 `sp setup` 完成安装。服务使用同一套设置（后端地址、MCP、代理说明、技能），修改设置后需要重启服务。
 
 | 操作 | 命令 |
 |------|------|

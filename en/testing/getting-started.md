@@ -12,7 +12,7 @@ Each card below has a switch at the top between the console and the command line
 
 ## Before you start {#prerequisites}
 
-- The **console URL** and the **backend URL**. On a single-server (All-in-One) deployment both are port `8090` of the platform server, for example `http://10.0.0.5:8090`. No platform yet? See [Deploy the backend](/en/testing/installation/server).
+- The **console URL** and the **backend URL**. On a single-server (All-in-One) deployment both are port `8090` of the platform server, for example `http://10.0.0.5:8090`. No platform yet? See [Choose a deployment](/en/testing/installation/deployment).
 - **A Java service you can restart**, on JDK 8, 11, 17 or 21, preferably in a test environment. Supported frameworks: [Supported frameworks](/en/testing/supported-frameworks).
 - The service's host can reach the backend, and the backend can reach the service's business port (replay sends requests to it).
 - For the command line: [install sp](/en/testing/installation/), point it at the same backend and [authenticate](/en/testing/agents/authentication). The service's `-Dsp.api.url` flag is for the agent only; it doesn't configure the command line.

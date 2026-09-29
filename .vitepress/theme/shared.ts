@@ -55,7 +55,7 @@ export function footerForLocale(locale: DocLocale): DefaultTheme.Footer {
           title: '文档',
           items: [
             { text: '流量回放测试', link: `${p}/testing/` },
-            { text: '部署后端', link: `${p}/testing/installation/server` },
+            { text: '部署平台', link: `${p}/testing/installation/deployment` },
             { text: '回放报告', link: `${p}/testing/replay-report` },
             { text: '命令参考', link: `${p}/testing/commands/` },
             { text: 'Agent QA', link: `${p}/agent-qa/` },
@@ -84,7 +84,7 @@ export function footerForLocale(locale: DocLocale): DefaultTheme.Footer {
           title: 'Docs',
           items: [
             { text: 'Replay Testing', link: `${p}/testing/` },
-            { text: 'Deploy the backend', link: `${p}/testing/installation/server` },
+            { text: 'Deploy the platform', link: `${p}/testing/installation/deployment` },
             { text: 'Replay report', link: `${p}/testing/replay-report` },
             { text: 'Command reference', link: `${p}/testing/commands/` },
             { text: 'Agent QA', link: `${p}/agent-qa/` },

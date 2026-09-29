@@ -98,7 +98,7 @@ System time and random numbers are built in: you don't need to add them, and rep
 
 ## Redact {#sensitive}
 
-Masks sensitive fields such as ID numbers and phone numbers when you **view** recordings and comparison results in the console. Redaction only affects what's displayed: the database keeps the full, encrypted payload, because replay needs the original. How storage encryption is configured: [Deploy the backend](/en/testing/installation/server).
+Masks sensitive fields such as ID numbers and phone numbers when you **view** recordings and comparison results in the console. Redaction only affects what's displayed: the database keeps the full, encrypted payload, because replay needs the original. Storage encryption: [Data protection and retention](/en/testing/installation/data-protection#encryption).
 
 ![Redact rules](/img/docs/testing/en/config-sensitive.png)
 

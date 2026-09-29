@@ -2,7 +2,7 @@
 
 Look up the application, Java agent and sp-backend log lines that belong to one request, by its `trace_id`. Use it after a replay fails to see what happened on both the recording and the replay side.
 
-This needs the unified log pipeline to be enabled on the backend — see [Install sp-backend (server) — unified log pipeline](/en/testing/installation/server#unified-log-pipeline). When the pipeline is off or unavailable, lookups fail with an error instead of returning an empty result.
+This needs the unified log pipeline to be enabled on the backend — it is on by default in the single-server install; for Kubernetes see [Kubernetes deployment (Helm) — unified log pipeline](/en/testing/installation/server#unified-log-pipeline). When the pipeline is off or unavailable, lookups fail with an error instead of returning an empty result.
 
 Where to get a `trace_id`: [Concepts and IDs — IDs](/en/testing/agents/concepts#ids).
 

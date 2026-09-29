@@ -22,7 +22,7 @@ title: 功能、适用范围与资源需求
 ## 适用范围 {#scope}
 
 - **语言**：Java，JDK 8、11、17、21。
-- **框架和中间件**：常见的 Web 框架、HTTP 客户端、数据库访问、缓存、RPC 框架都支持，完整清单见 [支持的 Java 版本与框架](/zh/testing/supported-frameworks)。清单外的框架，由我方在接入前评估和适配。
+- **框架和中间件**：常见的 Web 框架、HTTP 客户端、数据库访问、缓存、RPC 框架都支持，完整清单见 [支持的 Java 版本与框架](/zh/testing/supported-frameworks)。清单外的框架，由 SoftProbe 在接入前评估和适配。
 - **回放入口**：HTTP/HTTPS，以及 Dubbo 等 RPC 入口。
 - **部署**：SoftProbe Cloud；或私有化部署在单台服务器（All-in-One）或 Kubernetes 上，可完全离线运行。
 
@@ -53,7 +53,7 @@ title: 功能、适用范围与资源需求
 | 内存 | 16 GB | 不使用 AI 诊断时 8 GB 即可 |
 | 磁盘 | 100 GB | 主要存放录制数据和日志，按保留期自动清理；报文很大、接口很多或采样率很高时需要更多 |
 
-**Kubernetes 部署**的资源和配置见 [部署后端](/zh/testing/installation/server)。
+准备清单和网络策略见 [部署前准备](/zh/testing/installation/preparation)；**Kubernetes 部署**的资源需求见 [Kubernetes 部署（Helm）](/zh/testing/installation/server#resources)。
 
 ## 数据安全 {#data-security}
 

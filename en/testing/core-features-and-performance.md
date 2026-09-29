@@ -53,7 +53,7 @@ For people evaluating SoftProbe: what it does, what kind of systems it fits, how
 | Memory | 16 GB | 8 GB is enough without AI diagnosis |
 | Disk | 100 GB | Mostly recordings and logs, cleaned up by retention period; very large payloads, many endpoints or high sampling need more |
 
-Resources and configuration for **Kubernetes**: [Deploy the backend](/en/testing/installation/server).
+The full checklist and network rules: [Before you deploy](/en/testing/installation/preparation). Resources for **Kubernetes**: [Kubernetes deployment (Helm)](/en/testing/installation/server#resources).
 
 ## Data security {#data-security}
 
