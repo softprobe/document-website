@@ -9,7 +9,7 @@ title: 录制流量
 本页以 `order-service` 为例：它已按 [接入 Java Agent](/zh/testing/java-agent) 挂载 Agent、按快速开始注册过应用（`appId` 在手）。录制到配置对比规则这几步都用这个应用。
 
 ::: tip 开箱即录，不需要先配策略
-内置的全局默认策略（priority 0）让录制开箱即用，并已排除 `/health` 等探针流量。只有当你要调整采样率、时间窗口或操作范围时，才需要写应用级策略——见本页末尾 [调整录制范围](#调整录制范围)。
+内置的全局默认策略（priority 0）让录制开箱即用，并已排除 `/health` 等健康检查流量。只有当你要调整采样率、时间窗口或操作范围时，才需要写应用级策略——见本页末尾 [调整录制范围](#调整录制范围)。
 :::
 
 ## 第 1 步 · 确认 Agent 在线
@@ -44,7 +44,7 @@ CLI 不支持手工构造用例。想要更多用例，就让更多流量流过�
 <InterfaceTabs :tabs="['ui','cli']">
 <Interface id="ui">
 
-1. 在 Softprobe 控制台打开对应应用的 **工作台（Workbench）**。
+1. 在 SoftProbe 控制台打开对应应用的工作台。
 2. 在左侧导航中展开 **滚动录制**，选择对应的 API 接口，查看捕获的录制用例列表与上报时间。
 3. 点击任意一条用例进入链路详情，可核对入口请求内容及数据库、Redis、HTTP 等下游依赖调用。
 
@@ -98,7 +98,7 @@ sp policy recording apply -f recording.yaml --json
 可调项：`ratePerHundredSeconds`（采样）、`timeWindow`（时段）、`operations.include/exclude`（接口范围）、`serializeSkip`、`timeMock`。逐字段说明与完整示例见 [策略 YAML 指南 · RecordingPolicy](/zh/testing/policy-yaml-guide#recordingpolicy)。
 
 ::: warning `machineCountLimit: 1` 慎用
-该字段限制同环境**同时录制**的实例数。设为 `1` 时，首个占坑实例下线后配额可能长期不释放，其它实例会显示不录制。生产策略建议省略该字段（不限）或设为不小于实例数。
+该字段限制同环境**同时录制**的实例数。设为 `1` 时，首个占用配额的实例下线后，配额可能长期不释放，其他实例会显示不录制。生产策略建议省略该字段（不限）或设为不小于实例数。
 :::
 
 ::: info 两个已知边界

@@ -60,15 +60,20 @@ sp extraction-rule preview -f rules.yaml --json
   "ok": true,
   "command": "extraction-rule preview",
   "data": {
-    "preview": [
+    "matches": [
       {
-        "ruleName": "orderId",
-        "extractedValue": "ORD-1234"
+        "rule_index": 0,
+        "attr_name": "orderId",
+        "values": ["ORD-1234"]
       }
-    ]
+    ],
+    "warnings": [],
+    "validationErrors": []
   }
 }
 ```
+
+`matches` 与提交的规则按下标一一对应。没有命中的规则，`values` 为空，并带 `miss_reason` 说明原因。`validationErrors` 与 `warnings` 内容相同。
 
 ## REST 接口对照 {#rest-mapping}
 

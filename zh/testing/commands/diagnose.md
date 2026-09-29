@@ -1,10 +1,10 @@
 ---
-title: sp diagnose：打包好的排查工作流
+title: sp diagnose：一键排查
 ---
 
-# sp diagnose：打包好的排查工作流
+# sp diagnose：一键排查
 
-**AI 代理何时使用：** 一次性完成「进度 + 报告 + 存储 + trace」组合查询的工作流 —— 比手工串接底层命令步骤更少。
+**AI 代理何时使用：** 一条命令完成进度、报告、存储和 trace 的组合查询，比手工串接底层命令省步骤。
 
 ## 概要 {#synopsis}
 
@@ -15,23 +15,24 @@ title: sp diagnose：打包好的排查工作流
 
 ## `diagnose replay`
 
-替代 [诊断回放失败](/zh/testing/examples/agent-diagnose-replay) 中的手工步骤序列：
+收集排查一个失败回放计划所需的信息：
 
 ```bash
-sp diagnose replay plan-abc123 --failed-only --out-dir .sp-work --json
+sp diagnose replay plan-abc123 --out-dir .sp-work --json
 ```
 
 | 参数 | 默认值 | 说明 |
 |------|---------|-------------|
-| `--failed-only` | `true` | 只看对比失败的用例 |
-| `--out-dir` | `.sp-work` | 写入 `{planId}/{planItemId}-diff.json` 文件 |
-| `--page` / `--limit` | 全局 | 用例查询的分页 |
+| `--failed-only` | `true` | 只看没有通过的用例 |
+| `--out-dir` | `.sp-work` | 差异文件写到 `<out-dir>/<planId>/` 下 |
 
 执行步骤：
 
-1. `GET /api/progress?planId=…`
-2. 带 `--failed-only` 时，`POST /api/report/queryReplayCase` 会带上 `diffResultCode=1`
-3. 对每个带 `diffId` 的失败用例：`GET /api/report/queryDiffMsgById/{id}` → 产物文件
+1. `GET /api/progress?planId=…`，查回放计划的进度。
+2. `POST /api/report/queryPlanFailCase`，查这个计划里有差异或回放失败的用例（`diffResultCode` 为 1 和 2）；带 `--failed-only=false` 时查全部用例。
+3. 对每个有差异的用例，查出可读的差异（`GET /api/report/queryDiffMsgById/{id}`）并写成 JSON 文件。回放失败的用例没有差异，只计数。
+
+`data` 只是汇总，不列出用例。要拿用例编号（`replayId`、`traceId`），用 `sp replay case list --plan <planId> --failed --json`。
 
 JSON 输出示例（`diagnose replay`）：
 
@@ -53,9 +54,9 @@ JSON 输出示例（`diagnose replay`）：
 }
 ```
 
-`classification` 取值之一：`empty_window`、`invalid_target`、`assertion_failure`、`mixed`、`other`。`message` 来自后端的 `errorMessage` 或用例发送错误（如果有）—— 不是 CLI 自己编的文案。
+`classification` 取值之一：`empty_window`、`invalid_target`、`assertion_failure`、`mixed`、`other`。`message` 来自后端的 `errorMessage` 或用例发送错误（如有），不是 CLI 自己编的文案。
 
-**注意：** `nextActions` 已从 `diagnose replay --json` 的输出中移除（feature 007）。自动化请用 `classification` + `message`。
+`diagnose replay` 的输出没有 `nextActions` 字段（只有 `diagnose trace` 有）。自动化请用 `classification` 和 `message`。
 
 ## `diagnose trace`
 

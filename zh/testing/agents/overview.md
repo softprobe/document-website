@@ -38,7 +38,7 @@ title: 选择接入方式
 
 回放需要先有录制用例，而用例只能来自挂着 Agent 真实运行过的应用，所以新系统上第一步永远不是回放。
 
-Agent 通过 JVM 参数挂载。请显式固定应用 ID：SoftProbe 靠它区分录制数据、拉取配置、匹配回放数据（它和 `OTEL_SERVICE_NAME` 无关）。可以用 `sp app create` 返回的 ID，也可以用 `order-service` 这类固定、非空的名字；后端没见过的 ID 会在 Agent 第一次拉取配置时自动注册：
+Agent 通过 JVM 参数挂载。请显式固定应用 ID：SoftProbe 靠它区分录制数据、拉取配置、匹配回放数据（它和 `OTEL_SERVICE_NAME` 无关）。可以用 `sp app create` 返回的 ID，也可以用 `order-service` 这类固定、非空的名字；后端没见过的 ID 通常会在 Agent 第一次拉取配置时自动注册（例外见 [概念与编号](/zh/testing/agents/concepts#application-appid)）：
 
 ```bash
 java \
@@ -67,7 +67,7 @@ sp --json --profile "${SP_PROFILE:-default}" <子命令> ...
 | 变量 | 用途 |
 |----------|---------|
 | `SP_API_URL` | 后端地址（如 `http://127.0.0.1:8090`） |
-| `SP_TOKEN` | `sp auth login` 得到的令牌，或 CI 中的密钥 |
+| `SP_TOKEN` | `sp auth login` 得到的 token，或 CI 中的密钥 |
 | `SP_PROFILE` | `${XDG_CONFIG_HOME}/softprobe/config.jsonc` 或 `sp.jsonc` 中的配置档案名 |
 | `SP_CONFIG` | 额外的配置文件，在 `sp.jsonc` 之后、`--config` 之前加载 |
 

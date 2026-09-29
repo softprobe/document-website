@@ -137,7 +137,7 @@ Diff local policy file against current server state:
     "added": ["includeOperations[1]"],
     "changed": ["samplingRate"],
     "removed": [],
-    "unchanged": ["excludeOperations"]
+    "unchanged": false
   }
 }
 ```
@@ -187,8 +187,8 @@ Same path pattern under `/api/mock-policies`.
 | `list` | GET | `/policies` |
 | `get` | GET | `/policies/{id}` |
 | `apply` | POST | `/policies` |
-| `validate` | POST | `/policies/validate` |
-| `export` | GET | `/policies/{id}/yaml` |
+| `validate` | POST | `/validate` |
+| `export` | GET | `/policies/{id}/export` (JSON with a `yaml` field; the CLI writes out the YAML) |
 | templates | GET | `/templates`, `/functions` (v2 helpers) |
 
 ## Schema

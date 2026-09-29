@@ -4,7 +4,7 @@ title: Output contract
 
 # Output contract
 
-What `sp` prints and how it exits, for scripts, CI jobs and AI agents that call it with `--json`. This page covers the envelope, exit codes, large output, pagination, common `data` shapes and what may change between versions.
+What `sp` prints and how it exits, for scripts, CI jobs and AI agents that call it with `--json`. This page covers the envelope, exit codes, large output, pagination and common `data` shapes.
 
 ## Success: envelope on stdout {#cli-envelope-stdout-on-success}
 
@@ -18,13 +18,15 @@ What `sp` prints and how it exits, for scripts, CI jobs and AI agents that call 
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `ok` | boolean | Always `true` on exit 0 |
+| `ok` | boolean | `true`: the command ran and produced a result |
 | `command` | string | Normalized command name for logging |
 | `data` | object | Command-specific payload (see [Common `data` shapes](#json-types)) |
 
+`ok: true` means the command ran — not that everything it checked passed. Three commands write their result with `ok: true` **and** exit `1` when that result is a failure: see [Results that are failures](#results-that-are-failures).
+
 ## Failure: envelope on stderr {#cli-envelope-stderr-on-failure-exit-1}
 
-On exit `1`, `2` or `3`, stderr carries a JSON error object:
+When a command can't do its job — bad arguments, missing config, an unreachable backend, a backend error — it writes an error object to **stderr** and exits non-zero:
 
 ```json
 {
@@ -39,34 +41,37 @@ On exit `1`, `2` or `3`, stderr carries a JSON error object:
 }
 ```
 
-`backend` optionally contains the raw backend response body for debugging.
+`httpStatus` and `backend` (the raw backend response) are present only when the backend answered. Without `--json`, the same failure is printed as `error: <message>` (suppressed by `--quiet`).
 
-If `--json` is set and authentication is missing, the CLI does **not** prompt. It exits `3`:
+If the backend requires a login and no token is available, the CLI does **not** prompt in `--json` mode; it exits `3` with `"code": "AUTH_REQUIRED"`.
 
-```json
-{
-  "ok": false,
-  "error": { "code": "AUTH_REQUIRED", "message": "Set SP_TOKEN or run sp auth login" }
-}
-```
+Flags or arguments the command parser itself rejects (an unknown flag, a missing positional argument) exit `1` **without** a JSON envelope and may print nothing. Check the exit code, not only stderr.
+
+### Results that are failures {#results-that-are-failures}
+
+| Command | When | Output |
+|---------|------|--------|
+| `sp policy gate` | At least one policy file is invalid | Result on stdout (`ok: true`, `data.valid: false`), exit `1` |
+| `sp doctor` | At least one check failed | Result on stdout (`ok: true`, `data.status: "failed"`), exit `1` |
+| `sp upgrade` | The installer failed | Result on stdout (`ok: true`, `data.status: "failed"`), exit `1`. The installer's own output is streamed to stdout/stderr as well, so stdout is not a single JSON document |
+
+`sp policy <type> validate` is different again: an invalid policy exits `0` with `data.valid: false`. Always read `data.valid`.
 
 ## Exit codes {#exit-codes}
 
-| Code | Name | Meaning | Retry? |
-|------|------|---------|--------|
-| `0` | Success | Parsed JSON on stdout when `--json` | No |
-| `1` | API_ERROR | Backend returned an error or a non-success HTTP status (includes `NO_RECORDED_CASES` on `replay run`) | Sometimes — after fixing data, or for a transient 5xx |
-| `2` | USAGE / PROFILE_NOT_FOUND / CONFIG_* | Invalid flags, missing config, parse errors, unknown profile | No — fix the invocation |
-| `3` | AUTH_REQUIRED | No token available in non-interactive mode | After refresh or login |
+| Code | Error codes | Meaning | Retry? |
+|------|-------------|---------|--------|
+| `0` | — | Success | No |
+| `1` | `API_ERROR`, `NO_RECORDED_CASES`, `NO_PINNED_CASES`, `CONFIG_MISSING`, `CONFIG_PARSE_ERROR`, `CONFIG_WRITE_ERROR`; parser errors; the [result failures](#results-that-are-failures) above | The backend returned an error or couldn't be reached, there was nothing to replay, the config couldn't be read or written, or a check failed | Sometimes — after fixing data or config, or for a transient backend error |
+| `2` | `USAGE`, `PROFILE_NOT_FOUND` | Invalid input the command validated itself, or an unknown profile | No — fix the invocation |
+| `3` | `AUTH_REQUIRED` | No token available in non-interactive mode | After `sp auth login` or setting `SP_TOKEN` |
 
-Config error codes (exit `2`):
-
-| Code | Cause |
-|------|-------|
-| `CONFIG_MISSING` | No `config.jsonc` / `sp.jsonc`; run `sp config init` |
-| `CONFIG_PARSE_ERROR` | Invalid JSONC or schema validation failure |
-| `CONFIG_WRITE_ERROR` | Could not write config file |
-| `PROFILE_NOT_FOUND` | Selected profile missing from merged config |
+| Error code | Cause |
+|------------|-------|
+| `CONFIG_PARSE_ERROR` | A config file exists but isn't valid JSONC or fails validation |
+| `CONFIG_WRITE_ERROR` | A config file couldn't be written |
+| `CONFIG_MISSING` | A command that needs a config file found none. Most commands don't: with no file they fall back to defaults and environment variables such as `SP_API_URL` |
+| `PROFILE_NOT_FOUND` | The selected profile doesn't exist in the merged config |
 
 These are the exit codes of `sp` itself. The script in [Replay after deployment](/en/testing/webhook-and-ci#script) defines its own exit codes on top.
 
@@ -81,7 +86,7 @@ Most console APIs return:
 }
 ```
 
-The CLI maps `responseCode !== 0` to exit `1`.
+The CLI maps `responseCode !== 0` to exit `1`, and unwraps `body` into `data` (an array body becomes `data.items`).
 
 Replay control (`createPlan`, `progress`, …) returns:
 
@@ -93,17 +98,18 @@ Replay control (`createPlan`, `progress`, …) returns:
 }
 ```
 
-The CLI maps `result !== 1` to exit `1`.
+The CLI maps `result !== 1` to exit `1`. A non-2xx HTTP status is always exit `1`.
 
 ## Large output: artifacts {#artifacts-large-output}
 
-When a response is large, or the command always produces files (diff detail, log download), stdout carries a pointer instead of the full payload:
+Some commands write their payload to a file and put only a pointer on stdout:
 
 ```json
 {
   "ok": true,
   "command": "replay diff get",
   "data": {
+    "diffId": "abc123",
     "artifact": ".sp-work/diff-abc123.json",
     "summary": {
       "diffId": "abc123",
@@ -114,19 +120,20 @@ When a response is large, or the command always produces files (diff detail, log
 }
 ```
 
-Read the artifact file instead of expecting the full payload on stdout. The default `--out-dir` is `.sp-work/` in the current working directory; override it per invocation.
+`replay diff get` and `replay mock-tree` always do this; `record query` does it when the payload is larger than 4 KiB; `diagnose replay` writes one file per failed case and lists them in `data.artifacts`. Check for `data.artifact` before reading the payload from stdout. The default `--out-dir` is `.sp-work/` in the current working directory.
 
 ## Pagination {#pagination}
 
-List commands accept:
+List commands that page accept:
 
 | Flag | Default | Description |
 |------|---------|-------------|
 | `--page` | `1` | 1-based page index |
-| `--limit` | `20` | Page size (max 100 unless documented) |
-| `--fields` | all | Comma-separated field filter |
+| `--limit` | `20` | Page size, at most `100` |
 
-Paginated JSON:
+Not every list endpoint pages: for example `sp replay case list --plan <id>` (without `--plan-item`) returns the plan's cases in one response. Some commands take their own `--limit` with a different meaning; see the command's page.
+
+A paged result looks like:
 
 ```json
 {
@@ -136,39 +143,59 @@ Paginated JSON:
     "items": [],
     "page": 1,
     "pageSize": 20,
-    "total": 142,
-    "hasMore": true
+    "total": 142
   }
 }
 ```
 
+`total` is present only when the backend reports a count. There is no field filter; select fields with `jq`, for example `jq '[.data.items[] | {replayId, traceId}]'`.
+
 ## Without `--json` {#human-readable-mode-no-json}
 
-Tables go to stdout and errors to stderr as plain text.
+Results go to stdout as readable text or indented JSON (no envelope), and errors to stderr as `error: <message>`.
 
 ## Common `data` shapes {#json-types}
 
+These pass through what the backend returns, so extra fields may appear; ignore fields you don't know.
+
 ### ApplicationListItem
 
-Used in `sp app list` → `data.items[]`.
+`sp app list` → `data.items[]`.
 
 ```json
 {
+  "id": "string",
   "appId": "string",
   "appName": "string",
   "name": "string",
-  "agentStatus": "online | offline | never",
-  "lastSeenAt": 0,
-  "agentVersion": "string",
   "env": "string",
+  "agentVersion": "string",
+  "agentStatus": "online | degraded | offline | never",
+  "lastSeenAt": 0,
   "tags": ["string"],
   "worktreeDirectory": "string"
 }
 ```
 
+### AgentStatus
+
+`sp app status <appId>` → `data`.
+
+```json
+{
+  "appId": "string",
+  "status": "online | degraded | offline | never",
+  "agentVersion": "string",
+  "lastSeenAt": 0,
+  "instanceCount": 0
+}
+```
+
+`instanceCount` counts instances whose last heartbeat is within the online threshold, not every instance ever registered. What each status means: [Concepts and IDs — Application](/en/testing/agents/concepts#application-appid).
+
 ### ApplicationCreateResult
 
-Used in `sp app create` → `data`.
+`sp app create` → `data`.
 
 ```json
 {
@@ -178,31 +205,24 @@ Used in `sp app create` → `data`.
 }
 ```
 
-### AgentStatus
-
-Used in `sp app status` → `data`.
-
-```json
-{
-  "appId": "string",
-  "status": "online | offline | never",
-  "instanceCount": 0,
-  "lastSeenAt": 0,
-  "agentVersion": "string"
-}
-```
-
 ### PolicyValidateResult
 
+`sp policy <type> validate` → `data`. `details` is the backend's validation result as is.
+
 ```json
 {
-  "valid": true,
-  "errors": [{ "path": "spec.sampling.rate", "message": "..." }],
-  "warnings": []
+  "valid": false,
+  "details": {
+    "valid": false,
+    "errors": ["..."],
+    "warnings": []
+  }
 }
 ```
 
 ### ReplayPlanCreated
+
+`sp replay run` → `data`.
 
 ```json
 {
@@ -214,27 +234,16 @@ Used in `sp app status` → `data`.
 
 ### ReplayProgress
 
+`sp replay status <planId>` → `data`.
+
 ```json
 {
-  "planId": "string",
-  "status": "RUNNING | FINISHED | FAILED | CANCELLED",
   "percent": 0,
-  "finished": false
+  "lastUpdateTime": "2026-06-27 10:00:05"
 }
 ```
 
-### TraceSummary
-
-```json
-{
-  "traceId": "string",
-  "endpoint": "string",
-  "status": "string",
-  "durationMs": 0,
-  "startedAt": "ISO-8601",
-  "attrs": { "orderId": "ORD-123" }
-}
-```
+With `--watch` (on `status` or `run`), the command prints one envelope per poll until the plan finishes; the last one adds `"finished": true`. If the plan hasn't finished after 10 minutes, it stops with `API_ERROR` (exit `1`).
 
 ### ArtifactResult
 
@@ -245,30 +254,8 @@ Used in `sp app status` → `data`.
 }
 ```
 
-### PaginatedList
+## Versions {#versioning}
 
-```json
-{
-  "items": [],
-  "page": 1,
-  "pageSize": 20,
-  "total": 0,
-  "hasMore": false
-}
-```
-
-## Versions and stability {#versioning}
-
-`sp version` prints the CLI build version (semver). Log it with each session so support can match behavior to a release.
-
-| Change | Policy |
-|--------|--------|
-| New subcommand or optional flag | Allowed anytime |
-| Renaming a subcommand or flag | Deprecated for one minor release first, with a warning on stderr |
-| Removing a subcommand or flag | Major version only |
-| New fields in `data` | Allowed anytime; ignore fields you don't know |
-| Renaming or removing fields, changing field types | Major version only |
-
-Deprecations are listed in the release notes and in the command's `--help`.
+`sp version` (or `sp -v`, `sp --version`) prints the CLI version; `sp version --json` wraps it in the envelope. Log it with each session so behavior can be matched to a release, and pin the CLI version in CI.
 
 The CLI talks to one **sp-backend** URL; the storage and scheduling services behind it are internal and not addressed separately.

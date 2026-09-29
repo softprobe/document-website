@@ -93,7 +93,7 @@ sp record query --trace-id 4bf92f3577b34da6a3ce929d0e0e4736 --json
 }
 ```
 
-When payload size exceeds the threshold (64 KiB), an artifact file is written under `--out-dir`:
+When the payload is larger than 4 KiB (4096 bytes of compact JSON), it is written to a file under `--out-dir` and `data` carries only a summary and `artifact`; check for `data.artifact` first:
 
 ```json
 {

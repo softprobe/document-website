@@ -4,7 +4,7 @@ title: 输出契约
 
 # 输出契约
 
-`sp eval` 命令遵循与 Testing 相同的 **`--json` 信封**。Agent 解析 stdout；面向人时可不加 `--json`。
+`sp eval` 命令遵循与 Testing 相同的 **`--json` 信封**。Agent 解析 stdout；给人看时可以不加 `--json`。
 
 ## 成功信封
 
@@ -90,4 +90,4 @@ title: 输出契约
 3. 不要从 measurement 数量推断通过/失败——读取 `gate` 或运行 `sp eval compare`。
 4. Attempt 的 **result status** 不是 CLI 退出码——见 [Result status](/zh/evaluation/reference/result-status)。
 
-Testing 信封细节：[Testing 输出契约](/zh/testing/agents/output-contract)。
+Testing 信封细节：[Testing 输出约定](/zh/testing/agents/output-contract)。

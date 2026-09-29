@@ -15,7 +15,7 @@ title: 概念与编号
 | `appName` | 用 `sp app create <appName>` 注册时起的名字 |
 | `appId` | 应用 ID。Java Agent 和命令行都用它 |
 
-`sp app create` 会生成一个 16 位十六进制的 `appId`，但并不要求一定是这种格式：Agent 也可以用任何固定、非空的名字，比如 `order-service`。后端没见过的 `appId`，会在 Agent 第一次拉取配置时自动注册，应用名与 ID 相同。同一个服务的所有实例必须用同一个 `appId`；录制和回放时 `appId` 不一致，就找不到原来的用例。
+`sp app create` 会生成一个 16 位十六进制的 `appId`，但并不要求一定是这种格式：Agent 也可以用任何固定、非空的名字，比如 `order-service`。后端没见过的 `appId`，通常会在 Agent 第一次拉取配置时自动注册，应用名与 ID 相同；例外是这个 ID 已经被某个定时回放任务占用。同一个服务的所有实例必须用同一个 `appId`；录制和回放时 `appId` 不一致，就找不到原来的用例。
 
 **Agent 状态** 根据 Agent 的心跳得出：
 
@@ -24,7 +24,7 @@ title: 概念与编号
 | `online` | 至少有一个实例在阈值内（默认 60 秒）发过心跳 |
 | `degraded` | 在线，但至少有一个心跳正常的实例处于限流或降级状态 |
 | `offline` | 以前有过心跳，但阈值内没有 |
-| `never` | 从来没有实例上报过 |
+| `never` | 当前没有实例记录。实例记录在最后一次心跳约 3 分钟后过期，所以 Agent 停掉很久的应用也会显示 `never` |
 
 用 `sp app status <appId>` 或 `sp app list --json` 查看。命令说明见 [sp app](/zh/testing/commands/app)。
 
@@ -71,27 +71,27 @@ title: 概念与编号
 | 编号 | 标识什么 | 用在哪里 |
 |------|---------|---------|
 | `traceId` | 一次请求的调用链（W3C trace ID）。回放时沿用录制时的 `traceId` | **查日志**（[sp logs](/zh/testing/commands/logs)），查链路和录制数据 |
-| `replayId` | 某个用例的一次回放 | 看差异、诊断；查日志时可用来只看这一次回放 |
+| `replayId` | 某个用例的一次回放 | 看差异、诊断；查日志时可用它只看这一次回放 |
 | `planId` | 一个回放计划 | 用例列表、报告、诊断 |
 | `planItemId` | 回放计划中的一个接口 | 用例列表 |
-| `diffId` | 一条对比结果 | `sp replay diff get` |
+| `diffId` | 一条对比结果 | `sp replay diff get`；`sp diagnose replay` 会自动找到并下载差异 |
 
 ### 编号出现在哪里 {#where-ids-appear}
 
 | 命令 | 字段 |
 |------|------|
 | `sp replay run --json` | `planId` |
-| `sp replay case list --plan <planId> --failed --json` | 每个用例的 `replayId`、`traceId`、`diffId` 和计划中的接口 ID |
+| `sp replay case list --plan <planId> --failed --json` | 每个用例的 `caseId`、`replayId`、`traceId`、`operationId` |
 | `sp replay metadata <replayId> --json` | `traceId` 和对应的录制 |
 | `sp record case list --app <appId> --since -24h --json` | 每个录制入口请求的 `traceId` |
 | `sp trace find --app <appId> --attr-name <规则名> --attr-value <值> --json` | 按订单号等业务编号查到的 `traceId` |
-| `sp diagnose replay <planId> --json` | 失败用例及其编号 |
+| `sp diagnose replay <planId> --json` | 汇总和差异文件，不含用例编号（用 `case list` 查） |
 
 ### 查日志用哪个 `traceId` {#which-traceid}
 
-回放失败时，用**失败回放用例**上的 `traceId`。这个用例的录制和回放共用它，一次就能查到两边的日志。不要从最新的录制记录或健康检查请求（`/`、`/index.html`）里随便拿一个 trace，那些是不相干的请求。
+回放失败时，用**失败回放用例**上的 `traceId`。这个用例的录制和回放共用它，一次就能查到两边的日志。不要从最新的录制记录或健康检查请求（`/`、`/index.html`）里随便拿一个 trace ID，那些是不相干的请求。
 
-用户只给了订单号、保单号这类业务编号、没有 trace ID 时，先用业务编号查出 trace，见 [从业务编号开始排查](/zh/testing/examples/agent-diagnose-replay#business-id)。
+用户只给了订单号、保单号这类业务编号、没有 trace ID 时，先用业务编号查出 trace ID，见 [从业务编号开始排查](/zh/testing/examples/agent-diagnose-replay#business-id)。
 
 `replayId`、`planId`、`planItemId` 不能单独用来查日志；在 HTTP 接口里，它们是在 `trace_id` 之外追加的过滤条件（见 [sp logs — HTTP 接口](/zh/testing/commands/logs#http-api)）。
 

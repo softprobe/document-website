@@ -18,7 +18,7 @@ title: 日志查询字段
 
 ## 字段说明 {#field-reference}
 
-下面的基础字段每行都有。关联字段只在打日志的那一刻程序知道对应上下文时才有，否则会缺（见 [关联字段为什么会缺](#absent-correlation-fields)）。
+下面的基础字段每行都有。关联字段只在打日志的那一刻程序知道对应上下文才有，否则会缺（见 [关联字段为什么会缺](#absent-correlation-fields)）。
 
 | 字段 | 是否一定有 | 说明 |
 |------|-----------|------|
@@ -67,7 +67,7 @@ jq -r '.rows[] | select(.source=="backend") | .body' /tmp/sp-logs.json | head -2
 
 排查回放失败时，用失败回放用例的 `trace_id` 查询。只想看某一次回放的日志，在接口查询中加上 `&replay_id=`（再加 `&mode=replay`）。
 
-同一个用例的录制和回放往往相隔很久。通过 HTTP 接口查询时不传 `since`/`until`，后端会分别扫描录制前后和每次回放前后的时间；不要传一个从录制时间一直跨到回放时间的时间窗。见 [sp logs — HTTP 接口](./logs#http-api)。
+同一个用例的录制和回放往往相隔很久。通过 HTTP 接口查询时不传 `since`/`until`，后端会分别扫描录制前后和回放前后的时间（见 [sp logs — HTTP 接口](./logs#http-api)）；算不出时间窗时，按 [sp logs — 后端算不出时间窗时](./logs#explicit-windows) 分开查两个时间点。不要传一个从录制时间一直跨到回放时间的时间窗。
 
 ## 各组件的日志由谁控制 {#per-component-logging-ownership}
 

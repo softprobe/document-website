@@ -39,7 +39,7 @@ sp app list --json
 |-------|-------------|
 | `appId` | 稳定的 id，用于 Agent 配置和其他 `sp` 命令 |
 | `appName`、`name` | 显示名 |
-| `agentStatus` | `online`、`offline` 或 `never` |
+| `agentStatus` | `online`、`degraded`、`offline` 或 `never`，含义见 [status](#status) |
 | `lastSeenAt` | Unix 毫秒，最新一次实例心跳 |
 | `agentVersion` | Agent 构建版本字符串 |
 | `env` | 主环境标签，缺省为 `production` |
@@ -113,15 +113,16 @@ sp app status f3e2d1c0b9a87654 --json
 
 | 取值 | 含义 |
 |-------|---------|
-| `never` | 没有实例上报过 |
-| `online` | 最新心跳在阈值内 |
-| `offline` | 有实例，但心跳已过期 |
+| `never` | 当前没有实例记录（实例记录在最后一次心跳约 3 分钟后过期） |
+| `online` | 最新心跳在阈值内（默认 60 秒） |
+| `degraded` | 在线，但至少有一个心跳正常的实例处于限流或降级状态 |
+| `offline` | 有实例记录，但阈值内没有心跳 |
 
 | 字段 | 说明 |
 |-------|-------------|
-| `appId` | 应用 id |
-| `status` | `never`、`online` 或 `offline` |
-| `instanceCount` | 已注册实例数 |
+| `appId` | 应用 ID |
+| `status` | `never`、`online`、`degraded` 或 `offline` |
+| `instanceCount` | 阈值内有心跳的实例数 |
 | `lastSeenAt` | Unix 毫秒 |
 | `agentVersion` | 来自最新的实例 |
 

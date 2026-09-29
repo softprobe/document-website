@@ -38,7 +38,7 @@ Point your agent at `/llms.txt` first; it follows links into the full text or pe
 
 A replay needs recorded cases from an app that actually ran with the agent, so replay is never the first step on a fresh system.
 
-The agent is attached with a JVM flag. Pin the app ID explicitly; it is how SoftProbe isolates recordings, pulls config and matches replay data (it is separate from `OTEL_SERVICE_NAME`). Use the ID returned by `sp app create`, or any stable non-empty name such as `order-service` — an unknown ID is registered automatically the first time the agent loads its config:
+The agent is attached with a JVM flag. Pin the app ID explicitly; it is how SoftProbe isolates recordings, pulls config and matches replay data (it is separate from `OTEL_SERVICE_NAME`). Use the ID returned by `sp app create`, or any stable non-empty name such as `order-service` — an unknown ID is normally registered automatically the first time the agent loads its config (exceptions: [Concepts and IDs](/en/testing/agents/concepts#application-appid)):
 
 ```bash
 java \

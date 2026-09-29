@@ -8,7 +8,7 @@ title: sp record：录制数据查询
 
 ## 概要 {#synopsis}
 
-对已存储录制数据的只读访问（不是 Agent 的写入接口）。
+只读查询已存储的录制数据（不提供 Agent 的写入接口）。
 
 ## 子命令 {#subcommands}
 
@@ -16,10 +16,10 @@ title: sp record：录制数据查询
 |------------|-------------|
 | `case list` | 按应用和时间窗列出已录制的入口用例 |
 | `operation list` | 按类别列出已录制的操作（依赖地图） |
-| `query` | 按 trace id 或 replay id 查询 mocker/record 负载 |
+| `query` | 按 trace ID 或 replay ID 查询 mocker/record 负载 |
 | `trace <traceId>` | trace 树和子节点 |
 | `completeness <traceId>` | 全链路录制完整性 |
-| `view` | 可视化查询/查看 |
+| `view` | 可视化查询 |
 
 > **日志查询（v1）：** 用顶层的 [`sp logs`](./logs) 加 `--trace-id` —— 不要用 `sp record logs *`（已在统一日志管道中移除）。
 
@@ -41,10 +41,10 @@ sp logs --trace-id abc --since 2026-06-27T10:00:00Z --until 2026-06-27T10:05:00Z
 sp record case list --app a1b2c3d4e5f67890 --since -1h --limit 20 --json
 ```
 
-必守的行为约定：
+注意以下约定：
 
 - `--app` 必填，对应已注册的 `appId`。
-- `--since` / `--until` 选择录制时间窗。`-1h` 这样的时长按相对当前时间解析。
+- `--since` / `--until` 选择录制时间窗。`-1h` 这类时长表示相对当前时间。
 - `--page` / `--limit` 对用例分页。
 - 输出包含用例 id 或 trace id、操作名、录制时间，以及足够开始 trace 或回放流程的元数据。
 
@@ -97,7 +97,7 @@ sp record query --trace-id 4bf92f3577b34da6a3ce929d0e0e4736 --json
 }
 ```
 
-负载大小超过阈值（64 KiB）时，会在 `--out-dir` 下写产物文件：
+负载超过 4 KiB（紧凑 JSON 4096 字节）时，会写到 `--out-dir` 下的文件里，`data` 只保留摘要和 `artifact`；请先判断有没有 `data.artifact`：
 
 ```json
 {
@@ -199,7 +199,7 @@ sp record operation list --app a1b2c3d4e5f67890 --json
 | `record_log_overview` | `sp logs --trace-id …`（见 [logs](./logs)） |
 | `download_record_logs` | `sp logs --trace-id …` → 重定向或用 `jq` |
 
-## 非目标 {#non-goals}
+## 本命令不覆盖的接口 {#non-goals}
 
 - `POST /api/storage/record/save`、`batchSave*` —— 仅供 Agent 插桩使用
 

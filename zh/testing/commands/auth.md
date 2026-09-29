@@ -76,7 +76,7 @@ export SP_TOKEN="$(sp auth login ... --no-save --json | jq -r '.data.token')"
 | `login`（邮箱） | POST | `/api/login/verify` |
 | `login`（访客） | POST | `/api/login/loginAsGuest` |
 | `refresh` | GET | `/api/login/refresh/{userName}` |
-| `whoami` | — | 本地解码 JWT，或未来的 profile 接口 |
+| `whoami` | — | 本地解码 JWT；profile 接口实现后改为调用它 |
 
 verify 的请求体：`VerifyRequestType`（`userName`、`verifyCode` 等）。
 

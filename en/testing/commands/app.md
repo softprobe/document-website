@@ -35,7 +35,7 @@ Requires a token when `--json` is set (CLI exits with an auth error if `SP_TOKEN
 |-------|-------------|
 | `appId` | Stable id for agent config and other `sp` commands |
 | `appName`, `name` | Display name |
-| `agentStatus` | `online`, `offline`, or `never` |
+| `agentStatus` | `online`, `degraded`, `offline` or `never` — see [status](#status) |
 | `lastSeenAt` | Unix ms, freshest instance heartbeat |
 | `agentVersion` | Agent build string |
 | `env` | Primary env tag, or `production` |
@@ -109,15 +109,16 @@ Aggregates JVM instance heartbeats for the app. `status` reflects the **freshest
 
 | Value | Meaning |
 |-------|---------|
-| `never` | No instances reported |
-| `online` | Latest heartbeat within threshold |
-| `offline` | Instances exist but heartbeat is stale |
+| `never` | No instance record right now (records expire about 3 minutes after the last heartbeat) |
+| `online` | Latest heartbeat within the threshold (60 seconds by default) |
+| `degraded` | Online, but at least one instance with a fresh heartbeat is rate-limited or degraded |
+| `offline` | Instance records exist, but no heartbeat within the threshold |
 
 | Field | Description |
 |-------|-------------|
 | `appId` | Application id |
-| `status` | `never`, `online`, or `offline` |
-| `instanceCount` | Registered instances |
+| `status` | `never`, `online`, `degraded` or `offline` |
+| `instanceCount` | Instances with a heartbeat within the threshold |
 | `lastSeenAt` | Unix ms |
 | `agentVersion` | From freshest instance |
 

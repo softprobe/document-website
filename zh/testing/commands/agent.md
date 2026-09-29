@@ -4,13 +4,13 @@ title: sp agent：Java Agent 安装与启动命令
 
 # sp agent：Java Agent 安装与启动命令
 
-**AI 代理何时使用：** `sp app create` 之后，安装与后端版本配套的 `sp-agent.jar`，并拿到可直接粘贴的 JVM 参数。
+**AI 代理何时使用：** `sp app create` 之后，下载 `sp-agent.jar`，并拿到可直接粘贴的 JVM 参数。
 
 ## 概要 {#synopsis}
 
 | 子命令 | 说明 |
 |------------|-------------|
-| `download [version]` | 下载与当前后端版本配套的 `sp-agent.jar` |
+| `download [version]` | 下载 `sp-agent.jar`：指定的版本，或 `latest` |
 | `command` | 输出录制模式的 `-javaagent` 和 `sp.*` 系统属性 |
 
 ## `agent download`
@@ -25,7 +25,9 @@ sp agent download 2.0.0 --out-dir ./libs --json
 | 参数 | 说明 |
 |------|-------------|
 | `--out-dir` | 安装目录（默认：`${XDG_DATA_HOME}/softprobe/agent`） |
-| `--version` | 指定 Agent 版本（默认 latest）。也可以直接写在命令后面，如 `sp agent download 2.0.0` |
+| `--version` | 要下载的 Agent 版本，也可以直接写在命令后面，如 `sp agent download 2.0.0`。默认：设置了 `SOFTPROBE_AGENT_DOWNLOAD_VERSION` 时用它，否则用 `latest` |
+
+下载的版本不会自动和后端配套。后端要求特定版本的 Agent 时，请显式指定版本。
 
 ### JSON 输出（`download`） {#json-output-download}
 
@@ -44,7 +46,7 @@ sp agent download 2.0.0 --out-dir ./libs --json
 
 ## `agent command`
 
-在 **Softprobe Cloud** 上，先运行一次 `sp tenant key ensure`（或让本命令自动创建 key）。输出中会带上给 Java Agent 用的 `-Dsp.api.token=`。
+在 **SoftProbe Cloud** 上，先运行一次 `sp tenant key ensure`（或让本命令自动创建密钥）。输出会包含 Java Agent 使用的 `-Dsp.api.token=`。
 
 ```bash
 sp tenant key ensure --json   # SaaS：每个租户一次
@@ -60,7 +62,7 @@ sp agent command --app a1b2c3d4e5f67890 --agent-jar ./sp-agent.jar --app-jar tar
 | `--app-jar` | 可选。拼在 `startCommand` 末尾的 `-jar …` |
 | `--format` | `json`（默认）、`shell`、`docker`、`maven` |
 
-从 [接入 Java Agent — 下载](/zh/testing/java-agent#download) 下载 `sp-agent.jar`。可用的不可变版本发布在 `https://install.softprobe.ai/artifacts/agent/<version>/sp-agent.jar` 下。
+`sp-agent.jar` 的下载见 [接入 Java Agent — 下载](/zh/testing/java-agent#download)。各固定版本发布在 `https://install.softprobe.ai/artifacts/agent/<version>/sp-agent.jar` 下。
 
 JSON 输出中的 `apiUrl` 来自解析后的 CLI 配置档案（`api_url` / `SP_API_URL`）。可在 `agent command` 之前用 `sp config set-url`、`SP_API_URL` 或全局参数 `--api-url` 覆盖。
 
@@ -114,7 +116,7 @@ Agent 运行时的优先级（不是 CLI 的）：JVM `-Dsp.api.url` → 环境�
 
 | `--format` | stdout |
 |------------|--------|
-| `json` | 完整封装输出到 stdout |
+| `json` | 完整信封输出到 stdout |
 | `shell` | 只有 `startCommandMultiline` |
 | `docker` | `ENV JAVA_TOOL_OPTIONS='…'` |
 | `maven` | `<argLine>…</argLine>` |

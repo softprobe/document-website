@@ -1,12 +1,12 @@
 # sp agent
 
-**When agents use this:** Install a backend-compatible `sp-agent.jar` and get copy-paste JVM flags after `sp app create`.
+**When agents use this:** Download `sp-agent.jar` and get copy-paste JVM flags after `sp app create`.
 
 ## Synopsis
 
 | Subcommand | Description |
 |------------|-------------|
-| `download [version]` | Download `sp-agent.jar` matching this backend release |
+| `download [version]` | Download `sp-agent.jar`: the given version, or `latest` |
 | `command` | Emit `-javaagent` and `sp.*` system properties for record mode |
 
 ## `agent download`
@@ -21,7 +21,9 @@ sp agent download 2.0.0 --out-dir ./libs --json
 | Flag | Description |
 |------|-------------|
 | `--out-dir` | Install directory (default: `${XDG_DATA_HOME}/softprobe/agent`) |
-| `--version` | Specific agent version tag (default: latest). Same as passing the version as the argument, e.g. `sp agent download 2.0.0` |
+| `--version` | Agent version to download. Same as passing it as the argument, e.g. `sp agent download 2.0.0`. Default: `SOFTPROBE_AGENT_DOWNLOAD_VERSION` if set, otherwise `latest` |
+
+The version is not matched to your backend automatically. If your backend needs a specific agent version, pass it explicitly.
 
 ### JSON output (`download`)
 

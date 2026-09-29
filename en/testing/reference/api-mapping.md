@@ -88,10 +88,13 @@ The old `/api/record-logs/*` and `/api/replay-logs/*` endpoints and the `sp reco
 
 | Method | Path | CLI | Category |
 |--------|------|-----|-------|
-| GET | `/api/report/queryDiffMsgById/{id}` | `sp replay diff get` | investigation |
-| POST | `/api/report/queryReplayCase` | `sp replay case list` | investigation |
-| POST | `/api/report/init` | `sp replay report init` | investigation |
-| * | `/api/report/*` (others) | partial / future | investigation |
+| GET | `/api/report/queryDiffMsgById/{id}` | `sp replay diff get`, `sp diagnose replay` | investigation |
+| POST | `/api/report/queryPlanFailCase` | `sp replay case list --plan` (without `--plan-item`), `sp diagnose replay` | investigation |
+| POST | `/api/report/queryReplayCase` | `sp replay case list --plan-item`, `sp replay case get` | investigation |
+| POST | `/api/report/queryPlanStatistics` | `sp replay statistics` | investigation |
+| POST | `/api/report/queryPlanStatistic` | `sp replay report` | investigation |
+| POST | `/api/report/init` | — (not exposed) | investigation |
+| * | `/api/report/*` (others) | — (not exposed) | investigation |
 
 ## Agent config
 
@@ -104,7 +107,7 @@ The old `/api/record-logs/*` and `/api/replay-logs/*` endpoints and the `sp reco
 
 | Method | Path | CLI | Category |
 |--------|------|-----|-------|
-| GET/POST | `/api/config/{resource}/*` | `sp config legacy …` | investigation |
+| GET/POST | `/api/config/{resource}/*` | — (not exposed; `sp config legacy` was removed) | investigation |
 
 ## User groups
 

@@ -109,13 +109,13 @@ With `--json`, stdout is newline-delimited envelopes:
   "ok": true,
   "command": "replay status",
   "data": {
-    "planId": "plan-xyz",
-    "status": "RUNNING",
     "percent": 42,
-    "finished": false
+    "lastUpdateTime": "2026-06-27 10:00:05"
   }
 }
 ```
+
+`status` returns the scheduler's progress as is: `percent` and `lastUpdateTime`, no plan status. With `--watch`, it prints one such envelope per poll and adds `"finished": true` to the last one; `run --watch` may end with the plan's statistics row (with `"finished": true`) instead. A plan that hasn't finished after 10 minutes ends the watch with `API_ERROR` (exit `1`).
 
 ### JSON output (`stop`)
 
@@ -139,7 +139,7 @@ sp replay statistics <planId> --app <appId> --json
 sp replay report <planId> --app <appId> --json
 ```
 
-`statistics` returns the plan's row from the app's plan list. It only looks at the first page (20 plans); for an older plan it fails with `no statistics for plan <planId>`. `report` returns the backend's statistic report for the plan unchanged.
+`statistics` looks up the plan's statistics row by app and plan ID; if there is none, it fails with `no statistics for plan <planId>`. `report` returns the backend's statistic report for the plan unchanged.
 
 The verdict used to gate a pipeline — `findings.state` — comes from the [Open API](/en/testing/reference/replay-openapi), not from these commands.
 

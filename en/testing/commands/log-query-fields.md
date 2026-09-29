@@ -73,7 +73,7 @@ Common cases:
 
 When diagnosing a failed replay, query by the `trace_id` of the failed replay case. To get only one replay run's lines, add `&replay_id=` (and `&mode=replay`) to the API query.
 
-Recording and replay of the same case usually happen at very different times. On the HTTP API, leave out `since`/`until` and the backend scans a window around the recording and one around each replay run; don't pass one window that stretches from the recording time to the replay time. See [sp logs — HTTP API](./logs#http-api).
+Recording and replay of the same case usually happen at very different times. On the HTTP API, leave out `since`/`until` and the backend scans a window around the recording and around the replay runs (see [sp logs — HTTP API](./logs#http-api)); when it can't, query the two times separately as in [sp logs — explicit windows](./logs#explicit-windows). Don't pass one window that stretches from the recording time to the replay time.
 
 ---
 

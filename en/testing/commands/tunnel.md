@@ -10,7 +10,7 @@ Opens a reverse tunnel from the backend to a service on your own machine, so a r
 sp tunnel --port 8080 --app <appId>
 ```
 
-Keep it running in its own terminal while the replay runs; stop it with `Ctrl+C`. If the connection drops, it reconnects every 5 seconds.
+Keep it running in its own terminal while the replay runs; stop it with `Ctrl+C`. It reconnects on its own: 2 seconds after a connection drops, and every 5 seconds while it can't connect.
 
 ## Flags
 
@@ -20,7 +20,7 @@ Keep it running in its own terminal while the replay runs; stop it with `Ctrl+C`
 | `--app` | App from `sp demo start` | `appId` whose replay traffic goes through the tunnel |
 | `--url` | Derived from the backend URL | Override the WebSocket tunnel URL, e.g. `ws://localhost:8090/api/ws/tunnel` |
 
-The tunnel connects to `<backend URL>/api/ws/tunnel` (`wss://` for an `https://` backend) with your login token.
+The tunnel connects to `<backend URL>/api/ws/tunnel` with your login token: `ws://` for an `http://` backend, `wss://` for an `https://` one. For a local development console on port 3000 it uses `ws://localhost:8092/api/ws/tunnel`; pass `--url` to override.
 
 ## With the demo
 

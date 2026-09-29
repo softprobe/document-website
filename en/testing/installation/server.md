@@ -402,7 +402,7 @@ logPipeline:
     ttlDays: 4               # set "" to disable retention CronJob
     cleanupSchedule: "0 3 * * *"
   compaction:
-    enabled: true            # local storage only
+    enabled: true            # works with local, S3 and Azure Blob storage
     schedule: "15 * * * *"   # previous closed UTC hour
   # Pin Vector + maintenance jobs to the same node pool as sp-backend when using taints:
   placement:

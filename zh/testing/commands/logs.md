@@ -50,8 +50,10 @@ GET /api/recorder/logs?trace_id=<id>[&since=<ts>&until=<ts>][&replay_id=…][&pl
 
 接口比命令多几项能力：
 
-- **`since`、`until` 可以不传，但要么都传，要么都不传。** 都不传时，后端根据这条 trace 自己算时间窗：录制前后一段，这条 trace 的每次回放前后各一段（各留 2 分钟余量）。同一条 trace 回放超过 8 次时，需要用 `replay_id` 指明要哪一次。只传其中一个会被拒绝。
-- **时间窗太宽会被收窄。** 超过 3 小时的时间窗会收窄到这条 trace 自己的时间窗，实际扫描的范围写在 `lookup.windows` 里。任何情况下扫描范围都不超过 7 天。
+- **`since`、`until` 可以不传，但要么都传，要么都不传。** 都不传时，后端根据这条 trace 自己算时间窗，每段前后各留 2 分钟：录制前后一段；带了 `replay_id` 时加上这次回放前后一段，不带时加上这条 trace **最近 8 次**回放前后各一段（更早的回放会跳过，并给出提示）。只传其中一个会被拒绝。
+- **时间窗太宽时会换掉。** 传入的时间窗超过 3 小时时，如果能根据 trace 算出时间窗，就改扫算出来的时间窗；算不出来时按传入的范围扫描（并给出提示），超过 7 天则直接拒绝。
+- **耗时很长的请求只扫两头。** 根据 trace 算出的时间窗本身超过 3 小时时，只扫描两头各 90 分钟（并给出提示）。
+- 实际扫描的时间窗都列在 `lookup.windows` 里。
 - **可选过滤条件：**
 
 | 参数 | 作用 |
@@ -78,13 +80,34 @@ curl -s "${SP_API_URL}/api/recorder/logs?trace_id=${TRACE_ID}&replay_id=<replayI
 
 接口返回的内容在顶层（`.rows`）；`sp logs --json` 把同样的内容放在 `.data` 下（`.data.rows`）。
 
+### 后端算不出时间窗时 {#explicit-windows}
+
+<a id="case-scoped-lookup-dual-windows"></a>
+
+回放在第一次调用依赖之前就失败时，没有可以定位回放时间窗的依据；应用和后端的时钟相差较大时，算出来的时间窗也可能落错位置。这两种情况响应里都会有提示，这时把录制和回放**分开**查，各自指定时间窗：
+
+1. 从 `sp replay case list --plan <planId> --failed --json` 取这个用例的 `recordTime` 和 `replayTime`（毫秒时间戳）。
+2. 在两个时间点前后各查约 2 分钟，再把结果合并。
+
+```bash
+TRACE_ID=<traceId>
+RECORD_MS=<recordTime>; REPLAY_MS=<replayTime>
+win() { s=$(( ($1 + $2) / 1000 )); date -u -d "@$s" +%FT%TZ 2>/dev/null || date -u -r "$s" +%FT%TZ; }
+for T in $RECORD_MS $REPLAY_MS; do
+  curl -s "${SP_API_URL}/api/recorder/logs?trace_id=${TRACE_ID}&since=$(win $T -120000)&until=$(win $T 120000)" \
+    -H "Accept: application/json"
+done | jq -s '[.[].rows[]] | sort_by(.timestamp)'
+```
+
+不要传一个从录制时间一直跨到回放时间的时间窗：中间每一分钟都要扫，查询很慢，甚至会被拒绝。
+
 ## 输出 {#output}
 
 | 字段 | 含义 |
 |------|------|
 | `lookup` | `type`（`trace`）、`value`（trace ID）和 `windows`（实际扫描的时间窗） |
 | `rows` | 按时间排序的日志行，字段见 [日志查询字段](./log-query-fields) |
-| `warnings` | 不影响结果的提示，比如时间窗没能算出来、时间窗被收窄。可能为空 |
+| `warnings` | 没有让查询失败、但可能意味着结果**不完整**的提示：时间窗没能算出来、跳过了部分回放、时间窗被换掉或截短。判断「没有日志」之前先看它 |
 
 ```json
 {
@@ -117,6 +140,8 @@ curl -s "${SP_API_URL}/api/recorder/logs?trace_id=${TRACE_ID}&replay_id=<replayI
 ```
 
 ## 怎么看结果 {#triage}
+
+<a id="troubleshooting-failed-replays"></a>
 
 ```bash
 # 各来源的行数

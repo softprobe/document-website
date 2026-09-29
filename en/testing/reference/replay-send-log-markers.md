@@ -6,6 +6,8 @@ title: Replay send log markers
 
 When the backend replays a case, it logs one line just before it sends the recorded entry request to your service and one line after. These lines tell you whether a failed case ever reached your application.
 
+These markers are written when the backend sends the request directly over HTTP. When the app has an active [`sp tunnel`](/en/testing/commands/tunnel), requests go through the tunnel instead and the backend logs `[TUNNEL] …` lines rather than these markers.
+
 They are `backend` rows (`service_name` is usually `sp-backend`) in a log lookup by the case's `traceId` — see [sp logs](/en/testing/commands/logs). When correlation works, `recordedTraceId` in the message equals the row's `trace_id`.
 
 ## Messages {#message-prefixes}
@@ -51,7 +53,7 @@ Replay send failed: planId=6a3f2aad59f0c4655b0f99da, targetEnv=true, method=POST
 
 | What you see | Likely cause |
 |--------------|--------------|
-| No `Replay send start` | The case never got as far as sending — check the plan's status first (it may have been stopped, or failed while preparing) |
+| No `Replay send start` | The request went through `sp tunnel` (look for `[TUNNEL]` lines), or the case never got as far as sending — check the plan's status (it may have been stopped, or failed while preparing) |
 | `start` with no `done` or `failed` | The request may still be running, or the window is too narrow — widen it |
 | `failed`, and `error` is a connection error or timeout | The backend couldn't reach the target — check the `--env` URL, DNS, firewall, and that the service is running |
 | `failed`, and `error` starts with a 4xx/5xx status | The service answered with an error — read the agent and app logs after the `start` time |

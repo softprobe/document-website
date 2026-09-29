@@ -4,11 +4,11 @@ title: sp replay：回放计划
 
 # sp replay：回放计划
 
-**AI 代理何时使用：** 发起并盯回放计划。失败用例和差异见 [replay case](./replay-case) 和 [replay diff](./replay-diff)。
+**AI 代理何时使用：** 发起回放计划并跟踪进度。失败用例和差异见 [replay case](./replay-case) 和 [replay diff](./replay-diff)。
 
 ## 概要 {#synopsis}
 
-基于已录制的用例，创建、盯进度、停止和重跑回放计划。
+基于已录制的用例，创建、跟踪进度、停止和重跑回放计划。
 
 ## 子命令 {#subcommands}
 
@@ -27,9 +27,9 @@ title: sp replay：回放计划
 
 | 参数 | API 字段 | 说明 |
 |------|-----------|-------------|
-| `--app` | `appId` | 应用 id（必填） |
+| `--app` | `appId` | 应用 ID（必填） |
 | `--env` | `targetEnv` | **回放目标的 base URL**（必填），不是环境别名。必须带 `http://` 或 `https://` 和主机名，如 `http://travel-ota:8080`。CLI 会拒绝 `staging`、`dev` 这类值。 |
-| `--suite` | — | 用例集。设为 `Pinned` 时只回放手动固化的用例。`AutoPinned` 不可选。 |
+| `--suite` | — | 回放哪一类用例。设为 `Pinned` 时只回放手动固化的用例。`AutoPinned` 不可选。 |
 | `--from` | `caseSourceFrom` | 滚动选取的起始时间（时长如 `-24h`，或 RFC3339）。`--suite Pinned` 时忽略。 |
 | `--to` | `caseSourceTo` | 滚动选取的结束时间（默认：现在）。`--suite Pinned` 时忽略。 |
 | `--limit` | `caseCountLimit` | 最大用例数 |
@@ -37,7 +37,7 @@ title: sp replay：回放计划
 | `--operation` | `operationIds` | 可重复；按接口过滤 |
 | `--enable-mock` | `enableMock` | 回放时 Mock（默认 true） |
 | `--no-mock` | `enableMock` | 关闭 Mock（`enableMock=false`；覆盖 `--enable-mock`） |
-| `--allow-empty` | — | 窗口内没有录制用例时也创建滚动计划（默认 false）。它不能让空的 `Pinned` 用例集跑起来。 |
+| `--allow-empty` | — | 窗口内没有录制用例时也创建滚动计划（默认 false）。固化用例为空时，`--suite Pinned` 仍会失败。 |
 | `--watch` | — | `run` 时：创建计划后轮询到结束；`status` 时：轮询已有计划 |
 
 ## 示例 {#examples}
@@ -56,7 +56,7 @@ sp replay rerun plan-xyz --json
 
 默认选择方式是**滚动**：从 `--from`/`--to` 时间窗里选用例（不带这两个参数时，默认窗口是最近 24 小时）。
 
-`--suite Pinned` 选择该应用手动固化的用例集。它不是时间窗查询，所以 `--from` 和 `--to` 会被忽略。用例滑出正常录制时间窗后仍然可回放。自动管理的 `AutoPinned` 用例不包含在内。
+`--suite Pinned` 回放该应用手动固化的全部用例。它不是时间窗查询，所以 `--from` 和 `--to` 会被忽略。用例超出滚动时间窗后仍可回放。自动管理的 `AutoPinned` 用例不包含在内。
 
 ```bash
 sp replay run \
@@ -82,7 +82,7 @@ sp replay run \
 }
 ```
 
-`--suite Pinned` 时，CLI 改为检查手动固化的用例集。为空则以 `NO_PINNED_CASES` 失败；`--allow-empty` 不能跳过这个安全检查。
+`--suite Pinned` 时，CLI 改为检查有没有手动固化的用例。为空则以 `NO_PINNED_CASES` 失败；`--allow-empty` 不能跳过这个安全检查。
 
 ### JSON 输出（`run`） {#json-output-run}
 
@@ -113,13 +113,13 @@ sp replay run \
   "ok": true,
   "command": "replay status",
   "data": {
-    "planId": "plan-xyz",
-    "status": "RUNNING",
     "percent": 42,
-    "finished": false
+    "lastUpdateTime": "2026-06-27 10:00:05"
   }
 }
 ```
+
+`status` 原样返回调度服务的进度：`percent` 和 `lastUpdateTime`，没有计划状态。带 `--watch` 时每轮查询输出一条这样的信封，最后一条加上 `"finished": true`；`run --watch` 的最后一条也可能是这个计划的统计行（同样带 `"finished": true`）。10 分钟后计划仍未结束时，以 `API_ERROR` 结束（退出码 `1`）。
 
 ### JSON 输出（`stop`） {#json-output-stop}
 
@@ -143,7 +143,7 @@ sp replay statistics <planId> --app <appId> --json
 sp replay report <planId> --app <appId> --json
 ```
 
-`statistics` 从应用的回放计划列表里取出这个计划的那一行。它只查第一页（20 个计划），更早的计划会报 `no statistics for plan <planId>`。`report` 原样返回后端对这个计划的统计报告。
+`statistics` 按应用和回放计划 ID 查这个计划的统计行，查不到时报 `no statistics for plan <planId>`。`report` 原样返回后端对这个计划的统计报告。
 
 流水线用来判断能否发版的结论（`findings.state`）来自 [Open API](/zh/testing/reference/replay-openapi)，不是这两个命令。
 

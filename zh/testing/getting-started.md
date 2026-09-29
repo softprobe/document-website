@@ -2,9 +2,9 @@
 title: 快速开始
 ---
 
-# Softprobe 测试快速开始
+# SoftProbe 测试快速开始
 
-欢迎使用 Softprobe 测试！本指南将指导您在数分钟内运行预构建的 Travel OTA 演示项目以掌握录制与回放的完整流程，并在页面底部提供将您自己的 Java 服务接入 Softprobe 的极简指南。
+欢迎使用 SoftProbe 测试！本指南将指导您在数分钟内运行预构建的 Travel OTA 演示项目以掌握录制与回放的完整流程，并在页面底部提供将您自己的 Java 服务接入 SoftProbe 的极简指南。
 
 ::: tip 选择你的操作界面
 下方涉及注册应用、查看录制、回放的步骤，都可以在**网页控制台**或 **`sp` 命令**里完成。用每个卡片顶部的切换选一种——你的选择会记住，并在整个文档站点保持一致。
@@ -16,7 +16,7 @@ title: 快速开始
 
 - 本地安装了 **Java 8 或更高版本**（推荐 Java 17/21）且已配置到 `PATH` 环境变量中。
 - 已安装 **`sp` 命令** (`curl -fsSL https://install.softprobe.ai/install.sh | bash`)——详见 [安装 CLI](/zh/testing/installation/)。
-- 您的 **Softprobe Helm chart** 已安装并运行（Softprobe 后端服务可用，例如：`http://<您的后端主机地址>:8090`）——还没部署的话按 [服务端（Helm）](/zh/testing/installation/server) 先装好。
+- 您的 **SoftProbe Helm chart** 已安装并运行（SoftProbe 后端服务可用，例如：`http://<您的后端主机地址>:8090`）——还没部署的话按 [服务端（Helm）](/zh/testing/installation/server) 先装好。
 
 ---
 
@@ -32,8 +32,8 @@ java -version
 curl -L -O https://github.com/softprobe/demo-ota/releases/download/v1.1.0/travel-ota.jar
 ```
 
-## 3. 下载 Softprobe Agent 包
-下载 Softprobe Java Agent 软件包（您可以 [点击下载 sp-agent.jar](https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar) 直接通过浏览器下载，也可以运行下方命令）：
+## 3. 下载 SoftProbe Agent 包
+下载 SoftProbe Java Agent 软件包（您可以 [点击下载 sp-agent.jar](https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar) 直接通过浏览器下载，也可以运行下方命令）：
 ```bash
 curl -fsSL -o sp-agent.jar https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar
 ```
@@ -45,7 +45,7 @@ curl -fsSL -o sp-agent.jar https://install.softprobe.ai/artifacts/agent/latest/s
 <InterfaceTabs :tabs="['ui','cli']">
 <Interface id="ui">
 
-1. 打开您的 Softprobe Dashboard 控制台。
+1. 打开您的 SoftProbe Dashboard 控制台。
 2. 导航至 **Apps** 并点击 **Create App**。
 3. 输入 `travel-ota` 作为应用名称并点击 **Save**。
 4. 复制自动生成的 **App ID**。
@@ -83,14 +83,14 @@ java -javaagent:sp-agent.jar \
 2. 选择任意航班，点击 **Book**。
 3. 完成支付与结算流程 (Checkout)。
 
-Softprobe Agent 会自动拦截并捕捉这一连串的调用流量。
+SoftProbe Agent 会自动拦截并捕捉这一连串的调用流量。
 
 ## 7. 查看录制的数据
 
 <InterfaceTabs :tabs="['ui','cli']">
 <Interface id="ui">
 
-1. 登录 Softprobe Dashboard 控制台。
+1. 登录 SoftProbe Dashboard 控制台。
 2. 进入 **Workbench** (工作台) 或 **Recordings** 页面。
 3. 从应用下拉菜单中选择 `travel-ota`。
 4. 直观地浏览刚刚捕获的调用链 (Trace) 及深层依赖关系。
@@ -144,7 +144,7 @@ sp replay status <回放计划ID> --watch
 
 ## 接入您自己的应用
 
-接入您自己的应用程序与运行 Travel OTA 演示项目**完全相同**！您的应用也只是另外一个由相同的 Softprobe Java Agent 和您的自定义应用 ID 启动的 `.jar` 软件包。
+接入您自己的应用程序与运行 Travel OTA 演示项目**完全相同**！您的应用也只是另外一个由相同的 SoftProbe Java Agent 和您的自定义应用 ID 启动的 `.jar` 软件包。
 
 接入步骤十分简单：
 

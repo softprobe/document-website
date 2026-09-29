@@ -15,7 +15,7 @@ A service under test. Recordings, replays, policies and extraction rules all bel
 | `appName` | The name you register with `sp app create <appName>` |
 | `appId` | The application's ID. Configure the Java agent and the CLI with it |
 
-`sp app create` returns a generated 16-character hex `appId`. That format is not required: the agent can also use any stable, non-empty name such as `order-service`, and an unknown `appId` is registered automatically the first time the agent loads its config (the app name is then the same as the ID). All instances of one service must use the same `appId`; if it changes between recording and replay, SoftProbe can't find the original cases.
+`sp app create` returns a generated 16-character hex `appId`. That format is not required: the agent can also use any stable, non-empty name such as `order-service`, and an unknown `appId` is normally registered automatically the first time the agent loads its config (the app name is then the same as the ID). The exception is an ID that is already used by a scheduled replay task. All instances of one service must use the same `appId`; if it changes between recording and replay, SoftProbe can't find the original cases.
 
 **Agent status** comes from the agents' heartbeats:
 
@@ -24,7 +24,7 @@ A service under test. Recordings, replays, policies and extraction rules all bel
 | `online` | At least one instance sent a heartbeat within the threshold (60 seconds by default) |
 | `degraded` | Online, but at least one fresh instance is rate-limited or degraded |
 | `offline` | Heartbeats were seen before, but none within the threshold |
-| `never` | No instance has ever reported |
+| `never` | No instance record right now. Instance records expire about 3 minutes after the last heartbeat, so an app whose agents stopped long ago also shows `never` |
 
 Check it with `sp app status <appId>` or `sp app list --json`. Command reference: [sp app](/en/testing/commands/app).
 
@@ -74,18 +74,18 @@ One replay run, identified by a `planId`. Created with `sp replay run` (or the c
 | `replayId` | One replay of one case | Diffs and diagnosis; narrows a log lookup to one run |
 | `planId` | A replay plan | Case lists, reports, diagnosis |
 | `planItemId` | One interface inside a plan | Case lists |
-| `diffId` | One comparison result | `sp replay diff get` |
+| `diffId` | One comparison result | `sp replay diff get`; `sp diagnose replay` finds and downloads the diffs for you |
 
 ### Where the IDs appear {#where-ids-appear}
 
 | Command | Fields |
 |---------|--------|
 | `sp replay run --json` | `planId` |
-| `sp replay case list --plan <planId> --failed --json` | `replayId`, `traceId`, `diffId`, plan item IDs, per case |
+| `sp replay case list --plan <planId> --failed --json` | `caseId`, `replayId`, `traceId`, `operationId`, per case |
 | `sp replay metadata <replayId> --json` | `traceId` and the linked recording |
 | `sp record case list --app <appId> --since -24h --json` | `traceId` of each recorded entry request |
 | `sp trace find --app <appId> --attr-name <rule> --attr-value <value> --json` | `traceId` for a business ID such as an order number |
-| `sp diagnose replay <planId> --json` | Failed cases with their IDs |
+| `sp diagnose replay <planId> --json` | A summary and the diff files; no case IDs (use `case list`) |
 
 ### Which `traceId` to use for logs {#which-traceid}
 

@@ -4,9 +4,9 @@ title: 策略 YAML 指南
 
 # 策略 YAML 指南
 
-Softprobe 测试通过**声明式 YAML 策略**（`apiVersion: softprobe.ai/v1`）控制录制、回放 Mock 与差异对比。策略按应用（及可选的环境、操作）匹配，按优先级合并，由 sp-backend 在运行时生效。
+SoftProbe 测试通过**声明式 YAML 策略**（`apiVersion: softprobe.ai/v1`）控制录制、回放 Mock 与差异对比。策略按应用（及可选的环境、操作）匹配，按优先级合并，由 sp-backend 在运行时生效。
 
-通过 CLI 管理三种已支持的策略类型：
+三种策略类型都通过 CLI 管理：
 
 ```bash
 sp policy recording validate -f recording.yaml --json
@@ -21,7 +21,7 @@ sp policy compare apply -f compare.yaml --json
 | `MockPolicy` | 跳过/强制 Mock、查找容差、跨应用依赖、无 Mock 时的回退 | `sp policy mock` |
 | `CompareRulePolicy` | 忽略路径、解压、转换、数组匹配、CEL 校验 | `sp policy compare` |
 
-JSON Schema 位于后端模块 `sp-policy-rules`（`src/main/resources/schema/`）。在 YAML 顶部添加 `# yaml-language-server: $schema=...` 可在编辑器中获得补全与校验。
+JSON Schema 位于后端模块 `sp-policy-rules`（`src/main/resources/schema/`）。在 YAML 顶部添加 `# yaml-language-server: $schema=...` 编辑器即可提供补全与校验。
 
 ## 文档通用结构
 
@@ -75,7 +75,7 @@ spec:
 | **Recording** | 标量覆盖；列表合并；`timeMock` 任一为 true 则 true；`serializeSkip` 按 `className` + 字段名合并 |
 | **Mock** | 标量覆盖；`skipMock`/`forceMock` 合并；`matchTolerance`、`multiServiceDependencies` 按 pattern/应用键后者覆盖 |
 
-sp-backend 内置 priority 0 的 `default-global-*-policy.yaml`；用户策略请设置 `priority > 0` 覆盖。
+sp-backend 内置 priority 0 的 `default-global-*-policy.yaml`；用户策略请设置 `priority > 0` 以覆盖内置策略。
 
 ### 运行时流水线
 
@@ -104,11 +104,11 @@ Mongo 加载超时时安全降级（录制：不录；Mock：透传）。
 | 区块 | 字段 | 类型 | 语义 |
 |------|------|------|------|
 | `sampling` | `ratePerHundredSeconds` | integer ≥ 0 | 每 100 秒窗口最多录制请求数；`0` = 不录 |
-| `sampling` | `machineCountLimit` | integer ≥ 1 或省略 | 同环境组内同时录制的实例上限。**省略 = 不限**。慎用 `1`（易导致占坑） |
+| `sampling` | `machineCountLimit` | integer ≥ 1 或省略 | 同环境组内同时录制的实例上限。**省略 = 不限**。慎用 `1`（容易导致单个实例长期占用录制名额） |
 | `timeWindow` | `daysOfWeek` | `MON`…`SUN` 或 `*` | 省略整段 = 7×24 |
 | `timeWindow` | `from` / `to` | `HH:mm` | 必须成对；`from` 严格早于 `to`。Agent 使用 JVM 本地时区 |
 | `operations` | `exclude` | string[] | 不录制的操作 Glob（黑名单） |
-| `operations` | `include` | string[] | 非空时为**白名单**：只录这些；`exclude` 仍在 include 之后生效 |
+| `operations` | `include` | string[] | 非空时为**白名单**：只录这些；`exclude` 仍在 `include` 之后生效 |
 | `sensitiveData` | `headers` | string[] | 头名（见下方说明） |
 | `sensitiveData` | `bodyPaths` | string[] | JSONPath，必须以 `$` 开头 |
 | `sensitiveData` | `queryParams` | string[] | 查询参数名 |
@@ -119,7 +119,7 @@ Mongo 加载超时时安全降级（录制：不录；Mock：透传）。
 | | `extras` | map | 原样下发到 Agent `extendField` |
 
 ::: warning 录制路径上的 `sensitiveData`
-后端会把 `sensitiveData` 写入 Agent 线协议，但 **Java Agent 尚未在录制时执行脱敏**。回放 Mock 键噪声请用 `MockPolicy.spec.matchTolerance`；查看/查询时脱敏请用 `SensitivePolicy`（REST，暂无 `sp policy` CLI）。
+后端会把 `sensitiveData` 写入 Agent 线协议，但 **Java Agent 尚未在录制时执行脱敏**。回放 Mock 键噪音请用 `MockPolicy.spec.matchTolerance`；查看/查询时脱敏请用 `SensitivePolicy`（REST，暂无 `sp policy` CLI）。
 :::
 
 修改录制策略的包含/排除列表会影响调度服务构建的回放范围，无需单独改调度文档。
@@ -320,10 +320,10 @@ spec:
 
 对比策略。
 
-控制回放**差异对比**中的噪声：忽略路径、解压、归一化、数组匹配、对比后 CEL 过滤。
+控制回放**差异对比**中的噪音：忽略路径、解压、归一化、数组匹配、对比后 CEL 过滤。
 
 ::: warning 操作范围
-**不要**在 `selector` 上写 `operationNames` 或 `operationNamePatterns` — 保存时会被拒绝。按操作规则请用 `spec.operationSpecs[]`。
+**不要**在 `selector` 上写 `operationNames` 或 `operationNamePatterns` — 保存时会被拒绝。需要按操作区分的规则请用 `spec.operationSpecs[]`。
 :::
 
 ### `spec` 字段
@@ -370,7 +370,7 @@ spec:
 | `toTimestamp(s)` | 函数 | 转为 epoch 毫秒 |
 | `matches` | 方法 | 字符串正则 |
 
-按分类忽略差异（如整类 `DATABASE` 的 `body`）通过 **CEL `validations`** 实现，无单独「按分类忽略」字段。
+按分类忽略差异（如整类 `DATABASE` 的 `body`）用 **CEL `validations`** 实现，没有单独的「按分类忽略」字段。
 
 ### 完整示例（应用默认 + 按操作覆盖）
 
@@ -431,9 +431,9 @@ spec:
 
 ### 动态类
 
-**不属于** `RecordingPolicy`。在**动态类配置**（控制台或存储 API）中登记方法。回放时分类为 `UserDynamic` 或内置 `DynamicClass`（如 `SystemTime.*`）。用 **MockPolicy** 的 `forceMock` / `skipMock` 控制行为。
+**不属于** `RecordingPolicy`。在控制台的「动态类」页（或存储 API）中登记方法。回放时分类为 `UserDynamic` 或内置 `DynamicClass`（如 `SystemTime.*`）。用 **MockPolicy** 的 `forceMock` / `skipMock` 控制行为。
 
-回放匹配顺序：先按请求参数**精确**匹配，再无命中时按方法签名**模糊**匹配。
+回放匹配顺序：先按请求参数**精确**匹配，未命中时再按方法签名**模糊**匹配。
 
 ### SensitivePolicy（敏感数据策略）
 

@@ -4,7 +4,7 @@ title: sp health：后端健康检查
 
 # sp health：后端健康检查
 
-**AI 代理何时使用：** 长时间诊断会话开始前做预检；CI 冒烟检查。
+**AI 代理何时使用：** 长时间的诊断会话开始前先做预检；CI 冒烟检查。
 
 ## 概要 {#synopsis}
 
@@ -36,7 +36,7 @@ sp health --api-url https://sp.example.com --json
 |--------|------|
 | GET | `/vi/health` |
 
-默认部署不需要认证（请按你的环境核实）。
+默认部署下不需要认证（请按你的环境核实）。
 
 ## 错误 {#errors}
 

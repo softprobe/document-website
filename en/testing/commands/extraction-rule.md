@@ -56,15 +56,20 @@ sp extraction-rule preview -f rules.yaml --json
   "ok": true,
   "command": "extraction-rule preview",
   "data": {
-    "preview": [
+    "matches": [
       {
-        "ruleName": "orderId",
-        "extractedValue": "ORD-1234"
+        "rule_index": 0,
+        "attr_name": "orderId",
+        "values": ["ORD-1234"]
       }
-    ]
+    ],
+    "warnings": [],
+    "validationErrors": []
   }
 }
 ```
+
+`matches` lines up 1:1 with the rules you sent (by index). A rule that matched nothing has empty `values` and a `miss_reason`. `validationErrors` carries the same list as `warnings`.
 
 ## REST mapping
 

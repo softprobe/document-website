@@ -22,8 +22,8 @@ title: sp replay（数据查询）：用例与元数据
 
 | 参数 | 说明 |
 |------|-------------|
-| `--plan` | 计划 id |
-| `--plan-item` | 计划项 / 接口 id |
+| `--plan` | 计划 ID |
+| `--plan-item` | 计划项 / 接口 ID |
 | `--failed` | 只看失败/出错的用例 |
 | `--diff-result-code` | 按差异码过滤（1=有差异，2=出错） |
 | `--page` / `--limit` | 分页 |
@@ -109,7 +109,7 @@ sp replay case get case-001 --plan-item item-abc --json
 | `case list` | `/api/report/queryReplayCase`、存储 `viewRecord`、schedule 报告 |
 | `case get` | 按 planItemId 查报告 |
 
-具体路径随部署不同而有差异，见 [API 对照](/zh/testing/reference/api-mapping)。
+具体路径因部署而异，见 [API 对照](/zh/testing/reference/api-mapping)。
 
 ## 替代 `sp_api` {#replaces-sp_api}
 

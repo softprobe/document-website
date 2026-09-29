@@ -18,7 +18,7 @@ title: sp config：CLI 配置
 | `show` | 打印解析后的配置来源、当前配置档案、URL 和脱敏后的 token |
 | `set-url <url>` | 设置当前 `sp` 配置档案的 URL |
 | `set-profile <name>` | 切换当前 `sp` 配置档案 |
-| `agent load --app <appId>` | 像 Agent 那样为应用调用一次配置加载接口；应用不存在时会自动注册。主要用于测试环境 |
+| `agent load --app <appId>` | 像 Agent 那样为应用调用一次配置加载接口；应用不存在时通常会自动注册。主要用于测试环境 |
 
 ## 示例 {#examples}
 
@@ -43,7 +43,7 @@ ${XDG_DATA_HOME:-~/.local/share}/softprobe/           # 持久数据、Agent jar
 ${XDG_STATE_HOME:-~/.local/state}/softprobe/          # 日志和状态
 ```
 
-`config.jsonc` 与其他 Softprobe 工具共享。`sp.jsonc` 只供本 CLI 使用，会覆盖共享配置中的同名项。`spcode.jsonc`（全局的和项目级 `.softprobe/` 里的）由 `spcode` AI 助手引擎单独解析。
+`config.jsonc` 与其他 SoftProbe 工具共享。`sp.jsonc` 只供本 CLI 使用，会覆盖共享配置中的同名项。`spcode.jsonc`（全局的和项目级 `.softprobe/` 里的）由 `spcode` AI 助手引擎单独解析。
 
 
 ### JSON 输出（`init`） {#json-output-init}
@@ -112,7 +112,7 @@ ${XDG_STATE_HOME:-~/.local/state}/softprobe/          # 日志和状态
 
 ## 优先级 {#precedence}
 
-排越后的来源优先级越高，会覆盖前面的：
+越靠后的来源优先级越高，会覆盖前面的：
 
 1. 默认值。
 2. `${XDG_CONFIG_HOME}/softprobe/config.jsonc`。
@@ -121,11 +121,15 @@ ${XDG_STATE_HOME:-~/.local/state}/softprobe/          # 日志和状态
 5. 设置了 `--config` 时，来自它的额外配置。
 6. 选中的配置档案。档案选择优先级为 `--profile`、`SP_PROFILE`、
    合并后的 `profile`，最后才是 `default`。
-7. 标量环境变量覆盖：`SP_API_URL`、`SP_TOKEN`、`SP_AGENT_JAR`。
-8. 标量 CLI 参数：`--api-url`、`--token`、`--agent-jar`。
+7. 环境变量：`SP_API_URL`、`SP_TOKEN`、`SP_TENANT_ID`、`SP_TENANT_API_KEY`。
+8. 全局参数：`--api-url`、`--token`。
+
+Java Agent jar 的路径由 `sp agent command` 单独查找：先看 `--agent-jar`，再看 `SP_AGENT_JAR`，最后用默认安装路径，见 [sp agent](./agent)。
+
+没有配置文件不算错误：此时使用默认值和环境变量。`sp config init` 会创建配置文件。
 
 显式指定了不存在的配置档案时，直接以 `PROFILE_NOT_FOUND` 失败，
-绝不悄悄回退到 `default`。
+不会静默回退到 `default`。
 
 ## REST 接口对照 {#rest-mapping}
 
@@ -137,10 +141,9 @@ ${XDG_STATE_HOME:-~/.local/state}/softprobe/          # 日志和状态
 
 | 错误码 | 退出码 | 原因 |
 |------|------|-------|
-| `CONFIG_MISSING` | 2 | 没有配置文件；先运行 `init` |
 | `PROFILE_NOT_FOUND` | 2 | 配置档案名不存在 |
-| `CONFIG_PARSE_ERROR` | 2 | JSONC 不合法 |
-| `CONFIG_WRITE_ERROR` | 2 | 配置文件写入失败 |
+| `CONFIG_PARSE_ERROR` | 1 | 配置文件存在，但不是合法的 JSONC |
+| `CONFIG_WRITE_ERROR` | 1 | 配置文件写入失败 |
 
 ## 相关文档 {#related}
 

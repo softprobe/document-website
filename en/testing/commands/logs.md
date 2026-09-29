@@ -46,8 +46,10 @@ GET /api/recorder/logs?trace_id=<id>[&since=<ts>&until=<ts>][&replay_id=…][&pl
 
 The API does more than the command:
 
-- **`since` / `until` are optional, as a pair.** When you leave both out, the backend works out the windows from the trace itself: one around the recording, and one around each replay run of that trace (each padded by two minutes). A trace replayed more than eight times needs a `replay_id` to say which run you mean. Passing only one of the two is rejected.
-- **Very wide windows are narrowed.** A window longer than three hours is narrowed to the trace's own windows, and the scanned bounds are reported in `lookup.windows`. Nothing scans more than seven days.
+- **`since` / `until` are optional, as a pair.** When you leave both out, the backend works out the windows from the trace itself, each padded by two minutes: one around the recording, and one around the replay given by `replay_id` — or, without `replay_id`, around each of the **eight most recent** replay runs of that trace (older runs are skipped, with a warning). Passing only one of the two is rejected.
+- **Very wide windows are replaced.** If you pass a window longer than three hours, the backend scans the trace's own windows instead, when it can work them out; if it can't, it scans your window as asked (with a warning), and refuses anything longer than seven days.
+- **A long request is scanned at both ends only.** If a window worked out from the trace is itself longer than three hours, only 90 minutes at each end are scanned (with a warning).
+- The windows actually scanned are always listed in `lookup.windows`.
 - **Optional filters:**
 
 | Parameter | Effect |
@@ -74,13 +76,34 @@ curl -s "${SP_API_URL}/api/recorder/logs?trace_id=${TRACE_ID}&replay_id=<replayI
 
 The API body is at the top level (`.rows`); `sp logs --json` wraps the same body in `.data` (`.data.rows`).
 
+### When the backend can't work out the window {#explicit-windows}
+
+<a id="case-scoped-lookup-dual-windows"></a>
+
+A replay that failed before its first dependency call leaves nothing to anchor the replay window on, and a large clock difference between the application and the backend can put a worked-out window in the wrong place. In both cases the response has a warning; query the recording and the replay **separately**, each with an explicit window:
+
+1. Take `recordTime` and `replayTime` (epoch milliseconds) of the case from `sp replay case list --plan <planId> --failed --json`.
+2. Query two windows of about ±2 minutes, one around each time, and merge the rows.
+
+```bash
+TRACE_ID=<traceId>
+RECORD_MS=<recordTime>; REPLAY_MS=<replayTime>
+win() { s=$(( ($1 + $2) / 1000 )); date -u -d "@$s" +%FT%TZ 2>/dev/null || date -u -r "$s" +%FT%TZ; }
+for T in $RECORD_MS $REPLAY_MS; do
+  curl -s "${SP_API_URL}/api/recorder/logs?trace_id=${TRACE_ID}&since=$(win $T -120000)&until=$(win $T 120000)" \
+    -H "Accept: application/json"
+done | jq -s '[.[].rows[]] | sort_by(.timestamp)'
+```
+
+Don't pass one window that stretches from the recording time to the replay time: it spans every minute in between and is slow, or is refused.
+
 ## Output
 
 | Field | Meaning |
 |-------|---------|
 | `lookup` | `type` (`trace`), `value` (the trace ID) and `windows` — the time windows actually scanned |
 | `rows` | Log lines in time order — see [Log query fields](./log-query-fields) |
-| `warnings` | Non-fatal notices, for example a window that could not be derived or was narrowed. May be empty |
+| `warnings` | Notices that didn't stop the query but may mean the result is **incomplete**: a window that couldn't be worked out, replay runs that were skipped, a window that was replaced or cut short. Read them before concluding that logs are missing |
 
 ```json
 {
@@ -113,6 +136,8 @@ The API body is at the top level (`.rows`); `sp logs --json` wraps the same body
 ```
 
 ## Reading the result {#triage}
+
+<a id="troubleshooting-failed-replays"></a>
 
 ```bash
 # Rows per source

@@ -19,7 +19,7 @@ export SP_TOKEN=<令牌>   # 部署要求登录时才需要
 sp diagnose replay <planId> --out-dir .sp-work --json
 ```
 
-它会收集失败的用例，把差异写成文件，文件路径在 `data.artifacts[]` 里。见 [sp diagnose](/zh/testing/commands/diagnose)。
+它把失败用例的差异写成文件并返回汇总，文件路径在 `data.artifacts` 里。见 [sp diagnose](/zh/testing/commands/diagnose)。
 
 ## 分步排查 {#step-by-step}
 
@@ -43,18 +43,18 @@ sp app replays <appId> --limit 5 --json
 ### 3. 列出失败的用例 {#3-list-the-failed-cases}
 
 ```bash
-sp replay case list --plan <planId> --failed --page 1 --limit 20 --json
+sp replay case list --plan <planId> --failed --json
 ```
 
-每个用例记下 `diffId`、`replayId` 和 `traceId`。
+`data.items` 里每个用例记下 `replayId`、`traceId`、`operationId` 和 `diffResultCode`（`1` 表示有差异，`2` 表示回放失败）。要按时间查日志时，`recordTime` 和 `replayTime` 有用；`errorMessage` 说明回放失败的原因。
 
-### 4. 获取差异 {#4-get-the-diff}
+### 4. 获取差异 {#4-get-the-diffs}
 
 ```bash
-sp replay diff get <diffId> --out-dir .sp-work --json
+sp diagnose replay <planId> --out-dir .sp-work --json
 ```
 
-`data.artifact` 是一个 JSON 文件的路径。另起一步读取它，对比 `baseMsg`（录制时）和 `testMsg`（回放时）。
+它把每个有差异的用例的可读差异写成 JSON 文件，路径列在 `data.artifacts` 里。另起一步读取这些文件，对比 `baseMsg`（录制时）和 `testMsg`（回放时）。回放失败的用例没有差异，从它的 `errorMessage` 和日志入手。
 
 ### 5. 查看这个请求的日志 {#logs}
 
@@ -70,7 +70,7 @@ jq '.warnings' .sp-work/logs-${TRACE_ID}.json
 jq -r '.rows[] | select(.severity=="ERROR" or .severity=="WARN") | "\(.timestamp) \(.source) \(.body)"' .sp-work/logs-${TRACE_ID}.json | head -30
 ```
 
-带 `replay_id` 时，返回录制时的日志加上这一次回放的日志；不带则返回这条 trace 所有回放的日志。用 `sp logs` 查询时需要自己给时间窗：
+带 `replay_id` 时，返回录制时的日志加上这一次回放的日志。不带时，后端扫描录制前后，以及这条 trace 最近 8 次回放前后的时间。先看 `warnings`：时间窗没能算出来或被截短时，它会说明。用 `sp logs` 查询时需要自己给时间窗：
 
 ```bash
 sp logs --trace-id "$TRACE_ID" --since 2026-06-27T10:00:00Z --until 2026-06-27T10:05:00Z --json > .sp-work/logs.json
@@ -115,9 +115,9 @@ sp record completeness <traceId> --json
 
 ```markdown
 排查 SoftProbe 回放失败时：
-1. `sp replay case list --plan <id> --failed --json`
-2. 对每个 diffId 执行 `sp replay diff get <id> --out-dir .sp-work --json`，再读取结果文件；不要解析大段标准输出
-3. 日志：取失败用例的 traceId，执行 `curl "$SP_API_URL/api/recorder/logs?trace_id=<traceId>&replay_id=<replayId>"`；按 source 统计行数；依次看 backend、agent、app 的 ERROR/WARN
+1. `sp replay case list --plan <id> --failed --json`，取每个失败用例的 replayId 和 traceId
+2. `sp diagnose replay <id> --out-dir .sp-work --json`，再读取 data.artifacts 里的文件；不要解析大段标准输出
+3. 日志：执行 `curl "$SP_API_URL/api/recorder/logs?trace_id=<traceId>&replay_id=<replayId>"`；先看 warnings；按 source 统计行数；依次看 backend、agent、app 的 ERROR/WARN
 4. 只有业务编号时，先执行 `sp trace find`
 ```
 

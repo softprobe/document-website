@@ -6,6 +6,8 @@ title: 回放发送日志标记
 
 后端回放一个用例时，在把录制下来的入口请求发给你的服务之前打一行日志，拿到结果后再打一行。看这两行，就知道失败的用例到底有没有打到你的应用。
 
+这些标记只在后端直接通过 HTTP 发送请求时出现。应用开着 [`sp tunnel`](/zh/testing/commands/tunnel) 时，请求走隧道，后端打的是 `[TUNNEL] …` 日志，没有这些标记。
+
 按用例的 `traceId` 查日志时（见 [sp logs](/zh/testing/commands/logs)），它们是 `source` 为 `backend` 的行，`service_name` 一般是 `sp-backend`。关联正常时，日志内容里的 `recordedTraceId` 与这行的 `trace_id` 相同。
 
 ## 日志开头 {#message-prefixes}
@@ -51,7 +53,7 @@ Replay send failed: planId=6a3f2aad59f0c4655b0f99da, targetEnv=true, method=POST
 
 | 看到的情况 | 可能的原因 |
 |-----------|-----------|
-| 没有 `Replay send start` | 用例还没走到发送这一步。先看回放计划的状态（可能被停止了，或在准备阶段就失败了） |
+| 没有 `Replay send start` | 请求走了 `sp tunnel`（看有没有 `[TUNNEL]` 日志），或者用例还没走到发送这一步：看回放计划的状态（可能被停止了，或在准备阶段就失败了） |
 | 有 `start`，没有 `done` 或 `failed` | 请求可能还在进行，或时间窗太窄，放宽时间窗再查 |
 | `failed`，`error` 是连接失败或超时 | 后端连不上目标服务。检查 `--env` 地址、域名解析、防火墙，以及服务是否在运行 |
 | `failed`，`error` 以 4xx/5xx 状态码开头 | 服务返回了错误。看 `start` 之后 Agent 和应用的日志 |

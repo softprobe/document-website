@@ -4,7 +4,7 @@ title: sp group 与 sp grant：用户组与应用授权
 
 # sp group 与 sp grant：用户组与应用授权
 
-**AI 代理何时使用：** 访问控制的管理自动化（不是典型的诊断流程）。
+**AI 代理何时使用：** 自动化管理访问控制（不是典型的诊断流程）。
 
 ## 子命令 {#subcommands}
 

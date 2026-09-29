@@ -66,7 +66,7 @@ sp policy compare get compare-global --json
 
 ### JSON 输出（`gate`） {#json-output-gate}
 
-在 CI/CD 流水线中校验所有变更或提交的策略文件：
+在 CI/CD 流水线中校验所有改动过或新提交的策略文件：
 
 ```json
 {
@@ -141,7 +141,7 @@ sp policy compare get compare-global --json
     "added": ["includeOperations[1]"],
     "changed": ["samplingRate"],
     "removed": [],
-    "unchanged": ["excludeOperations"]
+    "unchanged": false
   }
 }
 ```
@@ -191,8 +191,8 @@ sp policy compare get compare-global --json
 | `list` | GET | `/policies` |
 | `get` | GET | `/policies/{id}` |
 | `apply` | POST | `/policies` |
-| `validate` | POST | `/policies/validate` |
-| `export` | GET | `/policies/{id}/yaml` |
+| `validate` | POST | `/validate` |
+| `export` | GET | `/policies/{id}/export`（返回带 `yaml` 字段的 JSON，CLI 从中取出 YAML 写入文件） |
 | templates | GET | `/templates`、`/functions`（v2 辅助接口） |
 
 ## 数据结构 {#schema}

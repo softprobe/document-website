@@ -4,7 +4,7 @@ title: sp trace：链路查询
 
 # sp trace：链路查询
 
-**AI 代理何时使用：** 用户给的是业务 ID（orderId、caseId）而不是 traceId —— **首选的发现入口**。
+**AI 代理何时使用：** 用户给的是业务 ID（orderId、caseId）而不是 traceId —— **首选的排查入口**。
 
 ## 概要 {#synopsis}
 
@@ -22,7 +22,7 @@ title: sp trace：链路查询
 
 | 参数 | 说明 |
 |------|-------------|
-| `--app` | 应用 id（必填） |
+| `--app` | 应用 ID（必填） |
 | `--attr-name` | 规则名（如 `orderId`） |
 | `--attr-value` | 业务值（如 `ORD-1234`） |
 | `--since` / `--until` | Epoch 毫秒时间窗（默认：最近 7 天） |
@@ -32,7 +32,7 @@ title: sp trace：链路查询
 
 1. `--attr-name` + `--attr-value` —— 精确查找  
 2. 只有 `--attr-name` —— 命中该规则的全部 trace  
-3. 都不带 —— 命中任意提取规则的最近 trace
+3. 都不带 —— 最近命中任意提取规则的 trace
 
 ## 示例 {#examples}
 

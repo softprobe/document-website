@@ -16,7 +16,7 @@ access-token: <JWT>
 
 ### 邮箱验证码流程 {#email-verification-flow}
 
-1. 请求验证码（人工操作，或单独的自动化）：
+1. 请求验证码（人工操作，或交给单独的自动化流程）：
 
    ```http
    GET /api/login/getVerificationCode/{userName}
@@ -43,10 +43,10 @@ export SP_TOKEN="eyJ..."
 sp app list --json
 ```
 
-**Java Agent** 在 Softprobe Cloud 上使用**租户 API key**（长期有效，作用域为该组织）：
+**Java Agent** 在 SoftProbe Cloud 上使用**租户 API key**（长期有效，仅该组织可用）：
 
 ```bash
-export SP_TENANT_API_KEY="…"   # 来自 sp tenant key ensure 或控制台的 Settings
+export SP_TENANT_API_KEY="…"   # 来自 sp tenant key ensure 或控制台的设置
 export SP_TENANT_ID="35"
 sp agent command --app <appId> --json
 ```
@@ -79,7 +79,7 @@ sp auth login --guest --json
 
 ## OAuth
 
-OAuth 流程走浏览器。代理应使用预先备好的 `SP_TOKEN`，而不是自己去驱动 OAuth。
+OAuth 流程走浏览器。代理应使用预先备好的 `SP_TOKEN`，而不是自己去走 OAuth 流程。
 
 给人看的文档：`GET /api/login/oauthInfo/{oauthType}`、`POST /api/login/oauthLogin`。
 

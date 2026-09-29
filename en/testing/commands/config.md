@@ -14,7 +14,7 @@ Manage XDG-backed SoftProbe config, profiles, and backend URL.
 | `show` | Print resolved config sources, active profile, URL, and masked token |
 | `set-url <url>` | Set URL for the active `sp` profile |
 | `set-profile <name>` | Switch the active `sp` profile |
-| `agent load --app <appId>` | Call the agent config-load endpoint once for an app, as an agent would; registers the app if it's new. Mainly for test setups |
+| `agent load --app <appId>` | Call the agent config-load endpoint once for an app, as an agent would; normally registers the app if it's new. Mainly for test setups |
 
 ## Examples
 
@@ -117,8 +117,12 @@ Later sources override earlier sources:
 5. Extra config from `--config`, when set.
 6. Selected profile. Profile selection priority is `--profile`, `SP_PROFILE`,
    merged `profile`, then `default`.
-7. Scalar env overrides: `SP_API_URL`, `SP_TOKEN`, `SP_AGENT_JAR`.
-8. Scalar CLI flags: `--api-url`, `--token`, `--agent-jar`.
+7. Environment variables: `SP_API_URL`, `SP_TOKEN`, `SP_TENANT_ID`, `SP_TENANT_API_KEY`.
+8. Global flags: `--api-url`, `--token`.
+
+The Java agent jar path is resolved separately by `sp agent command`: `--agent-jar`, then `SP_AGENT_JAR`, then the default install path. See [sp agent](./agent).
+
+Missing config files are not an error: with no file, the defaults and environment variables apply. `sp config init` creates the files.
 
 Explicit unknown profiles fail closed with `PROFILE_NOT_FOUND`; they never
 silently fall back to `default`.
@@ -133,10 +137,9 @@ The old `sp config legacy` command group has been removed. Use `sp policy` for r
 
 | Code | Exit | Cause |
 |------|------|-------|
-| `CONFIG_MISSING` | 2 | No config file; run `init` |
 | `PROFILE_NOT_FOUND` | 2 | Unknown profile name |
-| `CONFIG_PARSE_ERROR` | 2 | Invalid JSONC |
-| `CONFIG_WRITE_ERROR` | 2 | Config file could not be written |
+| `CONFIG_PARSE_ERROR` | 1 | A config file exists but isn't valid JSONC |
+| `CONFIG_WRITE_ERROR` | 1 | A config file couldn't be written |
 
 ## Related
 

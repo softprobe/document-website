@@ -33,6 +33,7 @@ sp replay mock-tree replay-uuid --json
   "ok": true,
   "command": "replay diff get",
   "data": {
+    "diffId": "abc",
     "artifact": ".sp-work/diff-abc.json",
     "summary": {
       "diffId": "abc",
@@ -82,17 +83,13 @@ sp replay mock-tree replay-uuid --json
   "ok": true,
   "command": "replay mock-tree",
   "data": {
-    "tree": [
-      {
-        "category": "Database",
-        "operation": "SELECT",
-        "matchStatus": "MATCHED",
-        "invocations": 1
-      }
-    ]
+    "replayId": "replay-uuid",
+    "artifact": ".sp-work/mock-tree-replay-uuid.json"
   }
 }
 ```
+
+调用树总是写到 `data.artifact` 指向的文件里，不会直接放在输出中。
 
 ### JSON 输出（`noise query`） {#json-output-noise-query}
 

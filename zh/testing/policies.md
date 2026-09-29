@@ -4,7 +4,7 @@ title: 策略
 
 # 策略概览
 
-Softprobe 测试用**声明式 YAML 策略**（`apiVersion: softprobe.ai/v1`）控制行为，而非临时请求参数。策略按应用匹配、按 `metadata.priority` 合并，由 sp-backend 在运行时生效。
+SoftProbe 测试用**声明式 YAML 策略**（`apiVersion: softprobe.ai/v1`）控制行为，而非临时请求参数。策略按应用匹配、按 `metadata.priority` 合并，由 sp-backend 在运行时生效。
 
 ::: tip 策略是可选的调优，不是前提
 内置的全局默认策略（priority 0）让录制与回放开箱即用。只有当你要**改变**默认行为——控制采样、缩小操作范围、忽略噪声字段——才需要写自己的策略（`priority > 0` 覆盖）。先能跑通核心流程，再回来收紧。

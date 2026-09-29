@@ -19,7 +19,7 @@ export SP_TOKEN=<token>   # only if your deployment requires one
 sp diagnose replay <planId> --out-dir .sp-work --json
 ```
 
-It collects the failed cases and writes their diffs as files; read the paths in `data.artifacts[]`. See [sp diagnose](/en/testing/commands/diagnose).
+It writes the diffs of the failed cases as files and returns a summary; read the file paths in `data.artifacts`. See [sp diagnose](/en/testing/commands/diagnose).
 
 ## Step by step
 
@@ -43,18 +43,18 @@ sp app replays <appId> --limit 5 --json
 ### 3. List the failed cases
 
 ```bash
-sp replay case list --plan <planId> --failed --page 1 --limit 20 --json
+sp replay case list --plan <planId> --failed --json
 ```
 
-From each item, keep `diffId`, `replayId` and `traceId`.
+From each item in `data.items`, keep `replayId`, `traceId`, `operationId` and `diffResultCode` (`1` = has differences, `2` = failed to replay). `recordTime` and `replayTime` are useful if you need to query logs by time. `errorMessage` explains a failed replay.
 
-### 4. Get the diff
+### 4. Get the diffs {#4-get-the-diffs}
 
 ```bash
-sp replay diff get <diffId> --out-dir .sp-work --json
+sp diagnose replay <planId> --out-dir .sp-work --json
 ```
 
-`data.artifact` is the path of a JSON file. Read it in a separate step and compare `baseMsg` (recorded) with `testMsg` (replayed).
+It writes the readable diff of each case with differences to a JSON file and lists the paths in `data.artifacts`. Read the files in a separate step and compare `baseMsg` (recorded) with `testMsg` (replayed). Cases that failed to replay have no diff; start from their `errorMessage` and the logs.
 
 ### 5. Read the logs of that request {#logs}
 
@@ -70,7 +70,7 @@ jq '.warnings' .sp-work/logs-${TRACE_ID}.json
 jq -r '.rows[] | select(.severity=="ERROR" or .severity=="WARN") | "\(.timestamp) \(.source) \(.body)"' .sp-work/logs-${TRACE_ID}.json | head -30
 ```
 
-`replay_id` keeps the recording rows plus that one replay run; leave it out to get every run of the trace. With `sp logs` you have to give the window yourself:
+`replay_id` keeps the recording rows plus that one replay run. Without it, the backend scans the recording and up to the eight most recent replay runs of the trace. Read `warnings`: they tell you when a window couldn't be worked out or was cut short. With `sp logs` you have to give the window yourself:
 
 ```bash
 sp logs --trace-id "$TRACE_ID" --since 2026-06-27T10:00:00Z --until 2026-06-27T10:05:00Z --json > .sp-work/logs.json
@@ -115,9 +115,9 @@ Don't send the user to the console to find a trace ID when an extraction rule al
 
 ```markdown
 When diagnosing a failed SoftProbe replay:
-1. `sp replay case list --plan <id> --failed --json`
-2. For each diffId: `sp replay diff get <id> --out-dir .sp-work --json`, then read the artifact file; don't parse large stdout
-3. Logs: take the failed case's traceId; `curl "$SP_API_URL/api/recorder/logs?trace_id=<traceId>&replay_id=<replayId>"`; count rows by source; read backend, then agent, then app ERROR/WARN lines
+1. `sp replay case list --plan <id> --failed --json` for replayId and traceId of each failed case
+2. `sp diagnose replay <id> --out-dir .sp-work --json`, then read the files in data.artifacts; don't parse large stdout
+3. Logs: `curl "$SP_API_URL/api/recorder/logs?trace_id=<traceId>&replay_id=<replayId>"`; read warnings first; count rows by source; read backend, then agent, then app ERROR/WARN lines
 4. If you only have a business ID, run `sp trace find` first
 ```
 

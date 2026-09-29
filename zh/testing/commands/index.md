@@ -18,14 +18,14 @@ title: 命令参考
 
 ## 生命周期命令（推荐） {#lifecycle-recommended}
 
-按「录制 → 回放」顺序排列的面向任务的命令：
+下面的命令面向具体任务，按「录制 → 回放」的顺序排列：
 
 | 命令 | 说明 |
 |---------|----------|
 | [demo](./demo) | `start`、`traffic`、`replay`、`status`、`stop` —— [Travel OTA 演示](https://github.com/softprobe/demo-ota) 全套环境 |
-| [agent](./agent) | `download`、`command` —— 安装 jar 和 JVM 参数 |
+| [agent](./agent) | `download`、`command` —— 安装 jar、生成 JVM 启动参数 |
 | [record](./record) | `case list` —— 回放前查看已录制的入口用例 |
-| [diagnose](./diagnose) | `replay`、`trace` —— 打包好的排查工作流 |
+| [diagnose](./diagnose) | `replay`、`trace` —— 现成的排查工作流 |
 
 ## 平台 {#platform}
 
@@ -39,8 +39,8 @@ title: 命令参考
 | [policy](./policy) | 录制、Mock、对比 YAML 策略 |
 | [replay](./replay) | 运行、查看进度、统计、报告、停止、重跑回放计划 |
 | [health](./health) | 集群健康检查 |
-| [tenant](./tenant) | 仅 Softprobe Cloud：Agent 使用的租户 API 密钥 |
-| [tunnel](./tunnel) | 仅 Softprobe Cloud：反向隧道，让回放请求能打到你本机的服务 |
+| [tenant](./tenant) | 仅 SoftProbe Cloud：Agent 使用的租户 API 密钥 |
+| [tunnel](./tunnel) | 仅 SoftProbe Cloud：反向隧道，让回放请求能到达你本机的服务 |
 
 ## 排查 {#investigation}
 
