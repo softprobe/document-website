@@ -13,7 +13,7 @@ Recordings are real business requests and responses, and can contain customer de
 | Recordings | Entry requests and responses, plus the arguments and results of database, cache and downstream calls made while handling them | The platform's MongoDB |
 | Replay results | Responses and dependency calls during replay, and comparison results | The platform's MongoDB |
 | Instance information | JVM system properties and environment variables of the service, sent when the agent first connects, used to identify instances | The platform's MongoDB |
-| Logs | Platform and agent logs from recording and replay | Log files on the platform server |
+| Logs | Platform and agent logs from recording and replay | Single server: a log volume on the platform server; Kubernetes: the log pipeline's storage (a volume in the cluster or your object store) |
 
 On the single-server and Kubernetes deployments all of this stays on your network. Content only leaves it when you turn on [AI diagnosis](/en/testing/installation/ai-diagnosis) or [replay notifications](/en/testing/notifications), and then only to the model service or notification channel you configured.
 

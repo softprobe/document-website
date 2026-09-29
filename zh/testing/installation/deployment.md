@@ -12,7 +12,7 @@ SoftProbe 由两部分组成：装在一处的**平台**（后端、控制台、
 | **单机部署（All-in-One）** | 私有化的常见选择；POC；数据不能出内网 | 一台 Linux 虚拟机，离线安装包自带 Docker、数据库和缓存 | [单机部署（All-in-One）](/zh/testing/installation/all-in-one) |
 | **Kubernetes 部署（Helm）** | 已有 Kubernetes 集群；要接已有的 MongoDB、Redis 或对象存储 | 你们的 Kubernetes 集群 | [Kubernetes 部署（Helm）](/zh/testing/installation/server) |
 
-拿不准时：没有现成的 Kubernetes 平台，或者只是 POC，用单机部署；已经有 Kubernetes 平台和运维流程，用 Helm。
+拿不准时：没有现成的 Kubernetes 集群，或者只是 POC，用单机部署；已经有 Kubernetes 集群和运维流程，用 Helm。
 
 ## 三种方式有什么不同 {#compare}
 

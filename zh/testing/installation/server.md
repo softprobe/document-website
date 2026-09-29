@@ -4,7 +4,7 @@ title: Kubernetes 部署（Helm）
 
 # Kubernetes 部署（Helm）
 
-使用 Helm 在 Kubernetes 上安装统一的 SoftProbe 后端。Chart 支持部署集群内**内置 MongoDB 与 Redis**，也可以连接**外部 MongoDB（单机/副本集）、外部 Redis（单机/Sentinel 集群）与外部 S3 存储桶**。
+使用 Helm 在 Kubernetes 上安装 SoftProbe 后端。Chart 支持部署集群内**内置 MongoDB 与 Redis**，也可以连接**外部 MongoDB（单机/副本集）、外部 Redis（单机/Sentinel 集群）与外部 S3 存储桶**。
 
 Chart **v4.3.x+** 默认启用 [统一日志管道](#unified-log-pipeline)（Vector、Parquet PVC、压缩）。全新安装只需配置下方的 MongoDB 与加密密钥——无需单独的 `logPipeline` 块。
 
@@ -254,7 +254,7 @@ curl -s http://127.0.0.1:8090/actuator/health
 6. **预览差异**（可选）：
 
 ```bash
-export NAMESPACE="softprobe"   # 或您的已有命名空间
+export NAMESPACE="softprobe"   # 或你的已有命名空间
 
 helm repo update
 helm upgrade softprobe softprobe/sp-backend \
@@ -271,7 +271,7 @@ helm upgrade softprobe softprobe/sp-backend \
 典型升级——使用安装时的 `values.yaml`，更新 Chart 与镜像版本：
 
 ```bash
-export NAMESPACE="softprobe"   # 或您的已有命名空间
+export NAMESPACE="softprobe"   # 或你的已有命名空间
 
 helm repo update
 helm upgrade softprobe softprobe/sp-backend \
@@ -303,7 +303,7 @@ encryption:
 升级命令（无需编辑文件）：
 
 ```bash
-export NAMESPACE="softprobe"   # 或您的已有命名空间
+export NAMESPACE="softprobe"   # 或你的已有命名空间
 
 helm upgrade softprobe softprobe/sp-backend \
   --version 4.3.10 \
@@ -320,7 +320,7 @@ Helm 会按 Chart 默认值添加日志管道资源。滚动更新完成后，�
 离线安装或从 GCS 校验 SHA-256 时：
 
 ```bash
-export NAMESPACE="softprobe"   # 或您的已有命名空间
+export NAMESPACE="softprobe"   # 或你的已有命名空间
 
 curl -fLO "https://storage.googleapis.com/softprobe-published-files/helm/sp-backend/v4.3.10/sp-backend-4.3.10.tgz"
 
@@ -343,7 +343,7 @@ curl -s http://127.0.0.1:8090/actuator/health
 
 sp-backend 会滚动重启（Chart 模板有变化时，Redis 也可能重启）。内置 MongoDB 在现有 PVC 上的数据会保留。新 Pod 启动后，sp-backend 可能需要约 2 分钟才能就绪（JVM 预热）。
 
-v4.3.10+ 还应看到 `log-vector` 与 `log-parquet` PVC（本地存储）。为已插桩工作负载配置：
+v4.3.10+ 还应看到 `log-vector` 与 `log-parquet` PVC（本地存储）。为接入 Agent 的工作负载配置：
 
 ```text
 -Dsp.api.url=http://<release>-sp-backend.<namespace>.svc.cluster.local:8090
@@ -384,7 +384,7 @@ logPipeline:
 
 **sp-backend** Helm Chart 提供关联日志采集、Parquet 存储与 trace ID 查询（`sp logs` / `GET /api/recorder/logs`）。
 
-**前置条件：** sp-backend release 运行正常，Chart 版本 **v4.3.x+**。管道**默认启用**（`logPipeline.enabled: true`）。已插桩工作负载需用 `-Dsp.api.url` 指向 sp-backend（见 [Agent 日志导出](#agent-log-export)）。
+**前置条件：** sp-backend release 运行正常，Chart 版本 **v4.3.x+**。管道**默认启用**（`logPipeline.enabled: true`）。接入 Agent 的工作负载需用 `-Dsp.api.url` 指向 sp-backend（见 [Agent 日志导出](#agent-log-export)）。
 
 ### Chart 部署的资源
 
@@ -540,7 +540,7 @@ logPipeline:
     backend: s3
     s3:
       bucket: my-softprobe-logs
-      endpoint: https://s3.amazonaws.com   # 或您的 MinIO / GCS / 其他 S3 端点
+      endpoint: https://s3.amazonaws.com   # 或你的 MinIO / GCS / 其他 S3 端点
       region: us-east-1
       forcePathStyle: true                 # MinIO 保持 true
       prefix: ""                           # Bucket 内可选 key 前缀
@@ -636,7 +636,7 @@ kubectl delete pvc -n "$NAMESPACE" -l app.kubernetes.io/instance=softprobe
 
 ## Java Agent
 
-将已插桩应用指向集群内服务：
+将接入 Agent 的被测服务指向集群内服务：
 
 ```text
 -Dsp.api.url=http://<release>-sp-backend.<namespace>.svc.cluster.local:8090

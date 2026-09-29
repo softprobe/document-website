@@ -79,7 +79,7 @@ docker start sp-allinone
 
 1. 按上文先备份数据库。
 2. 升级平台：[单机部署 — 升级](/zh/testing/installation/all-in-one#upgrade)。
-3. 升级后检查：容器都是 `(healthy)`；「设置 → 通用 → 关于」里的版本号已更新；「应用管理」里应用重新在线；手动发起一次小范围的回放，能正常出报告。
+3. 升级后检查：容器都在运行，除 `sp-parquet-s3` 外都是 `(healthy)`；「设置 → 通用 → 关于」里的版本号已更新；「应用管理」里应用重新在线；手动发起一次小范围的回放，能正常出报告。
 
 Agent 的版本和平台分别升级，见 [接入 Java Agent](/zh/testing/java-agent)。
 
@@ -114,4 +114,4 @@ docker logs --tail 300 sp-mongodb      # 数据库
 - Agent 相关的问题：被测服务的启动参数（去掉密码等敏感信息），以及 Agent 的日志（在 `sp-agent.jar` 所在目录下的 `logs` 目录）
 - 具体的应用 ID、Trace ID、回放计划 ID 和出问题的时间段，见 [应用、用例与回放编号](/zh/testing/agents/concepts#ids)
 
-加密密钥和业务报文不要随问题一起发送。确实需要报文时，先和 SoftProbe 约定传输方式。
+反馈问题时不要附上加密密钥和业务报文。确实需要报文时，先和 SoftProbe 约定传输方式。

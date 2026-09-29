@@ -51,7 +51,7 @@ curl -fL -o sp-agent.jar http://<平台地址>:8090/api/agent/sp-agent.jar
 curl -fsSL -o sp-agent.jar https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar
 ```
 
-`latest` 始终指向最新版本。在生产环境使用时，把 `latest` 换成具体版本号，固定版本：
+`latest` 始终指向最新版本。在生产环境使用时，把 `latest` 换成具体版本号固定下来：
 
 ```bash
 curl -fsSL -o sp-agent.jar https://install.softprobe.ai/artifacts/agent/v4.3.9/sp-agent.jar

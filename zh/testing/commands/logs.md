@@ -4,7 +4,7 @@ title: sp logs：按 trace 查日志
 
 # sp logs：按 trace 查日志
 
-按 `trace_id` 查出一次请求在被测应用、Java Agent 和 sp-backend 上留下的日志。回放失败后，用它同时看录制时和回放时发生了什么。
+按 `trace_id` 查出一次请求在被测服务、Java Agent 和 sp-backend 上留下的日志。回放失败后，用它同时看录制时和回放时发生了什么。
 
 后端需要开启统一日志：单机部署默认开启，Kubernetes 部署见 [Kubernetes 部署（Helm）— 统一日志管道](/zh/testing/installation/server#unified-log-pipeline)。统一日志没开或不可用时，查询会直接报错，不会返回空结果。
 

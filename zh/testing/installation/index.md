@@ -90,7 +90,7 @@ sudo sp setup --api-url http://sp-backend.corp:8090 --install-spcode-service
 
 `--install-spcode-service` 和 `--uninstall-spcode-service` 不能同时使用。
 
-请用负责这台机器 SoftProbe 设置的账号运行 `sp setup` 完成安装。服务使用同一套设置（后端地址、MCP、代理说明、技能），修改设置后需要重启服务。
+请用负责这台机器上 SoftProbe 设置的账号运行 `sp setup` 完成安装。服务使用同一套设置（后端地址、MCP、代理说明、技能），修改设置后需要重启服务。
 
 | 操作 | 命令 |
 |------|------|

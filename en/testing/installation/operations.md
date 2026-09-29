@@ -79,7 +79,7 @@ To restore on another machine, install the same platform version there with **th
 
 1. Back up the database as above.
 2. Upgrade the platform: [Single-server install — Upgrade](/en/testing/installation/all-in-one#upgrade).
-3. Check afterwards: all containers are `(healthy)`; the versions under **Settings → General → About** have changed; applications are back online under **Applications**; a small manual replay completes and produces a report.
+3. Check afterwards: all containers are running and all but `sp-parquet-s3` show `(healthy)`; the versions under **Settings → General → About** have changed; applications are back online under **Applications**; a small manual replay completes and produces a report.
 
 The agent is upgraded separately from the platform; see [Attach the Java agent](/en/testing/java-agent).
 
@@ -114,4 +114,4 @@ Detailed backend logs are in `/logs/storage.log` inside the container and are ke
 - For agent problems: the service's start-up flags (with passwords and other secrets removed), and the agent log from the `logs` directory next to `sp-agent.jar`
 - The application ID, trace ID, replay plan ID and time window involved; see [Concepts and IDs](/en/testing/agents/concepts#ids)
 
-Don't send encryption keys or business payloads along with the problem report. If payloads are really needed, agree on how to transfer them with SoftProbe first.
+Don't include encryption keys or business payloads when you report a problem. If payloads are really needed, agree on how to transfer them with SoftProbe first.

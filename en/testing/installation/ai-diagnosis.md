@@ -70,7 +70,7 @@ Open **Applications** at the bottom left and click the bind button (the branch i
 | Repository URL | For example `https://git.example.com/team/order-service` |
 | Default branch | The branch the AI reads, for example `main` |
 
-Click **Save & clone**, and the platform clones the code locally. Once the status is **Ready**, it's in use. On **Clone failed**, check the token's permissions and the network from the platform server to the repository.
+Click **Save & clone**, and the platform clones the code onto the platform server. Once the status is **Ready**, it's in use. On **Clone failed**, check the token's permissions and the network from the platform server to the repository.
 
 The AI reads the bound branch. SoftProbe doesn't check that this code matches the version actually running in the service under test; the report records which branch and commit the analysis read.
 

@@ -115,7 +115,7 @@ title: 单机部署（All-in-One）
 PUBLIC_BACKEND_HOST=10.0.0.5 bash softprobe-linux-amd64-<打包时间>.sh
 ```
 
-发现没有 root、也用不了 Docker 时，安装脚本会自动改用免 root 部署：Docker 以当前账号的身份运行，不写 `/usr`、`/etc`，不注册系统服务，程序和数据都在这个账号的 home 目录下。这是 Docker 官方支持的 rootless 模式，整套平台只拥有这个账号的权限。
+没有 root、也用不了 Docker 时，安装脚本会自动改用免 root 部署：Docker 以当前账号的身份运行，不写 `/usr`、`/etc`，不注册系统服务，程序和数据都在这个账号的 home 目录下。这是 Docker 官方支持的 rootless 模式，整套平台只拥有这个账号的权限。
 
 ### 先自检 {#rootless-check}
 
