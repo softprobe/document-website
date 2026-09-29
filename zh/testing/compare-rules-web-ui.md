@@ -91,6 +91,6 @@ title: 配置对比规则
 
 ## 下一步 {#next}
 
-在这里配的规则从下次[回放](/zh/testing/replay-and-diff)开始生效。想让已经跑完的回放按新规则判定，再回放一次；只有在回放的差异视图里直接加删规则时，才能当场[重新对比](/zh/testing/review-diffs-in-the-web-ui#recompare)。剩下的失败，就是值得认真看的差异。
+在这里配的规则从下次[回放](/zh/testing/replay-and-diff)开始生效。想让已经跑完的回放按新规则判定，再回放一次；只有在回放的差异视图里直接加了或删了规则时，才能当场[重新对比](/zh/testing/review-diffs-in-the-web-ui#recompare)。剩下的失败，就是值得认真看的差异。
 
 用 Git 管理对比规则，见 [用 Git 管理策略](/zh/testing/examples/gitops-policies) 和 [策略 YAML 参考](/zh/testing/policy-yaml-guide#comparerulepolicy)。

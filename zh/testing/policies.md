@@ -14,7 +14,7 @@ title: 录制配置与回放配置
 | [对比规则](/zh/testing/compare-rules-web-ui)<a id="compare-policy"></a> | 哪些差异不算数 |
 | [脱敏规则](#sensitive) | 在页面上查看报文时，哪些字段要打码 |
 
-「回放配置」「对比规则」「脱敏规则」页面可以在「可视化」和「YAML」之间切换；录制配置和动态类只能在页面上编辑。YAML 的字段说明见 [策略 YAML 参考](/zh/testing/policy-yaml-guide)；想把这些配置放进 Git 管理，见 [用 Git 管理策略](/zh/testing/examples/gitops-policies)。
+「回放配置」「对比规则」「脱敏规则」页面可以在「可视化」和「YAML」之间切换；「录制配置」和「动态类」只能在页面上编辑。YAML 的字段说明见 [策略 YAML 参考](/zh/testing/policy-yaml-guide)；想把这些配置放进 Git 管理，见 [用 Git 管理策略](/zh/testing/examples/gitops-policies)。
 
 改完点「保存」即可，不需要重启被测服务：Agent 会在下次拉取配置时用上新配置。
 
