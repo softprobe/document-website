@@ -21,7 +21,7 @@ sp policy compare apply -f compare.yaml --json
 | `MockPolicy` | 跳过/强制 Mock、查找容差、跨应用依赖、无 Mock 时的回退 | `sp policy mock` |
 | `CompareRulePolicy` | 忽略路径、解压、转换、数组匹配、CEL 校验 | `sp policy compare` |
 
-JSON Schema 位于后端模块 `sp-policy-rules`（`src/main/resources/schema/`）。在 YAML 顶部添加 `# yaml-language-server: $schema=...` 编辑器即可提供补全与校验。
+JSON Schema 位于后端模块 `sp-policy-rules`（`src/main/resources/schema/`）。在 YAML 顶部添加 `# yaml-language-server: $schema=...`，编辑器即可提供补全与校验。
 
 ## 文档通用结构
 
@@ -109,7 +109,7 @@ Mongo 加载超时时安全降级（录制：不录；Mock：透传）。
 | `timeWindow` | `from` / `to` | `HH:mm` | 必须成对；`from` 严格早于 `to`。Agent 使用 JVM 本地时区 |
 | `operations` | `exclude` | string[] | 不录制的操作 Glob（黑名单） |
 | `operations` | `include` | string[] | 非空时为**白名单**：只录这些；`exclude` 仍在 `include` 之后生效 |
-| `sensitiveData` | `headers` | string[] | 头名（见下方说明） |
+| `sensitiveData` | `headers` | string[] | 请求头名（见下方说明） |
 | `sensitiveData` | `bodyPaths` | string[] | JSONPath，必须以 `$` 开头 |
 | `sensitiveData` | `queryParams` | string[] | 查询参数名 |
 | `sensitiveData` | `placeholder` | string | 替换占位符，默认 `***` |
@@ -227,7 +227,7 @@ Mock 策略。
 | `QMessageProducer` | 主题或消息 ID |
 | `ConfigFile` | 配置键 |
 | `UserDynamic` | `com.foo.Cache.get`（用户配置的动态类） |
-| `DynamicClass` | `SystemTime.**`、`RandomSource.**（内置；全局默认强制 Mock，用户 `skipMock` 无效） |
+| `DynamicClass` | `SystemTime.**`、`RandomSource.**`（内置；全局默认强制 Mock，用户 `skipMock` 无效） |
 | `Encryption` | `com.foo.Crypto.encrypt` |
 | `IbmMQ` | MQ 目的地 |
 | `SoapClient` | SOAP 操作 |
@@ -331,7 +331,7 @@ spec:
 | 区块 | 字段 | 类型 | 语义 |
 |------|------|------|------|
 | `defaults` | `timeToleranceMs` | integer ≥ 0 | CEL 中 `time_tolerance_ms` 及时间类规则 |
-| `defaults` | `ignoreHeaderPatterns` | string[] | 对比时跳过的头名 Glob |
+| `defaults` | `ignoreHeaderPatterns` | string[] | 对比时跳过的请求头名 Glob |
 | | `includePaths` | string[] | JSON Pointer 白名单；空 = 对比全部 |
 | | `excludePaths` | string[] | JSON Pointer 黑名单（预过滤） |
 | `decompress[]` | `path` | string | JSON Pointer 或 Glob |

@@ -46,7 +46,7 @@ sp app replays <appId> --limit 5 --json
 sp replay case list --plan <planId> --failed --json
 ```
 
-`data.items` 里每个用例记下 `replayId`、`traceId`、`operationId` 和 `diffResultCode`（`1` 表示有差异，`2` 表示回放失败）。要按时间查日志时，`recordTime` 和 `replayTime` 有用；`errorMessage` 说明回放失败的原因。
+`data.items` 中的每个用例，记下 `replayId`、`traceId`、`operationId` 和 `diffResultCode`（`1` 表示有差异，`2` 表示回放失败）。要按时间查日志时，还会用到 `recordTime` 和 `replayTime`；`errorMessage` 说明回放失败的原因。
 
 ### 4. 获取差异 {#4-get-the-diffs}
 

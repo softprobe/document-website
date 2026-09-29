@@ -1,8 +1,8 @@
 ---
-title: 输出契约
+title: 输出约定
 ---
 
-# 输出契约
+# 输出约定
 
 `sp eval` 命令遵循与 Testing 相同的 **`--json` 信封**。Agent 解析 stdout；给人看时可以不加 `--json`。
 

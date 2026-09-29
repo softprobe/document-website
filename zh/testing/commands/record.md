@@ -46,7 +46,7 @@ sp record case list --app a1b2c3d4e5f67890 --since -1h --limit 20 --json
 - `--app` 必填，对应已注册的 `appId`。
 - `--since` / `--until` 选择录制时间窗。`-1h` 这类时长表示相对当前时间。
 - `--page` / `--limit` 对用例分页。
-- 输出包含用例 id 或 trace id、操作名、录制时间，以及足够开始 trace 或回放流程的元数据。
+- 输出包含用例 ID 或 trace ID、操作名、录制时间，以及足够用来发起 trace 或回放的元数据。
 
 JSON 结构示例：
 

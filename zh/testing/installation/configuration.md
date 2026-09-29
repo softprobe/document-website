@@ -8,7 +8,7 @@ title: 客户端配置
 
 | 路径 | 用途 |
 |------|------|
-| `~/.config/softprobe/config.jsonc` | 共享后端 URL 和凭证 |
+| `~/.config/softprobe/config.jsonc` | 共享后端 URL 和凭据 |
 | `~/.config/softprobe/sp.jsonc` | CLI 配置和 profile |
 | `~/.config/softprobe/spcode.jsonc` | 内部编码引擎设置 |
 | `~/.local/share/softprobe/agent/sp-agent.jar` | 已安装的 Java agent |
@@ -52,7 +52,7 @@ npx -v
 若命令不存在，请从 [nodejs.org](https://nodejs.org/) 安装 Node.js（LTS），或使用系统包管理器安装（例如 Debian/Ubuntu：`apt install nodejs npm`；RHEL/Fedora：`dnf install nodejs`）。若使用 Spcode Service，请再确认 root 下可用：`sudo npx -v`（服务进程以 root 运行）。
 :::
 
-1. 创建 `~/.config/spcode/opencode.jsonc`（将占位符替换为你的应用凭证；**不要**把真实密钥提交到仓库）：
+1. 创建 `~/.config/spcode/opencode.jsonc`（将占位符替换为你的应用凭据；**不要**把真实密钥提交到仓库）：
 
 ```jsonc
 {

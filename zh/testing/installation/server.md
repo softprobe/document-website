@@ -8,7 +8,7 @@ title: 安装 SoftProbe 服务端
 
 Chart **v4.3.x+** 默认启用 [统一日志管道](#unified-log-pipeline)（Vector、Parquet PVC、压缩）。全新安装只需配置下方的 MongoDB 与加密密钥——无需单独的 `logPipeline` 块。
 
-**前置条件：** Kubernetes 1.24+、Helm 3.x、SoftProbe 提供的 GCR 拉取凭证，以及用于加密静态载荷的 `encryption.secretKey`。
+**前置条件：** Kubernetes 1.24+、Helm 3.x、SoftProbe 提供的 GCR 拉取凭据，以及用于加密静态载荷的 `encryption.secretKey`。
 
 若使用**内置** MongoDB，集群需有默认或已配置的 `StorageClass` 供 MongoDB PVC 使用。
 
@@ -47,7 +47,7 @@ kubectl create namespace "$NAMESPACE"   # 若命名空间已存在可跳过
 
 ### 2. GCR 拉取 Secret
 
-在目标命名空间中创建镜像拉取凭证：
+在目标命名空间中创建镜像拉取凭据：
 
 ```bash
 kubectl create secret docker-registry softprobe-gcr-pull \
@@ -403,7 +403,7 @@ logPipeline:
     cleanupSchedule: "0 3 * * *"
   compaction:
     enabled: true            # local、S3、Azure Blob 三种存储都适用
-    schedule: "15 * * * *"   # 上一已关闭 UTC 小时
+    schedule: "15 * * * *"   # 上一个已结束的 UTC 小时
   # 使用 taint 时将 Vector 与维护任务固定到与 sp-backend 相同的节点池：
   placement:
     nodeSelector:
@@ -480,13 +480,13 @@ v1 不使用旧版采集标志（`sp.record.user.log`、`sp-capture-log`、`sp.u
 
 用 `logPipeline.storage.backend` 选择 Parquet 日志文件的存储位置，三选一：
 
-| 后端 | `logPipeline.storage.backend` | 适用场景 | 需要提供的凭证 |
+| 后端 | `logPipeline.storage.backend` | 适用场景 | 需要提供的凭据 |
 |------|-------------------------------|----------|----------------|
 | **本地磁盘**（默认） | `local` | 单集群、最简部署 | 无（集群内卷） |
 | **S3 兼容** | `s3` | AWS S3、MinIO、GCS 等任意 S3 API | `access-key-id` + `secret-access-key` |
 | **Azure Blob** | `azure_blob` | Azure 存储账户 | `account-key` |
 
-三种后端在查询、压缩与保留上的行为完全一致——仅存储位置与凭证不同。
+三种后端在查询、压缩与保留上的行为完全一致——仅存储位置与凭据不同。
 
 #### 方式一——本地磁盘（默认）
 
@@ -505,7 +505,7 @@ logPipeline:
 
 #### 方式二——S3 兼容存储桶
 
-**第 1 步——创建凭证 Secret。** 必须包含以下两个键：
+**第 1 步——创建凭据 Secret。** 必须包含以下两个键：
 
 ```bash
 kubectl create secret generic softprobe-log-s3-credentials -n "$NAMESPACE" \
@@ -537,7 +537,7 @@ logPipeline:
 
 #### 方式三——Azure Blob 容器
 
-**第 1 步——创建凭证 Secret。** 必须且仅包含一个键 `account-key`，即存储账户访问密钥：
+**第 1 步——创建凭据 Secret。** 必须且仅包含一个键 `account-key`，即存储账户访问密钥：
 
 ```bash
 kubectl create secret generic softprobe-log-azure-credentials -n "$NAMESPACE" \
@@ -573,7 +573,7 @@ logPipeline:
 
 > 压缩使用 `softprobe/duckdb:1.1.3` 镜像（`linux/amd64`）。Apple Silicon 开发集群可本地构建/加载 `arm64` 镜像（`make duckdb-image DUCKDB_PLATFORM=linux/arm64`）并覆盖 `logPipeline.compaction.image`。
 
-**安全：** 终端用户与 Agent Skills **绝不得**获得存储桶或存储账户凭证——仅通过 `sp logs` / `GET /api/recorder/logs` 查询。
+**安全：** 终端用户与 Agent Skills **绝不得**获得存储桶或存储账户凭据——仅通过 `sp logs` / `GET /api/recorder/logs` 查询。
 
 ### Helm values 参考
 

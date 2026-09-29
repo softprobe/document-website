@@ -6,7 +6,7 @@ title: 输出约定
 
 `sp` 在加上 `--json` 时输出什么、以什么退出码结束。写脚本、接 CI、让 AI 代理调用 `sp` 时以本页为准。
 
-要点：`ok: true` 只表示命令执行了，不表示检查都通过；`sp policy gate`、`sp doctor`、`sp upgrade` 在结果为失败时照样把结果写到标准输出，同时以 `1` 退出。`sp agent command --format shell|docker|maven` 即使带 `--json` 也输出纯文本；`sp tunnel` 一直运行到被停止，只输出进度行。
+要点：`ok: true` 只表示命令执行了，不表示检查都通过；`sp policy gate`、`sp doctor`、`sp upgrade` 在结果为失败时仍把结果写到标准输出，同时以 `1` 退出。`sp agent command --format shell|docker|maven` 即使带 `--json` 也输出纯文本；`sp tunnel` 一直运行到被停止，只输出进度行。
 
 ::: info 本页保留英文
 这是给脚本和 AI 代理用的机器契约，字段名、取值、错误码都和程序输出逐字对应，所以正文保留英文。

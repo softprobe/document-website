@@ -25,7 +25,7 @@ title: 命令参考
 | [demo](./demo) | `start`、`traffic`、`replay`、`status`、`stop` —— [Travel OTA 演示](https://github.com/softprobe/demo-ota) 全套环境 |
 | [agent](./agent) | `download`、`command` —— 安装 jar、生成 JVM 启动参数 |
 | [record](./record) | `case list` —— 回放前查看已录制的入口用例 |
-| [diagnose](./diagnose) | `replay`、`trace` —— 现成的排查工作流 |
+| [diagnose](./diagnose) | `replay`、`trace` —— 一键排查 |
 
 ## 平台 {#platform}
 

@@ -142,4 +142,4 @@ title: 命令与后端接口对照
 | POST | `/api/storage/record/save` | Agent write |
 | * | `/api/replay/local/*` | Local runner |
 
-Controller 源码： `sp-tr-api/sp-web-api`, `sp-storage/sp-storage-web-api`, `sp-replay-schedule/sp-schedule-web-api`.
+Controller 源码：`sp-tr-api/sp-web-api`, `sp-storage/sp-storage-web-api`, `sp-replay-schedule/sp-schedule-web-api`.

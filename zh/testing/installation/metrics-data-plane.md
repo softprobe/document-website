@@ -2,7 +2,7 @@
 
 SoftProbe 的指标复用**与日志相同的采集器和 Parquet 存储体系**：OTLP → Vector → 一分钟聚合 → `metrics/` 数据集下的 Parquet → 产品的 HTTP 查询接口。它面向**临时诊断**场景（例如「我们是否收到了 Agent 日志？」），不用于替代 Prometheus/Grafana 仪表盘。
 
-需要 Chart **v4.3.x+**，并启用[统一日志管道](./server#unified-log-pipeline)（默认启用）。指标复用同一个 Vector Deployment，不需要第二个时序数据库，也不需要额外的 Pod。
+需要 Chart **v4.3.x+**，并启用 [统一日志管道](./server#unified-log-pipeline)（默认启用）。指标复用同一个 Vector Deployment，不需要第二个时序数据库，也不需要额外的 Pod。
 
 ## 摄入 —— `POST /v1/metrics`
 
@@ -74,7 +74,7 @@ curl -sS "$SP_API_URL/api/recorder/metrics?metric_name=sp.logs.ingest.requests&s
 }
 ```
 
-错误响应体不得暴露 Parquet 路径、bucket 名称或存储凭证。
+错误响应体不得暴露 Parquet 路径、bucket 名称或存储凭据。
 
 ## 后端内置指标
 
@@ -93,4 +93,4 @@ curl -sS "$SP_API_URL/api/recorder/metrics?metric_name=sp.logs.ingest.requests&s
 
 - Prometheus 抓取、Grafana 或 PromQL
 - `sp metrics` 命令（请使用上面的 HTTP 接口）
-- 直接访问底层文件或存储凭证
+- 直接访问底层文件或存储凭据

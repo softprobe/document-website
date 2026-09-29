@@ -2,7 +2,7 @@
 title: sp replay（数据查询）：用例与元数据
 ---
 
-# sp replay（数据查询）
+# sp replay（数据查询）：用例与元数据
 
 **AI 代理何时使用：** `sp replay run` 跑完后 —— 列出失败用例、取元数据、翻页查用例。
 
