@@ -88,7 +88,7 @@ If the manual pinned set is empty, the command returns `NO_PINNED_CASES`.
 </InterfaceTabs>
 
 ::: warning Replay only against a non-production target
-Replay sends real entry requests to the target environment. Recorded downstream calls are mocked, but the application under test still executes its entry path. Use a test or staging target and turn recording off, or set it to a minimal level, on the replay host. See [Replay and diff](/en/testing/replay-and-diff#step-1-prepare-the-test-instance).
+Replay sends real entry requests to the target environment. Recorded downstream calls are mocked, but the application under test still executes its entry path. Use a test or staging target and turn recording off, or set it to a minimal level, on the replay host. See [Replay and diff](/en/testing/replay-and-diff).
 :::
 
 ## Important lifecycle details
