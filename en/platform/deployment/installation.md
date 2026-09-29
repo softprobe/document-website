@@ -3,8 +3,8 @@
 
 Deploy SP‑Istio Agent to your Istio service mesh, and integrate the SESSIFY for client-side enrichment.
 
-::: tip Looking for user install?
-Softprobe server install (Helm sp-backend), client install (`sp setup`, Spcode Service), `sp code`, `sp doctor`, and `sp upgrade` are documented under [Testing installation](/en/testing/installation/). This Platform page is for Istio mesh / SESSIFY deployment.
+::: tip Looking for the record-and-replay platform?
+Deploying SoftProbe for record and replay (single server or Kubernetes) is covered in [Choose a deployment](/en/testing/installation/deployment); the `sp` command line in [Install the sp command line](/en/testing/installation/). This page is for Istio mesh / SESSIFY deployment.
 :::
 
 
