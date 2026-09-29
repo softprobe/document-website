@@ -80,20 +80,33 @@ The API body is at the top level (`.rows`); `sp logs --json` wraps the same body
 
 <a id="case-scoped-lookup-dual-windows"></a>
 
-A replay that failed before its first dependency call leaves nothing to anchor the replay window on, and a large clock difference between the application and the backend can put a worked-out window in the wrong place. In both cases the response has a warning; query the recording and the replay **separately**, each with an explicit window:
+The backend can't place a replay window when the replay failed before its first dependency call. With `replay_id` it says so in `warnings`; without it there is no warning, so a missing replay window doesn't prove there were no replay logs. A large clock difference between the application and the backend can also put a worked-out window on the wrong minutes. In these cases, query the recording and the replay **separately**, each with an explicit window:
 
-1. Take `recordTime` and `replayTime` (epoch milliseconds) of the case from `sp replay case list --plan <planId> --failed --json`.
-2. Query two windows of about ±2 minutes, one around each time, and merge the rows.
+1. From `sp replay case list --plan <planId> --failed --json`, take the case's `recordTime` (when it was recorded) and `requestDateTime` (when the replay request was sent; use `replayTime` if it's empty). Both are epoch milliseconds. If `recordTime` is empty, use the recording time shown for this trace under **Recordings → Rolling recordings**.
+2. Query about two minutes either side of each time, with `replay_id` so other replay runs stay out, and keep both responses.
+
+Save this as a script (for example `case-logs.sh`) and run it with `bash`:
 
 ```bash
-TRACE_ID=<traceId>
-RECORD_MS=<recordTime>; REPLAY_MS=<replayTime>
+#!/usr/bin/env bash
+TRACE_ID=<traceId>; REPLAY_ID=<replayId>
+RECORD_MS=<recordTime>; REPLAY_MS=<requestDateTime>
 win() { s=$(( ($1 + $2) / 1000 )); date -u -d "@$s" +%FT%TZ 2>/dev/null || date -u -r "$s" +%FT%TZ; }
-for T in $RECORD_MS $REPLAY_MS; do
-  curl -s "${SP_API_URL}/api/recorder/logs?trace_id=${TRACE_ID}&since=$(win $T -120000)&until=$(win $T 120000)" \
-    -H "Accept: application/json"
-done | jq -s '[.[].rows[]] | sort_by(.timestamp)'
+i=0
+for T in "$RECORD_MS" "$REPLAY_MS"; do
+  case "$T" in ''|*[!0-9]*|0) echo "missing timestamp: '$T'" >&2; exit 1;; esac
+  i=$((i+1)); out="/tmp/logs-${TRACE_ID}-${i}.json"
+  curl -sf "${SP_API_URL}/api/recorder/logs?trace_id=${TRACE_ID}&replay_id=${REPLAY_ID}&since=$(win "$T" -120000)&until=$(win "$T" 120000)" \
+    -H "Accept: application/json" -o "$out" || { echo "request $i failed" >&2; exit 1; }
+  jq -e 'has("rows")' "$out" >/dev/null || { echo "request $i: $(jq -c . "$out")" >&2; exit 1; }
+done
+# Keep every window and warning; rows found by both queries are kept once
+jq -s '{windows: [.[].lookup.windows[]?], warnings: [.[].warnings[]?],
+        rows: ([.[].rows[]] | unique_by([.timestamp, .source, .span_id, .body]) | sort_by(.timestamp))}' \
+  "/tmp/logs-${TRACE_ID}-1.json" "/tmp/logs-${TRACE_ID}-2.json"
 ```
+
+If the application's clock differs from the backend's by more than a couple of minutes, shift the windows by the difference or widen them. For a request that itself ran for hours, query consecutive windows of at most three hours each rather than just its start and end.
 
 Don't pass one window that stretches from the recording time to the replay time: it spans every minute in between and is slow, or is refused.
 

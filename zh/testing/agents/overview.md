@@ -33,7 +33,7 @@ title: 选择接入方式
 |------|------|
 | **你的 Java 服务** | 启动时带上 `-javaagent:/path/to/sp-agent.jar` |
 | **SoftProbe Java Agent** | 运行时织入字节码，不改代码就能录下 HTTP、数据库、缓存、RPC 等依赖调用；回放时用录制结果代替这些调用 |
-| **SoftProbe 后端（sp-backend）** | 保存录制数据、策略、回放计划、日志、对比结果和 Agent 心跳；文档里的 `sp` 命令都通过 HTTP 访问它（默认端口 `:8090`） |
+| **SoftProbe 后端（sp-backend）** | 保存录制数据、策略、回放计划、日志、对比结果和 Agent 心跳；读写数据的 `sp` 命令都通过 HTTP 访问它（默认端口 `:8090`） |
 | **`sp` 命令行** | 注册应用、发布策略、查看 Agent 状态、查询录制数据、发起回放、诊断失败。JSON 输出稳定，退出码可预期，大块内容写到文件，见 [输出约定](/zh/testing/agents/output-contract) |
 
 回放需要先有录制用例，而用例只能来自挂着 Agent 真实运行过的应用，所以新系统上第一步永远不是回放。
@@ -54,7 +54,7 @@ java \
 
 1. **一个进程只做一件事**：每次工具调用只执行一条 `sp` 命令，参数写全。不用 shell 别名，不走交互式提问。
 2. **始终加 `--json`**，除非输出是给人看的。
-3. **大块内容走文件**：差异内容、日志下载和录制查询会把结果写到 `--out-dir` 下的文件，标准输出只给路径和摘要。
+3. **大块内容从文件读**：`replay diff get`、`replay mock-tree`、`diagnose replay` 会把结果写到 `--out-dir` 下的文件，`record query` 超过 4 KiB 时也会；这时标准输出只给路径和摘要。`sp logs` 总是把日志行直接打到标准输出，请重定向到文件。见 [输出约定 — 大块输出](/zh/testing/agents/output-contract#artifacts-large-output)。
 
 把 `sp` 包装成一个命令行工具，固定参数前缀：
 

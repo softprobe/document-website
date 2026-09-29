@@ -42,17 +42,17 @@ JSON 输出示例（`diagnose replay`）：
   "command": "diagnose replay",
   "data": {
     "planId": "plan-abc123",
-    "status": "FINISHED",
+    "status": "",
     "classification": "invalid_target",
     "message": "Connection refused: travel-ota:9999",
     "failedCaseCount": 0,
     "invalidCaseCount": 12,
-    "artifacts": [
-      ".sp-work/plan-abc123/item-1-diff.json"
-    ]
+    "artifacts": null
   }
 }
 ```
+
+这个例子里，目标连不上，所有用例都回放失败，没有差异，所以 `artifacts` 为 `null`。有差异的用例时，`artifacts` 列出差异文件。当前后端的进度接口不返回计划状态，所以 `status` 为空；查进度请用 [sp replay status](./replay)。
 
 `classification` 取值之一：`empty_window`、`invalid_target`、`assertion_failure`、`mixed`、`other`。`message` 来自后端的 `errorMessage` 或用例发送错误（如有），不是 CLI 自己编的文案。
 

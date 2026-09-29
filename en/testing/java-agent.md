@@ -208,11 +208,13 @@ To limit impact on live traffic, the agent implements **backpressure** when over
 ### When the recording queue is full {#queue-overflow}
 
 1. Recorded data goes into a bounded in-memory ring buffer: 2048 slots by default, holding up to 2047 batches (a batch is one group of recorded calls handed to the uploader). `-Dsp.buffer.size` can raise it; smaller values still get 2048.
-2. When the buffer is full, the new batch is dropped and its case is marked invalid and the agent switches to fast-reject: new recordings are dropped, apart from about one probe per second.
-3. After 30 seconds it lowers the sampling rate and checks again after 5 minutes, then every 10 minutes. Each check that still finds a backlog lowers the rate again — to 80% of the current rate per interface, never below 0.03 per minute (about once every 33 minutes).
-4. When the backlog clears, normal recording resumes.
+2. When the buffer is full, the new batch is dropped and its case is marked invalid, and the agent switches to **fast-reject**: new recordings are dropped, apart from about one probe per second.
+3. After 30 seconds it leaves fast-reject and records again, at a lower rate.
+4. It checks after 5 minutes, then every 10 minutes, whether uploads keep up (almost all batches waited in the queue for less than the threshold). If they do, the configured rate is restored; if not, the rate is lowered again.
 
-The agent never waits for the queue: a full queue costs recordings, not request latency.
+Each reduction takes the current rate of each interface, caps it at 20 per minute and uses 80% of that, but never goes below 0.03 per minute (about once every 33 minutes). For example, 100 per minute becomes 16.
+
+The agent never waits for space in the queue: a full queue costs recordings rather than holding up the request.
 
 ### When the backend fails {#storage-health}
 

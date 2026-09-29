@@ -62,7 +62,7 @@ sp policy compare get compare-global --json
 }
 ```
 
-只要后端有应答，`validate` 就以 `0` 退出，策略不合法时也是如此；`ok: true` 只表示校验执行了。请看 `data.valid`。
+后端完成校验时，即使策略不合法，`validate` 也以 `0` 退出；`ok: true` 只表示校验执行了，请看 `data.valid`。文件读不了或解析失败时以 `2` 退出（`USAGE`），请求失败时以 `1` 退出。
 
 ### JSON 输出（`gate`） {#json-output-gate}
 

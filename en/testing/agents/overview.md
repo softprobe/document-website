@@ -33,7 +33,7 @@ Point your agent at `/llms.txt` first; it follows links into the full text or pe
 |------|------|
 | **Your Java service** | Started with `-javaagent:/path/to/sp-agent.jar` |
 | **SoftProbe Java agent** | Weaves bytecode at runtime and records HTTP, database, cache, RPC and other dependency data without code changes; mocks those calls during replay |
-| **SoftProbe backend (sp-backend)** | Stores recordings, policies, replay plans, logs, diff results and agent heartbeats; every documented `sp` command talks to it over HTTP (`:8090` by default) |
+| **SoftProbe backend (sp-backend)** | Stores recordings, policies, replay plans, logs, diff results and agent heartbeats; `sp` commands that read or change data talk to it over HTTP (`:8090` by default) |
 | **`sp` CLI** | Registers apps, applies policies, checks agent status, queries recorded data, starts replays and diagnoses failures. Stable JSON output, predictable exit codes, and files for large payloads — see [Output contract](/en/testing/agents/output-contract) |
 
 A replay needs recorded cases from an app that actually ran with the agent, so replay is never the first step on a fresh system.
@@ -54,7 +54,7 @@ Full attach instructions: [Attach the Java agent](/en/testing/java-agent).
 
 1. **One process, one job** — each tool call runs a single `sp` command with explicit flags. No shell aliases, no interactive prompts.
 2. **Always pass `--json`** for machine parsing, unless you are showing output to a person.
-3. **Use artifacts for large payloads** — diff bodies, log downloads and record queries write files under `--out-dir`; stdout carries only paths and summaries.
+3. **Read large payloads from files** — `replay diff get`, `replay mock-tree` and `diagnose replay` write files under `--out-dir`, and `record query` does so above 4 KiB; stdout then carries paths and summaries. `sp logs` always prints its rows to stdout, so redirect it to a file. See [Output contract — artifacts](/en/testing/agents/output-contract#artifacts-large-output).
 
 Wrap `sp` as a shell tool with a fixed argv prefix:
 

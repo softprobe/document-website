@@ -38,17 +38,17 @@ Example JSON output (`diagnose replay`):
   "command": "diagnose replay",
   "data": {
     "planId": "plan-abc123",
-    "status": "FINISHED",
+    "status": "",
     "classification": "invalid_target",
     "message": "Connection refused: travel-ota:9999",
     "failedCaseCount": 0,
     "invalidCaseCount": 12,
-    "artifacts": [
-      ".sp-work/plan-abc123/item-1-diff.json"
-    ]
+    "artifacts": null
   }
 }
 ```
+
+In this example every case failed to replay because the target was unreachable, so there are no diffs and `artifacts` is `null`. When cases have differences, `artifacts` lists the diff files. `status` is empty with current backends (the progress API doesn't report a plan status); use [sp replay status](./replay) for progress.
 
 `classification` is one of: `empty_window`, `invalid_target`, `assertion_failure`, `mixed`, `other`. `message` comes from backend `errorMessage` or case send errors when available — not fabricated client copy.
 

@@ -58,7 +58,7 @@ sp policy compare get compare-global --json
 }
 ```
 
-`validate` exits `0` whenever the backend answered, even if the policy is invalid; `ok: true` only means the check ran. Read `data.valid`.
+When the backend completes the check, `validate` exits `0` even if the policy is invalid; `ok: true` only means the check ran, so read `data.valid`. A file that can't be read or parsed exits `2` (`USAGE`), and a failed request exits `1`.
 
 ### JSON output (`gate`)
 

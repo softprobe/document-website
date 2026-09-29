@@ -6,7 +6,7 @@ title: 输出约定
 
 `sp` 在加上 `--json` 时输出什么、以什么退出码结束。写脚本、接 CI、让 AI 代理调用 `sp` 时以本页为准。
 
-要点：`ok: true` 只表示命令执行了，不表示检查都通过；`sp policy gate`、`sp doctor`、`sp upgrade` 在结果为失败时照样把结果写到标准输出，同时以 `1` 退出。
+要点：`ok: true` 只表示命令执行了，不表示检查都通过；`sp policy gate`、`sp doctor`、`sp upgrade` 在结果为失败时照样把结果写到标准输出，同时以 `1` 退出。`sp agent command --format shell|docker|maven` 即使带 `--json` 也输出纯文本；`sp tunnel` 一直运行到被停止，只输出进度行。
 
 ::: info 本页保留英文
 这是给脚本和 AI 代理用的机器契约，字段名、取值、错误码都和程序输出逐字对应，所以正文保留英文。
@@ -47,9 +47,9 @@ When a command can't do its job — bad arguments, missing config, an unreachabl
 }
 ```
 
-`httpStatus` and `backend` (the raw backend response) are present only when the backend answered. Without `--json`, the same failure is printed as `error: <message>` (suppressed by `--quiet`).
+`httpStatus` is the HTTP status when the backend returned an HTTP error. `backend` is optional extra context: usually a summary of the backend's error (`responseCode`/`responseDesc`, or `result`/`desc`), sometimes built by the CLI itself (for example next steps when the agent jar is missing). Don't treat either as proof that a request reached the backend, and don't parse `backend` as the backend's raw response. Without `--json`, the same failure is printed as `error: <message>` (suppressed by `--quiet`).
 
-If the backend requires a login and no token is available, the CLI does **not** prompt in `--json` mode; it exits `3` with `"code": "AUTH_REQUIRED"`.
+If a command needs a token and none is configured, the CLI does **not** prompt in `--json` mode; it exits `3` with `"code": "AUTH_REQUIRED"`. This is checked by the CLI before calling the backend.
 
 Flags or arguments the command parser itself rejects (an unknown flag, a missing positional argument) exit `1` **without** a JSON envelope and may print nothing. Check the exit code, not only stderr.
 
@@ -61,7 +61,7 @@ Flags or arguments the command parser itself rejects (an unknown flag, a missing
 | `sp doctor` | At least one check failed | Result on stdout (`ok: true`, `data.status: "failed"`), exit `1` |
 | `sp upgrade` | The installer failed | Result on stdout (`ok: true`, `data.status: "failed"`), exit `1`. The installer's own output is streamed to stdout/stderr as well, so stdout is not a single JSON document |
 
-`sp policy <type> validate` is different again: an invalid policy exits `0` with `data.valid: false`. Always read `data.valid`.
+`sp policy <type> validate` is different again: when the backend completes the check and finds the policy invalid, the command exits `0` with `data.valid: false`. A file that can't be read or parsed is a `USAGE` error (exit `2`), and a failed request is exit `1`. In CI, check both the exit code and `data.valid`.
 
 ## Exit codes {#exit-codes}
 
@@ -104,7 +104,7 @@ Replay control (`createPlan`, `progress`, …) returns:
 }
 ```
 
-The CLI maps `result !== 1` to exit `1`. A non-2xx HTTP status is always exit `1`.
+The CLI maps `result !== 1` to exit `1`. For the other APIs, a non-2xx HTTP status is exit `1`; replay control decides by `result`.
 
 ## Large output: artifacts {#artifacts-large-output}
 
@@ -126,7 +126,7 @@ Some commands write their payload to a file and put only a pointer on stdout:
 }
 ```
 
-`replay diff get` and `replay mock-tree` always do this; `record query` does it when the payload is larger than 4 KiB; `diagnose replay` writes one file per failed case and lists them in `data.artifacts`. Check for `data.artifact` before reading the payload from stdout. The default `--out-dir` is `.sp-work/` in the current working directory.
+`replay diff get` and `replay mock-tree` always do this; `record query` does it when the payload is larger than 4 KiB; `diagnose replay` writes a file for each failed case whose diff it could find and lists them in `data.artifacts`. Cases that failed to replay, and cases without a readable diff, get no file, so the number of files is not the number of failures. `sp logs` never writes a file: redirect its stdout. Check for `data.artifact` before reading the payload from stdout. The default `--out-dir` is `.sp-work/` in the current working directory.
 
 ## Pagination {#pagination}
 
@@ -197,7 +197,7 @@ These pass through what the backend returns, so extra fields may appear; ignore 
 }
 ```
 
-`instanceCount` counts instances whose last heartbeat is within the online threshold, not every instance ever registered. What each status means: [Concepts and IDs — Application](/zh/testing/agents/concepts#application-appid).
+`instanceCount` counts instances whose last heartbeat is within the online threshold, not every instance ever registered. `agentVersion`, `lastSeenAt` and similar fields can be empty or missing. What each status means: [Concepts and IDs — Application](/zh/testing/agents/concepts#application-appid).
 
 ### ApplicationCreateResult
 
@@ -248,6 +248,8 @@ These pass through what the backend returns, so extra fields may appear; ignore 
   "lastUpdateTime": "2026-06-27 10:00:05"
 }
 ```
+
+`lastUpdateTime` is the scheduler's local time in GMT+8, without a time zone suffix.
 
 With `--watch` (on `status` or `run`), the command prints one envelope per poll until the plan finishes; the last one adds `"finished": true`. If the plan hasn't finished after 10 minutes, it stops with `API_ERROR` (exit `1`).
 
