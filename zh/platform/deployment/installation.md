@@ -4,7 +4,7 @@
 将 SP-Istio Agent 部署到您的生产 Istio 服务网格中。
 
 ::: tip 要部署录制回放平台？
-部署录制回放用的 SoftProbe 平台（单机或 Kubernetes）见 [选择部署方式](/zh/testing/installation/deployment)，`sp` 命令行见 [安装 sp 命令行](/zh/testing/installation/)。本页只讲 Istio 网格和 SESSIFY 的部署。
+部署用于录制回放的 SoftProbe 平台（单机或 Kubernetes）见 [选择部署方式](/zh/testing/installation/deployment)，`sp` 命令行的安装见 [安装 sp 命令行](/zh/testing/installation/)。本页只讲 Istio 网格和 SESSIFY 的部署。
 :::
 
 ::: tip 下一步：在 Dashboard 查看 Context View
