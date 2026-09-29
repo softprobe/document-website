@@ -335,11 +335,11 @@ spec:
 | | `includePaths` | string[] | JSON Pointer 白名单；空 = 对比全部 |
 | | `excludePaths` | string[] | JSON Pointer 黑名单（预过滤） |
 | `decompress[]` | `path` | string | JSON Pointer 或 Glob |
-| `decompress[]` | `codec` | enum | `PLAIN_JSON`、`BASE64_JSON`、`GZIP_BASE64_JSON` |
+| `decompress[]` | `codec` | enum | `PLAIN_JSON`、`BASE64_JSON`、`GZIP_BASE64_JSON`。**当前版本不生效**，见下方说明 |
 | `transforms[]` | `path` | string | JSON Pointer |
-| `transforms[]` | `expression` | string | 对比前归一化的 CEL |
+| `transforms[]` | `expression` | string | 对比前归一化的 CEL。**当前版本不生效**，见下方说明 |
 | `arrays[]` | `path` | string | 数组字段路径 |
-| `arrays[]` | `strategy` | enum | `BY_INDEX`（默认）、`BY_KEY`（需要非空的 `keys`）或 `BY_LCS`（最长公共子序列，控制台里显示为「LCS 算法」）。要写 `BY_LCS`，不能写 `LCS` |
+| `arrays[]` | `strategy` | enum | `BY_INDEX`（默认）或 `BY_KEY`（需要非空的 `keys`）。`BY_LCS`（控制台里的「LCS 算法」）可以保存，但当前版本不生效，等同于 `BY_INDEX` |
 | `arrays[]` | `keys` | string[] | `BY_KEY` 时必填 |
 | `arrays[]` | `references[]` | object | `field`、`target`、`targetKey` |
 | `validations[]` | `id` | string | 规则唯一 ID |
@@ -352,6 +352,10 @@ spec:
 | `operationSpecs[]` | `spec` | object | 与顶层 spec 相同的叶子字段（不可嵌套 `operationSpecs`） |
 
 路径为 **JSON Pointer**（`/foo/bar`）。Glob：`*` 单段，`**` 任意深度。
+
+::: warning decompress 和 transforms 暂不生效
+后端目前没有注册 `decompress` 编码和 `transforms` 表达式的处理程序。这两类规则能通过校验、也能保存，但对比时会被跳过（后端日志里留一条记录），仍按原值对比。
+:::
 
 ### CEL 变量与函数
 

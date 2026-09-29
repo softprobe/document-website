@@ -332,11 +332,11 @@ Do **not** put `operationNames` or `operationNamePatterns` on `selector` — the
 | | `includePaths` | string[] | JSON Pointer whitelist; empty = compare all |
 | | `excludePaths` | string[] | JSON Pointer blacklist (pre-filter) |
 | `decompress[]` | `path` | string | JSON Pointer or glob (`/data/**`) |
-| `decompress[]` | `codec` | enum | `PLAIN_JSON`, `BASE64_JSON`, `GZIP_BASE64_JSON` |
+| `decompress[]` | `codec` | enum | `PLAIN_JSON`, `BASE64_JSON`, `GZIP_BASE64_JSON`. **No effect in the current version**, see the note below |
 | `transforms[]` | `path` | string | JSON Pointer |
-| `transforms[]` | `expression` | string | CEL expression to normalize value before compare |
+| `transforms[]` | `expression` | string | CEL expression to normalize value before compare. **No effect in the current version**, see the note below |
 | `arrays[]` | `path` | string | Array field path |
-| `arrays[]` | `strategy` | enum | `BY_INDEX` (default), `BY_KEY` (needs non-empty `keys`) or `BY_LCS` (longest common subsequence; shown as "By LCS" in the console). Write `BY_LCS`, not `LCS` |
+| `arrays[]` | `strategy` | enum | `BY_INDEX` (default) or `BY_KEY` (needs non-empty `keys`). `BY_LCS` (**LCS algorithm** in the console) is accepted but has no effect in the current version and behaves like `BY_INDEX` |
 | `arrays[]` | `keys` | string[] | Required when `BY_KEY` |
 | `arrays[]` | `references[]` | object | `field`, `target`, `targetKey` for FK-style array linking |
 | `validations[]` | `id` | string | Unique rule id |
@@ -349,6 +349,10 @@ Do **not** put `operationNames` or `operationNamePatterns` on `selector` — the
 | `operationSpecs[]` | `spec` | object | Same leaf fields as top-level spec (no nested `operationSpecs`) |
 
 Paths use **JSON Pointer** syntax (`/foo/bar`). Globs: `*` = one segment, `**` = any depth.
+
+::: warning decompress and transforms have no effect yet
+The backend currently registers no handler for `decompress` codecs or `transforms` expressions. These rules validate and save, but at comparison time they are skipped (with a message in the backend log), and the original values are compared.
+:::
 
 ### CEL variables and helpers
 
