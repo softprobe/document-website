@@ -77,5 +77,7 @@ The [Platform](/en/platform/advanced-guides/agent-architecture) **SP-Istio agent
 - [Java agent](/en/testing/java-agent) — Attach, JVM flags, and production safety.
 - [Policies overview](/en/testing/policies) — YAML by lifecycle phase.
 - [Replay and diff](/en/testing/replay-and-diff) — Core workflow step 2: regression run.
-- [Webhook and CI/CD](/en/testing/webhook-and-ci) — Post-deploy replay and pipeline gates.
+- [Replay report](/en/testing/replay-report) — The conclusion, what caused the differences, and exporting the report.
+- [Replay after deployment](/en/testing/webhook-and-ci) — Replay automatically after each deploy and let the result decide whether the pipeline continues.
+- [Replay notifications](/en/testing/notifications) — Post replay results to Feishu, DingTalk or your own system.
 - [Supported frameworks](/en/testing/supported-frameworks)

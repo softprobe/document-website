@@ -62,7 +62,7 @@ Diff outcomes are classified as: matched, different, extra calls during replay, 
 
 ### 2.4 Replay reports and issue localization
 
-Every replay produces a report showing pass rate, failures, and diff details, with daily trend views. Cases with differences link directly to the endpoint, showing the exact differences between the old and new payloads.
+Every replay produces a report that leads with the conclusion. Once AI analysis has finished, it states what caused the differences, for example "3 differences are caused by code changes; developers need to confirm they are intended". Failing cases are grouped by cause into three tiers — caused by code changes, cause not established, and invalid — and differences caused by code changes point to the commit and line. Reports can be exported to Excel or PDF, or copied as a summary or Markdown. See [Replay report](/en/testing/replay-report).
 
 ### 2.5 Sensitive data protection
 
