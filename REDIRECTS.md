@@ -1,37 +1,28 @@
-# URL redirects (legacy → v2)
+# URL redirects
 
 Canonical site: `https://docs.softprobe.ai` (Cloudflare Worker `softprobe-docs`).
 
-VitePress `rewrites` in [`.vitepress/config.ts`](.vitepress/config.ts) handle many legacy paths at build time. Configure **Cloudflare Bulk Redirects** (or Worker rules) for 301s from old hosts.
+All redirects are Cloudflare rules in [`public/_redirects`](./public/_redirects). VitePress `rewrites` are not used (`npm run validate:testing-ia` rejects them). Rules are evaluated top to bottom and the first match wins, so exact rules must come before any wildcard that would also match them. Cloudflare limits the number of rules per file: use `:splat` wildcards for pure prefix moves and exact rules only where the destination differs.
 
-## Docusaurus platform (document-website / saas-doc)
+## What is redirected
 
-| Old path | New path |
-|----------|----------|
-| `/getting-started/:path*` | `/en/platform/getting-started/:path*` |
-| `/deployment/:path*` | `/en/platform/deployment/:path*` |
-| `/configuration/:path*` | `/en/platform/configuration/:path*` |
-| `/production/:path*` | `/en/platform/production/:path*` |
-| `/advanced-guides/:path*` | `/en/platform/advanced-guides/:path*` |
-| `/billing/:path*` | `/en/platform/billing/:path*` |
-| `/support/:path*` | `/en/platform/support/:path*` |
-| `/sessify` | `/en/platform/sessify` |
-| `/web-sdk` | `/en/platform/sessify` |
-| `/zh/getting-started/:path*` | `/zh/platform/getting-started/:path*` |
-| `/zh/deployment/:path*` | `/zh/platform/deployment/:path*` |
-| (same pattern for other `/zh/*` platform slugs) | `/zh/platform/...` |
+| Old paths | New paths |
+|-----------|-----------|
+| `/` | `/en/` (302; the zh site is one click away in the nav) |
+| `/auto-testing*`, `/{en,zh}/auto-testing*` (AREX era) | `/{en,zh}/testing/` |
+| `/{en,zh}/cli/guide/*` | Listed one by one: each guide page moved to a different Testing page |
+| `/{en,zh}/cli/{commands,examples,reference}/*` | `/{en,zh}/testing/{commands,examples,reference}/*` |
+| `/{en,zh}/cli/policies/*` | `/{en,zh}/testing/policies` |
+| `/guide/*`, `/commands/*`, `/examples/*`, `/reference/*`, `/policies/*` (old CLI docs site) | The English Testing tree |
+| `/getting-started/*`, `/deployment/*`, `/configuration/*`, `/production/*`, `/advanced-guides/*`, `/billing/*`, `/support/*` (Docusaurus) | `/en/platform/…` |
+| `/cli/*`, `/platform/*`, `/testing/*` | The English tree |
+| Pages merged in the 2026-09 restructure (for example `testing/download-java-agent`, `testing/installation/doctor`, `testing/agents/versioning`, `testing/reference/exit-codes`) | The section of the page that now holds their content |
 
-## CLI docs (softprobe-cli-docs.pages.dev)
-
-| Old path | New path |
-|----------|----------|
-| `/guide/:path*` | `/en/cli/guide/:path*` |
-| `/commands/:path*` | `/en/cli/commands/:path*` |
-| `/examples/:path*` | `/en/cli/examples/:path*` |
-| `/reference/:path*` | `/en/cli/reference/:path*` |
-| `/policies/:path*` | `/en/cli/policies/:path*` |
+When you merge or move a page, add an exact rule for the old URL of both languages, with a fragment pointing at the right section if there is one.
 
 ## Hostnames
+
+Configured in the Cloudflare dashboard, not in this repository:
 
 | Old host | Action |
 |----------|--------|
@@ -39,14 +30,4 @@ VitePress `rewrites` in [`.vitepress/config.ts`](.vitepress/config.ts) handle ma
 | `doc.softprobe.ai` | 301 → `docs.softprobe.ai` |
 | `softprobe-cli-docs.pages.dev` | 301 → `docs.softprobe.ai` (or keep as preview) |
 
-## Legacy AREX auto-testing
-
-| Old path | New path |
-|----------|----------|
-| `/en/auto-testing` | `/en/testing/` |
-| `/en/auto-testing/` | `/en/testing/` |
-| `/en/auto-testing/*` | `/en/testing/getting-started` |
-| `/zh/auto-testing` | `/zh/testing/` |
-| `/zh/auto-testing/*` | `/zh/testing/` |
-
-Update hardcoded links in `arex-client-opensource` separately.
+Hardcoded links in `arex-client-opensource` are updated separately.
