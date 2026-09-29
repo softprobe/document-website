@@ -76,7 +76,7 @@ COMPOSE_PROFILES=bundled docker compose -f docker-compose.yml down   # 停止全
 ./start.sh                                                           # 启动服务
 ```
 
-::: warning 不要用 stop.sh 停止
+::: warning 不要用 `./stop.sh` 停止
 当前安装包里的 `./stop.sh` 只停得掉平台容器，数据库、缓存和日志组件会继续运行。请用上面的命令停止。
 :::
 

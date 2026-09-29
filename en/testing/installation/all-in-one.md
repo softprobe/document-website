@@ -76,7 +76,7 @@ COMPOSE_PROFILES=bundled docker compose -f docker-compose.yml down   # stop ever
 ./start.sh                                                           # start the services
 ```
 
-::: warning Don't stop with stop.sh
+::: warning Don't stop with `./stop.sh`
 In current packages, `./stop.sh` only stops the platform container; the database, cache and log components keep running. Use the command above instead.
 :::
 

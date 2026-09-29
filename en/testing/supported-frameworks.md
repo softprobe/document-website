@@ -43,7 +43,7 @@ A recording starts with a request the service receives. The entry must be one of
 
 Apache HttpClient 5.x isn't supported yet.
 
-Mock exceptions under **Replay**, the dependency-type rules in diff rules, and policy YAML refer to dependency calls by category name (such as `HttpClient`, `Database`, `Redis`, `DubboConsumer`); the names are listed in [Policy YAML reference — dependency categories](/en/testing/policy-yaml-guide#dependency-categories).
+**Mock exceptions** under **Replay**, the dependency-type rules in diff rules, and policy YAML refer to dependency calls by category name (such as `HttpClient`, `Database`, `Redis`, `DubboConsumer`); the names are listed in [Policy YAML reference — dependency categories](/en/testing/policy-yaml-guide#dependency-categories).
 
 ## Local caches, time and dynamic classes {#dynamic}
 
