@@ -1,8 +1,8 @@
 # Softprobe documentation (VitePress v2)
 
-Unified public docs: **Platform** (`/en/platform/…`), **Testing** (`/en/testing/…` — install, `sp` commands, record & replay), and **Agent Evaluation** (`/en/evaluation/…` — suites, evaluators, gates; EN only for now).
+Unified public docs, in English and Chinese: **Replay Testing** (`/{en,zh}/testing/…` — record and replay, deployment and operations, pipelines, the `sp` command line and AI agent contracts), **Business observability** (`/{en,zh}/platform/…`, SoftProbe Cloud only), **Agent QA** (`/{en,zh}/agent-qa/…`) and **Agent Evaluation** (`/{en,zh}/evaluation/…`).
 
-User-facing **`sp`** docs are canonical under **`en/testing/`** and **`zh/testing/`**. Legacy `/en/cli/*` URLs rewrite to Testing sources (see `CONTRIBUTING.md`).
+Legacy `/cli/*` and Docusaurus URLs are redirected by Cloudflare rules in [`public/_redirects`](./public/_redirects); see [REDIRECTS.md](./REDIRECTS.md).
 
 ## Local dev
 
@@ -48,22 +48,15 @@ See [REDIRECTS.md](./REDIRECTS.md) for legacy URL mapping.
 
 ## Content layout
 
-| Path | Source |
-|------|--------|
-| `en/platform/` | Former `document-website/docs/` |
-| `zh/platform/` | Former `i18n/zh/.../current/` |
-| `en/testing/` | New product docs (rewritten from legacy `auto-testing/` backup) |
-| `zh/testing/` | ZH overview + links to EN detail pages |
-| `en/cli/` | Former `backend/docs-site/` (public pages) |
-| `zh/cli/` | English CLI mirror + locale banner |
-| `en/cli/implementer/` | Internal only — excluded from build |
+| Path | Contents |
+|------|----------|
+| `{en,zh}/testing/` | Replay Testing. Sidebar groups: getting started, everyday use, deploy and operate, pipelines and notifications, integrate and AI agents, command reference |
+| `{en,zh}/platform/` | Business observability (Istio/Envoy mesh capture), SoftProbe Cloud only |
+| `{en,zh}/agent-qa/` | Agent QA |
+| `{en,zh}/evaluation/` | Agent Evaluation |
+| `{en,zh}/cli/implementer/`, `en/evaluation/implementer/` | Internal notes, excluded from the build |
 
-To refresh CLI content from backend after API changes:
-
-```bash
-node scripts/migrate-content.mjs
-node scripts/fix-html.mjs
-```
+Sidebars live in `.vitepress/config.ts`; nav and footer in `.vitepress/theme/shared.ts`. Screenshots are under `public/img/docs/testing/{en,zh}/` and come from the latest v2 console.
 
 ## Branch
 

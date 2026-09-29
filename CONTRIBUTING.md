@@ -2,20 +2,25 @@
 
 ## Where to edit (canonical paths)
 
-User-facing **`sp`** install, setup, lifecycle, commands, and automation docs live under **`en/testing/`** and **`zh/testing/`** only.
+Replay Testing docs live under **`en/testing/`** and **`zh/testing/`**.
 
 | Topic | Edit here |
 |-------|-----------|
-| Install sp-backend (server) / setup / config / code / doctor / upgrade / agent | `{en,zh}/testing/installation/*.md` (setup is a section on client `index.md`) |
-| Command reference | `{en,zh}/testing/commands/*.md` |
-| AI agent contracts (output, versioning, concepts) | `{en,zh}/testing/agents/*.md` |
-| Examples / reference / policies | `{en,zh}/testing/{examples,reference,policies}/` |
-| Platform / Istio / K8s mesh ops | `{en,zh}/platform/deployment/` |
-| Agent Evaluation (suites, evaluators, gates; `en/evaluation/implementer/` is internal, excluded from build) | `en/evaluation/` (English-only for now) |
+| Getting started, how it works, capabilities | `{en,zh}/testing/{index,getting-started,how-it-works,core-features-and-performance}.md` |
+| Everyday use in the console (recordings, pinned cases, replay, report, diffs, rules, settings) | `{en,zh}/testing/*.md` at the top level |
+| Deploy and operate (deployment choice, preparation, All-in-One, Helm, Java agent, data protection, AI diagnosis, maintenance) | `{en,zh}/testing/installation/*.md`, `{en,zh}/testing/java-agent.md`, `{en,zh}/testing/supported-frameworks.md` |
+| Pipelines and notifications | `{en,zh}/testing/{webhook-and-ci,notifications}.md`, `{en,zh}/testing/examples/gitops-policies.md` |
+| `sp` command line, AI agent contracts, references | `{en,zh}/testing/{agents,commands,reference,examples}/`, `{en,zh}/testing/policy-yaml-guide.md` |
+| Business observability (SoftProbe Cloud only) | `{en,zh}/platform/` |
+| Agent Evaluation (`en/evaluation/implementer/` is internal, excluded from the build) | `{en,zh}/evaluation/` |
 
-**Do not** add feature content under `{en,zh}/cli/` — those files are **redirect stubs** for legacy URLs. VitePress `rewrites` map `/en/cli/*` bookmarks to `testing/*` sources.
+Content for our own implementation engineers (on-site process, compatibility assessment, internal troubleshooting, schedules) does **not** belong on this public site; it lives in the internal field handbook.
 
-Normative IA contract: [`specs/010-sp-facade/contracts/docs-ia.md`](../specs/010-sp-facade/contracts/docs-ia.md) in the workspace `dev` repo.
+Pages written for AI agents and tools (`testing/agents/output-contract`, parts of `testing/commands/`) keep an English body on the zh site, with a Chinese introduction saying so.
+
+## Redirects
+
+Redirects live in [`public/_redirects`](./public/_redirects) (Cloudflare, first match wins). VitePress `rewrites` are not used; `npm run validate:testing-ia` fails if they come back. When you merge or move a page, add an exact rule for its old URL, pointing at the section that now holds the content. See [REDIRECTS.md](./REDIRECTS.md).
 
 ## Validation
 
@@ -29,14 +34,6 @@ Run before opening a docs PR. CI should run the same check.
 
 When you change `en/testing/...`, update the matching `zh/testing/...` path unless the page is intentionally English-only (note why in the PR).
 
-## Preview URLs
+## Screenshots
 
-Check the **Testing** sidebar path, e.g. `/en/testing/installation/` — not `/en/cli/commands/setup`.
-
-## Migration script
-
-One-time bulk move (already applied on `v2`):
-
-```bash
-node scripts/complete-cli-to-testing-migration.mjs
-```
+Take screenshots from the latest v2 console, in the language of the page (`public/img/docs/testing/zh/` for Chinese, `en/` for English). Button and menu names quoted in the text must match the console's i18n strings exactly.

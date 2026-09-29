@@ -640,3 +640,8 @@ a.button {
     max-width: none;
   }
 }
+
+/* SoftProbe Cloud-only notice above /platform/ pages (PlatformScopeNote.vue) */
+.sp-scope-note {
+  margin: 0 0 32px;
+}
