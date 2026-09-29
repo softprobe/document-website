@@ -4,88 +4,72 @@ title: 工作原理
 
 # 录制回放如何工作
 
-SoftProbe 测试采集的是一次**事务**：一条入口请求，以及该调用链上代码触达的每个依赖。回放时同一代码路径再次执行；外部调用由存储数据满足，而非访问真实系统。
+SoftProbe 录的是一次完整的**请求处理**：一条入口请求，以及处理它时代码调用的每一个依赖。回放时，同一段业务代码再执行一遍；它调用依赖时，按配置用录制下来的结果应答。
 
-## 端到端时序
+## 全过程 {#end-to-end}
 
 ```mermaid
 sequenceDiagram
-  participant App as 被测应用
-  participant Agent as Java Agent
-  participant Storage as sp-backend 存储
-  participant Redis as Redis Mock 缓存
-  participant Mongo as MongoDB
-  participant Schedule as 回放调度
+  participant App as 被测服务（挂 Agent）
+  participant Backend as SoftProbe 后端
+  participant Target as 测试环境的新版本（挂 Agent）
 
-  Note over App,Mongo: 录制
-  App->>Agent: 依赖调用
-  Agent->>Storage: 上传 SpMocker
-  Storage->>Mongo: 持久化
+  Note over App,Backend: 录制
+  App->>App: 处理真实请求
+  App->>Backend: 上报入口请求、响应和依赖调用
 
-  Note over Schedule,Redis: 回放准备
-  Schedule->>Storage: 预加载 Mock
-  Storage->>Redis: record 分类键
+  Note over Backend,Target: 回放
+  Backend->>Target: 重新发送录制的入口请求
+  Target->>Backend: 调用依赖时，取录制的结果
+  Backend-->>Target: 返回录制的结果
+  Target->>Backend: 上报这次的响应和依赖调用
 
-  Note over App,Redis: 回放
-  App->>Agent: 相同调用路径
-  Agent->>Storage: 查询 Mock
-  Storage->>Redis: 取录制响应
-  Storage-->>Agent: Zstd 载荷
-  Agent-->>App: Mock 依赖
-
-  Note over Schedule,Mongo: 对比
-  Schedule->>Storage: 录制 vs 回放列表
-  Storage->>Schedule: 差异结果
+  Note over Backend: 对比
+  Backend->>Backend: 对比录制与回放，生成报告
 ```
 
-## 录制阶段 {#recording-phase}
+## 录制 {#recording-phase}
 
-开启录制后，Agent 拦截：
+Agent 在服务里记录两类调用：
 
-| 类型 | 示例 | 存储内容 |
-|------|------|----------|
-| **入口** | `Servlet`、`DubboProvider`、`NettyProvider` | 入站 API 请求与响应 |
-| **依赖** | `HttpClient`、`Database`、`Redis`、`DubboConsumer`、`DynamicClass` 等 | 每次对外调用的请求与响应 |
+| 类型 | 例子 | 记录什么 |
+|------|------|---------|
+| **入口** | HTTP 接口（Servlet）、Dubbo 服务、消息消费 | 收到的请求和返回的响应 |
+| **依赖** | 数据库、Redis、HTTP 客户端、Dubbo 调用、本地缓存、系统时间 | 每次调用的参数和结果 |
 
-每次交互是一条 **mocker** 记录，按 `appId`、trace/用例标识、分类与操作名索引。
+一条入口请求连同它触发的全部依赖调用，就是一个**用例**。录制按采样进行，默认每个实例、每个接口每分钟约 1 条。数据由 Agent 的后台线程上报，业务请求不等待网络。
 
-**如何产生用例：** [录制流量](/zh/testing/recording) · **录制范围配置：** [录制策略](/zh/testing/policies#recording-policy)
+用例只能靠录制产生，不能手工编写。怎么查看录制，见 [查看录制](/zh/testing/recording)；怎么调整录制范围，见 [录制配置](/zh/testing/policies#recording)。
 
-::: tip
-用例**仅由**已织入 Agent 的流量产生。CLI 不支持手写用例；请在 Agent 录制期间向应用发送真实或合成流量。
-:::
+## 回放 {#replay-phase}
 
-## 回放阶段
+一次回放（回放计划）选出一批用例，把它们的入口请求发给**目标环境**：测试环境里正在运行的服务地址，例如 `http://order-service.test:8080`。目标服务也要挂 Agent，使用同一个应用 ID。
 
-**回放计划**选择已录制用例，并将入口 HTTP 流量驱动到 **`targetEnv`** — 被测服务的基础 URL（例如 `http://order-service.test:8080`）。这与指向 sp-backend 的 `SP_API_URL` **不是**同一个地址。
+1. 后端把录制的入口请求发给目标服务。
+2. 目标服务真实执行业务代码：Controller、业务逻辑都会跑。
+3. 代码调用依赖时，Agent 按「回放配置」决定：用录制时的结果应答（Mock），还是真的去调用。默认全部 Mock。
+4. 这次的响应和依赖调用被记录下来。
 
-回放过程中：
+Mock 只对 Agent 支持的依赖类型生效。回放配置里设为「走真实请求」的依赖、Agent 不支持的依赖，以及新建回放计划时选择「强制所有依赖走真实调用」时，回放都会真的访问外部系统。所以回放目标应该是测试环境。
 
-1. 调度服务将录制的入口请求发往 `targetEnv`。
-2. 被测应用必须挂载 Agent（回放机器上可将录制频率设为 0）。
-3. 每次依赖调用时，Agent 向存储查询**匹配的录制响应**。
-4. 已预加载时从 Redis 读取；否则从 MongoDB 加载。
+## 对比 {#comparison}
 
-**入口与依赖的行为差异：**
+回放结束后，把每个用例的录制结果和回放结果逐项对比：
 
-- **入口**（`entryPoint` 分类）：存储会记录回放侧请求；业务代码中的 Controller/Handler 仍会真实执行。
-- **依赖**：存储返回录制的 Mock 体，应用不会访问真实数据库或外部 API。
+- **入口响应**：返回给调用方的内容是否一致。
+- **依赖调用**：调用的参数是否一致，有没有少调、多调。
 
-## 对比阶段
+常见的差异：
 
-回放结束后，对比引擎配对录制与回放的 mocker。失败表示主响应或某依赖不一致（缺调用、值不同、多调用等）。
+- **值不一致**：同一个字段，录制时和回放时的值不同。
+- **少了调用**：录制时调用过的依赖，回放时没有调用。
+- **多了调用**：回放时调用了录制里没有的依赖。
 
-常见差异类型：
+时间戳、随机 ID 这类每次都变的字段，用[对比规则](/zh/testing/compare-rules-web-ui)忽略。对比结果汇总成[回放报告](/zh/testing/replay-report)；接入 AI 诊断后，报告还会说明差异是不是代码改动引起的。
 
-- **值差异** — 依赖被调用了，但响应体不同
-- **缺调用** — 回放未调用录制时存在的依赖
-- **多调用** — 回放调用了录制中不存在的依赖
+## 一个例子 {#example}
 
-通过[对比策略](/zh/testing/policies)与[回放与对比](/zh/testing/replay-and-diff)忽略噪声字段（时间戳、令牌、IP 等）。
-
-## 示例说明
-
-下面方法解析 IP 并调用校验逻辑：
+下面这个方法解析 IP 地址：
 
 ```java
 public Integer parseIp(String ip) {
@@ -101,24 +85,11 @@ public Integer parseIp(String ip) {
 }
 ```
 
-**录制** — 当 `needRecord()` 为真时，Agent 保存入参与返回值。
+如果 `checkFormat` 依赖外部配置或运行环境，把它登记为[动态类](/zh/testing/policies#dynamic-classes)：录制时 Agent 记下它的参数和返回值；回放时直接返回录制的值，`parseIp` 就会按录制时的结果执行，即使测试环境的配置不同。本地缓存、加解密、系统时间也是这样处理的，不需要改业务代码。
 
-**回放** — Agent 用存储结果短路执行，使 `checkFormat` 与解析行为与采集时一致，即使测试环境不同。
+## 相关文档 {#related}
 
-本地缓存、加解密、系统时间等**动态类**同样适用；通过录制策略与 Mock 策略配置，无需改业务代码。
-
-## 存储结构（概念）
-
-| 存储 | 作用 |
-|------|------|
-| **MongoDB** | 持久化录制、回放计划、对比结果 |
-| **Redis** | 回放热路径 Mock 缓存（`record:{category}:{recordId}:…`） |
-
-自托管时，`sp-backend` 通常是单一进程，在 **8090** 端口同时提供 API、存储与调度。
-
-## 相关文档
-
-- [Java Agent](/zh/testing/java-agent)
-- [策略](/zh/testing/policies)
-- [回放与对比](/zh/testing/replay-and-diff)
-- [CLI 概念](/zh/testing/agents/concepts)
+- [接入 Java Agent](/zh/testing/java-agent)
+- [录制配置与回放配置](/zh/testing/policies)
+- [发起回放与定时回放](/zh/testing/replay-and-diff)
+- [概念与编号](/zh/testing/agents/concepts)

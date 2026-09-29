@@ -1,83 +1,60 @@
 ---
-title: Softprobe Testing
+title: Replay Testing
 ---
 
-# Softprobe Testing
+# Replay Testing
 
-**Record real traffic. Replay with automatic mocks. Compare without writing test cases.**
+Record real requests in production or test, replay them against a new version in a test environment, and compare the results automatically to find what your change broke. No hand-written test cases, no changes to your business code.
 
-::: tip Ready to start?
-🚀 If you are new to Softprobe, go straight to our **[Getting Started](/en/testing/getting-started)** guide! Try it out using a pre-built JAR in 5 minutes, and then onboard your own application.
-:::
+For **Java** services: add the SoftProbe Java agent to the service's start command and recording begins.
 
-Softprobe Testing is record-and-replay regression for **Java** services. Attach the Softprobe Java agent as a `-javaagent`, capture inbound API traffic and outbound dependency calls in the background, then replay recorded cases in a test environment while dependencies are mocked from stored data and results are compared automatically.
+## What it solves {#why}
 
-::: info Product areas on this site
-| Area | You use it when... |
-|------|---------------------|
-| **[Platform](/en/platform/)** | You need Istio/Envoy mesh capture, SESSIFY session context, or the observability dashboard |
-| **Testing** (this section) | You need Java record/replay, the JVM agent, policies, replay semantics, installation, commands, and automation |
-:::
+- **Hand-written tests miss real traffic.** The parameter combinations and edge cases that show up in production are hard to build by hand. Recorded requests are the test cases.
+- **Regression checks are manual.** After a change you no longer diff responses one endpoint at a time: a replay compares everything and points to the endpoint and field that changed.
+- **Test environments lack dependencies.** During replay, calls to databases, caches and downstream services can be answered with what was recorded, so the test environment doesn't need all of them.
 
-## Why record-and-replay
-
-Traditional integration tests require maintaining environments, seed data, and hand-written cases. Softprobe Testing instead:
-
-- **No application code changes** — bytecode instrumentation via `sp-agent.jar`
-- **High coverage from real traffic** — production or staging requests become replay cases
-- **Isolated replay** — databases, HTTP clients, Redis, RPC, caches, and more are mocked from recordings so you do not need live downstreams in the test environment
-- **Safe WRITE paths** — recorded dependency behavior is replayed without dirtying shared databases during regression
-- **Lower noise** — compare rules, time mocking, and ignore nodes handle timestamps, random IDs, and environment-specific fields
-
-## How the pieces fit together
-
-| Component | Role |
-|-----------|------|
-| **Your Java service** | The application under test, started with `-javaagent:…/sp-agent.jar` |
-| **Softprobe Java agent** | Records and replays at runtime; mocks dependencies during replay |
-| **Softprobe backend** (`:8090`) | Deployed via Helm. Stores cases (MongoDB), serves policies, runs replay plans, computes diffs |
-| **`sp` command** (optional) | Registers apps, applies policies, starts replay, inspects failures — see [Commands](/en/testing/commands/) |
-| **Dashboard / workbench** (optional) | Visual diff and trace review |
+## How it works {#how-it-works}
 
 ```mermaid
 flowchart LR
-  App[JVM app under test]
-  Agent[Java agent]
-  Backend[sp-backend]
-  App --> Agent
-  Agent --> Backend
+  A[Real requests] --> B[Service with the agent]
+  B -->|records requests and dependency calls| C[(SoftProbe backend)]
+  C -->|replays the entry requests| D[New version in test]
+  D -->|dependency calls answered from the recording| C
+  C --> E[Comparison and replay report]
 ```
 
-## Record → replay → compare (short)
+1. **Record**: while the service handles real requests, the agent records the entry request and response, plus every call it makes to databases, caches and downstream endpoints, with their results. Recording is sampled, not exhaustive.
+2. **Replay**: the recorded entry requests are sent to the new version in a test environment. It runs the real business code; when it calls a dependency, the agent answers with the recorded result.
+3. **Compare**: the recorded and replayed responses and dependency calls are compared, and a [replay report](/en/testing/replay-report) explains which differences come from the code change.
 
-1. **Record** — Agent captures entry traffic (e.g. HTTP `Servlet`) and dependency calls (`HttpClient`, `Database`, `Redis`, …) while the app handles real requests.
-2. **Store** — Backend persists each interaction; replay hot path uses Redis-backed mock cache.
-3. **Replay** — Schedule service sends recorded entry requests to your **test instance** (`targetEnv` URL). The agent returns recorded dependency responses instead of calling real downstreams.
-4. **Compare** — Engine diffs recorded vs replay traffic; policies define what to ignore or how strictly to match.
+::: warning Replay doesn't always stay away from real dependencies
+Only calls the agent supports, and that are set to mock under **Config → Replay**, are answered from the recording. That page can send some dependencies to the real service, and a replay plan can choose to force every dependency to make real calls. Point replays at a test environment, never at production.
+:::
 
-Details: [Record traffic](/en/testing/recording) · [How it works](/en/testing/how-it-works) · [Replay and diff](/en/testing/replay-and-diff)
+More detail: [How it works](/en/testing/how-it-works).
 
-## Platform agent ≠ Java agent
+## What's in it {#components}
 
-The [Platform](/en/platform/advanced-guides/agent-architecture) **SP-Istio agent** runs in Envoy sidecars and captures mesh HTTP traffic. **Softprobe Testing** uses the **JVM agent** attached with `-javaagent`. They solve different problems; both can feed the same backend for correlation in SaaS deployments.
+| Part | Role |
+|------|------|
+| **SoftProbe Java agent** | A jar that starts with your service; records, and answers dependency calls during replay |
+| **SoftProbe backend** | Stores recordings, runs replays and comparisons, builds reports |
+| **Console** | Browse recordings, start replays, read reports, configure rules, and ask AI why a replay failed |
+| **`sp` command line** (optional) | For scripts, CI jobs and AI agents |
 
-## Who should read this section
+## Where to start {#where-to-start}
 
-- **Java developers** adopting record/replay for the first time
-- **QA / release engineers** running regression without full downstream stacks
-- **Platform engineers** wiring `sp-backend` and agent startup in K8s or VM images
-- **Automation authors** — start here for concepts, then [Commands](/en/testing/commands/) for `sp` automation
+| You are | Start here |
+|---------|-----------|
+| A tester or developer using SoftProbe for regression | [Your first record and replay](/en/testing/getting-started), then the "Everyday use" section |
+| An operator or platform admin deploying it | [Deploy the backend](/en/testing/installation/server), [Attach the Java agent](/en/testing/java-agent) |
+| Maintaining a pipeline that should replay after each deploy | [Replay after deployment](/en/testing/webhook-and-ci) |
+| Writing scripts or plugins, or wiring up an AI agent | [Choose how to integrate](/en/testing/agents/overview) |
 
-## Quick links
+Supported Java versions and frameworks: [Supported frameworks](/en/testing/supported-frameworks).
 
-- [Getting Started](/en/testing/getting-started) — Try the 5-minute [Travel OTA](https://github.com/softprobe/demo-ota) demo and onboard your application.
-- [Install Softprobe](/en/testing/installation/) — Install, set up, launch coding, diagnose, and upgrade with `sp`.
-- [Record traffic](/en/testing/recording) — Core workflow step 1: build the case corpus.
-- [Pin cases & test sets](/en/testing/pinned-cases) — Keep selected recordings beyond retention and replay them as a reusable set.
-- [Java agent](/en/testing/java-agent) — Attach, JVM flags, and production safety.
-- [Policies overview](/en/testing/policies) — YAML by lifecycle phase.
-- [Replay and diff](/en/testing/replay-and-diff) — Core workflow step 2: regression run.
-- [Replay report](/en/testing/replay-report) — The conclusion, what caused the differences, and exporting the report.
-- [Replay after deployment](/en/testing/webhook-and-ci) — Replay automatically after each deploy and let the result decide whether the pipeline continues.
-- [Replay notifications](/en/testing/notifications) — Post replay results to Feishu, DingTalk or your own system.
-- [Supported frameworks](/en/testing/supported-frameworks)
+::: info Business Observability
+The "Business Observability" section of this site covers mesh traffic capture with Istio/Envoy on SoftProbe Cloud only. It is separate from Java-agent record and replay.
+:::

@@ -1,152 +1,119 @@
 ---
-title: 回放与对比
+title: 发起回放与定时回放
 ---
 
-# 回放与对比
+# 发起回放与定时回放
 
-回放把 [录制](/zh/testing/recording) 攒下的用例变成一次**回归运行**：把当初的入口请求原样打到你的**测试实例**上，依赖调用（数据库、外部 HTTP…）由录制数据自动 Mock，跑完自动对比录制响应和回放响应，给出通过/失败。
+回放把录下的入口请求重新发给测试环境里的服务，服务真实执行业务代码，调用依赖时用录制结果应答，最后对比录制时和这次的结果。一次回放就是一个**回放计划**。
 
-继续用 `order-service` 的例子：生产流量已经录了一批用例，现在要在测试环境验证新版本代码有没有回归。
+可以手动发起一次回放，也可以建**定时任务**每天自动回放；发版后由流水线自动触发，见 [发版后自动回放](/zh/testing/webhook-and-ci)。
 
-## 第 1 步 · 准备测试实例
+## 准备测试实例 {#prepare}
 
-在测试环境把**新版本**的应用跑起来，同样挂 Agent、用同一个 `appId`：
+在测试环境启动要验证的版本，同样挂上 Agent，并使用**和录制时相同的应用 ID**（`-Dsp.app.id`）。记下它的地址，例如 `order-service.test:8080`，这就是回放的**目标环境**。
 
-```bash
-java -javaagent:sp-agent.jar \
-     -Dsp.app.id=<你的 appId> \
-     -Dsp.api.url=http://<后端主机>:8090 \
-     -jar order-service-new.jar
-```
+::: warning 回放会真实请求目标服务
+入口请求会真实发给目标服务，业务代码真实执行。依赖调用是否用录制结果应答，取决于「回放配置」（见 [录制配置与回放配置](/zh/testing/policies#replay)）。所以：
 
-记下它的访问地址，比如 `http://order-service.test:8080`——这就是 **`targetEnv`**，回放流量的目的地。
-
-::: warning 在生产录制，在测试环境回放
-回放会向 `targetEnv` 发送**真实 HTTP 请求**（只有下游依赖被 Mock），所以除非明确接受风险，回放目标应该是非生产实例。同时把回放机上的录制关掉或调到极低，避免回放流量又被录一遍污染用例库。
+- 目标请用测试环境，不要指向生产。
+- 回放目标上的录制关掉或调到很低，避免把回放请求又录一遍。
 :::
 
-## 第 2 步 · 发起回放
+发起回放的后端要能访问目标地址。使用 SoftProbe Cloud、目标只在你本机时，用 [`sp tunnel`](/zh/testing/commands/tunnel)。
+
+## 立即回放 {#run}
 
 <InterfaceTabs :tabs="['ui','cli']">
 <Interface id="ui">
 
-1. 进入应用工作台，在左侧导航切换至 **回放** 模块。
-2. 点击 **+ 新建回放计划**，在「目标环境（targetEnv）」中填入测试服务地址（如 `http://order-service.test:8080`）。
-3. 选择回放范围（全量接口、选择接口或固化用例），点击 **创建计划**，系统将实时显示各用例的调度与执行进度。
+打开「回放 → 执行记录」，点「立即回放」，填写「新建回放计划」：
 
-![网页控制台发起回放演示](/img/docs/testing/zh/replay-recordings.gif)
+![新建回放计划](/img/docs/testing/zh/new-plan.png)
 
-</Interface>
-<Interface id="cli">
-
-```bash
-sp replay run --app <你的 appId> --env http://order-service.test:8080 --json
-```
-
-命令返回一个 `planId`。盯着它跑完：
-
-```bash
-sp replay status <planId> --watch
-```
-
-</Interface>
-</InterfaceTabs>
-
-::: tip 两个 URL 别混
-`--env`（`targetEnv`）是**被测服务**的地址；`SP_API_URL` 是 **sp-backend 后端服务**的地址。混淆二者是最常见的集成错误——见 [CLI 概念](/zh/testing/agents/concepts#replay-target-url-targetenv)。
-:::
-
-回放期间发生的事：调度服务把用例的 Mock 预加载进 Redis，逐条向 `targetEnv` 重发录制的入口请求；你的服务真实执行业务代码，但每次调依赖时 Agent 返回**录制的响应**，不碰真实数据库和外部系统；回放侧流量被存下来，与录制侧自动对比。
-
-sp-backend 在每次入口请求发出前记录 **`Replay send start`**，发出后记录 **`Replay send done`** / **`Replay send failed`**——这是回放 HTTP 派发的进入/退出边界，日志排查见 [Replay send / 日志标记](/zh/testing/reference/replay-send-log-markers)。
-
-## 第 3 步 · 读结果
-
-对比例行没有发现实质差异的用例**通过**。**失败**的用例会给出差异场景：
-
-- **值差异** — 依赖调了，但响应体不同
-- **缺调用** — 录制时调过的依赖，回放时没调
-- **主响应差异** — 入口响应与录制不一致
-
-<InterfaceTabs :tabs="['ui','cli']">
-<Interface id="ui">
-
-1. 在「执行记录」中打开这次回放，先在「报告」页签查看结论和差异原因（详见 [回放报告](/zh/testing/replay-report)），再切换到「用例列表」查看每条用例。
-2. 选中左侧标记为失败的用例，右侧调用树即刻展开并排 Diff 视图（左侧为录制响应，右侧为回放响应）。
-3. 悬停差异行可快速添加忽略规则，并使用顶部的 **重新比对** 立即刷新判定结果。
-
-![网页控制台审查回放结果与差异演示](/img/docs/testing/zh/review-diffs.gif)
-
-</Interface>
-<Interface id="cli">
-
-命令行快速排查：
-
-```bash
-sp replay case list --plan <planId> --json     # 哪些用例失败
-sp diagnose replay <planId> --failed-only --out-dir .sp-work --json   # 失败详情 + diff 产物落盘
-```
-
-拿到某条差异的 `diffId` 后，看单条完整 diff：`sp replay diff get <diffId> --out-dir .sp-work --json`。
-
-</Interface>
-</InterfaceTabs>
-
-## 有失败？先别当 bug
-
-**大多数失败不是 bug。** 时间戳、随机 ID、Pod IP、会话令牌每次运行都会变——它们永远会"不一样"，但并没有出错。接下来两步就是干这个的：
-
-- **[审查差异](/zh/testing/review-diffs-in-the-web-ui)** — 在工作台里逐条看 diff，接受不是 bug 的差异，让真失败露出来
-- **[配置对比规则](/zh/testing/compare-rules-web-ui)** — 把"永远会变"的字段配成规则，以后每次回放都不再误报
-
-规则也能用 YAML 声明（`sp policy compare`），方便进 CI 和 GitOps——见 [策略 YAML 指南 · CompareRulePolicy](/zh/testing/policy-yaml-guide#comparerulepolicy)。
-
-## 术语速查
-
-| 概念 | 含义 |
+| 字段 | 说明 |
 |------|------|
-| `targetEnv` / `--env` | 接收回放入口流量的服务基础 URL |
-| `planId` | 整次运行的容器 |
-| `planItemId` | 计划内的一个操作（API 路径） |
-| `replayId` | 单个用例的一次回放执行 |
-| Case | 一条录制的入口请求及其依赖 mocker |
+| 计划名称 | 选填，便于在执行记录里认出来 |
+| 目标环境（targetEnv） | 左边选协议（`http://`、`https://`、`dubbo://` 等），右边填 `host:port` |
+| 回放范围 | 「全量接口」「选择接口」或「固化用例」。选择接口时可以按接口名、描述、标签搜索，也可以「按标签选择」 |
+| 录制起始时间 / 录制截止时间 | 回放这段时间里录下的用例，可选近 1 小时、近 24 小时、近 7 天。回放固化用例时不看这个时间 |
+| 每个接口的用例数量上限 | 按接口分别计算，不填则全部回放 |
+| 用例标签筛选 | 只回放带指定标签的用例，如 `env:prod` |
 
-## 回放范围
+「高级选项」里还有：
 
-普通回放哪些用例由计划请求的时间范围、操作过滤，以及录制策略的 `operations` 包含/排除决定。默认的 Rolling 回放使用基于时间范围的选择逻辑。
+| 选项 | 说明 |
+|------|------|
+| 压力与速率 | 「标准（自适应）」遇错自动降速，适合日常回归；「串行」一条跑完再发下一条；「固定总 RPS（压测）」全程恒定。标准模式可以选倍速（0.25×～4×） |
+| 单 case 超时 | 单条用例等待响应的最长时间（毫秒），留空用默认值 |
+| 依赖调用 | 勾选「本次回放强制所有依赖走真实调用」后，这次回放不使用录制结果应答任何依赖。只在已隔离的测试环境使用 |
+| Agent 版本 | 只回放指定版本的 Agent 录下的用例。升级 Agent 后，旧版本录的用例有时会有兼容问题，可以用它排除 |
+| 流量染色 | 给每条回放请求加上自定义请求头，让被测服务识别出回放流量 |
 
-回放支持两种用例选择模式：
+点「创建计划」。Agent 离线时也能创建，但要等 Agent 重新连上才会开始执行。
 
-| 模式 | 选择方式 | 是否使用时间范围 |
-|------|----------|------------------|
-| Rolling（默认） | 计划时间窗与操作过滤匹配的录制用例 | 使用；省略参数时采用普通滚动窗口 |
-| `--suite Pinned` | 应用 `Pinned` 集合中手动保存的用例 | 不使用；忽略 `--from` 和 `--to` |
-
-`Pinned` 用于建立稳定的回归套件。它只包含手动置顶的用例，不包含自动管理的 `AutoPinned` 用例。因此，即使用例早于普通滚动窗口，也可以被回放。
-
-运行 Pinned 套件：
+</Interface>
+<Interface id="cli">
 
 ```bash
-sp replay run \
-  --app <你的 appId> \
-  --env http://order-service.test:8080 \
-  --suite Pinned \
-  --watch \
-  --json
+sp replay run --app <appId> --env http://order-service.test:8080 --from -24h --json
+sp replay status <planId> --watch --json
 ```
 
-如果手动集合为空，命令会返回 `NO_PINNED_CASES`，不会创建一个看似成功的空运行。要扩大 Rolling 用例库，请回到 [录制](/zh/testing/recording) 录制更多流量；要调整 Pinned 套件，请在 Workbench 中置顶或取消置顶用例。
+常用参数：`--suite Pinned`（只回放固化用例）、`--operation <接口>`（可重复）、`--limit <每个接口的用例上限>`、`--no-mock`（依赖全部走真实调用）。完整参数见 [sp replay](/zh/testing/commands/replay)。
 
-如果要在普通保留期后回放录制数据，请在 Workbench 中选择 **Pinned cases（固化用例）** 范围，并选择要组成测试集的固化用例；此时不要求原始录制仍处于时间窗口内。详见[固化用例与测试集](/zh/testing/pinned-cases)。
+</Interface>
+</InterfaceTabs>
 
-如果固化用例对应的 API 已被删除或重命名，工作台会标记 **API gone（API 已不存在）** 并跳过该用例。请更新应用配置，或将该用例从测试集中移除。
+每秒发多少条请求，默认由「回放配置」里的「每实例 QPS 上限」决定（默认每个实例 5 条/秒，整个计划约为这个值乘以在线实例数），单次回放可以在「高级选项」里临时调整。
 
-## 自动化
+## 执行记录 {#records}
 
-人工查看差异时使用工作台；CI 与 AI 代理使用 `sp diagnose replay <planId> --json` 命令，以及 [输出约定](/zh/testing/agents/output-contract) 中说明的 `--out-dir` 输出内容。如需部署后自动触发回放，并根据结论决定流水线是否继续，见 [发版后自动回放](/zh/testing/webhook-and-ci)。
+「回放 → 执行记录」列出所有回放计划，可以按执行状态（执行中、全部通过、有差异、执行异常）、触发来源（一次性回放、定时任务、CI、API）和时间筛选。
 
-## 下一步
+![执行记录](/img/docs/testing/zh/replay-records.png)
 
-回放结束后，先查看 **[回放报告](/zh/testing/replay-report)**，了解结论和差异原因。
+每一行显示用例数、通过数、失败数（有差异）、回放失败数（请求没能完成，比如目标连不上），以及报告的结论。点计划名称打开[回放报告](/zh/testing/replay-report)；执行中的计划可以「停止计划」，不需要的计划可以「删除计划」（结果、对比记录和日志会一并删除）。
 
-有失败用例时，按 **[审查差异](/zh/testing/review-diffs-in-the-web-ui)** 逐条查看差异、排除噪音。
+## 定时回放 {#scheduled}
+
+每天或每个工作日在固定时刻自动回放一次，适合夜间做回归。
+
+打开「回放 → 定时任务」，点「新建定时任务」：
+
+![新建定时任务](/img/docs/testing/zh/new-task.png)
+
+| 字段 | 说明 |
+|------|------|
+| 任务名称 | 必填 |
+| 目标环境、回放范围 | 与立即回放相同。回放范围也可以选「固化用例」 |
+| 执行周期 | 选星期几，或直接选「工作日」「每天」 |
+| 启动时刻 | 每天几点执行，下方会显示下次执行时间和时区 |
+| 执行前多久开始、持续多久 | 决定回放哪段时间的录制：从触发前「执行前多久开始」起，录制「持续多久」这么长的一段。例如执行前 10 小时开始、持续 8 小时，凌晨 2 点触发时回放前一天 16 点到 24 点的录制。持续时长至少 1 分钟，且不能超过「执行前多久开始」 |
+| 每个接口的用例数量上限、用例标签筛选、高级选项 | 与立即回放相同 |
+
+点「保存任务」，或「保存并立即运行」先跑一次看看。
+
+任务列表显示触发规则、下次执行时间和「自动调度」开关：关掉开关就暂停调度，任务保留。每个任务可以「运行」（马上执行一次）、「编辑」或删除。定时任务发起的回放出现在「执行记录」里，触发来源为「定时任务」。
+
+没有录到流量、同一应用正在创建另一次回放、没有在线的 Agent 实例时，这次定时回放不会启动，原因会显示在执行记录里。
+
+::: info SoftProbe Cloud
+定时回放由云端在排定时刻发起，目标地址必须能从公网访问；目标在内网时，请用桌面客户端的「立即回放」。
+:::
+
+## 回放过程中 {#during}
+
+后端逐条把录下的入口请求发给目标服务：
+
+1. 目标服务真实执行业务代码。
+2. 服务调用依赖时，Agent 按「回放配置」决定用录制结果应答，还是走真实调用。
+3. 回放侧的响应和依赖调用被记录下来，与录制时逐项对比。
+
+后端在每条请求发出前后记录 `Replay send start` / `Replay send done` / `Replay send failed` 日志，排查「请求到底有没有打到服务」时用得上，见 [回放发送日志标记](/zh/testing/reference/replay-send-log-markers)。
+
+## 回放结束后 {#after}
+
+1. 先看 [回放报告](/zh/testing/replay-report)：结论，以及没通过的用例按原因分类。
+2. 有差异时，按 [审查差异](/zh/testing/review-diffs-in-the-web-ui) 逐条看；时间戳、随机 ID 这类每次都变的字段，配成 [对比规则](/zh/testing/compare-rules-web-ui) 忽略掉。
+
+多数差异不是 bug：时间戳、流水号、随机 ID 每次回放都不一样，但没有出错。把它们忽略掉，真正的问题才会显出来。

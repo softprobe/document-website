@@ -1,111 +1,101 @@
 ---
-title: 录制流量
+title: 查看录制
 ---
 
-# 录制流量
+# 查看录制
 
-录制就是让挂了 Agent 的应用**正常处理真实请求**——每条经过的请求连同它触发的依赖调用（数据库、HTTP、Redis…）会自动存成一条**用例**，成为后面回放的素材。
+服务挂上 Agent 后，处理的请求会按采样规则自动录下来：入口请求和响应，加上处理过程中对数据库、缓存、下游接口的每次调用。这些录制就是回放用的用例。本页讲怎么在控制台查看录制，以及没录到时怎么查。
 
-本页以 `order-service` 为例：它已按 [接入 Java Agent](/zh/testing/java-agent) 挂载 Agent、按快速开始注册过应用（`appId` 在手）。录制到配置对比规则这几步都用这个应用。
+还没有接入服务，先看 [第一次录制回放](/zh/testing/getting-started) 或 [接入 Java Agent](/zh/testing/java-agent)。
 
-::: tip 开箱即录，不需要先配策略
-内置的全局默认策略（priority 0）让录制开箱即用，并已排除 `/health` 等健康检查流量。只有当你要调整采样率、时间窗口或操作范围时，才需要写应用级策略——见本页末尾 [调整录制范围](#调整录制范围)。
-:::
+## 录多少 {#sampling}
 
-## 第 1 步 · 确认 Agent 在线
+默认按采样录制，不是全量：**每个服务实例、每个接口，大约每分钟录 1 条**入口请求。一条入口请求会连带录下它触发的全部依赖调用。健康检查一类的请求默认不录。
 
-在**要采集流量的环境**（通常是生产或预发）启动应用：
+要多录、少录、只在某些时段或某些环境录，或者排除某些接口，在「配置 → 录制配置」里调整，见 [录制配置与回放配置](/zh/testing/policies#recording)。改完不需要重启服务，Agent 会在下次拉取配置时生效。
 
-```bash
-java -javaagent:sp-agent.jar \
-     -Dsp.app.id=<你的 appId> \
-     -Dsp.api.url=http://<后端主机>:8090 \
-     -jar order-service.jar
-```
+录制数据按保留期自动删除，保留期在「设置 → 数据保留期」调整。需要长期保留的录制，请[固化](/zh/testing/pinned-cases)。
 
-确认 Agent 已上报：
+## 按接口查看 {#by-endpoint}
 
-```bash
-sp app status <你的 appId> --json
-```
+在顶部选中应用，打开「录制 → 滚动录制」。
 
-多环境部署时给实例打标签（如 `-Dsp.tags.env=prod`），之后筛选用例、匹配策略都靠它。
+![滚动录制：按接口汇总](/img/docs/testing/zh/recording-overview.png)
 
-## 第 2 步 · 让真实流量流过
+页面顶部是这段时间内的录制条数和活跃接口数，下面的列表按接口汇总：
 
-什么都不用做——用户请求、业务调用、压测流量经过应用就会被采集。没有自然流量的环境（如预发），主动向接口发几笔业务请求即可。
+- **只看有录制的**：默认只列出这段时间里有录制的接口；点掉可以看到全部接口。
+- **时间范围**：默认近 7 天，可以改。
+- **标签**、**类别**：按接口标签（如「读接口」「写接口」）或接口类别（如 Servlet、Dubbo）筛选。
+- **搜索**：按接口名、描述、标签搜索。
 
-::: tip 用例只能录出来，不能手写
-CLI 不支持手工构造用例。想要更多用例，就让更多流量流过应用。
-:::
+鼠标移到接口行上，可以给接口**添加描述**（一句话说明这个接口做什么，回车保存）或**添加标签**。描述和标签在新建回放计划选择接口时也能用来搜索和筛选。
 
-## 第 3 步 · 确认录到了
+## 查看某个接口的录制 {#by-case}
+
+点接口名，列出这个接口的每一条录制：Trace ID 和录制时间。每一行有四个操作：
+
+| 操作 | 作用 |
+|------|------|
+| 查看 trace 录制详情 | 打开这条录制的调用链 |
+| 复制 traceId | 复制 Trace ID，用于查日志或在命令行中查询 |
+| AI 诊断 | 让 AI 分析这条录制 |
+| 删除此条录制 | 删除这一条 |
+
+右上角的「删除接口录制」会删掉这个接口的全部录制数据。
+
+## 看一条录制的调用链 {#trace}
+
+录制详情按调用顺序列出这次请求的每一步：入口（如 `SERVLET /order/price`），以及它调用的数据库、Redis、HTTP 下游、动态类等，每一步都能展开看请求和响应的报文。顶部的「录制完整」表示这次请求的调用都录到了。
+
+![一条录制的调用链](/img/docs/testing/zh/recording-trace.png)
+
+右上角的按钮：
+
+| 按钮 | 作用 |
+|------|------|
+| 固化 | 把这条录制长期保留，见 [固化用例](/zh/testing/pinned-cases) |
+| 回放这一条 | 只拿这一条录制新建一个回放计划 |
+| AI 诊断 | 让 AI 分析这条录制 |
+| 删除这条录制 | 删除 |
 
 <InterfaceTabs :tabs="['ui','cli']">
 <Interface id="ui">
 
-1. 在 SoftProbe 控制台打开对应应用的工作台。
-2. 在左侧导航中展开 **滚动录制**，选择对应的 API 接口，查看捕获的录制用例列表与上报时间。
-3. 点击任意一条用例进入链路详情，可核对入口请求内容及数据库、Redis、HTTP 等下游依赖调用。
-
-![工作台查看录制用例演示](/img/docs/testing/zh/view-recorded-data.gif)
+在调用链上方可以按 span 名称、类别或服务搜索。
 
 </Interface>
 <Interface id="cli">
 
 ```bash
-sp record case list --app <你的 appId> --since -1h --json
-```
-
-需要按链路核对完整性时用：
-
-```bash
-sp record completeness <traceId> --json
+sp record case list --app <appId> --since -1h --json     # 最近一小时的录制
+sp record query --trace-id <traceId> --out-dir .sp-work --json   # 一条录制的完整数据
+sp record completeness <traceId> --json                   # 这条录制是否完整
 ```
 
 </Interface>
 </InterfaceTabs>
 
-列表里出现用例，第 1 步就完成了。如果希望用例在默认保留期后仍可使用，请先[固化用例并加入测试集](/zh/testing/pinned-cases)，再进入 [回放](/zh/testing/replay-and-diff)。
+## 没录到？ {#troubleshooting}
 
-## 没录到？按这张表排查
+| 现象 | 先查什么 |
+|------|---------|
+| 「应用管理」里应用状态不是「Agent 在线」 | Agent 没启动或连不上后端：看服务启动日志里 `[SoftProbe]` 开头的行，确认 `-Dsp.api.url` 地址可达。见 [接入 Java Agent](/zh/testing/java-agent) |
+| 应用在线，但一条录制都没有 | 「录制配置」里命中这台机器的规则采样率是否为 0、是否不在录制时段内、接口是否被排除；「录制机器上限」是否已被其他实例占满 |
+| 有录制，但比预期少 | 默认每个接口每分钟约 1 条；需要多录时调高采样率 |
+| 某个接口一直没有 | 接口是否在「录制配置 → 接口过滤」里被排除；这个接口的入口框架是否受支持（见 [支持的 Java 版本与框架](/zh/testing/supported-frameworks)） |
+| 录制里缺某类依赖调用 | 这类客户端是否受支持；本地缓存（@Cacheable、Caffeine、Guava）需要在「录制配置」里配置「覆盖包」才会录 |
 
-| 现象 | 优先排查 |
-|------|----------|
-| `sp record case list` 为空 | 应用级策略把 `ratePerHundredSeconds` 设成了 0；当前时间在 `timeWindow` 外；操作被 `exclude` |
-| Agent 显示不录制 | `machineCountLimit` 过小；另有实例占满配额 |
-| 有用例但很少 | 采样上限；`include` 白名单过窄 |
-| 完全无上报 | `appId` 与策略 `selector` 不一致；`SP_API_URL` 不可达；Agent 不在线 |
+## 录制环境和回放环境分开 {#separate-environments}
 
-## 录制环境与回放环境分开
+| 环境 | 录制 | 说明 |
+|------|------|------|
+| 生产、预发 | 开启 | 采集真实流量，积累用例 |
+| 测试、回放目标 | 关闭或调到很低 | 避免把回放产生的请求又录一遍 |
 
-| 环境 | Agent 录制 | 说明 |
-|------|------------|------|
-| 生产 / 预发 | 开启 | 采集真实流量建用例库 |
-| 测试 / CI 回放机 | 关闭或极低采样 | 避免回放时再录一套数据污染用例库 |
+多个环境共用一个应用时，给各环境的实例打上环境标签（如 `-Dsp.tags.env=prod`），在「录制配置」里按标签给不同环境设不同的采样规则；新建回放计划时也可以按标签筛选用例。
 
-按来源环境筛选用例时，录制和查询要用同样的环境标签（如 `-Dsp.tags.env=prod`）。
+## 下一步 {#next}
 
-## 调整录制范围 {#调整录制范围}
-
-默认策略不满足时——比如要控制采样率、只录部分接口、限定录制时段——写一份应用级 `RecordingPolicy`（`priority > 0` 覆盖全局默认）：
-
-```bash
-sp policy recording validate -f recording.yaml --json
-sp policy recording apply -f recording.yaml --json
-```
-
-可调项：`ratePerHundredSeconds`（采样）、`timeWindow`（时段）、`operations.include/exclude`（接口范围）、`serializeSkip`、`timeMock`。逐字段说明与完整示例见 [策略 YAML 指南 · RecordingPolicy](/zh/testing/policy-yaml-guide#recordingpolicy)。
-
-::: warning `machineCountLimit: 1` 慎用
-该字段限制同环境**同时录制**的实例数。设为 `1` 时，首个占用配额的实例下线后，配额可能长期不释放，其他实例会显示不录制。生产策略建议省略该字段（不限）或设为不小于实例数。
-:::
-
-::: info 两个已知边界
-- 录制路径上的 `spec.sensitiveData` 目前**不会**改变入库内容；查看时脱敏见 [SensitivePolicy](/zh/testing/policy-yaml-guide#related-configuration)。
-- 修改 `operations` 包含/排除也会影响**回放调度**的操作范围。
-:::
-
-## 下一步
-
-用例已经躺在库里了 → **[固化用例与测试集](/zh/testing/pinned-cases)** 保留选中的用例，或直接进入 **[回放与对比](/zh/testing/replay-and-diff)** 做一次时间窗口回放。
+- [固化用例](/zh/testing/pinned-cases)：保留重要的录制
+- [发起回放与定时回放](/zh/testing/replay-and-diff)
