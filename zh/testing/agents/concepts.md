@@ -1,125 +1,101 @@
-# Concepts
+---
+title: 概念与编号
+---
 
-Java 录制回放产品说明（Agent、策略、回放语义）见 [Softprobe 测试](/zh/testing/)。
+# 概念与编号
 
-Istio/Envoy 网格采集与 SESSIFY 会话上下文（与 Java Agent 不同）见[平台核心概念](/zh/platform/advanced-guides/concepts)。
+用脚本操作 SoftProbe 时会碰到的几类对象，以及把录制、回放、差异和日志串起来的各种编号。录制回放的整体原理见 [工作原理](/zh/testing/how-it-works)。
 
-## Application (`appId`)
+## 应用（`appId`） {#application-appid}
 
-A registered service under test. Recording, replay, policies, and extraction rules are all scoped by **`appId`**.
+一个被测服务就是一个应用。录制、回放、策略和提取规则都归属于某个 `appId`。
 
-| Field | Role |
-|-------|------|
-| `appName` | Unique label supplied at registration (`sp app create <appName>`). |
-| `appId` | System-generated id (16-character hex). Configure the Java agent and CLI with this value. |
+| 字段 | 说明 |
+|------|------|
+| `appName` | 用 `sp app create <appName>` 注册时起的名字 |
+| `appId` | 应用 ID。Java Agent 和命令行都用它 |
 
-After registration, save `data.appId` from the create response. Attach the SoftProbe Java agent to your JVM with that id and your sp-backend URL, then confirm connectivity with `sp app status <appId>` or `sp app list --json`.
+`sp app create` 会生成一个 16 位十六进制的 `appId`，但并不要求一定是这种格式：Agent 也可以用任何固定、非空的名字，比如 `order-service`。后端没见过的 `appId`，会在 Agent 第一次拉取配置时自动注册，应用名与 ID 相同。同一个服务的所有实例必须用同一个 `appId`；录制和回放时 `appId` 不一致，就找不到原来的用例。
 
-**Agent status** (`online`, `offline`, `never`) is derived from instance heartbeats, not from the app document alone. The server marks an app `offline` when the freshest heartbeat is older than the configured threshold (default 60 seconds).
+**Agent 状态** 根据 Agent 的心跳得出：
 
-**CLI reference:** [sp app](/zh/testing/commands/app)
+| 状态 | 含义 |
+|------|------|
+| `online` | 至少有一个实例在阈值内（默认 60 秒）发过心跳 |
+| `degraded` | 在线，但至少有一个心跳正常的实例处于限流或降级状态 |
+| `offline` | 以前有过心跳，但阈值内没有 |
+| `never` | 从来没有实例上报过 |
 
-## Java agent
+用 `sp app status <appId>` 或 `sp app list --json` 查看。命令说明见 [sp app](/zh/testing/commands/app)。
 
-The SoftProbe Java agent is attached to the service under test with `-javaagent:/path/to/sp-agent.jar`. It operates like an observability agent operationally, but its purpose is test data capture and replay:
+## Java Agent {#java-agent}
 
-- During **recording**, it observes real requests and dependency interactions and uploads mocker data keyed by `appId` and trace/case ids.
-- During **replay**, it restores recorded dependency behavior according to mock policy and emits replay data for comparison.
-- It reports heartbeat/status so `sp app status <appId>` can tell whether an app is `online`, `offline`, or `never`.
+用 `-javaagent:/path/to/sp-agent.jar` 挂到被测服务上。
 
-Minimum startup flags:
+- **录制**时，记录真实请求，以及请求过程中对数据库、缓存和其他服务的调用。
+- **回放**时，按 Mock 策略用录制下来的结果代替这些真实调用。
+- 定期发送心跳，`sp app status` 靠它判断应用是否在线。
 
-```bash
-java \
-  -javaagent:/opt/softprobe/sp-agent.jar \
-  -Dsp.app.id=<appId> \
-  -Dsp.api.url=http://<sp-backend-host>:8090 \
-  -jar app.jar
-```
+接入方法见 [接入 Java Agent](/zh/testing/java-agent)。
 
-Pin `sp.app.id` for every production-like deployment. If the id changes between recording and replay, SoftProbe cannot reliably find the original cases or mock data.
+## 回放目标地址（`targetEnv`） {#replay-target-url-targetenv}
 
-## Replay target URL (`targetEnv`)
+回放不认 `staging`、`prod` 这类环境名。`targetEnv` 是接收回放请求的那个**正在运行的服务的根地址**，比如 `http://order-service:8080` 或 `https://order-service.internal:8443`。
 
-Replay does not use a symbolic environment label such as `staging` or `prod`. The schedule service field **`targetEnv`** is the **base URL of the running service** that will receive replayed HTTP traffic.
+- `sp replay run --env <地址>` 会把它作为 `targetEnv` 传给后端。
+- 必须带协议和主机名（端口不是默认端口时也要带）。没有主机名时，创建回放计划会报错 *requested target env unable load active instance*。
+- 它和 `SP_API_URL` 无关，后者指向 sp-backend。
 
-When you run `sp replay run --env <url>`, the CLI sends that value as `targetEnv` on `POST /api/createPlan`. The schedule module parses it as a URI (`DefaultDeploymentEnvironmentProviderImpl`) and builds a `ServiceInstance` whose `url` is that string. Replay senders then issue requests to that URL (for example `DefaultHttpReplaySender` uses `instanceRunner.getUrl()`).
+命令说明见 [sp replay](/zh/testing/commands/replay)。
 
-Requirements:
+## 策略 {#policies}
 
-- Use a reachable base URL for the app under test, including scheme and host (and port when not default), for example `http://travel-ota:8080` or `https://order-service.internal:8443`.
-- The URL must parse as a URI with a non-empty host; otherwise plan validation fails with *requested target env unable load active instance*.
-- This is independent of **`SP_API_URL`** / `api_url` in CLI config, which points at sp-backend (storage, report, schedule APIs), not at the service being replayed.
+三类声明式 YAML 策略：
 
-Optional **`sourceEnv`** on the same request is a separate URI used only when you need a non-default source deployment; the demo stack often leaves it as `pro`.
+| 类型 | 控制什么 | 命令 |
+|------|---------|------|
+| `RecordingPolicy` | Agent 录什么：采样速率、录哪些接口、录制时段、序列化时跳过的内容 | `sp policy recording` |
+| `MockPolicy` | 回放时 Mock 哪些调用，以及 Mock 匹配的宽松程度 | `sp policy mock` |
+| `CompareRulePolicy` | 怎么对比响应：忽略哪些字段、数组怎么对齐、怎么解码 | `sp policy compare` |
 
-**CLI reference:** [sp replay](/zh/testing/commands/replay) (`--env` → `targetEnv`)
+一个应用可以匹配多条策略，按 `metadata.priority` 合并。内置的默认策略优先级为 `0`。字段说明见 [策略 YAML 参考](/zh/testing/policy-yaml-guide)。
 
-## Recording policy
+## 回放计划 {#replay-plan}
 
-Declarative YAML (`kind: RecordingPolicy`) controlling what the agent records: sampling, operation include/exclude, time windows, sensitive-field scrubbing.
+一次回放就是一个回放计划，用 `planId` 标识。可以用 `sp replay run` 创建，也可以在控制台、定时任务或 [Open API](/zh/testing/reference/replay-openapi) 中发起；用 `sp replay status` 查看进度。回放计划回放的是已经录下的用例，所以挂上 Agent 后从没收到过流量的应用，没有东西可回放。用例只能通过录制产生，不能手工编写。
 
-- Managed via `sp policy recording`
-- Schema: [策略 YAML 指南](/zh/testing/policy-yaml-guide)
+## 编号 {#ids}
 
-## Mock policy
+<a id="trace-replay-and-plan-ids"></a>
 
-Declarative YAML (`kind: MockPolicy`) controlling replay-time mocking: skip/force mock, tolerance, dependencies.
+| 编号 | 标识什么 | 用在哪里 |
+|------|---------|---------|
+| `traceId` | 一次请求的调用链（W3C trace ID）。回放时沿用录制时的 `traceId` | **查日志**（[sp logs](/zh/testing/commands/logs)），查链路和录制数据 |
+| `replayId` | 某个用例的一次回放 | 看差异、诊断；查日志时可用来只看这一次回放 |
+| `planId` | 一个回放计划 | 用例列表、报告、诊断 |
+| `planItemId` | 回放计划中的一个接口 | 用例列表 |
+| `diffId` | 一条对比结果 | `sp replay diff get` |
 
-- `sp policy mock`
-
-## Compare rules
-
-Declarative YAML (`kind: CompareRulePolicy`) controlling diff behavior during replay comparison.
-
-- `sp policy compare`
-
-Policies merge by `metadata.priority`; global defaults ship in `sp-policy-rules` JAR resources.
-
-## Replay plan
-
-A batch replay job with a `planId`. Created by `sp replay run`, tracked with `sp replay status`. Replay plans consume cases already recorded by an instrumented app; a fresh app with no recorded traffic has nothing meaningful to replay.
-
-Schedule service endpoints: `/api/createPlan`, `/api/progress`, `/api/stopPlan`.
-
-## Trace、replay 与 plan ID {#trace-replay-and-plan-ids}
-
-平台 ID 把录制、回放、diff 与**关联日志检索**串联起来。完整参考——每个 ID 的含义、在哪里获取、以及如何分诊统一日志——见 **[日志关联 ID](/zh/testing/reference/log-correlation-ids)**。
-
-| ID | 含义 | 日志查询（v1） |
-|----|------|----------------|
-| `traceId` | 一次录制或回放请求流的 W3C trace id | **`sp logs --trace-id …`** 或 `GET /api/recorder/logs?trace_id=…` —— **唯一的 v1 键** |
-| `replayId` | 一个 case 的一次回放**尝试** | 仅用于 diff/diagnose —— 查日志请从同一 case 行复制 **`traceId`** |
-| `planId` | `sp replay run` 产生的回放计划容器 | case 列表 / diagnose —— 查日志用每个 case 的 **`traceId`** |
-| `planItemId` | 计划内的操作级条目 | 同上 —— 不是日志查询键 |
-| `diffId` | 用于深度 diff 拉取的比对结果行 | 用 `sp replay diff get` —— 不是日志查询键 |
-
-**ID 在 CLI 输出中的位置**
+### 编号出现在哪里 {#where-ids-appear}
 
 | 命令 | 字段 |
 |------|------|
 | `sp replay run --json` | `planId` |
-| `sp replay case list --plan … --json` | `replayId`、`traceId`、plan item id |
-| `sp replay metadata <replayId> --json` | `traceId`、关联的录制元数据 |
-| `sp trace find … --json` | 解析业务属性时的 `traceId` |
-| `sp diagnose replay <planId> --json` | 带 id 的失败 case，供后续跟进 |
+| `sp replay case list --plan <planId> --failed --json` | 每个用例的 `replayId`、`traceId`、`diffId` 和计划中的接口 ID |
+| `sp replay metadata <replayId> --json` | `traceId` 和对应的录制 |
+| `sp record case list --app <appId> --since -24h --json` | 每个录制入口请求的 `traceId` |
+| `sp trace find --app <appId> --attr-name <规则名> --attr-value <值> --json` | 按订单号等业务编号查到的 `traceId` |
+| `sp diagnose replay <planId> --json` | 失败用例及其编号 |
 
-当用户提供业务属性（orderId、caseId）而非 trace id 时，Agent 应通过 `sp trace find` 获取 `traceId`。回放失败后做日志诊断时，使用失败回放 case 中的 **`traceId`** 或 e2e **Softprobe correlation** 块（`trace_id` 字段）——而不是把 `replayId` 当作日志查询键。
+### 查日志用哪个 `traceId` {#which-traceid}
 
-## Historical coupling: schedule ↔ recording
+回放失败时，用**失败回放用例**上的 `traceId`。这个用例的录制和回放共用它，一次就能查到两边的日志。不要从最新的录制记录或健康检查请求（`/`、`/index.html`）里随便拿一个 trace，那些是不相干的请求。
 
-Replay operation include/exclude lists on schedule configuration are **populated from recording policy at read time**, not stored independently on the schedule document.
+用户只给了订单号、保单号这类业务编号、没有 trace ID 时，先用业务编号查出 trace，见 [从业务编号开始排查](/zh/testing/examples/agent-diagnose-replay#business-id)。
 
-Implications:
+`replayId`、`planId`、`planItemId` 不能单独用来查日志；在 HTTP 接口里，它们是在 `trace_id` 之外追加的过滤条件（见 [sp logs — HTTP 接口](/zh/testing/commands/logs#http-api)）。
 
-- Changing recording policy can change which operations appear in replay scope without editing schedule config.
-- Diagnosis skills must not assume schedule Mongo documents are the sole source of operation filters.
+## 相关文档 {#related}
 
-See server comments on `ScheduleConfigurableHandler` in sp-tr-api.
-
-Test cases are created only via **recording** (instrumented app traffic). Manual case authoring is not part of the CLI workflow.
-
-## Related
-
-- [For agents](./overview)
-- [Commands](/zh/testing/commands/)
+- [选择接入方式](./overview)
+- [命令参考](/zh/testing/commands/)

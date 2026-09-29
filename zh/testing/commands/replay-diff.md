@@ -1,19 +1,23 @@
-# sp replay diff
+---
+title: sp replay diff：差异与对比
+---
 
-**When agents use this:** Deep dive on a failed case — diff bodies, compare JSON. For correlated logs use [`sp logs`](./logs).
+# sp replay diff：差异与对比
 
-## Subcommands
+**AI 代理何时使用：** 深挖一条失败用例 —— 差异消息体、对比 JSON。查关联日志用 [`sp logs`](./logs)。
 
-| Subcommand | Description |
+## 子命令 {#subcommands}
+
+| 子命令 | 说明 |
 |------------|-------------|
-| `diff get <diffId>` | Base vs test messages (artifact) |
-| `compare` | Full-link compare result |
-| `mock-tree <replayId>` | Mock tree for replay |
-| `noise query` | Query noise rules |
-| `noise exclude` | Exclude noise (`-f` + `--confirm`) |
-| `realtime …` | Real-time replay queue (see below) |
+| `diff get <diffId>` | 基准与本次的消息体（产物文件） |
+| `compare` | 全链路对比结果 |
+| `mock-tree <replayId>` | 该次回放的 Mock 树 |
+| `noise query` | 查询噪音规则 |
+| `noise exclude` | 排除噪音（`-f` + `--confirm`） |
+| `realtime …` | 实时回放队列（见下文） |
 
-## Examples
+## 示例 {#examples}
 
 ```bash
 sp replay diff get diff-abc --out-dir .sp-work --json
@@ -22,7 +26,7 @@ sp logs --trace-id <trace-id> --since 2026-06-27T10:00:00Z --until 2026-06-27T10
 sp replay mock-tree replay-uuid --json
 ```
 
-### JSON output (`diff get`)
+### JSON 输出（`diff get`） {#json-output-diff-get}
 
 ```json
 {
@@ -39,9 +43,9 @@ sp replay mock-tree replay-uuid --json
 }
 ```
 
-Artifact contains decoded `baseMsg` and `testMsg` (JSON when parseable).
+产物文件中是解码后的 `baseMsg` 和 `testMsg`（能解析时为 JSON）。
 
-### JSON output (`compare`)
+### JSON 输出（`compare`） {#json-output-compare}
 
 ```json
 {
@@ -54,7 +58,7 @@ Artifact contains decoded `baseMsg` and `testMsg` (JSON when parseable).
 }
 ```
 
-当指定 `--plan-item` 时，全链路比对详情将写入 `--out-dir`：
+带 `--plan-item` 时，全链路对比详情会写入 `--out-dir`：
 
 ```json
 {
@@ -71,7 +75,7 @@ Artifact contains decoded `baseMsg` and `testMsg` (JSON when parseable).
 }
 ```
 
-### JSON output (`mock-tree`)
+### JSON 输出（`mock-tree`） {#json-output-mock-tree}
 
 ```json
 {
@@ -90,7 +94,7 @@ Artifact contains decoded `baseMsg` and `testMsg` (JSON when parseable).
 }
 ```
 
-### JSON output (`noise query`)
+### JSON 输出（`noise query`） {#json-output-noise-query}
 
 ```json
 {
@@ -109,7 +113,7 @@ Artifact contains decoded `baseMsg` and `testMsg` (JSON when parseable).
 }
 ```
 
-### JSON output (`noise exclude`)
+### JSON 输出（`noise exclude`） {#json-output-noise-exclude}
 
 ```json
 {
@@ -119,35 +123,35 @@ Artifact contains decoded `baseMsg` and `testMsg` (JSON when parseable).
 }
 ```
 
-## REST mapping
+## REST 接口对照 {#rest-mapping}
 
-| Subcommand | Method | Path |
+| 子命令 | 方法 | 路径 |
 |------------|--------|------|
 | `diff get` | GET | `/api/report/queryDiffMsgById/{id}` |
-| `compare` | POST | Schedule `/api/compareCase` + report APIs |
+| `compare` | POST | schedule `/api/compareCase` + 报告接口 |
 | `mock-tree` | GET | `/api/storage/replay-mock-tree/{replayId}` |
 | `noise query` | GET | `/api/queryNoise` |
 | `noise exclude` | POST | `/api/excludeNoise` |
 
-### Real-time replay
+### 实时回放 {#real-time-replay}
 
-| Subcommand | Path |
+| 子命令 | 路径 |
 |------------|------|
 | `realtime create` | `POST /api/createRealTimePlan` |
-| `realtime queue pause <planId>` | `GET /api/queue/control/pause?planId=...` (`--confirm`) |
-| `realtime queue resume <planId>` | `GET /api/queue/control/resume?planId=...` (`--confirm`) |
+| `realtime queue pause <planId>` | `GET /api/queue/control/pause?planId=...`（`--confirm`） |
+| `realtime queue resume <planId>` | `GET /api/queue/control/resume?planId=...`（`--confirm`） |
 | `realtime log` | `POST /api/realtime/log/query` |
 
-## Replaces `sp_api`
+## 替代 `sp_api` {#replaces-sp_api}
 
 | sp_api | sp |
 |--------|-----|
 | `diff_detail` | `sp replay diff get` |
 | `compare_result` | `sp replay compare` |
 | `replay_log_overview` | `sp logs --trace-id …` |
-| `download_replay_logs` | `sp logs --trace-id …` → 落盘后 `grep` |
+| `download_replay_logs` | `sp logs --trace-id …` → 写文件 + `grep` |
 
-## Related
+## 相关文档 {#related}
 
-- [Output contract](/zh/testing/agents/output-contract)
-- [Diagnose replay failure](/zh/testing/examples/agent-diagnose-replay)
+- [输出约定](/zh/testing/agents/output-contract)
+- [诊断回放失败](/zh/testing/examples/agent-diagnose-replay)

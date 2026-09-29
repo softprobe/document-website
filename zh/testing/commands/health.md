@@ -1,19 +1,23 @@
-# sp health
+---
+title: sp health：后端健康检查
+---
 
-**When agents use this:** Preflight before a long diagnosis session; CI smoke check.
+# sp health：后端健康检查
 
-## Synopsis
+**AI 代理何时使用：** 长时间诊断会话开始前做预检；CI 冒烟检查。
 
-Check sp-backend availability.
+## 概要 {#synopsis}
 
-## Usage
+检查 sp-backend 是否可用。
+
+## 用法 {#usage}
 
 ```bash
 sp health --json
 sp health --api-url https://sp.example.com --json
 ```
 
-## JSON output
+## JSON 输出 {#json-output}
 
 ```json
 {
@@ -26,21 +30,21 @@ sp health --api-url https://sp.example.com --json
 }
 ```
 
-## REST mapping
+## REST 接口对照 {#rest-mapping}
 
-| Method | Path |
+| 方法 | 路径 |
 |--------|------|
 | GET | `/vi/health` |
 
-No authentication required in default deployments (verify for your environment).
+默认部署不需要认证（请按你的环境核实）。
 
-## Errors
+## 错误 {#errors}
 
-| Situation | Exit |
+| 情况 | 退出码 |
 |-----------|------|
-| Connection refused | 1 |
-| Non-200 HTTP | 1 |
+| 连接被拒绝 | 1 |
+| HTTP 非 200 | 1 |
 
-## Related
+## 相关文档 {#related}
 
-- [Installation](/zh/testing/installation/)
+- [安装](/zh/testing/installation/)

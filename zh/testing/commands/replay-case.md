@@ -1,30 +1,34 @@
-# sp replay (data)
+---
+title: sp replay（数据查询）：用例与元数据
+---
 
-**When agents use this:** After `sp replay run` completes — list failed cases, fetch metadata, paginate cases.
+# sp replay（数据查询）
 
-## Synopsis
+**AI 代理何时使用：** `sp replay run` 跑完后 —— 列出失败用例、取元数据、翻页查用例。
 
-Query replay plans, cases, and metadata (read-only report/storage APIs).
+## 概要 {#synopsis}
 
-## Subcommands
+查询回放计划、用例和元数据（只读的报告/存储接口）。
 
-| Subcommand | Description |
+## 子命令 {#subcommands}
+
+| 子命令 | 说明 |
 |------------|-------------|
-| `metadata <replayId>` | Replay metadata (nodes, fullLink, traceId) |
-| `case list` | Cases under plan or plan item |
-| `case get <caseId>` | Single case detail (`--plan-item` required) |
+| `metadata <replayId>` | 回放元数据（节点、fullLink、traceId） |
+| `case list` | 计划或计划项下的用例 |
+| `case get <caseId>` | 单条用例详情（必须带 `--plan-item`） |
 
-## Flags (`case list`)
+## 参数（`case list`） {#flags-case-list}
 
-| Flag | Description |
+| 参数 | 说明 |
 |------|-------------|
-| `--plan` | Plan id |
-| `--plan-item` | Plan item / operation id |
-| `--failed` | Only failed/error cases |
-| `--diff-result-code` | Filter by diff code (1=diff, 2=error) |
-| `--page` / `--limit` | Pagination |
+| `--plan` | 计划 id |
+| `--plan-item` | 计划项 / 接口 id |
+| `--failed` | 只看失败/出错的用例 |
+| `--diff-result-code` | 按差异码过滤（1=有差异，2=出错） |
+| `--page` / `--limit` | 分页 |
 
-## Examples
+## 示例 {#examples}
 
 ```bash
 sp replay metadata replay-uuid --json
@@ -33,7 +37,7 @@ sp replay case list --plan-item item-abc --json
 sp replay case get case-001 --plan-item item-abc --json
 ```
 
-### JSON output (`metadata`)
+### JSON 输出（`metadata`） {#json-output-metadata}
 
 ```json
 {
@@ -53,7 +57,7 @@ sp replay case get case-001 --plan-item item-abc --json
 }
 ```
 
-### JSON output (`case list`)
+### JSON 输出（`case list`） {#json-output-case-list}
 
 ```json
 {
@@ -78,7 +82,7 @@ sp replay case get case-001 --plan-item item-abc --json
 }
 ```
 
-### JSON output (`case get`)
+### JSON 输出（`case get`） {#json-output-case-get}
 
 ```json
 {
@@ -97,17 +101,17 @@ sp replay case get case-001 --plan-item item-abc --json
 }
 ```
 
-## REST mapping
+## REST 接口对照 {#rest-mapping}
 
-| Subcommand | APIs |
+| 子命令 | 接口 |
 |------------|------|
-| `metadata` | Storage replay query / schedule metadata endpoints |
-| `case list` | `/api/report/queryReplayCase`, storage `viewRecord`, schedule report |
-| `case get` | Report query by planItemId |
+| `metadata` | 存储回放查询 / schedule 元数据接口 |
+| `case list` | `/api/report/queryReplayCase`、存储 `viewRecord`、schedule 报告 |
+| `case get` | 按 planItemId 查报告 |
 
-Exact paths vary by deployment; see [API mapping](/zh/testing/reference/api-mapping).
+具体路径随部署不同而有差异，见 [API 对照](/zh/testing/reference/api-mapping)。
 
-## Replaces `sp_api`
+## 替代 `sp_api` {#replaces-sp_api}
 
 | sp_api | sp |
 |--------|-----|
@@ -115,7 +119,7 @@ Exact paths vary by deployment; see [API mapping](/zh/testing/reference/api-mapp
 | `query_plan_fail_cases` | `sp replay case list --plan … --failed` |
 | `query_replay_case` | `sp replay case list` |
 
-## Related
+## 相关文档 {#related}
 
 - [replay-diff](./replay-diff)
-- [Diagnose replay failure](/zh/testing/examples/agent-diagnose-replay)
+- [诊断回放失败](/zh/testing/examples/agent-diagnose-replay)

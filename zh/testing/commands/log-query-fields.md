@@ -1,101 +1,87 @@
-> 本页翻译可能滞后于英文版，如有出入以[英文版](/en/testing/commands/log-query-fields)为准。
+---
+title: 日志查询字段
+---
 
 # 日志查询字段
 
-**代理何时使用本页：** 用于解读 [`sp logs`](./logs) 或 `GET /api/recorder/logs` 返回的行——包括字段名称、含义，以及关联 id 何时可能缺失。
+[`sp logs`](./logs) 和 `GET /api/recorder/logs` 返回的每行日志有哪些字段，以及有些字段为什么会缺。
 
-本参考仅描述 **CLI 与 API 的查询输出**。它不涉及 Parquet 文件路径、分区布局，也不说明如何直接查询存储。所有查询请使用 [`sp logs`](./logs) 或规范的 HTTP API。
+**查询条件：** `trace_id` 必填。通过 HTTP 接口查询时，还可以加 `replay_id`、`plan_id`、`plan_item_id`、`mode`（`record` 或 `replay`）和 `source` 过滤，见 [sp logs — HTTP 接口](./logs#http-api)。
 
-**查询键：** **`trace_id`** 是必填查询键。**`replay_id`**、**`plan_id`**、**`plan_item_id`** 与 **`mode`**（`record` 或 `replay`）是受支持的**可选查询过滤参数**——作为 query 参数传入，用于在同一条 trace 内把录制行与某一次回放运行的行分开。
+**字段名：** 返回结果里的字段名不带前缀（`source`、`replay_id` 等）。日志在上报途中（OTLP）可能写成 `sp.source`、`sp.replay_id`，存储时会去掉前缀。
 
-**命名：** API 与 Parquet 的行使用**无前缀**的列名（`source`、`replay_id`……）。在传输链路上，OTLP 在 Vector 将它们映射进存储之前可能使用 `sp.source`、`sp.replay_id` 等带前缀的名称。
+## 日志行怎么排列 {#where-rows-appear}
 
----
+每次查询返回一组按时间排好的日志行，`sp logs --json` 放在 `data.rows` 里，接口放在 `rows` 里，按 `timestamp` 从早到晚排列。不带 `--json` 时，`sp logs` 输出的也是这些字段。
 
-## 行出现在哪里
+查询参数和结果解读见 [sp logs](./logs)。
 
-每次成功查询都会在 `data.rows`（CLI `--json`）或 API 的 `rows` 数组中返回一条**按时间顺序排列的行流**。行按事件 `timestamp` 升序排列。
+## 字段说明 {#field-reference}
 
-CLI 的人类可读输出打印的逻辑字段与 API JSON 相同。
+下面的基础字段每行都有。关联字段只在打日志的那一刻程序知道对应上下文时才有，否则会缺（见 [关联字段为什么会缺](#absent-correlation-fields)）。
 
-关于 `--trace-id` 查询键、排障流程和必需的时间范围，请参见 [sp logs](./logs)。
+| 字段 | 是否一定有 | 说明 |
+|------|-----------|------|
+| `timestamp` | 有 | 日志的发生时间，JSON 中为 ISO-8601 UTC，如 `2026-06-27T10:00:10.123Z`。用于排序和按 `[since, until)` 过滤 |
+| `severity` | 有 | 日志级别，如 `DEBUG`、`INFO`、`WARN`、`ERROR`。每个组件打哪些级别由它自己的日志配置决定，SoftProbe 不统一过滤 |
+| `body` | 有 | 完整的日志内容，不截断 |
+| `service_name` | 有 | 打这行日志的服务，如 `travel-ota`、`sp-backend` |
+| `source` | 有 | 日志来自哪个组件：`agent`、`app` 或 `backend`（见 [source 的取值](#source-values)） |
+| `trace_id` | 已知时有 | 打日志时正在处理的请求的 W3C trace ID，也是查询条件 |
+| `span_id` | 已知时有 | 打日志时所在 span 的 ID |
+| `replay_id` | 已知时有 | 打日志时所属那一次回放的 ID。也可作为查询过滤条件（`&replay_id=`） |
+| `plan_id` | 已知时有 | 打日志时所属回放计划的 ID。也可作为查询过滤条件（`&plan_id=`） |
+| `plan_item_id` | 已知时有 | 回放计划中某个接口的 ID。也可作为查询过滤条件（`&plan_item_id=`） |
+| `mode` | 已知时有 | Agent 标注的阶段：`record`（录制）或 `replay`（回放）。旧版 Agent 写的日志没有这个字段，请看 `effective_mode`。也可作为查询过滤条件（`&mode=record` / `&mode=replay`） |
+| `effective_mode` | 有（由后端算出） | 后端给每行算出的阶段：有 `mode` 就用 `mode`；没有时看 `replay_id`，没有 `replay_id` 算 `record`，有则算 `replay`。**判断阶段以它为准**，不要自己去看 `replay_id`。这个字段只出现在返回结果里，不存储 |
 
----
+结果里不包含 `session_id` / `sp.session_id`。
 
-## 字段参考
+## source 的取值 {#source-values}
 
-每一行都包含下面的核心字段。关联字段**仅在发出方运行时于打日志时知晓其值**时才包含——在缺乏上下文的行上它们可能不存在（参见[缺失的关联字段](#缺失的关联字段)）。
+| 取值 | 含义 | 常见的 `service_name` |
+|------|------|----------------------|
+| `agent` | Java Agent 自身的诊断日志（织入、上报、Agent 内部日志） | 挂 Agent 的应用的服务名 |
+| `app` | Agent 采集的被测应用日志（Logback、Log4j2、JUL） | `travel-ota`、客户的应用 ID |
+| `backend` | sp-backend 通过 OpenTelemetry 上报的诊断日志 | `sp-backend` |
 
-| Field | Always present | Description |
-|-------|----------------|-------------|
-| `timestamp` | yes | 日志行的事件时间。JSON 中为 ISO-8601 UTC（例如 `2026-06-27T10:00:10.123Z`）。用于按时间顺序排序以及调用方的 `[since, until)` 过滤。 |
-| `severity` | yes | 发出方 logger 归一化后的严重级别文本（例如 `DEBUG`、`INFO`、`WARN`、`ERROR`）。每个组件通过**其自身原生的日志配置**控制发出哪些级别——Softprobe 不施加产品级的严重级别过滤。 |
-| `body` | yes | 完整的日志消息文本。v1 返回完整的 `body`；查询结果不会截断消息内容。 |
-| `service_name` | yes | 该行的运行时服务标识（例如 `travel-ota`、`sp-backend`）。标识产生该行的是哪个进程。 |
-| `source` | yes | 产生该行的 v1 流水线来源。固定取值：`agent`、`app` 或 `backend`（参见 [source 取值](#source-取值)）。 |
-| `trace_id` | when known | 打出该行时处于活动状态的请求或工作单元的 W3C OpenTelemetry trace id。**v1 唯一的查询键。** |
-| `span_id` | when known | 打出该行时活动 span 的 OpenTelemetry span id。 |
-| `replay_id` | when known | 打日志时回放上下文处于活动状态的那一次回放**尝试**的 id。同时是受支持的可选查询过滤参数（`&replay_id=`）。 |
-| `plan_id` | when known | 打日志时计划上下文处于活动状态的回放**计划** id。同时是受支持的可选查询过滤参数（`&plan_id=`）。 |
-| `plan_item_id` | when known | 回放计划内的某个 case 或操作。同时是受支持的可选查询过滤参数（`&plan_item_id=`）。 |
-| `mode` | when known | agent 打行时标注的录制/回放相位（`record` 或 `replay`）。是原始 v1 契约之后新增的可选列——老 writer 写出的行没有它，读相位请用 `effective_mode`。同时是受支持的可选查询过滤参数（`&mode=record` / `&mode=replay`）。 |
-| `effective_mode` | yes（推导） | 服务端为每行推导的相位：存储列 `mode` 存在时用它，否则按 `replay_id` 推断（缺失 ⇒ `record`，存在 ⇒ `replay`）。**相位的权威字段**——优先用它，别自己去看 `replay_id`。仅存在于响应中，不是存储列。 |
-
-**不在 v1 查询结果中：** `session_id` / `sp.session_id`。
-
----
-
-## `source` 取值
-
-| Value | Meaning | Typical `service_name` examples |
-|-------|---------|--------------------------------|
-| `agent` | Java agent 自诊断（插桩、导出、agent 内部日志） | 插桩下的应用服务名 |
-| `app` | 由 agent 捕获的被测应用日志（Logback、Log4j2、JUL） | `travel-ota`、客户应用 id |
-| `backend` | 通过 OpenTelemetry 导出的 sp-backend 诊断日志 | `sp-backend` |
-
-当你在同一次 trace 查询中只想要应用行、agent 诊断行或 backend 行时，可按 `source` 过滤或扫描。
+同一次查询里只想看应用日志、Agent 日志或后端日志时，按 `source` 过滤：
 
 ```bash
 jq '[.rows[].source] | group_by(.) | map({source: .[0], n: length})' /tmp/sp-logs.json
 jq -r '.rows[] | select(.source=="backend") | .body' /tmp/sp-logs.json | head -20
 ```
 
----
+## 关联字段为什么会缺 {#absent-correlation-fields}
 
-## 缺失的关联字段
-
-当运行时在打日志时**确实没有请求或回放上下文**时，关联字段（`trace_id`、`span_id`、`replay_id`、`plan_id`、`plan_item_id`）会被**省略或为空**。这是预期行为——并非查询缺陷。
+打日志时如果程序确实不在处理任何请求或回放，关联字段（`trace_id`、`span_id`、`replay_id`、`plan_id`、`plan_item_id`）就会缺失或为空。这是正常情况，不是查询出了问题。
 
 常见情形：
 
-| Situation | Typical absent fields | Why |
-|-----------|----------------------|-----|
-| 进程**启动**或**关闭** | 部分或全部关联字段 | 尚无活动的 HTTP/RPC 请求或回放派发，或上下文已被清除 |
-| **后台 / 内务处理**行 | `trace_id`、`span_id`、replay/plan id | 录制/回放流量之外的线程或定时器工作 |
-| **agent 或 backend 空闲**诊断 | `replay_id`、`plan_id`、`plan_item_id` | 仅带 trace 上下文的诊断行，或没有入站 W3C 上下文 |
-| 行上**未设置计划上下文** | `plan_id`、`plan_item_id` | 即便在回放期间，该行也是在计划项派发之外打出的 |
+| 情形 | 通常缺哪些字段 | 原因 |
+|------|---------------|------|
+| 进程**启动**或**停止**时 | 部分或全部关联字段 | 还没有请求或回放在处理，或上下文已经清掉 |
+| **后台任务、定时任务** | `trace_id`、`span_id`、回放和计划相关 ID | 这些工作不属于录制或回放的请求 |
+| **Agent 或后端空闲时**的诊断日志 | `replay_id`、`plan_id`、`plan_item_id` | 只有 trace 上下文，或请求没有带 W3C 上下文 |
+| 日志不在**回放计划的执行过程中**打出 | `plan_id`、`plan_item_id` | 即使在回放期间，这行日志也不属于某个计划中的接口 |
 
-诊断失败的回放时，请按回放 case 或 pytest 关联块中的 **`trace_id`** 查询。当你需要限定在回放范围内的行时，直接在查询上传 **`&replay_id=`**（或 `&mode=replay`）——服务端替你过滤。
+排查回放失败时，用失败回放用例的 `trace_id` 查询。只想看某一次回放的日志，在接口查询中加上 `&replay_id=`（再加 `&mode=replay`）。
 
-**限定 case 的诊断：** 录制窗锚到 case 行的 **`recordTime`**（真实录制时刻；老 backend 没有该字段——退回 `requestDateTime` 会把窗口锚偏，因为它是**回放请求发出时刻**，不是录制时刻），回放窗锚到 **`replayTime`**。使用两个各 ±2 分钟的窗口（每个锚点一个），而不是从录制到回放的单一跨度。两个窗口正常都应有行：录制窗为空意味着锚点错了（`requestDateTime` 降级）或录制日志真的缺失——要排查，不能当正常现象。参见 [sp logs — 限定 case 的查询](./logs#case-scoped-lookup-dual-windows)。
+同一个用例的录制和回放往往相隔很久。通过 HTTP 接口查询时不传 `since`/`until`，后端会分别扫描录制前后和每次回放前后的时间；不要传一个从录制时间一直跨到回放时间的时间窗。见 [sp logs — HTTP 接口](./logs#http-api)。
 
----
+## 各组件的日志由谁控制 {#per-component-logging-ownership}
 
-## 各组件的日志归属
+| `source` | 日志级别和内容由谁控制 |
+|----------|----------------------|
+| `agent` | Agent / JVM 的日志配置（`sp.log.path`、`sp.log.console`、`sp.enable.debug` 等） |
+| `app` | 应用自己的 Logback、Log4j2 或 JUL 配置 |
+| `backend` | sp-backend 的日志配置和 OpenTelemetry 日志上报配置 |
 
-| `source` | 谁控制 `severity` 以及发出什么 |
-|----------|-----------------------------------------------|
-| `agent` | Agent / JVM 日志配置（`sp.log.path`、`sp.log.console`、`sp.enable.debug` 等） |
-| `app` | 应用的 Logback、Log4j2 或 JUL 设置 |
-| `backend` | sp-backend 日志与 OpenTelemetry 日志导出配置 |
+SoftProbe 只给各组件已经打出的日志加上关联 ID 并转发，不改应用的日志级别，也不统一过滤级别。
 
-Softprobe 附加关联 id 并转发各 logger 已经发出的行。它不会更改应用的日志级别，也不会在产品层面过滤严重级别。
+## 示例（JSON） {#example-row-json}
 
----
-
-## 示例行（JSON）
-
-来自 [`sp logs --json`](./logs) 或 `GET /api/recorder/logs`：
+[`sp logs --json`](./logs) 或 `GET /api/recorder/logs` 返回的一行：
 
 ```json
 {
@@ -114,7 +100,7 @@ Softprobe 附加关联 id 并转发各 logger 已经发出的行。它不会更�
 }
 ```
 
-同一服务的一条启动行可能完全省略关联字段：
+同一服务启动时打的一行可能完全没有关联字段：
 
 ```json
 {
@@ -127,22 +113,10 @@ Softprobe 附加关联 id 并转发各 logger 已经发出的行。它不会更�
 }
 ```
 
-注意这个示例暴露的坑：无上下文的平台行（没有存储列 `mode`、也没有 `replay_id`）会被兜底推导成 `effective_mode: "record"`，尽管它们并不是录制流量。只在带请求/回放上下文的行上把 `effective_mode` 当权威；平台诊断行要结合 `source` 判断。
+注意这个例子：这类不属于任何请求的平台日志，既没有 `mode` 也没有 `replay_id`，`effective_mode` 会算成 `record`，但它并不是录制流量。只有带请求或回放上下文的日志，`effective_mode` 才可信；看平台诊断日志时要结合 `source` 判断。
 
----
+## 相关文档 {#related}
 
-## 范围之外（v1）
-
-本参考仅涵盖统一流水线的**查询输出**。除非另行说明，以下内容不属于 v1：
-
-- 录制 trace 表、指标表、回放读迁移、历史回填
-- 非回放路径的服务日志（dashboard、auth 及其他 Helm/workspace 服务）
-- 直接访问 Parquet 文件、对象存储凭证或独立查询工具
-
----
-
-## 相关内容
-
-- [sp logs](./logs) — 命令参考、flag、排障与 API 映射
-- [日志关联 ID — 查找与使用 id](/zh/testing/reference/log-correlation-ids)
-- [诊断回放失败示例](/zh/testing/examples/agent-diagnose-replay)
+- [sp logs](./logs)
+- [概念与编号](/zh/testing/agents/concepts#ids)
+- [排查回放失败](/zh/testing/examples/agent-diagnose-replay)

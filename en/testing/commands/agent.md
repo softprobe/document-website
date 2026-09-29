@@ -21,7 +21,7 @@ sp agent download 2.0.0 --out-dir ./libs --json
 | Flag | Description |
 |------|-------------|
 | `--out-dir` | Install directory (default: `${XDG_DATA_HOME}/softprobe/agent`) |
-| `--version` | Specific agent version tag (default: latest) |
+| `--version` | Specific agent version tag (default: latest). Same as passing the version as the argument, e.g. `sp agent download 2.0.0` |
 
 ### JSON output (`download`)
 
@@ -56,7 +56,7 @@ sp agent command --app a1b2c3d4e5f67890 --agent-jar ./sp-agent.jar --app-jar tar
 | `--app-jar` | Optional. Trailing `-jar …` in `startCommand` |
 | `--format` | `json` (default), `shell`, `docker`, `maven` |
 
-Download `sp-agent.jar` from [Download Java agent](/en/testing/download-java-agent). Available immutable versions are published under `https://install.softprobe.ai/artifacts/agent/<version>/sp-agent.jar`.
+Download `sp-agent.jar` from [Attach the Java agent — download](/en/testing/java-agent#download). Available immutable versions are published under `https://install.softprobe.ai/artifacts/agent/<version>/sp-agent.jar`.
 
 `apiUrl` in the JSON output comes from the resolved CLI profile (`api_url` / `SP_API_URL`). Override with `sp config set-url`, `SP_API_URL`, or the global `--api-url` flag before `agent command`.
 
@@ -117,7 +117,7 @@ Example success JSON output:
 
 ## Related
 
-- [Doctor](/en/testing/installation/doctor) — `sp doctor`
+- [Check the installation](/en/testing/installation/#doctor) — `sp doctor`
 - [app](./app) — create app and check heartbeat
 - [record](./record) — list recorded cases
 - [Concepts: Java agent](/en/testing/agents/concepts)

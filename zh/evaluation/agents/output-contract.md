@@ -81,7 +81,7 @@ title: 输出契约
 
 ## 退出码
 
-与 Testing 相同——见 [退出码](/zh/testing/reference/exit-codes)。Eval 特有：运行本身成功但 **GateDecision** 失败时退出码为 `1`。
+与 Testing 相同——见 [退出码](/zh/testing/agents/output-contract#exit-codes)。Eval 特有：运行本身成功但 **GateDecision** 失败时退出码为 `1`。
 
 ## Agent 规则
 

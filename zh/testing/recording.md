@@ -29,7 +29,7 @@ java -javaagent:sp-agent.jar \
 sp app status <你的 appId> --json
 ```
 
-多环境部署时给实例打标签（如 `-Dsp.mocker.tags=env=prod`），之后筛选用例、匹配策略都靠它。
+多环境部署时给实例打标签（如 `-Dsp.tags.env=prod`），之后筛选用例、匹配策略都靠它。
 
 ## 第 2 步 · 让真实流量流过
 
@@ -84,7 +84,7 @@ sp record completeness <traceId> --json
 | 生产 / 预发 | 开启 | 采集真实流量建用例库 |
 | 测试 / CI 回放机 | 关闭或极低采样 | 避免回放时再录一套数据污染用例库 |
 
-按来源环境筛选用例时，保持录制与查询使用一致的 `sp.mocker.tags`（如 `env=prod`）。
+按来源环境筛选用例时，录制和查询要用同样的环境标签（如 `-Dsp.tags.env=prod`）。
 
 ## 调整录制范围 {#调整录制范围}
 

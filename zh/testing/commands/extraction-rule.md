@@ -1,16 +1,20 @@
-# sp extraction-rule
+---
+title: sp extraction-rule：业务字段提取规则
+---
 
-**When agents use this:** Configure or preview business-attribute extraction for `sp trace find`.
+# sp extraction-rule：业务字段提取规则
 
-## Subcommands
+**AI 代理何时使用：** 为 `sp trace find` 配置或预览业务字段提取规则。
 
-| Subcommand | Description |
+## 子命令 {#subcommands}
+
+| 子命令 | 说明 |
 |------------|-------------|
-| `list --app <id>` | App extraction rules |
-| `apply -f rules.yaml` | PUT app rules |
-| `preview -f rules.yaml` | POST preview |
+| `list --app <id>` | 应用的提取规则 |
+| `apply -f rules.yaml` | PUT 应用规则 |
+| `preview -f rules.yaml` | POST 预览 |
 
-## 示例
+## 示例 {#examples}
 
 ```bash
 sp extraction-rule list --app my-app --json
@@ -18,7 +22,7 @@ sp extraction-rule apply --app my-app -f rules.yaml --json
 sp extraction-rule preview -f rules.yaml --json
 ```
 
-### JSON 输出 (`list`)
+### JSON 输出（`list`） {#json-output-list}
 
 ```json
 {
@@ -36,7 +40,7 @@ sp extraction-rule preview -f rules.yaml --json
 }
 ```
 
-### JSON 输出 (`apply`)
+### JSON 输出（`apply`） {#json-output-apply}
 
 ```json
 {
@@ -49,7 +53,7 @@ sp extraction-rule preview -f rules.yaml --json
 }
 ```
 
-### JSON 输出 (`preview`)
+### JSON 输出（`preview`） {#json-output-preview}
 
 ```json
 {
@@ -66,15 +70,15 @@ sp extraction-rule preview -f rules.yaml --json
 }
 ```
 
-## REST mapping
+## REST 接口对照 {#rest-mapping}
 
-| Subcommand | Method | Path |
+| 子命令 | 方法 | 路径 |
 |------------|--------|------|
 | `list` | GET | `/api/applications/{appId}/extraction-rules` |
 | `apply` | PUT | `/api/applications/{appId}/extraction-rules` |
 | `preview` | POST | `/api/extraction-rules/preview` |
-| agent pull | GET | `/api/agent/extraction-rules` (agent use; CLI rarely) |
+| Agent 拉取 | GET | `/api/agent/extraction-rules`（Agent 用；CLI 很少用） |
 
-## Related
+## 相关文档 {#related}
 
 - [trace](./trace)

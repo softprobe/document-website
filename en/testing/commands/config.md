@@ -14,6 +14,7 @@ Manage XDG-backed SoftProbe config, profiles, and backend URL.
 | `show` | Print resolved config sources, active profile, URL, and masked token |
 | `set-url <url>` | Set URL for the active `sp` profile |
 | `set-profile <name>` | Switch the active `sp` profile |
+| `agent load --app <appId>` | Call the agent config-load endpoint once for an app, as an agent would; registers the app if it's new. Mainly for test setups |
 
 ## Examples
 
@@ -124,7 +125,9 @@ silently fall back to `default`.
 
 ## REST mapping
 
-Config subcommands are **local only** (no HTTP), except `config agent load` in [config legacy](./config-legacy).
+Config subcommands are **local only** (no HTTP), except `config agent load`, which calls `POST /api/config/agent/load`.
+
+The old `sp config legacy` command group has been removed. Use `sp policy` for recording, mock and compare settings.
 
 ## Errors
 

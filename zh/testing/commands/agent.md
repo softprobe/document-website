@@ -1,29 +1,33 @@
-# sp agent
+---
+title: sp agent：Java Agent 安装与启动命令
+---
 
-**When agents use this:** Install a backend-compatible `sp-agent.jar` and get copy-paste JVM flags after `sp app create`.
+# sp agent：Java Agent 安装与启动命令
 
-## Synopsis
+**AI 代理何时使用：** `sp app create` 之后，安装与后端版本配套的 `sp-agent.jar`，并拿到可直接粘贴的 JVM 参数。
 
-| Subcommand | Description |
+## 概要 {#synopsis}
+
+| 子命令 | 说明 |
 |------------|-------------|
-| `download [version]` | 下载匹配当前后端版本的 `sp-agent.jar` |
-| `command` | 生成录制模式所需的 `-javaagent` 与 `sp.*` JVM 启动参数 |
+| `download [version]` | 下载与当前后端版本配套的 `sp-agent.jar` |
+| `command` | 输出录制模式的 `-javaagent` 和 `sp.*` 系统属性 |
 
 ## `agent download`
 
-下载 `sp-agent.jar` 到本地存储目录（或指定目录）：
+把 `sp-agent.jar` 下载到本地存储（或指定目录）：
 
 ```bash
 sp agent download --json
 sp agent download 2.0.0 --out-dir ./libs --json
 ```
 
-| Flag | Description |
+| 参数 | 说明 |
 |------|-------------|
 | `--out-dir` | 安装目录（默认：`${XDG_DATA_HOME}/softprobe/agent`） |
-| `--version` | 指定 agent 版本（默认：latest） |
+| `--version` | 指定 Agent 版本（默认 latest）。也可以直接写在命令后面，如 `sp agent download 2.0.0` |
 
-### JSON 输出 (`download`)
+### JSON 输出（`download`） {#json-output-download}
 
 ```json
 {
@@ -40,7 +44,7 @@ sp agent download 2.0.0 --out-dir ./libs --json
 
 ## `agent command`
 
-在 **Softprobe Cloud** 上，先运行一次 `sp tenant key ensure`（或让本命令自动创建 key）。输出中会包含供 Java agent 使用的 `-Dsp.api.token=`。
+在 **Softprobe Cloud** 上，先运行一次 `sp tenant key ensure`（或让本命令自动创建 key）。输出中会带上给 Java Agent 用的 `-Dsp.api.token=`。
 
 ```bash
 sp tenant key ensure --json   # SaaS：每个租户一次
@@ -49,20 +53,20 @@ sp agent command --app a1b2c3d4e5f67890 --json
 sp agent command --app a1b2c3d4e5f67890 --agent-jar ./sp-agent.jar --app-jar target/app.jar --json
 ```
 
-| Flag | Description |
+| 参数 | 说明 |
 |------|-------------|
-| `--app` | Required. Registered `appId` from `sp app create` |
-| `--agent-jar` | Optional. Default: `$SP_AGENT_JAR`, then `${XDG_DATA_HOME}/softprobe/agent/sp-agent.jar` |
-| `--app-jar` | Optional. Trailing `-jar …` in `startCommand` |
-| `--format` | `json` (default), `shell`, `docker`, `maven` |
+| `--app` | 必填。`sp app create` 注册的 `appId` |
+| `--agent-jar` | 可选。默认：`$SP_AGENT_JAR`，其次 `${XDG_DATA_HOME}/softprobe/agent/sp-agent.jar` |
+| `--app-jar` | 可选。拼在 `startCommand` 末尾的 `-jar …` |
+| `--format` | `json`（默认）、`shell`、`docker`、`maven` |
 
-请从 [下载 Java Agent](/zh/testing/download-java-agent) 下载 `sp-agent.jar`。不可变版本发布在 `https://install.softprobe.ai/artifacts/agent/<version>/sp-agent.jar`。
+从 [接入 Java Agent — 下载](/zh/testing/java-agent#download) 下载 `sp-agent.jar`。可用的不可变版本发布在 `https://install.softprobe.ai/artifacts/agent/<version>/sp-agent.jar` 下。
 
-JSON 中的 `apiUrl` 来自 CLI 配置（`api_url` / `SP_API_URL`）。可通过 `sp config set-url`、`SP_API_URL` 或全局 `--api-url` 覆盖。
+JSON 输出中的 `apiUrl` 来自解析后的 CLI 配置档案（`api_url` / `SP_API_URL`）。可在 `agent command` 之前用 `sp config set-url`、`SP_API_URL` 或全局参数 `--api-url` 覆盖。
 
-Agent 运行时解析顺序：JVM `-Dsp.api.url` → 环境变量 `SP_API_URL` → JAR 内嵌 `META-INF/sp/sp.agent.conf`。
+Agent 运行时的优先级（不是 CLI 的）：JVM `-Dsp.api.url` → 环境变量 `SP_API_URL` → Agent JAR 内置的 `META-INF/sp/sp.agent.conf`。
 
-When the default jar is missing:
+默认 jar 不存在时：
 
 ```json
 {
@@ -72,13 +76,13 @@ When the default jar is missing:
     "code": "USAGE",
     "message": "sp-agent.jar not found",
     "backend": {
-      "nextActions": ["从 https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar 下载 sp-agent.jar"]
+      "nextActions": ["Download sp-agent.jar from https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar"]
     }
   }
 }
 ```
 
-成功时的 JSON 输出示例：
+成功的 JSON 输出示例：
 
 ```json
 {
@@ -99,10 +103,10 @@ When the default jar is missing:
     "dockerJavaToolOptions": "-javaagent:/home/user/.local/share/softprobe/agent/sp-agent.jar -Dsp.app.id=a1b2c3d4e5f67890 -Dsp.api.url=http://127.0.0.1:8090",
     "mavenArgLine": "-javaagent:/home/user/.local/share/softprobe/agent/sp-agent.jar -Dsp.app.id=a1b2c3d4e5f67890 -Dsp.api.url=http://127.0.0.1:8090",
     "nextActions": [
-      "启动服务时在 startCommand 后添加 -jar your-app.jar",
-      "运行 startCommand（或复制 startCommandMultiline 粘贴到启动脚本中）",
-      "发送流量，然后运行：sp record case list --app a1b2c3d4e5f67890 --since -1h --json",
-      "检查心跳状态：sp app status a1b2c3d4e5f67890 --json"
+      "Add -jar your-app.jar to startCommand when starting the service",
+      "Run startCommand (or paste startCommandMultiline into a run script)",
+      "Send traffic, then: sp record case list --app a1b2c3d4e5f67890 --since -1h --json",
+      "Verify heartbeat: sp app status a1b2c3d4e5f67890 --json"
     ]
   }
 }
@@ -110,14 +114,14 @@ When the default jar is missing:
 
 | `--format` | stdout |
 |------------|--------|
-| `json` | Full envelope on stdout |
-| `shell` | `startCommandMultiline` only |
+| `json` | 完整封装输出到 stdout |
+| `shell` | 只有 `startCommandMultiline` |
 | `docker` | `ENV JAVA_TOOL_OPTIONS='…'` |
 | `maven` | `<argLine>…</argLine>` |
 
-## Related
+## 相关文档 {#related}
 
-- [Doctor](/zh/testing/installation/doctor) — `sp doctor`
-- [app](./app) — create app and check heartbeat
-- [record](./record) — list recorded cases
-- [Concepts: Java agent](/zh/testing/agents/concepts)
+- [检查安装](/zh/testing/installation/#doctor) —— `sp doctor`
+- [app](./app) —— 创建应用、检查心跳
+- [record](./record) —— 列出已录制的用例
+- [概念：Java Agent](/zh/testing/agents/concepts)

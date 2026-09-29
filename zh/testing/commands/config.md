@@ -1,21 +1,26 @@
-# sp config
+---
+title: sp config：CLI 配置
+---
 
-**When agents use this:** Once per session to verify connectivity; CI uses env vars instead of `init`.
+# sp config：CLI 配置
 
-## Synopsis
+**AI 代理何时使用：** 每个会话开始时验证一次连通性；CI 中用环境变量代替 `init`。
 
-Manage XDG-backed SoftProbe config, profiles, and backend URL.
+## 概要 {#synopsis}
 
-## Subcommands
+管理基于 XDG 的 SoftProbe 配置、配置档案和后端 URL。
 
-| Subcommand | Description |
+## 子命令 {#subcommands}
+
+| 子命令 | 说明 |
 |------------|-------------|
-| `init` | Create `${XDG_CONFIG_HOME}/softprobe/config.jsonc` and `sp.jsonc` |
-| `show` | Print resolved config sources, active profile, URL, and masked token |
-| `set-url <url>` | Set URL for the active `sp` profile |
-| `set-profile <name>` | Switch the active `sp` profile |
+| `init` | 创建 `${XDG_CONFIG_HOME}/softprobe/config.jsonc` 和 `sp.jsonc` |
+| `show` | 打印解析后的配置来源、当前配置档案、URL 和脱敏后的 token |
+| `set-url <url>` | 设置当前 `sp` 配置档案的 URL |
+| `set-profile <name>` | 切换当前 `sp` 配置档案 |
+| `agent load --app <appId>` | 像 Agent 那样为应用调用一次配置加载接口；应用不存在时会自动注册。主要用于测试环境 |
 
-## Examples
+## 示例 {#examples}
 
 ```bash
 sp config init
@@ -24,24 +29,24 @@ sp config set-url http://127.0.0.1:8090
 sp config set-profile staging
 ```
 
-### File layout
+### 文件布局 {#file-layout}
 
-`sp` uses the global XDG namespace `softprobe`:
+`sp` 使用全局 XDG 命名空间 `softprobe`：
 
 ```text
-${XDG_CONFIG_HOME:-~/.config}/softprobe/config.jsonc  # shared Softprobe connectivity config
-${XDG_CONFIG_HOME:-~/.config}/softprobe/sp.jsonc      # sp CLI-specific config
-${XDG_CONFIG_HOME:-~/.config}/softprobe/spcode.jsonc  # spcode AI assistant-specific config
-.softprobe/                                           # local project config directory
-${XDG_CACHE_HOME:-~/.cache}/softprobe/                # caches
-${XDG_DATA_HOME:-~/.local/share}/softprobe/           # durable data, agent jars
-${XDG_STATE_HOME:-~/.local/state}/softprobe/          # logs and state
+${XDG_CONFIG_HOME:-~/.config}/softprobe/config.jsonc  # 共享的 Softprobe 连接配置
+${XDG_CONFIG_HOME:-~/.config}/softprobe/sp.jsonc      # sp CLI 专属配置
+${XDG_CONFIG_HOME:-~/.config}/softprobe/spcode.jsonc  # spcode AI 助手专属配置
+.softprobe/                                           # 项目级本地配置目录
+${XDG_CACHE_HOME:-~/.cache}/softprobe/                # 缓存
+${XDG_DATA_HOME:-~/.local/share}/softprobe/           # 持久数据、Agent jar
+${XDG_STATE_HOME:-~/.local/state}/softprobe/          # 日志和状态
 ```
 
-`config.jsonc` is shared with other Softprobe tools. `sp.jsonc` is only for this CLI and overrides shared values. `spcode.jsonc` (global and inside project-level `.softprobe/`) is parsed separately by the `spcode` AI assistant engine.
+`config.jsonc` 与其他 Softprobe 工具共享。`sp.jsonc` 只供本 CLI 使用，会覆盖共享配置中的同名项。`spcode.jsonc`（全局的和项目级 `.softprobe/` 里的）由 `spcode` AI 助手引擎单独解析。
 
 
-### JSON output (`init`)
+### JSON 输出（`init`） {#json-output-init}
 
 ```json
 {
@@ -55,7 +60,7 @@ ${XDG_STATE_HOME:-~/.local/state}/softprobe/          # logs and state
 }
 ```
 
-### JSON output (`show`)
+### JSON 输出（`show`） {#json-output-show}
 
 ```json
 {
@@ -80,7 +85,7 @@ ${XDG_STATE_HOME:-~/.local/state}/softprobe/          # logs and state
 }
 ```
 
-### JSON output (`set-url`)
+### JSON 输出（`set-url`） {#json-output-set-url}
 
 ```json
 {
@@ -93,7 +98,7 @@ ${XDG_STATE_HOME:-~/.local/state}/softprobe/          # logs and state
 }
 ```
 
-### JSON output (`set-profile`)
+### JSON 输出（`set-profile`） {#json-output-set-profile}
 
 ```json
 {
@@ -105,37 +110,39 @@ ${XDG_STATE_HOME:-~/.local/state}/softprobe/          # logs and state
 }
 ```
 
-## Precedence
+## 优先级 {#precedence}
 
-Later sources override earlier sources:
+排越后的来源优先级越高，会覆盖前面的：
 
-1. Defaults.
-2. `${XDG_CONFIG_HOME}/softprobe/config.jsonc`.
-3. `${XDG_CONFIG_HOME}/softprobe/sp.jsonc`.
-4. Extra config from `SP_CONFIG`, when set.
-5. Extra config from `--config`, when set.
-6. Selected profile. Profile selection priority is `--profile`, `SP_PROFILE`,
-   merged `profile`, then `default`.
-7. Scalar env overrides: `SP_API_URL`, `SP_TOKEN`, `SP_AGENT_JAR`.
-8. Scalar CLI flags: `--api-url`, `--token`, `--agent-jar`.
+1. 默认值。
+2. `${XDG_CONFIG_HOME}/softprobe/config.jsonc`。
+3. `${XDG_CONFIG_HOME}/softprobe/sp.jsonc`。
+4. 设置了 `SP_CONFIG` 时，来自它的额外配置。
+5. 设置了 `--config` 时，来自它的额外配置。
+6. 选中的配置档案。档案选择优先级为 `--profile`、`SP_PROFILE`、
+   合并后的 `profile`，最后才是 `default`。
+7. 标量环境变量覆盖：`SP_API_URL`、`SP_TOKEN`、`SP_AGENT_JAR`。
+8. 标量 CLI 参数：`--api-url`、`--token`、`--agent-jar`。
 
-Explicit unknown profiles fail closed with `PROFILE_NOT_FOUND`; they never
-silently fall back to `default`.
+显式指定了不存在的配置档案时，直接以 `PROFILE_NOT_FOUND` 失败，
+绝不悄悄回退到 `default`。
 
-## REST mapping
+## REST 接口对照 {#rest-mapping}
 
-Config subcommands are **local only** (no HTTP), except `config agent load` in [config legacy](./config-legacy).
+配置类子命令**只在本地执行**（不发 HTTP），唯一例外是 `config agent load`，它调用 `POST /api/config/agent/load`。
 
-## Errors
+旧的 `sp config legacy` 命令组已经移除。录制、Mock 和对比设置请用 `sp policy`。
 
-| Code | Exit | Cause |
+## 错误 {#errors}
+
+| 错误码 | 退出码 | 原因 |
 |------|------|-------|
-| `CONFIG_MISSING` | 2 | No config file; run `init` |
-| `PROFILE_NOT_FOUND` | 2 | Unknown profile name |
-| `CONFIG_PARSE_ERROR` | 2 | Invalid JSONC |
-| `CONFIG_WRITE_ERROR` | 2 | Config file could not be written |
+| `CONFIG_MISSING` | 2 | 没有配置文件；先运行 `init` |
+| `PROFILE_NOT_FOUND` | 2 | 配置档案名不存在 |
+| `CONFIG_PARSE_ERROR` | 2 | JSONC 不合法 |
+| `CONFIG_WRITE_ERROR` | 2 | 配置文件写入失败 |
 
-## Related
+## 相关文档 {#related}
 
-- [Configuration guide](/zh/testing/installation/configuration)
+- [配置指南](/zh/testing/installation/configuration)
 - [auth](./auth)

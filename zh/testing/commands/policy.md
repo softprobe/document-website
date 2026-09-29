@@ -1,32 +1,36 @@
-# sp policy
+---
+title: sp policy：策略管理
+---
 
-**When agents use this:** Validate and apply YAML policy changes; CI gates on `validate`.
+# sp policy：策略管理
 
-## Synopsis
+**AI 代理何时使用：** 校验并应用 YAML 策略变更；CI 里用 `gate`。
 
-Manage declarative policies: **recording**, **mock**, **compare**.
+## 概要 {#synopsis}
 
-## Structure
+管理声明式策略：**录制**、**Mock**、**对比**。
+
+## 结构 {#structure}
 
 ```text
 sp policy <kind> <action>
 ```
 
-`<kind>`: `recording` | `mock` | `compare`
+`<kind>`：`recording` | `mock` | `compare`
 
-| Action | Description |
+| 操作 | 说明 |
 |--------|-------------|
-| `list` | List policy documents |
-| `get <id>` | Get policy by id |
-| `apply` | Create or update (`-f` file or stdin) |
-| `delete <id>` | Remove policy |
-| `validate` | Validate without save (`-f`) |
-| `export <id>` | Write YAML to stdout or `-o` |
-| `import` | Import YAML file (`-f`) |
-| `diff` | Diff local file vs server export (`-f`, `--against <id>`) |
-| `gate` | Validate all YAML files in a directory (CI) |
+| `list` | 列出策略文档 |
+| `get <id>` | 按 id 获取策略 |
+| `apply` | 创建或更新（`-f` 文件或标准输入） |
+| `delete <id>` | 删除策略 |
+| `validate` | 只校验不保存（`-f`） |
+| `export <id>` | 输出 YAML 到 stdout 或 `-o` |
+| `import` | 导入 YAML 文件（`-f`） |
+| `diff` | 比较本地文件与服务端导出（`-f`、`--against <id>`） |
+| `gate` | 校验一个目录下的全部 YAML 文件（CI） |
 
-## Examples
+## 示例 {#examples}
 
 ```bash
 sp policy recording list --json
@@ -41,7 +45,7 @@ sp policy mock export policy-id-1 -o mock.yaml
 sp policy compare get compare-global --json
 ```
 
-### JSON output (`validate`)
+### JSON 输出（`validate`） {#json-output-validate}
 
 ```json
 {
@@ -58,9 +62,11 @@ sp policy compare get compare-global --json
 }
 ```
 
-### JSON output (`gate`)
+只要后端有应答，`validate` 就以 `0` 退出，策略不合法时也是如此；`ok: true` 只表示校验执行了。请看 `data.valid`。
 
-用于 CI/CD 流水线中校验全部变更或提交的策略文件：
+### JSON 输出（`gate`） {#json-output-gate}
+
+在 CI/CD 流水线中校验所有变更或提交的策略文件：
 
 ```json
 {
@@ -84,7 +90,7 @@ sp policy compare get compare-global --json
 }
 ```
 
-当策略文件校验失败时，`policy gate` 退出码为 1，并包含校验错误明细：
+有策略文件校验失败时，`policy gate` 以退出码 1 退出。结果照样写到标准输出，`ok` 仍为 `true`，并带上校验详情：
 
 ```json
 {
@@ -107,7 +113,7 @@ sp policy compare get compare-global --json
 }
 ```
 
-### JSON output (`apply`)
+### JSON 输出（`apply`） {#json-output-apply}
 
 ```json
 {
@@ -121,9 +127,9 @@ sp policy compare get compare-global --json
 }
 ```
 
-### JSON output (`diff`)
+### JSON 输出（`diff`） {#json-output-diff}
 
-对比本地策略文件与服务端当前生效配置：
+比较本地策略文件与服务端当前状态：
 
 ```json
 {
@@ -140,7 +146,7 @@ sp policy compare get compare-global --json
 }
 ```
 
-### JSON output (`list`)
+### JSON 输出（`list`） {#json-output-list}
 
 ```json
 {
@@ -160,40 +166,39 @@ sp policy compare get compare-global --json
 }
 ```
 
-## REST mapping
+## REST 接口对照 {#rest-mapping}
 
-### Recording (`/api/recording-policies`)
+### Recording（`/api/recording-policies`） {#recording-apirecording-policies}
 
-| Action | Method | Path |
+| 操作 | 方法 | 路径 |
 |--------|--------|------|
 | `list` | GET | `/policies` |
 | `get` | GET | `/policies/{id}` |
-| `apply` (JSON) | POST | `/policies` |
-| `apply` (YAML) | POST | `/policies/yaml` (`Content-Type: text/yaml`) |
+| `apply`（JSON） | POST | `/policies` |
+| `apply`（YAML） | POST | `/policies/yaml`（`Content-Type: text/yaml`） |
 | `delete` | DELETE | `/policies/{id}` |
 | `validate` | POST | `/policies/validate` |
 | `export` | GET | `/policies/{id}/yaml` |
 
-### Mock (`/api/mock-policies`)
+### Mock（`/api/mock-policies`） {#mock-apimock-policies}
 
-Same path pattern under `/api/mock-policies`.
+`/api/mock-policies` 下的路径模式相同。
 
-### Compare (`/api/compare-rules`)
+### Compare（`/api/compare-rules`） {#compare-apicompare-rules}
 
-| Action | Method | Path |
+| 操作 | 方法 | 路径 |
 |--------|--------|------|
 | `list` | GET | `/policies` |
 | `get` | GET | `/policies/{id}` |
 | `apply` | POST | `/policies` |
 | `validate` | POST | `/policies/validate` |
 | `export` | GET | `/policies/{id}/yaml` |
-| templates | GET | `/templates`, `/functions` (v2 helpers) |
+| templates | GET | `/templates`、`/functions`（v2 辅助接口） |
 
-## Schema
+## 数据结构 {#schema}
 
-见 [CLI 策略索引](/zh/testing/policies) 与 [策略 YAML 指南](/zh/testing/policy-yaml-guide)。
+见 [CLI 策略](/zh/testing/policies) 和 [策略 YAML 指南](/zh/testing/policy-yaml-guide)。
 
-## Related
+## 相关文档 {#related}
 
-- [CI policy gate](/zh/testing/examples/ci-policy-gate)
-- [GitOps policies](/zh/testing/examples/gitops-policies)
+- [用 Git 管理策略](/zh/testing/examples/gitops-policies)，其中包括 [在 CI 中校验](/zh/testing/examples/gitops-policies#ci-validation)

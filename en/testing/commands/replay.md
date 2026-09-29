@@ -12,8 +12,12 @@ Create, monitor, stop, and rerun replay plans against recorded cases.
 |------------|-------------|
 | `run` | Create plan (`POST /api/createPlan`) |
 | `status <planId>` | Poll progress (`GET /api/progress`) |
+| `statistics <planId> --app <appId>` | The plan's summary row, with its case counts |
+| `report <planId> --app <appId>` | The plan's statistic report |
 | `stop <planId>` | Stop plan |
 | `rerun <planId>` | Re-run plan |
+
+Case lists, diffs and metadata are under [replay case](./replay-case) and [replay diff](./replay-diff).
 
 ## Flags (`run`)
 
@@ -126,6 +130,19 @@ With `--json`, stdout is newline-delimited envelopes:
 }
 ```
 
+### `statistics` and `report` {#statistics-and-report}
+
+Both need `--app` as well as the plan ID:
+
+```bash
+sp replay statistics <planId> --app <appId> --json
+sp replay report <planId> --app <appId> --json
+```
+
+`statistics` returns the plan's row from the app's plan list. It only looks at the first page (20 plans); for an older plan it fails with `no statistics for plan <planId>`. `report` returns the backend's statistic report for the plan unchanged.
+
+The verdict used to gate a pipeline — `findings.state` — comes from the [Open API](/en/testing/reference/replay-openapi), not from these commands.
+
 ### JSON output (`rerun`)
 
 ```json
@@ -149,6 +166,8 @@ With `--json`, stdout is newline-delimited envelopes:
 | `status` | GET | `/api/progress?planId=` |
 | `stop` | GET | `/api/stopPlan?planId=` |
 | `rerun` | POST | `/api/reRunPlan` |
+| `statistics` | POST | `/api/report/queryPlanStatistics` |
+| `report` | POST | `/api/report/queryPlanStatistic` |
 
 Body for `run`: `BuildReplayPlanRequest` (schedule module).
 

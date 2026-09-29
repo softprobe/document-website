@@ -1,25 +1,29 @@
-# sp record
+---
+title: sp record：录制数据查询
+---
 
-**When agents use this:** Inspect what was recorded for a trace; verify agent behavior via logs.
+# sp record：录制数据查询
 
-## Synopsis
+**AI 代理何时使用：** 查看一条 trace 录到了什么；通过日志核实 Agent 行为。
 
-Read-only access to stored recordings (not agent write APIs).
+## 概要 {#synopsis}
 
-## Subcommands
+对已存储录制数据的只读访问（不是 Agent 的写入接口）。
 
-| Subcommand | Description |
+## 子命令 {#subcommands}
+
+| 子命令 | 说明 |
 |------------|-------------|
-| `case list` | List recorded entry cases for an app and time window |
-| `operation list` | List recorded operations by category (dependency map) |
-| `query` | Query mocker/record payload by trace or replay id |
-| `trace <traceId>` | Trace tree and children |
-| `completeness <traceId>` | Full-link recording completeness |
-| `view` | Visualization query/view |
+| `case list` | 按应用和时间窗列出已录制的入口用例 |
+| `operation list` | 按类别列出已录制的操作（依赖地图） |
+| `query` | 按 trace id 或 replay id 查询 mocker/record 负载 |
+| `trace <traceId>` | trace 树和子节点 |
+| `completeness <traceId>` | 全链路录制完整性 |
+| `view` | 可视化查询/查看 |
 
-> **日志查询（v1）：** 使用顶层 [`sp logs`](./logs) 加 `--trace-id` —— 不再使用 `sp record logs *`（已在统一日志管线中移除）。
+> **日志查询（v1）：** 用顶层的 [`sp logs`](./logs) 加 `--trace-id` —— 不要用 `sp record logs *`（已在统一日志管道中移除）。
 
-## Examples
+## 示例 {#examples}
 
 ```bash
 sp record case list --app a1b2c3d4e5f67890 --since -1h --json
@@ -31,20 +35,20 @@ sp logs --trace-id abc --since 2026-06-27T10:00:00Z --until 2026-06-27T10:05:00Z
 
 ## `case list`
 
-Use this immediately after running an instrumented app and sending traffic. It proves that replay has input data.
+启动插桩应用并发完流量后，立刻用这个命令。它能证明回放有输入数据。
 
 ```bash
 sp record case list --app a1b2c3d4e5f67890 --since -1h --limit 20 --json
 ```
 
-Required behavior:
+必守的行为约定：
 
-- `--app` is required and maps to the registered `appId`.
-- `--since` / `--until` select the recording window. Durations such as `-1h` are resolved relative to now.
-- `--page` / `--limit` paginate cases.
-- Output includes case ids or trace ids, operation names, recorded time, and enough metadata to start trace or replay workflows.
+- `--app` 必填，对应已注册的 `appId`。
+- `--since` / `--until` 选择录制时间窗。`-1h` 这样的时长按相对当前时间解析。
+- `--page` / `--limit` 对用例分页。
+- 输出包含用例 id 或 trace id、操作名、录制时间，以及足够开始 trace 或回放流程的元数据。
 
-Example JSON shape:
+JSON 结构示例：
 
 ```json
 {
@@ -67,7 +71,7 @@ Example JSON shape:
 
 ## `query`
 
-根据 trace ID 或 replay ID 查询录制数据 payload：
+按 trace ID 或 replay ID 查询已存储的录制负载：
 
 ```bash
 sp record query --trace-id 4bf92f3577b34da6a3ce929d0e0e4736 --json
@@ -93,7 +97,7 @@ sp record query --trace-id 4bf92f3577b34da6a3ce929d0e0e4736 --json
 }
 ```
 
-当响应内容超过阈值（64 KiB）时，将作为文件写入 `--out-dir`：
+负载大小超过阈值（64 KiB）时，会在 `--out-dir` 下写产物文件：
 
 ```json
 {
@@ -108,7 +112,7 @@ sp record query --trace-id 4bf92f3577b34da6a3ce929d0e0e4736 --json
 
 ## `trace`
 
-查看录制 trace 调用树与子调用：
+查看录制 trace 树和子节点：
 
 ```bash
 sp record trace 4bf92f3577b34da6a3ce929d0e0e4736 --json
@@ -135,7 +139,7 @@ sp record trace 4bf92f3577b34da6a3ce929d0e0e4736 --json
 
 ## `completeness`
 
-验证单个 trace 的录制完整性：
+核实一条 trace 的录制完整性：
 
 ```bash
 sp record completeness 4bf92f3577b34da6a3ce929d0e0e4736 --json
@@ -156,7 +160,7 @@ sp record completeness 4bf92f3577b34da6a3ce929d0e0e4736 --json
 
 ## `operation list`
 
-按类别列出应用已录制的依赖接口调用（依赖拓扑）：
+列出应用已录制的依赖操作和类别：
 
 ```bash
 sp record operation list --app a1b2c3d4e5f67890 --json
@@ -176,9 +180,9 @@ sp record operation list --app a1b2c3d4e5f67890 --json
 }
 ```
 
-## REST mapping
+## REST 接口对照 {#rest-mapping}
 
-| Subcommand | Method | Path |
+| 子命令 | 方法 | 路径 |
 |------------|--------|------|
 | `case list` | POST | `/api/storage/replay/query/replayCase` |
 | `query` | POST | `/api/storage/record/query` |
@@ -187,7 +191,7 @@ sp record operation list --app a1b2c3d4e5f67890 --json
 | `completeness` | GET | `/api/storage/record/completeness` |
 | `view` | POST | `/api/storage/visualization/query` |
 
-## Replaces `sp_api`
+## 替代 `sp_api` {#replaces-sp_api}
 
 | sp_api | sp |
 |--------|-----|
@@ -195,11 +199,11 @@ sp record operation list --app a1b2c3d4e5f67890 --json
 | `record_log_overview` | `sp logs --trace-id …`（见 [logs](./logs)） |
 | `download_record_logs` | `sp logs --trace-id …` → 重定向或用 `jq` |
 
-## Non-goals
+## 非目标 {#non-goals}
 
-- `POST /api/storage/record/save`, `batchSave*` — agent instrumentation only
+- `POST /api/storage/record/save`、`batchSave*` —— 仅供 Agent 插桩使用
 
-## Related
+## 相关文档 {#related}
 
 - [trace](./trace)
 - [replay-diff](./replay-diff)

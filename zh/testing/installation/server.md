@@ -655,4 +655,4 @@ sp-backend 健康后，在开发者机器上安装 Softprobe 客户端：[安装
 
 Linux 上共享团队 Web 工作台见客户端安装页的 [Spcode Service](./index#spcode-service)。
 
-相关：[`sp logs`](/zh/testing/commands/logs) · [日志关联 ID](/zh/testing/reference/log-correlation-ids)
+相关：[`sp logs`](/zh/testing/commands/logs) · [概念与编号](/zh/testing/agents/concepts#ids)

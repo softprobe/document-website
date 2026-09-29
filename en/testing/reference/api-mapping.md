@@ -80,10 +80,9 @@ Authoritative **REST ↔ CLI** reference for sp-backend (default port **8090**).
 
 | Method | Path | CLI | Category |
 |--------|------|-----|-------|
-| GET | `/api/record-logs/overview` | `sp record logs overview` | investigation |
-| GET | `/api/record-logs/download` | `sp record logs download` | investigation |
-| GET | `/api/replay-logs/overview` | `sp replay logs overview` | investigation |
-| GET | `/api/replay-logs/download` | `sp replay logs download` | investigation |
+| GET | `/api/recorder/logs` | `sp logs` | investigation |
+
+The old `/api/record-logs/*` and `/api/replay-logs/*` endpoints and the `sp record logs` / `sp replay logs` commands have been removed; see [sp logs](/en/testing/commands/logs).
 
 ## Reports (subset)
 

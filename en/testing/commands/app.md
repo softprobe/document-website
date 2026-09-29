@@ -197,5 +197,5 @@ Header: `access-token: <JWT>`.
 - [Quickstart](/en/testing/getting-started)
 - [sp replay](replay.md)
 - [Diagnose replay failure](/en/testing/examples/agent-diagnose-replay)
-- [JSON types — ApplicationListItem](/en/testing/reference/json-types#applicationlistitem)
+- [Output contract — ApplicationListItem](/en/testing/agents/output-contract#applicationlistitem)
 - [API mapping](/en/testing/reference/api-mapping)

@@ -28,23 +28,23 @@
 /en/cli/guide/concepts /en/testing/agents/concepts 301
 /en/cli/guide/configuration /en/testing/installation/configuration 301
 /en/cli/guide/installation /en/testing/installation/ 301
-/en/cli/guide/introduction /en/testing/agents/introduction 301
-/en/cli/guide/log-correlation-ids /en/testing/reference/log-correlation-ids 301
+/en/cli/guide/introduction /en/testing/agents/overview 301
+/en/cli/guide/log-correlation-ids /en/testing/agents/concepts 301
 /en/cli/guide/output-contract /en/testing/agents/output-contract 301
 /en/cli/guide/overview /en/testing/agents/overview 301
 /en/cli/guide/quickstart /en/testing/getting-started 301
-/en/cli/guide/spcode /en/testing/installation/code 301
-/en/cli/guide/versioning /en/testing/agents/versioning 301
+/en/cli/guide/spcode /en/testing/installation/ 301
+/en/cli/guide/versioning /en/testing/agents/output-contract 301
 /zh/cli/guide/authentication /zh/testing/agents/authentication 301
 /zh/cli/guide/concepts /zh/testing/agents/concepts 301
 /zh/cli/guide/configuration /zh/testing/installation/configuration 301
 /zh/cli/guide/installation /zh/testing/installation/ 301
-/zh/cli/guide/introduction /zh/testing/agents/introduction 301
+/zh/cli/guide/introduction /zh/testing/agents/overview 301
 /zh/cli/guide/output-contract /zh/testing/agents/output-contract 301
 /zh/cli/guide/overview /zh/testing/agents/overview 301
 /zh/cli/guide/quickstart /zh/testing/getting-started 301
-/zh/cli/guide/spcode /zh/testing/installation/code 301
-/zh/cli/guide/versioning /zh/testing/agents/versioning 301
+/zh/cli/guide/spcode /zh/testing/installation/ 301
+/zh/cli/guide/versioning /zh/testing/agents/output-contract 301
 
 # --- cli/* → testing/* — pure prefix renames, collapsed to wildcards ---
 # commands / examples / reference all map cli/<x>/:splat → testing/<x>/:splat
@@ -63,7 +63,7 @@
 /guide/installation   /en/testing/installation/               301
 /guide/quickstart     /en/testing/getting-started             301
 /guide/configuration  /en/testing/installation/configuration  301
-/guide/spcode         /en/testing/installation/code           301
+/guide/spcode         /en/testing/installation/                301
 /guide/overview       /en/testing/agents/overview             301
 /guide/*              /en/testing/                            301
 /commands/*           /en/testing/commands/:splat             301
@@ -90,3 +90,40 @@
 # --- Merged Policies dir index → single overview page ---
 /en/testing/policies/ /en/testing/policies 301
 /zh/testing/policies/ /zh/testing/policies 301
+
+# --- 2026-09 docs restructure: merged pages → the page that now holds their content ---
+# Exact rules only. No wildcard above matches these paths, so their position is free.
+/en/testing/agents/introduction /en/testing/agents/overview 301
+/en/testing/agents/versioning /en/testing/agents/output-contract 301
+/en/testing/reference/exit-codes /en/testing/agents/output-contract 301
+/en/testing/reference/json-types /en/testing/agents/output-contract 301
+/en/testing/reference/log-correlation-ids /en/testing/agents/concepts 301
+/en/testing/reference/ /en/testing/agents/overview 301
+/en/testing/reference/index /en/testing/agents/overview 301
+/en/testing/examples/ /en/testing/agents/overview 301
+/en/testing/examples/index /en/testing/agents/overview 301
+/en/testing/examples/agent-attr-trace-lookup /en/testing/examples/agent-diagnose-replay 301
+/en/testing/examples/ci-policy-gate /en/testing/examples/gitops-policies 301
+/en/testing/download-java-agent /en/testing/java-agent 301
+/en/testing/installation/code /en/testing/installation/ 301
+/en/testing/installation/doctor /en/testing/installation/ 301
+/en/testing/installation/upgrade /en/testing/installation/ 301
+/en/testing/commands/recorder /en/testing/commands/logs 301
+/en/testing/commands/config-legacy /en/testing/commands/config 301
+/zh/testing/agents/introduction /zh/testing/agents/overview 301
+/zh/testing/agents/versioning /zh/testing/agents/output-contract 301
+/zh/testing/reference/exit-codes /zh/testing/agents/output-contract 301
+/zh/testing/reference/json-types /zh/testing/agents/output-contract 301
+/zh/testing/reference/log-correlation-ids /zh/testing/agents/concepts 301
+/zh/testing/reference/ /zh/testing/agents/overview 301
+/zh/testing/reference/index /zh/testing/agents/overview 301
+/zh/testing/examples/ /zh/testing/agents/overview 301
+/zh/testing/examples/index /zh/testing/agents/overview 301
+/zh/testing/examples/agent-attr-trace-lookup /zh/testing/examples/agent-diagnose-replay 301
+/zh/testing/examples/ci-policy-gate /zh/testing/examples/gitops-policies 301
+/zh/testing/download-java-agent /zh/testing/java-agent 301
+/zh/testing/installation/code /zh/testing/installation/ 301
+/zh/testing/installation/doctor /zh/testing/installation/ 301
+/zh/testing/installation/upgrade /zh/testing/installation/ 301
+/zh/testing/commands/recorder /zh/testing/commands/logs 301
+/zh/testing/commands/config-legacy /zh/testing/commands/config 301

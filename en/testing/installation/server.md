@@ -657,4 +657,4 @@ After sp-backend is healthy, install Softprobe on developer machines: [Install S
 
 For a shared team web workbench on Linux, see [Spcode Service](./index#spcode-service) on the client install page.
 
-Related: [`sp logs`](/en/testing/commands/logs) · [Log correlation IDs](/en/testing/reference/log-correlation-ids)
+Related: [`sp logs`](/en/testing/commands/logs) · [Concepts and IDs](/en/testing/agents/concepts#ids)

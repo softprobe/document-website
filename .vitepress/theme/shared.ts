@@ -28,17 +28,17 @@ export function navForLocale(locale: DocLocale): DefaultTheme.NavItem[] {
   if (locale === 'zh') {
     return [
       { text: '首页', link: `${p}/` },
+      { text: '流量回放测试', link: `${p}/testing/`, activeMatch: '/zh/testing/' },
       { text: 'Agent QA', link: `${p}/agent-qa/`, activeMatch: '/zh/agent-qa/' },
       { text: 'Agent Evaluation', link: `${p}/evaluation/`, activeMatch: '/zh/evaluation/' },
-      { text: '测试', link: `${p}/testing/`, activeMatch: '/zh/testing/' },
       { text: '业务观测', link: `${p}/platform/getting-started/quick-start`, activeMatch: '/zh/platform/' },
     ]
   }
   return [
     { text: 'Home', link: `${p}/` },
+    { text: 'Replay Testing', link: `${p}/testing/`, activeMatch: '/en/testing/' },
     { text: 'Agent QA', link: `${p}/agent-qa/`, activeMatch: '/en/agent-qa/' },
     { text: 'Agent Evaluation', link: `${p}/evaluation/`, activeMatch: '/en/evaluation/' },
-    { text: 'Testing', link: `${p}/testing/`, activeMatch: '/en/testing/' },
     { text: 'Business Observability', link: `${p}/platform/getting-started/quick-start`, activeMatch: '/en/platform/' },
   ]
 }
@@ -54,12 +54,12 @@ export function footerForLocale(locale: DocLocale): DefaultTheme.Footer {
         {
           title: '文档',
           items: [
+            { text: '流量回放测试', link: `${p}/testing/` },
+            { text: '部署后端', link: `${p}/testing/installation/server` },
+            { text: '回放报告', link: `${p}/testing/replay-report` },
+            { text: '命令参考', link: `${p}/testing/commands/` },
             { text: 'Agent QA', link: `${p}/agent-qa/` },
             { text: 'Agent Evaluation', link: `${p}/evaluation/` },
-            { text: '测试概览', link: `${p}/testing/` },
-            { text: '安装指南', link: `${p}/testing/installation/` },
-            { text: 'sp-backend（Helm）', link: `${p}/testing/installation/server` },
-            { text: '命令', link: `${p}/testing/commands/` },
           ],
         },
         {
@@ -83,12 +83,12 @@ export function footerForLocale(locale: DocLocale): DefaultTheme.Footer {
         {
           title: 'Docs',
           items: [
+            { text: 'Replay Testing', link: `${p}/testing/` },
+            { text: 'Deploy the backend', link: `${p}/testing/installation/server` },
+            { text: 'Replay report', link: `${p}/testing/replay-report` },
+            { text: 'Command reference', link: `${p}/testing/commands/` },
             { text: 'Agent QA', link: `${p}/agent-qa/` },
             { text: 'Agent Evaluation', link: `${p}/evaluation/` },
-            { text: 'Testing overview', link: `${p}/testing/` },
-            { text: 'Installation', link: `${p}/testing/installation/` },
-            { text: 'sp-backend (Helm)', link: `${p}/testing/installation/server` },
-            { text: 'Commands', link: `${p}/testing/commands/` },
           ],
         },
       {

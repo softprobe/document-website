@@ -1,12 +1,10 @@
 # Log query fields
 
-**When agents use this:** Interpret rows returned by [`sp logs`](./logs) or `GET /api/recorder/logs` — field names, meanings, and when correlation ids may be missing.
+The fields of each row returned by [`sp logs`](./logs) or `GET /api/recorder/logs`, and why some of them may be missing.
 
-This reference describes **CLI and API query output** only. It does not document Parquet file paths, partition layout, or how to query storage directly. Use [`sp logs`](./logs) or the canonical HTTP API for all lookups.
+**Lookup key:** `trace_id` is required. On the HTTP API, `replay_id`, `plan_id`, `plan_item_id`, `mode` (`record` or `replay`) and `source` are optional filters — see [sp logs — HTTP API](./logs#http-api).
 
-**Lookup key:** **`trace_id`** is the required lookup key. **`replay_id`**, **`plan_id`**, **`plan_item_id`**, and **`mode`** (`record` or `replay`) are supported **optional query filters** — pass them as query parameters to separate record rows from a specific replay run within one trace.
-
-**Naming:** API and Parquet rows use **unprefixed** column names (`source`, `replay_id`, …). OTLP on the wire may use `sp.source`, `sp.replay_id`, etc. before Vector maps them into storage.
+**Naming:** rows use unprefixed names (`source`, `replay_id`, …). OTLP data on the wire may use `sp.source`, `sp.replay_id` and so on before it is stored.
 
 ---
 
@@ -16,7 +14,7 @@ Each successful lookup returns one **chronological stream** of rows in `data.row
 
 Human-readable CLI output prints the same logical fields as API JSON.
 
-See [sp logs](./logs) for the `--trace-id` lookup key, triage workflow, and required time bounds.
+See [sp logs](./logs) for the lookup flags and how to read the result.
 
 ---
 
@@ -28,18 +26,18 @@ Every row includes the core fields below. Correlation fields are included **when
 |-------|----------------|-------------|
 | `timestamp` | yes | Event time of the log line. ISO-8601 UTC in JSON (for example `2026-06-27T10:00:10.123Z`). Used for chronological ordering and for caller `[since, until)` filtering. |
 | `severity` | yes | Normalized severity text from the emitting logger (for example `DEBUG`, `INFO`, `WARN`, `ERROR`). Each component controls which severities it emits through **its own native logging configuration** — Softprobe does not impose a product-wide severity filter. |
-| `body` | yes | Full log message text. v1 returns the complete `body`; query results do not truncate message content. |
+| `body` | yes | Full log message text; it is not truncated. |
 | `service_name` | yes | Runtime service identity for the line (for example `travel-ota`, `sp-backend`). Identifies which process produced the row. |
-| `source` | yes | Which v1 pipeline source produced the row. Fixed values: `agent`, `app`, or `backend` (see [source values](#source-values)). |
-| `trace_id` | when known | W3C OpenTelemetry trace id for the request or work unit that was active when the line was emitted. **The only v1 lookup key.** |
+| `source` | yes | Which component produced the row: `agent`, `app` or `backend` (see [source values](#source-values)). |
+| `trace_id` | when known | W3C OpenTelemetry trace id for the request or work unit that was active when the line was emitted. The lookup key. |
 | `span_id` | when known | OpenTelemetry span id for the active span when the line was emitted. |
 | `replay_id` | when known | One replay **attempt** id when replay context was active at emit time. Also a supported optional query filter (`&replay_id=`). |
 | `plan_id` | when known | Replay **plan** id when plan context was active at emit time. Also a supported optional query filter (`&plan_id=`). |
 | `plan_item_id` | when known | One case or operation inside a replay plan. Also a supported optional query filter (`&plan_item_id=`). |
-| `mode` | when known | Record/replay phase tag as emitted by the agent (`record` or `replay`). Optional column added after the original v1 contract — rows written by older writers omit it; read `effective_mode` instead. Also a supported optional query filter (`&mode=record` / `&mode=replay`). |
+| `mode` | when known | Record/replay phase tag as emitted by the agent (`record` or `replay`). Rows written by older agents omit it; read `effective_mode` instead. Also a supported optional query filter (`&mode=record` / `&mode=replay`). |
 | `effective_mode` | yes (derived) | Server-derived phase for the row: the stored `mode` when present, otherwise inferred from `replay_id` (absent ⇒ `record`, present ⇒ `replay`). **The authoritative phase field** — prefer it over inspecting `replay_id` yourself. Response-only; not a stored column. |
 
-**Not in v1 query results:** `session_id` / `sp.session_id`.
+`session_id` / `sp.session_id` is not returned.
 
 ---
 
@@ -73,9 +71,9 @@ Common cases:
 | **Agent or backend idle** diagnostics | `replay_id`, `plan_id`, `plan_item_id` | Diagnostic line with trace context only, or no inbound W3C context |
 | **Plan context not set** on a line | `plan_id`, `plan_item_id` | Line emitted outside a plan item dispatch even during replay |
 
-When diagnosing a failed replay, query by the **`trace_id`** from the replay case or pytest correlation block. When you need replay-scoped lines, pass **`&replay_id=`** (or `&mode=replay`) on the query itself — the server filters for you.
+When diagnosing a failed replay, query by the `trace_id` of the failed replay case. To get only one replay run's lines, add `&replay_id=` (and `&mode=replay`) to the API query.
 
-**Case-scoped diagnosis:** anchor the record window to the case row's **`recordTime`** (the true recording time; older backends omit it — falling back to `requestDateTime` mis-anchors the window, because that field is the **replay send time**, not the recording time) and the replay window to **`replayTime`**. Use two ±2 minute windows (one per anchor) instead of one span from record to replay. Both windows should normally have rows: an empty record window means a bad anchor (`requestDateTime` fallback) or genuinely missing recording logs — investigate it rather than treating it as normal. See [sp logs — Case-scoped lookup](./logs#case-scoped-lookup-dual-windows).
+Recording and replay of the same case usually happen at very different times. On the HTTP API, leave out `since`/`until` and the backend scans a window around the recording and one around each replay run; don't pass one window that stretches from the recording time to the replay time. See [sp logs — HTTP API](./logs#http-api).
 
 ---
 
@@ -129,18 +127,8 @@ Note the caveat visible in this example: contextless platform lines (no stored `
 
 ---
 
-## Out of scope (v1)
-
-This reference covers unified pipeline **query output** only. Not part of v1 unless separately specified:
-
-- Record trace tables, metrics tables, replay read migration, historical backfill
-- Non-replay-path service logs (dashboard, auth, and other Helm/workspace services)
-- Direct Parquet file access, object-store credentials, or standalone query tools
-
----
-
 ## Related
 
-- [sp logs](./logs) — command reference, flags, triage, and API mapping
-- [Log correlation IDs — find and use ids](/en/testing/reference/log-correlation-ids)
-- [Diagnose replay failure example](/en/testing/examples/agent-diagnose-replay)
+- [sp logs](./logs)
+- [Concepts and IDs](/en/testing/agents/concepts#ids)
+- [Diagnose a failed replay](/en/testing/examples/agent-diagnose-replay)

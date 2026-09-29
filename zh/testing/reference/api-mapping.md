@@ -1,8 +1,18 @@
-# API mapping
+---
+title: 命令与后端接口对照
+---
 
-Authoritative **REST ↔ CLI** reference for sp-backend (default port **8090**). Header `access-token` required on console APIs unless noted.
+# 命令与后端接口对照
 
-**Legend:** Category `platform` | `investigation` | `admin` | `—` (not exposed)
+每条 `sp` 命令调用的是哪个后端 HTTP 接口。自己写程序对接后端、或排查命令行为时查这张表。
+
+::: info 本页保留英文
+表中是接口路径和命令名，逐字对应程序，所以正文保留英文。
+:::
+
+后端默认端口为 **8090**。除特别注明外，控制台接口需要带 `access-token` 请求头。
+
+**分类**：`platform`（平台）、`investigation`（排查）、`admin`（管理）、`—`（不对外开放）。
 
 ## Auth
 
@@ -80,10 +90,9 @@ Authoritative **REST ↔ CLI** reference for sp-backend (default port **8090**).
 
 | Method | Path | CLI | Category |
 |--------|------|-----|-------|
-| GET | `/api/record-logs/overview` | `sp record logs overview` | investigation |
-| GET | `/api/record-logs/download` | `sp record logs download` | investigation |
-| GET | `/api/replay-logs/overview` | `sp replay logs overview` | investigation |
-| GET | `/api/replay-logs/download` | `sp replay logs download` | investigation |
+| GET | `/api/recorder/logs` | `sp logs` | investigation |
+
+The old `/api/record-logs/*` and `/api/replay-logs/*` endpoints and the `sp record logs` / `sp replay logs` commands have been removed; see [sp logs](/zh/testing/commands/logs).
 
 ## Reports (subset)
 

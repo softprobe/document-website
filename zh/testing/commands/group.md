@@ -1,27 +1,31 @@
-# sp group & grant
+---
+title: sp group 与 sp grant：用户组与应用授权
+---
 
-**When agents use this:** Admin automation for access control (not typical diagnosis flows).
+# sp group 与 sp grant：用户组与应用授权
 
-## Subcommands
+**AI 代理何时使用：** 访问控制的管理自动化（不是典型的诊断流程）。
+
+## 子命令 {#subcommands}
 
 ### `sp group`
 
-| Subcommand | Path prefix |
+| 子命令 | 路径前缀 |
 |------------|-------------|
 | `list` | `/api/userGroup/list` |
 | `my` | `/api/userGroup/my` |
 
 ### `sp grant`
 
-| Subcommand | Path |
+| 子命令 | 路径 |
 |------------|------|
 | `list` | `GET /api/appGrant/list` |
 
-`sp grant list` requires `--app <appId>`.
+`sp grant list` 必须带 `--app <appId>`。
 
-All commands require `access-token`.
+所有命令都需要 `access-token`。
 
-## Examples
+## 示例 {#examples}
 
 ```bash
 sp group list --json
@@ -29,7 +33,7 @@ sp group my --json
 sp grant list --app my-app --json
 ```
 
-### JSON output (`group list`)
+### JSON 输出（`group list`） {#json-output-group-list}
 
 ```json
 {
@@ -47,7 +51,7 @@ sp grant list --app my-app --json
 }
 ```
 
-### JSON output (`grant list`)
+### JSON 输出（`grant list`） {#json-output-grant-list}
 
 ```json
 {
@@ -66,6 +70,6 @@ sp grant list --app my-app --json
 }
 ```
 
-## Related
+## 相关文档 {#related}
 
 - [app](/zh/testing/commands/app)

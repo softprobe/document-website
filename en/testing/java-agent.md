@@ -2,6 +2,24 @@
 title: Java agent
 ---
 
+<script setup>
+import { onMounted, ref } from 'vue'
+
+const agentVersions = ref([])
+const agentVersionError = ref('')
+
+onMounted(async () => {
+  try {
+    const response = await fetch('https://install.softprobe.ai/artifacts/agent/versions.json')
+    if (!response.ok) throw new Error(`HTTP ${response.status}`)
+    const body = await response.json()
+    agentVersions.value = Array.isArray(body.versions) ? body.versions : []
+  } catch {
+    agentVersionError.value = 'Version list is temporarily unavailable.'
+  }
+})
+</script>
+
 # Softprobe Java agent
 
 The Softprobe Java agent (`sp-agent.jar`) attaches to your JVM with `-javaagent`. It instruments frameworks at bytecode level (similar in *deployment* to an OpenTelemetry Java agent) but its purpose is **test data capture and replay-time mocking**, not generic distributed tracing.
@@ -15,6 +33,38 @@ Mesh capture is documented under [Platform agent architecture](/en/platform/adva
 - Java service you can restart with JVM flags
 - **sp-backend** reachable from the agent host (default `http://127.0.0.1:8090` locally)
 - Registered **`appId`** — create with `sp app create` and pin the same id on every instance
+
+## Download the agent {#download}
+
+With internet access, download the latest agent:
+
+```bash
+curl -fsSL -o sp-agent.jar https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar
+```
+
+`latest` always points at the newest release. For anything you deliver or run in production, pin a version by replacing `latest`:
+
+```bash
+curl -fsSL -o sp-agent.jar https://install.softprobe.ai/artifacts/agent/v4.3.9/sp-agent.jar
+```
+
+On a machine without internet access, use the agent JAR delivered with your installation package, or ask your SoftProbe implementation team.
+
+Available versions:
+
+<ul v-if="agentVersions.length">
+  <li v-for="version in agentVersions" :key="version">
+    <a :href="`https://install.softprobe.ai/artifacts/agent/${version}/sp-agent.jar`">{{ version }}</a>
+  </li>
+</ul>
+<p v-else-if="agentVersionError">{{ agentVersionError }}</p>
+<p v-else>Loading versions...</p>
+
+The same list for scripts:
+
+```bash
+curl -fsSL https://install.softprobe.ai/artifacts/agent/versions.json
+```
 
 ## Startup command
 
@@ -32,8 +82,8 @@ The agent may also resolve an app id automatically from jar name or environment;
 
 | Property | Points to | Purpose |
 |----------|-----------|---------|
-| `-Dsp.app.id` | — | Registered application id (16-char hex from `sp app create`). **Pin this** in every environment that shares recordings. |
-| `-Dsp.api.url` | **sp-backend** (e.g. `:8090`) | **Required** — sp-backend base URL (must include `http://` or `https://`). Env fallback: `SP_API_URL`. Record, replay, mock, compare, **and correlated log export** (`{sp.api.url}/v1/logs`). |
+| `-Dsp.app.id` | — | Application ID: the one `sp app create` returns, or any stable non-empty name such as `order-service` (an unknown ID is registered automatically when the agent first loads its config). **Pin this** in every environment that shares recordings. |
+| `-Dsp.api.url` | **sp-backend** (e.g. `:8090`) | **Required** — sp-backend base URL (must include `http://` or `https://`). Looked up in this order: `-Dsp.api.url`, the `SP_API_URL` environment variable, then `sp.api.url` baked into the agent jar. Used for record, replay, mock, compare **and correlated log export** (`{sp.api.url}/v1/logs`). |
 
 When `sp.api.url` is set and the server [unified log pipeline](./installation/server.md#unified-log-pipeline) is enabled, logs are proxied to Vector internally — you do **not** need a separate Vector URL on the agent.
 
@@ -47,7 +97,7 @@ For advanced setups (bypassing the backend proxy), set:
 
 This JVM property wins over `{sp.api.url}/v1/logs`.
 
-Without `sp.api.url` (and without the override above), record and replay still work, but application logs are not exported and `sp logs` will be empty for that trace.
+If no backend URL can be found in any of those places, the agent reports that it failed to start and does nothing: no recording, no replay, no log export. The log endpoint override above does not replace the backend URL.
 
 ## Execution-path deduplication
 
@@ -97,8 +147,10 @@ The key is the execution path, not the request body alone. Therefore different i
 Tag recorded traffic for filtering and replay scope:
 
 ```bash
--Dsp.mocker.tags=env=staging
+-Dsp.tags.env=staging
 ```
+
+Each `-Dsp.tags.<key>=<value>` adds one tag; for several tags, repeat it (`-Dsp.tags.region=east`). Don't set `sp.mocker.tags` yourself — the agent builds it from the `sp.tags.*` properties and overwrites it.
 
 Recorded mockers carry `env=<value>` so you can replay only traffic from a given environment. Match the same tag in a policy via `selector.envTags` — see [Policy YAML guide · Common fields](/en/testing/policy-yaml-guide#common-fields).
 
@@ -177,4 +229,4 @@ The **same** agent JAR must be attached on the instance that receives replay tra
 
 Agent attached and `sp app status` shows online? Onboarding is done → head into the core workflow with **[Record traffic](/en/testing/recording)**.
 
-Related: [Download Java agent](/en/testing/download-java-agent) · [Supported frameworks](/en/testing/supported-frameworks) · [Getting started](/en/testing/getting-started)
+Related: [Supported frameworks](/en/testing/supported-frameworks) · [Getting started](/en/testing/getting-started)

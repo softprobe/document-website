@@ -1,6 +1,6 @@
 # sp policy
 
-**When agents use this:** Validate and apply YAML policy changes; CI gates on `validate`.
+**When agents use this:** Validate and apply YAML policy changes; in CI, use `gate`.
 
 ## Synopsis
 
@@ -58,6 +58,8 @@ sp policy compare get compare-global --json
 }
 ```
 
+`validate` exits `0` whenever the backend answered, even if the policy is invalid; `ok: true` only means the check ran. Read `data.valid`.
+
 ### JSON output (`gate`)
 
 Used in CI/CD pipelines to validate all changed or committed policy files:
@@ -84,7 +86,7 @@ Used in CI/CD pipelines to validate all changed or committed policy files:
 }
 ```
 
-When a policy file fails validation, `policy gate` exits with code 1 and includes validation details:
+When a policy file fails validation, `policy gate` exits with code 1. The result is still written to stdout with `ok: true`, including the validation details:
 
 ```json
 {
@@ -195,5 +197,4 @@ See [CLI policies](/en/testing/policies) and [Policy YAML guide](/en/testing/pol
 
 ## Related
 
-- [CI policy gate](/en/testing/examples/ci-policy-gate)
-- [GitOps policies](/en/testing/examples/gitops-policies)
+- [Manage policies in Git](/en/testing/examples/gitops-policies) — including [validation in CI](/en/testing/examples/gitops-policies#ci-validation)

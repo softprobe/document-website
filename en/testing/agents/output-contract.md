@@ -1,8 +1,12 @@
+---
+title: Output contract
+---
+
 # Output contract
 
-All public `sp` commands follow this contract when `--json` is set.
+What `sp` prints and how it exits, for scripts, CI jobs and AI agents that call it with `--json`. This page covers the envelope, exit codes, large output, pagination, common `data` shapes and what may change between versions.
 
-## CLI envelope (stdout on success)
+## Success: envelope on stdout {#cli-envelope-stdout-on-success}
 
 ```json
 {
@@ -16,9 +20,11 @@ All public `sp` commands follow this contract when `--json` is set.
 |-------|------|-------------|
 | `ok` | boolean | Always `true` on exit 0 |
 | `command` | string | Normalized command name for logging |
-| `data` | object | Command-specific payload (see [JSON types](/en/testing/reference/json-types)) |
+| `data` | object | Command-specific payload (see [Common `data` shapes](#json-types)) |
 
-## CLI envelope (stderr on failure, exit 1)
+## Failure: envelope on stderr {#cli-envelope-stderr-on-failure-exit-1}
+
+On exit `1`, `2` or `3`, stderr carries a JSON error object:
 
 ```json
 {
@@ -33,11 +39,38 @@ All public `sp` commands follow this contract when `--json` is set.
 }
 ```
 
-`backend` optionally contains the raw SoftProbe `Response` or schedule `CommonResponse` body for debugging.
+`backend` optionally contains the raw backend response body for debugging.
 
-## Backend response shapes
+If `--json` is set and authentication is missing, the CLI does **not** prompt. It exits `3`:
 
-### sp-tr-api (`Response`)
+```json
+{
+  "ok": false,
+  "error": { "code": "AUTH_REQUIRED", "message": "Set SP_TOKEN or run sp auth login" }
+}
+```
+
+## Exit codes {#exit-codes}
+
+| Code | Name | Meaning | Retry? |
+|------|------|---------|--------|
+| `0` | Success | Parsed JSON on stdout when `--json` | No |
+| `1` | API_ERROR | Backend returned an error or a non-success HTTP status (includes `NO_RECORDED_CASES` on `replay run`) | Sometimes — after fixing data, or for a transient 5xx |
+| `2` | USAGE / PROFILE_NOT_FOUND / CONFIG_* | Invalid flags, missing config, parse errors, unknown profile | No — fix the invocation |
+| `3` | AUTH_REQUIRED | No token available in non-interactive mode | After refresh or login |
+
+Config error codes (exit `2`):
+
+| Code | Cause |
+|------|-------|
+| `CONFIG_MISSING` | No `config.jsonc` / `sp.jsonc`; run `sp config init` |
+| `CONFIG_PARSE_ERROR` | Invalid JSONC or schema validation failure |
+| `CONFIG_WRITE_ERROR` | Could not write config file |
+| `PROFILE_NOT_FOUND` | Selected profile missing from merged config |
+
+These are the exit codes of `sp` itself. The script in [Replay after deployment](/en/testing/webhook-and-ci#script) defines its own exit codes on top.
+
+## How backend errors map to exit codes {#backend-response-shapes}
 
 Most console APIs return:
 
@@ -48,11 +81,9 @@ Most console APIs return:
 }
 ```
 
-The CLI maps `responseCode !== 0` to exit code `1`.
+The CLI maps `responseCode !== 0` to exit `1`.
 
-### sp-replay-schedule (`CommonResponse`)
-
-Replay control (`createPlan`, `progress`, …) uses:
+Replay control (`createPlan`, `progress`, …) returns:
 
 ```json
 {
@@ -62,13 +93,11 @@ Replay control (`createPlan`, `progress`, …) uses:
 }
 ```
 
-The CLI maps `result !== 1` (per server convention) to exit code `1`.
+The CLI maps `result !== 1` to exit `1`.
 
-## Artifacts (large output)
+## Large output: artifacts {#artifacts-large-output}
 
-When response bodies exceed an internal threshold (recommended: 64 KiB) or when the command always produces files (diff detail, log download):
-
-**stdout:**
+When a response is large, or the command always produces files (diff detail, log download), stdout carries a pointer instead of the full payload:
 
 ```json
 {
@@ -85,11 +114,9 @@ When response bodies exceed an internal threshold (recommended: 64 KiB) or when 
 }
 ```
 
-Agents should **read the artifact file** with their file tool, not expect full payloads on stdout.
+Read the artifact file instead of expecting the full payload on stdout. The default `--out-dir` is `.sp-work/` in the current working directory; override it per invocation.
 
-Default `--out-dir`: `.sp-work/` in the current working directory (override per invocation).
-
-## Pagination
+## Pagination {#pagination}
 
 List commands accept:
 
@@ -115,19 +142,133 @@ Paginated JSON:
 }
 ```
 
-## Human-readable mode (no `--json`)
+## Without `--json` {#human-readable-mode-no-json}
 
-- Tables on stdout
-- Errors on stderr as plain text
-- Colors only when stdout is a TTY and `--pretty` is set (optional; not required for v1 implementers)
+Tables go to stdout and errors to stderr as plain text.
 
-## Non-interactive rule
+## Common `data` shapes {#json-types}
 
-If `--json` is set and authentication is missing, the CLI must **not** prompt. Exit `3` with:
+### ApplicationListItem
+
+Used in `sp app list` → `data.items[]`.
 
 ```json
 {
-  "ok": false,
-  "error": { "code": "AUTH_REQUIRED", "message": "Set SP_TOKEN or run sp auth login" }
+  "appId": "string",
+  "appName": "string",
+  "name": "string",
+  "agentStatus": "online | offline | never",
+  "lastSeenAt": 0,
+  "agentVersion": "string",
+  "env": "string",
+  "tags": ["string"],
+  "worktreeDirectory": "string"
 }
 ```
+
+### ApplicationCreateResult
+
+Used in `sp app create` → `data`.
+
+```json
+{
+  "success": true,
+  "appId": "string",
+  "msg": "string"
+}
+```
+
+### AgentStatus
+
+Used in `sp app status` → `data`.
+
+```json
+{
+  "appId": "string",
+  "status": "online | offline | never",
+  "instanceCount": 0,
+  "lastSeenAt": 0,
+  "agentVersion": "string"
+}
+```
+
+### PolicyValidateResult
+
+```json
+{
+  "valid": true,
+  "errors": [{ "path": "spec.sampling.rate", "message": "..." }],
+  "warnings": []
+}
+```
+
+### ReplayPlanCreated
+
+```json
+{
+  "planId": "string",
+  "result": 1,
+  "desc": "string"
+}
+```
+
+### ReplayProgress
+
+```json
+{
+  "planId": "string",
+  "status": "RUNNING | FINISHED | FAILED | CANCELLED",
+  "percent": 0,
+  "finished": false
+}
+```
+
+### TraceSummary
+
+```json
+{
+  "traceId": "string",
+  "endpoint": "string",
+  "status": "string",
+  "durationMs": 0,
+  "startedAt": "ISO-8601",
+  "attrs": { "orderId": "ORD-123" }
+}
+```
+
+### ArtifactResult
+
+```json
+{
+  "artifact": "relative/path.json",
+  "summary": {}
+}
+```
+
+### PaginatedList
+
+```json
+{
+  "items": [],
+  "page": 1,
+  "pageSize": 20,
+  "total": 0,
+  "hasMore": false
+}
+```
+
+## Versions and stability {#versioning}
+
+`sp version` prints the CLI build version (semver). Log it with each session so support can match behavior to a release.
+
+| Change | Policy |
+|--------|--------|
+| New subcommand or optional flag | Allowed anytime |
+| Renaming a subcommand or flag | Deprecated for one minor release first, with a warning on stderr |
+| Removing a subcommand or flag | Major version only |
+| New fields in `data` | Allowed anytime; ignore fields you don't know |
+| Renaming or removing fields, changing field types | Major version only |
+
+Deprecations are listed in the release notes and in the command's `--help`.
+
+The CLI talks to one **sp-backend** URL; the storage and scheduling services behind it are internal and not addressed separately.

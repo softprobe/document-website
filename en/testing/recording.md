@@ -29,7 +29,7 @@ Confirm the agent has reported in:
 sp app status <your appId> --json
 ```
 
-In multi-environment deployments, tag instances (e.g. `-Dsp.mocker.tags=env=prod`) — you will use the same tags later to filter cases and match policies.
+In multi-environment deployments, tag instances (e.g. `-Dsp.tags.env=prod`) — you will use the same tags later to filter cases and match policies.
 
 ## Step 2 · Let real traffic flow
 
@@ -84,7 +84,7 @@ Cases showing up in the list means step 1 of the workflow is done. If a case sho
 | Production / staging | On | Build the case corpus from real traffic |
 | Test / CI replay host | Off or minimal | Avoid recording a second corpus during replay |
 
-Use consistent `sp.mocker.tags` (e.g. `env=prod`) when filtering cases by source environment.
+Use the same environment tags (e.g. `-Dsp.tags.env=prod`) when filtering cases by source environment.
 
 ## Tune what gets recorded {#tune-what-gets-recorded}
 

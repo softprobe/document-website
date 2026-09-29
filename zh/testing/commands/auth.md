@@ -1,20 +1,24 @@
-# sp auth
+---
+title: sp auth：登录与令牌
+---
 
-**When agents use this:** When `SP_TOKEN` is unset or expired.
+# sp auth：登录与令牌
 
-## Synopsis
+**AI 代理何时使用：** `SP_TOKEN` 未设置或已过期时。
 
-Authenticate and inspect identity.
+## 概要 {#synopsis}
 
-## Subcommands
+认证并查看当前身份。
 
-| Subcommand | Flags | Description |
+## 子命令 {#subcommands}
+
+| 子命令 | 参数 | 说明 |
 |------------|-------|-------------|
-| `login` | `--email`, `--code`, `--guest`, `--no-save` | Obtain JWT |
-| `whoami` | — | Current user from token |
-| `refresh` | `--user`, `--no-save` | Refresh token |
+| `login` | `--email`、`--code`、`--guest`、`--no-save` | 获取 JWT |
+| `whoami` | — | 从 token 中读取当前用户 |
+| `refresh` | `--user`、`--no-save` | 刷新 token |
 
-## Examples
+## 示例 {#examples}
 
 ```bash
 sp auth login --email ops@corp.com --code 848291 --json
@@ -23,12 +27,11 @@ sp auth whoami --json
 export SP_TOKEN="$(sp auth login ... --no-save --json | jq -r '.data.token')"
 ```
 
-By default, `login` and `refresh` save the token to the shared configuration file in
-`${XDG_CONFIG_HOME:-~/.config}/softprobe/config.jsonc`. With `--no-save`, the token
+默认情况下，`login` 和 `refresh` 会把 token 写入共享配置文件
+`${XDG_CONFIG_HOME:-~/.config}/softprobe/config.jsonc`。带 `--no-save` 时，token
+只在 JSON 中返回，不改动任何配置、缓存、数据或状态文件。
 
-is returned in JSON only and no config, cache, data, or state file is modified.
-
-### JSON output (`login`)
+### JSON 输出（`login`） {#json-output-login}
 
 ```json
 {
@@ -41,7 +44,7 @@ is returned in JSON only and no config, cache, data, or state file is modified.
 }
 ```
 
-### JSON output (`whoami`)
+### JSON 输出（`whoami`） {#json-output-whoami}
 
 ```json
 {
@@ -53,7 +56,7 @@ is returned in JSON only and no config, cache, data, or state file is modified.
 }
 ```
 
-### JSON output (`refresh`)
+### JSON 输出（`refresh`） {#json-output-refresh}
 
 ```json
 {
@@ -66,21 +69,21 @@ is returned in JSON only and no config, cache, data, or state file is modified.
 }
 ```
 
-## REST mapping
+## REST 接口对照 {#rest-mapping}
 
-| Subcommand | Method | Path |
+| 子命令 | 方法 | 路径 |
 |------------|--------|------|
-| `login` (email) | POST | `/api/login/verify` |
-| `login` (guest) | POST | `/api/login/loginAsGuest` |
+| `login`（邮箱） | POST | `/api/login/verify` |
+| `login`（访客） | POST | `/api/login/loginAsGuest` |
 | `refresh` | GET | `/api/login/refresh/{userName}` |
-| `whoami` | — | JWT decode locally, or future profile API |
+| `whoami` | — | 本地解码 JWT，或未来的 profile 接口 |
 
-Request body for verify: `VerifyRequestType` (`userName`, `verifyCode`, …).
+verify 的请求体：`VerifyRequestType`（`userName`、`verifyCode` 等）。
 
-## Replaces
+## 替代关系 {#replaces}
 
-None (new). CI uses `SP_TOKEN` directly.
+无（新增命令）。CI 直接使用 `SP_TOKEN`。
 
-## Related
+## 相关文档 {#related}
 
-- [Authentication guide](/zh/testing/agents/authentication)
+- [认证指南](/zh/testing/agents/authentication)

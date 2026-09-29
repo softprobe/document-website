@@ -2,6 +2,24 @@
 title: Java Agent
 ---
 
+<script setup>
+import { onMounted, ref } from 'vue'
+
+const agentVersions = ref([])
+const agentVersionError = ref('')
+
+onMounted(async () => {
+  try {
+    const response = await fetch('https://install.softprobe.ai/artifacts/agent/versions.json')
+    if (!response.ok) throw new Error(`HTTP ${response.status}`)
+    const body = await response.json()
+    agentVersions.value = Array.isArray(body.versions) ? body.versions : []
+  } catch {
+    agentVersionError.value = '版本列表暂时不可用。'
+  }
+})
+</script>
+
 # Softprobe Java Agent
 
 Softprobe Java Agent（`sp-agent.jar`）通过 `-javaagent` 挂载到 JVM。它在字节码层织入各类框架（*部署方式*上类似 OpenTelemetry Java Agent），但目的是**测试数据采集与回放时 Mock**，而非通用分布式追踪。
@@ -15,6 +33,38 @@ Softprobe Java Agent（`sp-agent.jar`）通过 `-javaagent` 挂载到 JVM。它�
 - 可通过 JVM 参数重启的 Java 服务
 - Agent 主机可访问 **sp-backend**（本地默认 `http://127.0.0.1:8090`）
 - 已注册 **`appId`** — 使用 `sp app create` 创建，并在所有实例上固定同一 id
+
+## 下载 Agent {#download}
+
+能访问互联网时，下载最新版：
+
+```bash
+curl -fsSL -o sp-agent.jar https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar
+```
+
+`latest` 始终指向最新版本。交付给客户或在生产使用时，请把 `latest` 换成具体版本号，固定版本：
+
+```bash
+curl -fsSL -o sp-agent.jar https://install.softprobe.ai/artifacts/agent/v4.3.9/sp-agent.jar
+```
+
+无法访问互联网的机器，使用安装包中附带的 Agent JAR，或向 SoftProbe 实施人员索取。
+
+可用版本：
+
+<ul v-if="agentVersions.length">
+  <li v-for="version in agentVersions" :key="version">
+    <a :href="`https://install.softprobe.ai/artifacts/agent/${version}/sp-agent.jar`">{{ version }}</a>
+  </li>
+</ul>
+<p v-else-if="agentVersionError">{{ agentVersionError }}</p>
+<p v-else>正在加载版本列表……</p>
+
+脚本中获取同一列表：
+
+```bash
+curl -fsSL https://install.softprobe.ai/artifacts/agent/versions.json
+```
 
 ## 启动命令
 
@@ -30,8 +80,8 @@ java \
 
 | 参数 | 指向 | 含义 |
 |------|------|------|
-| `-Dsp.app.id` | — | 注册应用 id（`sp app create` 返回的 16 位十六进制）。**请在共享录制的各环境固定此值。** |
-| `-Dsp.api.url` | **sp-backend**（如 `:8090`） | **必填** — sp-backend 根 URL（须含 `http://` 或 `https://`）。环境变量回退：`SP_API_URL`。录制、回放、Mock、对比，**以及关联日志导出**（`{sp.api.url}/v1/logs`）。 |
+| `-Dsp.app.id` | — | 应用 ID：可以用 `sp app create` 返回的 ID，也可以用 `order-service` 这类固定、非空的名字（后端没见过的 ID 会在 Agent 第一次拉取配置时自动注册）。**请在共享录制的各环境固定此值。** |
+| `-Dsp.api.url` | **sp-backend**（如 `:8090`） | **必填** — sp-backend 根地址（须含 `http://` 或 `https://`）。按以下顺序查找：`-Dsp.api.url`、环境变量 `SP_API_URL`、Agent jar 内置的 `sp.api.url`。录制、回放、Mock、对比，**以及关联日志导出**（`{sp.api.url}/v1/logs`）都用它。 |
 
 当 `sp.api.url` 已设置且服务端 [统一日志管道](./installation/server.md#unified-log-pipeline) 已启用时，日志由 sp-backend 内部代理到 Vector — Agent **无需**单独配置 Vector URL。
 
@@ -45,7 +95,7 @@ java \
 
 该 JVM 属性优先于 `{sp.api.url}/v1/logs`。
 
-未设置 `sp.api.url`（且未设置上述覆盖）时，录制与回放仍可用，但应用日志不会导出，该 trace 的 `sp logs` 将为空。
+以上几处都找不到后端地址时，Agent 会报告启动失败，什么都不做：不录制、不回放、也不导出日志。上面的日志地址覆盖不能代替后端地址。
 
 ## 基于执行路径的去重录制
 
@@ -97,8 +147,10 @@ Agent 也可能从 jar 名或环境自动解析 app id；显式设置 `-Dsp.app.
 为录制流量打标签，便于筛选与限定回放范围：
 
 ```bash
--Dsp.mocker.tags=env=staging
+-Dsp.tags.env=staging
 ```
+
+每个 `-Dsp.tags.<键>=<值>` 加一个标签，多个标签就写多个（如再加 `-Dsp.tags.region=east`）。不要自己设置 `sp.mocker.tags`：Agent 会根据 `sp.tags.*` 生成它，并覆盖你设的值。
 
 录制数据会带上 `env=<值>`，从而只回放特定环境的用例。策略里用 `selector.envTags` 匹配同一标签——见 [策略 YAML 指南 · 通用字段](/zh/testing/policy-yaml-guide#common-fields)。
 
@@ -177,4 +229,4 @@ sp.api.url=http://127.0.0.1:8090
 
 Agent 挂上、`sp app status` 显示 online 之后，接入就完成了 → 进入核心流程 **[录制流量](/zh/testing/recording)**。
 
-相关：[下载 Java Agent](/zh/testing/download-java-agent) · [支持的框架](/zh/testing/supported-frameworks) · [快速开始](/zh/testing/getting-started)
+相关：[支持的框架](/zh/testing/supported-frameworks) · [快速开始](/zh/testing/getting-started)

@@ -76,9 +76,9 @@ curl -sS "$SP_API_URL/api/recorder/metrics?metric_name=sp.logs.ingest.requests&s
 
 错误响应体不得暴露 Parquet 路径、bucket 名称或存储凭证。
 
-## 后端 P0 目录（R1）
+## 后端内置指标
 
-Softprobe 从日志摄入/转发路径发出以下序列：
+后端在日志接收和转发过程中产生以下指标：
 
 | Name | Meaning |
 |------|---------|
@@ -87,11 +87,10 @@ Softprobe 从日志摄入/转发路径发出以下序列：
 | `sp.logs.forward.results` | 导出结果（`success` / `failure` / `skipped_*`） |
 | `sp.logs.forward.duration_ms` | 导出耗时直方图 |
 
-经过 Vector 的一分钟聚合后，预计约一分钟内即可查询到相应行（CI 最多轮询 **70 秒**）。
+指标按分钟聚合，新数据通常约一分钟后可以查询到。
 
-## 不在范围内
+## 不提供的功能
 
-- 将 Prometheus 抓取、Grafana 或 PromQL 作为 Softprobe 的产品路径
-- `sp metrics` CLI（R1 契约为 HTTP API）
-- Agent 侧的 `sp.agent.logs.*` 发射器（后续轮次）
-- 面向终端用户的直接 Parquet 或存储凭证
+- Prometheus 抓取、Grafana 或 PromQL
+- `sp metrics` 命令，请使用上面的 HTTP 接口
+- 直接访问底层文件或存储凭证

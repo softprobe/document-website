@@ -57,7 +57,7 @@ spec:
 | `selector.appIds` | string[] | 三选一\* | 精确应用 ID |
 | `selector.appIdPattern` | string | 三选一\* | Glob，如 `order-*` |
 | `selector.excludeAppIds` | string[] | 否 | 从匹配结果中排除 |
-| `selector.envTags` | map | 否 | 标签键 → 允许值列表，如 `env: [prod, staging]`。与 Agent 上报标签匹配（`-Dsp.mocker.tags=env=prod`）。**合取**：声明的每个键都必须满足；省略 = 所有环境 |
+| `selector.envTags` | map | 否 | 标签键 → 允许值列表，如 `env: [prod, staging]`。与 Agent 上报的标签匹配（用 `-Dsp.tags.env=prod` 设置）。**合取**：声明的每个键都必须满足；省略 = 所有环境 |
 | `selector.operationNames` | string[] | 否 | 精确操作名。**仅录制与 Mock** — CompareRulePolicy 的 selector 不允许 |
 | `selector.operationNamePatterns` | string[] | 否 | Glob，如 `/api/order/*`。**仅录制与 Mock** |
 
@@ -339,7 +339,7 @@ spec:
 | `transforms[]` | `path` | string | JSON Pointer |
 | `transforms[]` | `expression` | string | 对比前归一化的 CEL |
 | `arrays[]` | `path` | string | 数组字段路径 |
-| `arrays[]` | `strategy` | enum | `BY_INDEX`（默认）或 `BY_KEY` |
+| `arrays[]` | `strategy` | enum | `BY_INDEX`（默认）、`BY_KEY`（需要非空的 `keys`）或 `BY_LCS`（最长公共子序列，控制台里显示为「LCS 算法」）。要写 `BY_LCS`，不能写 `LCS` |
 | `arrays[]` | `keys` | string[] | `BY_KEY` 时必填 |
 | `arrays[]` | `references[]` | object | `field`、`target`、`targetKey` |
 | `validations[]` | `id` | string | 规则唯一 ID |

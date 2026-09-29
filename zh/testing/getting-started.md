@@ -37,7 +37,7 @@ curl -L -O https://github.com/softprobe/demo-ota/releases/download/v1.1.0/travel
 ```bash
 curl -fsSL -o sp-agent.jar https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar
 ```
-更多不可变发布版本见 [下载 Java Agent](/zh/testing/download-java-agent)。
+固定版本的下载地址见 [接入 Java Agent — 下载](/zh/testing/java-agent#download)。
 
 ## 4. 注册应用程序
 在系统中注册该应用，以获取一个唯一的 `appId`（一个 16 位的十六进制标识符）：

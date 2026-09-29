@@ -57,7 +57,7 @@ spec:
 | `selector.appIds` | string[] | one of\* | Exact app ids |
 | `selector.appIdPattern` | string | one of\* | Glob, e.g. `order-*` |
 | `selector.excludeAppIds` | string[] | no | Subtract from match |
-| `selector.envTags` | map | no | Tag key → list of allowed values, e.g. `env: [prod, staging]`. Matches agent tags from `-Dsp.mocker.tags=env=prod`. Conjunctive: every declared key must match. Omitted = all environments |
+| `selector.envTags` | map | no | Tag key → list of allowed values, e.g. `env: [prod, staging]`. Matches agent tags set with `-Dsp.tags.env=prod`. Conjunctive: every declared key must match. Omitted = all environments |
 | `selector.operationNames` | string[] | no | Exact operation names. **Recording and Mock only** — rejected on CompareRulePolicy selector |
 | `selector.operationNamePatterns` | string[] | no | Globs, e.g. `/api/order/*`. **Recording and Mock only** |
 
@@ -336,7 +336,7 @@ Do **not** put `operationNames` or `operationNamePatterns` on `selector` — the
 | `transforms[]` | `path` | string | JSON Pointer |
 | `transforms[]` | `expression` | string | CEL expression to normalize value before compare |
 | `arrays[]` | `path` | string | Array field path |
-| `arrays[]` | `strategy` | enum | `BY_INDEX` (default) or `BY_KEY` |
+| `arrays[]` | `strategy` | enum | `BY_INDEX` (default), `BY_KEY` (needs non-empty `keys`) or `BY_LCS` (longest common subsequence; shown as "By LCS" in the console). Write `BY_LCS`, not `LCS` |
 | `arrays[]` | `keys` | string[] | Required when `BY_KEY` |
 | `arrays[]` | `references[]` | object | `field`, `target`, `targetKey` for FK-style array linking |
 | `validations[]` | `id` | string | Unique rule id |
