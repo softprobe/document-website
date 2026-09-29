@@ -54,7 +54,7 @@ java \
 
 1. **一个进程只做一件事**：每次工具调用只执行一条 `sp` 命令，参数写全。不用 shell 别名，不走交互式提问。
 2. **始终加 `--json`**，除非输出是给人看的。
-3. **大块内容从文件读**：`replay diff get`、`replay mock-tree`、`diagnose replay` 会把结果写到 `--out-dir` 下的文件，`record query` 超过 4 KiB 时也会；这时标准输出只给路径和摘要。`sp logs` 总是把日志行直接打到标准输出，请重定向到文件。见 [输出约定 — 大块输出](/zh/testing/agents/output-contract#artifacts-large-output)。
+3. **大块内容从文件读**：`replay diff get`、`replay mock-tree`、`diagnose replay` 会把结果写到 `--out-dir` 下的文件，`record query` 超过 4 KiB 时也会；这时标准输出只给路径和摘要。`sp logs` 总是把日志行直接写到标准输出，请重定向到文件。见 [输出约定 — 大块输出](/zh/testing/agents/output-contract#artifacts-large-output)。
 
 把 `sp` 包装成一个命令行工具，固定参数前缀：
 

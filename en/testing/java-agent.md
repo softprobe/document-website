@@ -97,7 +97,7 @@ For advanced setups (bypassing the backend proxy), set:
 
 This JVM property wins over `{sp.api.url}/v1/logs`.
 
-If no backend URL can be found in any of those places, the agent reports that it failed to start and does nothing: no recording, no replay, no log export. The log endpoint override above does not replace the backend URL. Agents released after 4.3.36 also convert the old `-Dsp.api.service.host` start flag into `sp.api.url` when neither `-Dsp.api.url` nor `SP_API_URL` is set; 4.3.36 and earlier don't, so use `sp.api.url`.
+If no backend URL can be found in any of those places, the agent reports that it failed to start and does nothing: no recording, no replay, no log export. The log endpoint override above does not replace the backend URL. The agent source now also converts the old `-Dsp.api.service.host` start flag into `sp.api.url` when neither `-Dsp.api.url` nor `SP_API_URL` is set, but that change isn't in a released version yet (as of 4.3.36). Use `sp.api.url`.
 
 ## Execution-path deduplication
 
@@ -210,7 +210,7 @@ To limit impact on live traffic, the agent implements **backpressure** when over
 1. Recorded data goes into a bounded in-memory ring buffer: 2048 slots by default, holding up to 2047 batches (a batch is one group of recorded calls handed to the uploader). `-Dsp.buffer.size` can raise it; smaller values still get 2048.
 2. When the buffer is full, the new batch is dropped and its case is marked invalid, and the agent switches to **fast-reject**: new recordings are dropped, apart from about one probe per second.
 3. After 30 seconds it leaves fast-reject and records again, at a lower rate.
-4. It checks after 5 minutes, then every 10 minutes, whether uploads keep up (almost all batches waited in the queue for less than the threshold). If they do, the configured rate is restored; if not, the rate is lowered again.
+4. It checks after 5 minutes, then every 10 minutes, whether uploads keep up: the check passes when nothing was queued in the period, or when fewer than 3 batches were rejected and at least 99% of batches waited in the queue for no more than 3 seconds. If it passes, the configured rate is restored; if not, the rate is lowered again.
 
 Each reduction takes the current rate of each interface, caps it at 20 per minute and uses 80% of that, but never goes below 0.03 per minute (about once every 33 minutes). For example, 100 per minute becomes 16.
 

@@ -328,7 +328,7 @@ Do **not** put `operationNames` or `operationNamePatterns` on `selector` — the
 | Section | Field | Type | Semantics |
 |---------|-------|------|-----------|
 | `defaults` | `timeToleranceMs` | integer ≥ 0 | Used by CEL `time_tolerance_ms` and timestamp rules |
-| `defaults` | `ignoreHeaderPatterns` | string[] | Header name globs skipped in compare |
+| `defaults` | `ignoreHeaderPatterns` | string[] | Field-name globs whose differences are ignored; meant for header fields, but not limited to request headers |
 | | `includePaths` | string[] | JSON Pointer whitelist; empty = compare all |
 | | `excludePaths` | string[] | JSON Pointer blacklist (pre-filter) |
 | `decompress[]` | `path` | string | JSON Pointer or glob (`/data/**`) |

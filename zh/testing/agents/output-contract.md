@@ -6,7 +6,7 @@ title: 输出约定
 
 `sp` 在加上 `--json` 时输出什么、以什么退出码结束。写脚本、接 CI、让 AI 代理调用 `sp` 时以本页为准。
 
-要点：`ok: true` 只表示命令执行了，不表示检查都通过；`sp policy gate`、`sp doctor`、`sp upgrade` 在结果为失败时仍把结果写到标准输出，同时以 `1` 退出。`sp agent command --format shell|docker|maven` 即使带 `--json` 也输出纯文本；`sp tunnel` 一直运行到被停止，只输出进度行。
+要点：`ok: true` 只表示命令执行了，不表示检查都通过；`sp policy gate`、`sp doctor`、`sp upgrade` 在结果为失败时仍把结果写到标准输出，同时以 `1` 退出。`sp agent command --format shell|docker|maven` 即使带 `--json` 也输出纯文本；`sp tunnel` 一直运行到被停止，没有结果信封（进度写到标准错误，带 `--json` 时不输出）。
 
 ::: info 本页保留英文
 这是给脚本和 AI 代理用的机器契约，字段名、取值、错误码都和程序输出逐字对应，所以正文保留英文。
@@ -47,7 +47,7 @@ When a command can't do its job — bad arguments, missing config, an unreachabl
 }
 ```
 
-`httpStatus` is the HTTP status when the backend returned an HTTP error. `backend` is optional extra context: usually a summary of the backend's error (`responseCode`/`responseDesc`, or `result`/`desc`), sometimes built by the CLI itself (for example next steps when the agent jar is missing). Don't treat either as proof that a request reached the backend, and don't parse `backend` as the backend's raw response. Without `--json`, the same failure is printed as `error: <message>` (suppressed by `--quiet`).
+`httpStatus` is optional status context: an HTTP error usually carries the response status, but a business error returned with HTTP 200 carries `200`, and some paths set the value themselves — it never means the request succeeded. `backend` is optional extra context: usually a summary of the backend's error (`responseCode`/`responseDesc`, or `result`/`desc`), sometimes built by the CLI itself (for example next steps when the agent jar is missing). Don't treat either as proof that a request reached the backend, and don't parse `backend` as the backend's raw response. Without `--json`, the same failure is printed as `error: <message>` (suppressed by `--quiet`).
 
 If a command needs a token and none is configured, the CLI does **not** prompt in `--json` mode; it exits `3` with `"code": "AUTH_REQUIRED"`. This is checked by the CLI before calling the backend.
 
@@ -104,7 +104,7 @@ Replay control (`createPlan`, `progress`, …) returns:
 }
 ```
 
-The CLI maps `result !== 1` to exit `1`. For the other APIs, a non-2xx HTTP status is exit `1`; replay control decides by `result`.
+The CLI maps `result !== 1` to exit `1`. A non-2xx HTTP status is exit `1` too, except for replay operations sent with POST (such as creating a plan), which are judged by `result` only. Network and JSON parse errors always fail.
 
 ## Large output: artifacts {#artifacts-large-output}
 

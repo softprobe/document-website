@@ -109,7 +109,7 @@ Mongo 加载超时时安全降级（录制：不录；Mock：透传）。
 | `timeWindow` | `from` / `to` | `HH:mm` | 必须成对；`from` 严格早于 `to`。Agent 使用 JVM 本地时区 |
 | `operations` | `exclude` | string[] | 不录制的操作 Glob（黑名单） |
 | `operations` | `include` | string[] | 非空时为**白名单**：只录这些；`exclude` 仍在 `include` 之后生效 |
-| `sensitiveData` | `headers` | string[] | 请求头名（见下方说明） |
+| `sensitiveData` | `headers` | string[] | HTTP 头名（见下方说明） |
 | `sensitiveData` | `bodyPaths` | string[] | JSONPath，必须以 `$` 开头 |
 | `sensitiveData` | `queryParams` | string[] | 查询参数名 |
 | `sensitiveData` | `placeholder` | string | 替换占位符，默认 `***` |
@@ -331,7 +331,7 @@ spec:
 | 区块 | 字段 | 类型 | 语义 |
 |------|------|------|------|
 | `defaults` | `timeToleranceMs` | integer ≥ 0 | CEL 中 `time_tolerance_ms` 及时间类规则 |
-| `defaults` | `ignoreHeaderPatterns` | string[] | 对比时跳过的请求头名 Glob |
+| `defaults` | `ignoreHeaderPatterns` | string[] | 按字段名 Glob 忽略差异，常用于 HTTP 头字段；不限于请求头 |
 | | `includePaths` | string[] | JSON Pointer 白名单；空 = 对比全部 |
 | | `excludePaths` | string[] | JSON Pointer 黑名单（预过滤） |
 | `decompress[]` | `path` | string | JSON Pointer 或 Glob |

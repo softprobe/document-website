@@ -87,7 +87,7 @@ curl -s "${SP_API_URL}/api/recorder/logs?trace_id=${TRACE_ID}&replay_id=<replayI
 回放在第一次调用依赖之前就失败时，后端没法定位回放的时间窗。带了 `replay_id` 时，`warnings` 里会说明；不带时没有提示，所以找不到回放时间窗不代表没有回放日志。应用和后端的时钟相差较大时，算出来的时间窗也可能落错位置。这些情况下，把录制和回放**分开**查，各自指定时间窗：
 
 1. 从 `sp replay case list --plan <planId> --failed --json` 取这个用例的 `recordTime`（录制时间）和 `requestDateTime`（回放请求发出的时间，为空时用 `replayTime`），都是毫秒时间戳。`recordTime` 为空时，用控制台「录制 → 滚动录制」里这条 trace 的录制时间。
-2. 在两个时间点前后各查约 2 分钟，带上 `replay_id` 排除其他回放，两次的结果都保留下来。
+2. 在两个时间点前后各查约 2 分钟，带上 `replay_id` 排除其他回放。两段时间有重叠时合成一段查，避免同一行日志查到两次。每次响应里的时间窗和提示都保留下来。
 
 把下面的内容存成脚本（例如 `case-logs.sh`），用 `bash` 运行：
 
@@ -95,19 +95,24 @@ curl -s "${SP_API_URL}/api/recorder/logs?trace_id=${TRACE_ID}&replay_id=<replayI
 #!/usr/bin/env bash
 TRACE_ID=<traceId>; REPLAY_ID=<replayId>
 RECORD_MS=<recordTime>; REPLAY_MS=<requestDateTime>
-win() { s=$(( ($1 + $2) / 1000 )); date -u -d "@$s" +%FT%TZ 2>/dev/null || date -u -r "$s" +%FT%TZ; }
-i=0
+PAD=120000   # two minutes either side
+iso() { s=$(( $1 / 1000 )); date -u -d "@$s" +%FT%TZ 2>/dev/null || date -u -r "$s" +%FT%TZ; }
 for T in "$RECORD_MS" "$REPLAY_MS"; do
   case "$T" in ''|*[!0-9]*|0) echo "missing timestamp: '$T'" >&2; exit 1;; esac
-  i=$((i+1)); out="/tmp/logs-${TRACE_ID}-${i}.json"
-  curl -sf "${SP_API_URL}/api/recorder/logs?trace_id=${TRACE_ID}&replay_id=${REPLAY_ID}&since=$(win "$T" -120000)&until=$(win "$T" 120000)" \
+done
+# Two windows, or one if they overlap, so no log line is fetched twice
+A=$(( RECORD_MS < REPLAY_MS ? RECORD_MS : REPLAY_MS )); B=$(( RECORD_MS < REPLAY_MS ? REPLAY_MS : RECORD_MS ))
+if [ $(( B - PAD )) -le $(( A + PAD )) ]; then WINDOWS=("$((A - PAD)):$((B + PAD))")
+else WINDOWS=("$((A - PAD)):$((A + PAD))" "$((B - PAD)):$((B + PAD))"); fi
+i=0; FILES=()
+for W in "${WINDOWS[@]}"; do
+  i=$((i+1)); out="/tmp/logs-${TRACE_ID}-${i}.json"; FILES+=("$out")
+  curl -sf "${SP_API_URL}/api/recorder/logs?trace_id=${TRACE_ID}&replay_id=${REPLAY_ID}&since=$(iso "${W%%:*}")&until=$(iso "${W##*:}")" \
     -H "Accept: application/json" -o "$out" || { echo "request $i failed" >&2; exit 1; }
   jq -e 'has("rows")' "$out" >/dev/null || { echo "request $i: $(jq -c . "$out")" >&2; exit 1; }
 done
-# Keep every window and warning; rows found by both queries are kept once
-jq -s '{windows: [.[].lookup.windows[]?], warnings: [.[].warnings[]?],
-        rows: ([.[].rows[]] | unique_by([.timestamp, .source, .span_id, .body]) | sort_by(.timestamp))}' \
-  "/tmp/logs-${TRACE_ID}-1.json" "/tmp/logs-${TRACE_ID}-2.json"
+# Keep every window, warning and row
+jq -s '{windows: [.[].lookup.windows[]?], warnings: [.[].warnings[]?], rows: ([.[].rows[]] | sort_by(.timestamp))}' "${FILES[@]}"
 ```
 
 应用和后端的时钟相差超过一两分钟时，把时间窗按差值平移，或者放宽。请求本身持续了几个小时的，分成连续的多段查询，每段不超过 3 小时，不要只查开始和结束两个时刻。

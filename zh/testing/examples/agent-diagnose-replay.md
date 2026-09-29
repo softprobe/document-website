@@ -54,7 +54,7 @@ sp replay case list --plan <planId> --failed --json
 sp diagnose replay <planId> --out-dir .sp-work --json
 ```
 
-它把每个有差异的用例的可读差异写成 JSON 文件，路径列在 `data.artifacts` 里。另起一步读取这些文件，对比 `baseMsg`（录制时）和 `testMsg`（回放时）。回放失败的用例没有差异，从它的 `errorMessage` 和日志入手。
+它为能找到差异内容的每个有差异用例写一个 JSON 文件，路径列在 `data.artifacts` 里；以这个列表为准，没有文件的用例不一定没有差异。另起一步读取这些文件，对比 `baseMsg`（录制时）和 `testMsg`（回放时）。回放失败的用例没有差异，从它的 `errorMessage` 和日志入手。
 
 ### 5. 查看这个请求的日志 {#logs}
 

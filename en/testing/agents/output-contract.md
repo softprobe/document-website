@@ -6,7 +6,7 @@ title: Output contract
 
 What `sp` prints and how it exits, for scripts, CI jobs and AI agents that call it with `--json`. This page covers the envelope, exit codes, large output, pagination and common `data` shapes.
 
-Two commands don't follow the envelope: `sp agent command --format shell|docker|maven` prints plain text even with `--json`, and `sp tunnel` runs until stopped and prints progress lines, not a result.
+Two commands don't follow the envelope: `sp agent command --format shell|docker|maven` prints plain text even with `--json`, and `sp tunnel` runs until stopped without a result envelope (its progress lines go to stderr, and `--json` suppresses them).
 
 ## Success: envelope on stdout {#cli-envelope-stdout-on-success}
 
@@ -43,7 +43,7 @@ When a command can't do its job — bad arguments, missing config, an unreachabl
 }
 ```
 
-`httpStatus` is the HTTP status when the backend returned an HTTP error. `backend` is optional extra context: usually a summary of the backend's error (`responseCode`/`responseDesc`, or `result`/`desc`), sometimes built by the CLI itself (for example next steps when the agent jar is missing). Don't treat either as proof that a request reached the backend, and don't parse `backend` as the backend's raw response. Without `--json`, the same failure is printed as `error: <message>` (suppressed by `--quiet`).
+`httpStatus` is optional status context: an HTTP error usually carries the response status, but a business error returned with HTTP 200 carries `200`, and some paths set the value themselves — it never means the request succeeded. `backend` is optional extra context: usually a summary of the backend's error (`responseCode`/`responseDesc`, or `result`/`desc`), sometimes built by the CLI itself (for example next steps when the agent jar is missing). Don't treat either as proof that a request reached the backend, and don't parse `backend` as the backend's raw response. Without `--json`, the same failure is printed as `error: <message>` (suppressed by `--quiet`).
 
 If a command needs a token and none is configured, the CLI does **not** prompt in `--json` mode; it exits `3` with `"code": "AUTH_REQUIRED"`. This is checked by the CLI before calling the backend.
 
@@ -100,7 +100,7 @@ Replay control (`createPlan`, `progress`, …) returns:
 }
 ```
 
-The CLI maps `result !== 1` to exit `1`. For the other APIs, a non-2xx HTTP status is exit `1`; replay control decides by `result`.
+The CLI maps `result !== 1` to exit `1`. A non-2xx HTTP status is exit `1` too, except for replay operations sent with POST (such as creating a plan), which are judged by `result` only. Network and JSON parse errors always fail.
 
 ## Large output: artifacts {#artifacts-large-output}
 

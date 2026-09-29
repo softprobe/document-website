@@ -48,7 +48,7 @@ Example JSON output (`diagnose replay`):
 }
 ```
 
-In this example every case failed to replay because the target was unreachable, so there are no diffs and `artifacts` is `null`. When cases have differences, `artifacts` lists the diff files. `status` is empty with current backends (the progress API doesn't report a plan status); use [sp replay status](./replay) for progress.
+In this example every case failed to replay because the target was unreachable, so there are no diffs and `artifacts` is `null`. When cases have differences, `artifacts` lists the files for those whose diff could be found. `status` is empty with current backends (the progress API doesn't report a plan status); use [sp replay status](./replay) for progress.
 
 `classification` is one of: `empty_window`, `invalid_target`, `assertion_failure`, `mixed`, `other`. `message` comes from backend `errorMessage` or case send errors when available — not fabricated client copy.
 

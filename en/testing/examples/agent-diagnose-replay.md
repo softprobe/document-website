@@ -54,7 +54,7 @@ From each item in `data.items`, keep `replayId`, `traceId`, `operationId` and `d
 sp diagnose replay <planId> --out-dir .sp-work --json
 ```
 
-It writes the readable diff of each case with differences to a JSON file and lists the paths in `data.artifacts`. Read the files in a separate step and compare `baseMsg` (recorded) with `testMsg` (replayed). Cases that failed to replay have no diff; start from their `errorMessage` and the logs.
+It writes a JSON file for each case with differences whose diff it can find, and lists the paths in `data.artifacts`; go by that list — a case without a file may still have differences. Read the files in a separate step and compare `baseMsg` (recorded) with `testMsg` (replayed). Cases that failed to replay have no diff; start from their `errorMessage` and the logs.
 
 ### 5. Read the logs of that request {#logs}
 
