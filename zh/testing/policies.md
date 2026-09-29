@@ -1,150 +1,119 @@
 ---
-title: 策略
+title: 录制配置与回放配置
 ---
 
-# 策略概览
+# 录制配置与回放配置
 
-SoftProbe 测试用**声明式 YAML 策略**（`apiVersion: softprobe.ai/v1`）控制行为，而非临时请求参数。策略按应用匹配、按 `metadata.priority` 合并，由 sp-backend 在运行时生效。
+录什么、回放时哪些依赖用录制结果应答、哪些类要特殊处理、页面上哪些字段要打码，都在控制台左侧的「配置」里设置，按应用生效。不配置时使用内置默认值，录制和回放开箱可用。
 
-::: tip 策略是可选的调优，不是前提
-内置的全局默认策略（priority 0）让录制与回放开箱即用。只有当你要**改变**默认行为——控制采样、缩小操作范围、忽略噪声字段——才需要写自己的策略（`priority > 0` 覆盖）。先能跑通核心流程，再回来收紧。
+| 页面 | 管什么 |
+|------|--------|
+| [录制配置](#recording) | 在哪些机器上录、每分钟录多少、什么时段录、哪些接口不录 |
+| [回放配置](#replay) | 回放时哪些依赖用录制结果应答、哪些走真实调用；每个实例每秒发多少请求 |
+| [动态类](#dynamic-classes) | 需要在录制和回放时单独处理的类方法 |
+| [对比规则](/zh/testing/compare-rules-web-ui)<a id="compare-policy"></a> | 哪些差异不算数 |
+| [脱敏规则](#sensitive) | 在页面上查看报文时，哪些字段要打码 |
+
+「回放配置」「对比规则」「脱敏规则」页面可以在「可视化」和「YAML」之间切换；「录制配置」和「动态类」只能在页面上编辑。YAML 的字段说明见 [策略 YAML 参考](/zh/testing/policy-yaml-guide)；想把这些配置放进 Git 管理，见 [用 Git 管理策略](/zh/testing/examples/gitops-policies)。
+
+改完点「保存」即可，不需要重启被测服务：Agent 会在下次拉取配置时用上新配置。
+
+## 录制配置 {#recording}
+
+<a id="recording-policy"></a>
+
+![录制配置](/img/docs/testing/zh/config-recording.png)
+
+### 采样规则 {#sampling-rules}
+
+决定在哪些机器上录、录多少。规则按环境标签匹配机器，**从上往下匹配，命中第一条就用这一条**；没有命中任何规则的机器，按最下面的「默认规则」录制。
+
+每条规则可以设置：
+
+| 设置 | 说明 |
+|------|------|
+| 生效环境 | 按机器的环境标签匹配，如 `env=prod`，多个值用逗号分隔（`env=fat1,fat2`），命中任一值即匹配。标签在 Agent 启动参数里用 `-Dsp.tags.env=prod` 设置 |
+| 采样率（次/分钟） | 每台机器、每个接口每分钟大约录几条入口请求。设为 0 表示命中这条规则的机器不录制 |
+| 录制机器上限 | 同一环境最多几台机器同时录制，默认不限 |
+| 录制时段 | 允许录制的星期和时间段 |
+
+「默认规则」不能删除，默认每分钟 1 条、全天录制。想让没命中规则的机器都不录，把默认规则的采样率设为 0。
+
+规则的先后顺序可以用上移、下移调整：越靠上越先匹配。
+
+::: warning 「录制机器上限」设为 1 要谨慎
+限制为 1 台时，先占到名额的机器下线后，名额可能一段时间内不释放，其他机器会一直不录制。一般不设，或设为不小于实际实例数。
 :::
 
-**操作流程**与**策略配置**分开阅读：
+### 全应用设置 {#app-wide}
 
-| 阶段 | 操作文档 | 策略配置 |
-|------|----------|----------|
-| **1 · 录制** | [录制流量](/zh/testing/recording) | 本节 [RecordingPolicy](#recording-policy) |
-| **2 · 回放** | [回放与对比](/zh/testing/replay-and-diff) | 本节 [MockPolicy](#mock-policy)、[CompareRulePolicy](#compare-policy) |
+对应用的所有机器统一生效，不受上面规则的影响。
 
-逐字段说明与完整 YAML 示例：[策略 YAML 指南](/zh/testing/policy-yaml-guide) · [sp policy 命令](/zh/testing/commands/policy)
+**覆盖包**：业务代码的包名前缀，多个用逗号分隔，如 `com.example.order,com.example.payment`。本地缓存（`@Cacheable`、Caffeine、Guava）的调用只在这些包下才会录制；不配置时，这类缓存调用不录。
 
-## CLI 速查
+### 接口过滤 {#operation-filter}
 
-```bash
-sp policy recording validate -f recording.yaml --json
-sp policy recording apply -f recording.yaml --json
-sp policy mock apply -f mock.yaml --json
-sp policy compare apply -f compare.yaml --json
-```
+- **黑名单**（默认）：全部接口都录，排除选中的接口。
+- **白名单**：默认都不录，只录选中的接口。
 
-冲突时 **`metadata.priority`** 更高者生效。内置 priority 0 全局默认；应用策略请设 `priority > 0`。
+列表来自已经录到的接口，也可以手动输入接口名添加。修改接口过滤，也会影响回放时可以选择的接口范围。
 
-## 按生命周期分阶段
+## 回放配置 {#replay}
 
-| 阶段 | Kind | 何时配置 | CLI |
-|------|------|----------|-----|
-| **1 · 录制** | `RecordingPolicy` | 产生流量**之前** | `sp policy recording` |
-| **2 · 回放** | `MockPolicy` | 执行 `sp replay run` **之前** | `sp policy mock` |
-| **2 · 回放** | `CompareRulePolicy` | 执行 `sp replay run` **之前** | `sp policy compare` |
+<a id="mock-policy"></a>
 
-完整生命周期：[快速开始](/zh/testing/getting-started)
+![回放配置](/img/docs/testing/zh/config-replay.png)
 
----
+### 依赖 Mock {#mock}
 
-## RecordingPolicy {#recording-policy}
+回放时，外部依赖（数据库、缓存、第三方接口等）用录制好的数据应答，还是去调用真实服务。
 
-**用于[录制](/zh/testing/recording)阶段 · 产生流量之前应用**
+- **默认 Mock**：开启时，所有依赖都用录制数据应答，不碰真实服务；关闭时，默认调用真实服务。
+- **例外**：在默认 Mock 开启时，把个别依赖设为「走真实请求」；关闭时，把个别依赖设为「走 Mock」。可以按类型（如整类 Redis）或具体某个依赖设置。
+- **Mock 未命中策略**：回放时某个调用在录制里找不到对应的结果怎么办。默认「标记失败（默认，最安全）」；也可以「放行真实请求」（可能真的调用外部服务，只在隔离的测试环境使用）或「返回预设响应」（填 HTTP 状态码和响应体）。
 
-控制 Agent **录什么**：采样、时间窗口、操作包含/排除、序列化跳过、录制时时间 Mock。
+系统时间、随机数的调用始终用录制结果应答，这里的例外和默认 Mock 开关对它们不起作用。
 
-- **采样** — `ratePerHundredSeconds`（每 100 秒上限；`0` = 不录）、`machineCountLimit`（并发录制实例上限，省略 = 不限）
-- **时间窗口** — `daysOfWeek`、`from` / `to`（Agent JVM 本地时区）
-- **操作过滤** — `exclude`（黑名单 Glob）；非空 `include` 时变为白名单模式
-- **序列化跳过** — `serializeSkip` 按类名与字段名
-- **`timeMock`** — 录制时固定 `java.time.*`
+新建回放计划时勾选「本次回放强制所有依赖走真实调用」，这一次回放会忽略这里的设置。
 
-**操作步骤：** [录制流量](/zh/testing/recording)
+### 发送速率 {#rate}
 
-**YAML 字段与示例：** [策略 YAML 指南 · RecordingPolicy](/zh/testing/policy-yaml-guide#recordingpolicy)
+**每实例 QPS 上限**：回放时每个目标实例每秒最多收到几条请求，默认 5，建议不超过 20。回放计划里填的一个目标地址按一个实例算。单次回放可以在新建回放计划的「高级选项」里临时调整。
 
-::: info 说明
-- `spec.sensitiveData` 在 Agent 录制路径**尚未生效**；Mock 键噪声用 `matchTolerance`，查看脱敏用 `SensitivePolicy`（见 YAML 指南相关配置）。
-- 修改 `operations` 包含/排除会影响**回放调度**的操作范围，无需单独改调度文档。
-:::
+## 动态类 {#dynamic-classes}
 
-```bash
-sp policy recording validate -f my-recording.yaml --json
-```
+有些方法的返回值每次都不一样，或者依赖运行环境，例如读取系统时间、生成随机数、本地缓存、加解密。把它们登记为动态类后，Agent 会在录制时记下返回值，回放时直接返回录制的值，让回放和录制走同一条代码路径。
 
----
+点「添加」，填写：
 
-## MockPolicy {#mock-policy}
+| 字段 | 说明 |
+|------|------|
+| 全类名 | 如 `com.example.MyClass` |
+| 方法 | 方法名 |
+| 参数类型 | 全限定名，多个用 `@` 分隔，如 `java.lang.String@int`；留空表示不限 |
+| Key 表达式 | 可选，用来区分同一方法的不同调用 |
+| 基类 | 勾选后，规则对这个类的所有子类都生效 |
 
-**用于[回放](/zh/testing/replay-and-diff)阶段 · 执行 `sp replay run` 之前应用**
+系统时间、随机数已经内置，不需要手动添加，而且回放时始终用录制的值。
 
-控制回放时**依赖是否 Mock**、Mock 键容差、跨应用依赖与无匹配 Mock 时的回退。
+## 脱敏规则 {#sensitive}
 
-- **`mockByDefault`** — 默认 Mock 全部依赖（`skipMock` 为例外），或反之以 `forceMock` 为例外
-- **`Category:operationGlob`** — 如 `HttpClient:/payment/**`（**不是** `Servlet` 等入口类型）
-- **`matchTolerance`** — 忽略易变头、查询参数、body 路径
-- **`multiServiceDependencies`** — 同会话内下游应用 Mock
-- **`fallback`** — `FAIL`（默认）、`PASS_THROUGH`、`RETURN_DEFAULT`
+在控制台**查看**录制和对比结果时，把身份证号、手机号等敏感字段打码显示。脱敏只影响页面展示，数据库里保存的是加密后的完整报文（回放需要原始报文）。报文落库加密见 [数据保护与保留期](/zh/testing/installation/data-protection#encryption)。
 
-内置全局策略 **强制 Mock** `DynamicClass:SystemTime.**` / `RandomSource.**`；用户 `skipMock` 无效。
+![脱敏规则](/img/docs/testing/zh/config-sensitive.png)
 
-**YAML 字段与示例：** [策略 YAML 指南 · MockPolicy](/zh/testing/policy-yaml-guide#mockpolicy)
+- **系统默认规则**：内置，对所有应用生效，包含若干条字段名规则和值内容规则。
+- **本应用规则**：只对当前应用生效，和系统默认规则叠加；正则相同时，覆盖默认规则的脱敏类型。
 
-[完整依赖分类列表](/zh/testing/policy-yaml-guide#mock-categories)
+每条规则是一个正则表达式和一个标签（姓名、手机号、邮箱、身份证、护照、通用，或不脱敏）：
 
----
+- **字段名规则**匹配 JSON 字段名，如 `(?i)^password$`。
+- **值内容规则**匹配字段的值。
 
-## CompareRulePolicy {#compare-policy}
+脱敏只对 JSON 格式的报文生效；超过约 100 万字符的报文，或者处理出错时，控制台显示原文。系统默认规则在「设置 → 脱敏规则管理」里编辑。
 
-**用于[回放](/zh/testing/replay-and-diff)阶段 · 执行 `sp replay run` 之前应用**
+## 相关文档 {#related}
 
-控制回放**差异对比**中的噪声（非 Mock 行为）。
-
-- **`excludePaths` / `includePaths`** — JSON Pointer（支持 Glob）
-- **`defaults.timeToleranceMs`** 与 CEL **`validations`** — 按规则丢弃差异（含按 `category` 忽略，如 DATABASE body）
-- **`operationSpecs`** — 按入口操作覆盖（**不要**在 `selector` 上写操作名）
-
-**YAML 字段与示例：** [策略 YAML 指南 · CompareRulePolicy](/zh/testing/policy-yaml-guide#comparerulepolicy)
-
-回放后用 `sp replay diff` 排查，再收紧策略而非改业务代码。
-
----
-
-## 动态类（非 RecordingPolicy）
-
-本地缓存等方法在**动态类配置**（控制台/API）登记，不在 `RecordingPolicy` 中。回放 Mock 通过 **MockPolicy** 的 `UserDynamic` / `DynamicClass` 规则控制。见 [策略 YAML 指南 · 相关配置](/zh/testing/policy-yaml-guide#related-configuration)。
-
-## 策略类型与服务端模块
-
-| Kind | CLI | 服务端模块 |
-|------|-----|-----------|
-| `RecordingPolicy` | `sp policy recording` | `RecordingPolicyService` |
-| `MockPolicy` | `sp policy mock` | `MockPolicyService` |
-| `CompareRulePolicy` | `sp policy compare` | `CompareRulesService` |
-
-示例文件位于 `sp-policy-rules/src/main/resources/examples/`。
-
-## Agent 工作流
-
-```bash
-# apply 前务必先 validate
-sp policy recording validate -f recording.yaml --json
-sp policy recording apply -f recording.yaml --json
-```
-
-CI 应在 `valid: false` 或非零退出码时失败。
-
-## GitOps
-
-```bash
-sp policy recording export prod-policy-id -o policies/recording-prod.yaml
-git commit -m "chore: sync recording policy"
-```
-
-见 [GitOps 策略](/zh/testing/examples/gitops-policies)。
-
-## 与旧版配置的关系
-
-policy-rules 迁移后，`sp config legacy schedule` 与 Mongo 的 `ServiceCollectConfiguration` **不再**是配置的唯一来源。用 `sp policy recording` 管理同时影响 agent 与回放范围的 operation include/exclude。
-
-## 相关文档
-
-- [录制流量](/zh/testing/recording)
-- [回放与对比](/zh/testing/replay-and-diff)
-- [策略 YAML 指南](/zh/testing/policy-yaml-guide)
-- [CLI：policy 命令](/zh/testing/commands/policy)
+- [策略 YAML 参考](/zh/testing/policy-yaml-guide)：所有配置的 YAML 字段
+- [sp policy](/zh/testing/commands/policy)：用命令行导出、校验、发布配置
+- [用 Git 管理策略](/zh/testing/examples/gitops-policies)

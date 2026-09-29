@@ -1,120 +1,96 @@
 ---
-title: Configure compare rules
+title: Diff rules
 ---
 
-# Configure compare rules
+# Diff rules
 
-Compare rules decide which replay differences **don't count**. The principle: *what you configure is skipped; everything else is compared strictly.* Accepting diffs one by one in [Review diffs](/en/testing/review-diffs-in-the-web-ui) only covers one run; turning always-changing fields (timestamps, random IDs) into rules stops the false alarms on every future replay — this step closes the loop.
+Diff rules decide which differences **don't count**: whatever you configure is skipped, everything else is compared strictly. Handling differences one by one in [Review differences](/en/testing/review-diffs-in-the-web-ui) only covers one run; turning fields that always change (timestamps, random IDs, serial numbers) into rules stops the false alarms on every future replay.
 
-This page covers setting rules in the **Web console's visual editor** — pick a rule type, fill in a field or two, click add. The visual editor is the friendlier path for day-to-day use; the exact same rules can be written declaratively in the [Policy YAML guide](/en/testing/policy-yaml-guide) for GitOps and CI.
+This page covers the console. The same rules can be written as YAML and kept in Git: see [Policy YAML reference](/en/testing/policy-yaml-guide#comparerulepolicy).
 
-## Where to configure rules
+## Where to configure {#where}
 
-There are two places, for two scopes:
-
-| | Global default rules | Application rules |
+| | Application rules | Global defaults |
 |---|---|---|
-| Open from | Settings → Compare Rules | Workbench → Configuration → Compare Rules |
-| Applies to | Every application | The current application only |
-| Rule types | All types, in six tabs | The three common types plus per-endpoint overlays; the rest via YAML |
+| Open from | **Config → Diff rules** | **View global →** on the application rules page |
+| Applies to | The current application | Every application |
+| Rule types | Ignore by path, ignore by condition (CEL), dependency types, and **Per-endpoint** rules that apply to some endpoints only; other types via YAML | All six types, one tab each |
 
-An application panel links to the global defaults at the top, so you always see what else is in effect.
+![Diff rules of an application](/img/docs/testing/en/compare-app.png)
 
-![The application compare-rules panel](/img/docs/replay/compare-rules-panel.png)
+The application page shows how many global default rules there are; **View global →** opens them. Several common global rules are built in, for example ignoring a difference when both values are UUIDs, both are IP addresses, or both are timestamps within the tolerance.
 
-The global page groups the rule types into six tabs — one per type below.
+Change application rules with **Edit** at the top right and click **Save** when you're done, or switch to **YAML** and edit it directly. On the global default rules page, every tab needs **Save config** after you add or change something; **Add** alone doesn't save it.
 
-![The six rule-type tabs](/img/docs/replay/rules-global-tabs.png)
+![Global default rules](/img/docs/testing/en/compare-global.png)
 
-## Ignore a field by path
+## Ignore fields by path {#paths}
 
-**The most common rule — stop comparing a field.** Ideal for volatile fields: timestamps, trace IDs, random tokens. The field, and everything under it, is removed from the comparison.
+The most common rule: stop comparing a field. Good for timestamps, trace IDs and random tokens; the field and everything under it drop out of the comparison.
 
-**How to add it:** open the **Ignore by path** tab, type the field path in **Ignore fields**, and click **Add**.
+On the **Ignore by path (fast)** tab, enter the path under **Ignored fields (skipped on replay)** and click **Add**. Write the path as `data.traceId` or as a JSON Pointer, `/data/traceId`; `*` matches one level and `**` any number of levels, as in `/data/*/updatedAt`.
 
-![Configuring compare rules walk-through](/img/docs/testing/en/compare-rules.gif)
-
-**What to type:** a field path. Both `data.traceId` (dot form) and `/data/traceId` (JSON Pointer) work. Use `*` for one level and `**` for any depth, e.g. `/data/*/updatedAt`.
-
-::: tip The whitelist input (rarely needed)
-The same tab has an **Include paths (whitelist)** input at the top. Add anything here and **only** those paths are compared, everything else ignored — the opposite of the ignore list. Leave it empty (the normal case) to compare everything.
+::: tip Include paths (whitelist)
+The same tab has **Include paths (whitelist)**. Once filled, **only** those paths are compared and everything else is ignored — the opposite of ignored fields. Usually left empty, meaning everything is compared.
 :::
 
-## Ignore an entire dependency type
+## Ignore a whole dependency type {#categories}
 
-**A coarse switch — drop all differences from one kind of downstream call.** For example, ignore every Redis difference, or every difference from one database query.
+A coarse switch: differences in one kind of downstream call don't count at all, for example every Redis call, or one particular database operation.
 
-**How to add it:** open the **Dependency types** tab. Enter the **type** (e.g. `Redis`, `Database`, `Dubbo`, `HttpClient`) and, optionally, a specific dependency **name**. Leave the name empty to ignore the whole type.
+On the **Dependency types** tab, enter the type (such as `Redis`, `Database`, `Dubbo`, `HttpClient`) and, if needed, the specific dependency name; with no name, the whole type is ignored.
 
-![Ignoring a dependency type walk-through](/img/docs/testing/en/rule-ignore-category.gif)
+In replay results, calls ignored this way are marked **Category ignored** and aren't compared field by field.
 
-In a run, a call ignored this way shows an **"Entire category ignored"** chip instead of per-field strikethroughs — the whole call is dropped at once.
+## Ignore by condition (CEL) {#cel}
 
-## Ignore by a condition (CEL)
+The most flexible: write a condition that every difference is checked against; when it holds, the difference doesn't count. Use it when a path or field name isn't enough, such as "ignore when both values are timestamps".
 
-**The most flexible rule — ignore a difference when a condition is true.** Use it when matching by path or field name isn't enough, e.g. "ignore any field whose recorded and replayed values are both timestamps." After the comparison runs, each difference is tested against your condition; if it matches, the difference is dropped.
+On the **Ignore by condition (CEL)** tab, click **Add rule**, optionally name it, and write the condition — or pick one **From template**. **Available functions** lists every function.
 
-**How to add it:** open the **Ignore by condition (CEL)** tab, click **Add rule**, optionally name it, and write the condition. A template picker offers ready-made conditions.
+Common variables: `left`, `right` (recorded and replayed value), `path`, `pointer` (field path), `fieldName`, `category`, `time_tolerance_ms`. Common functions: `isUUID`, `isIP`, `isTimestamp`, `toTimestamp`, `toNumber`.
 
-![Configuring CEL condition rule walk-through](/img/docs/testing/en/rule-cel.gif)
-
-Variables you can use: `left` / `right` (recorded / replayed value), `path` / `pointer` (field path), `fieldName`, `category`, `time_tolerance_ms`. Helpers: `isUUID`, `isIP`, `isTimestamp`, `toTimestamp`, `toNumber`.
-
-Examples:
+For example:
 
 - Both values are timestamps: `isTimestamp(left) && isTimestamp(right)`
-- A generated ID: `fieldName == "requestId" && isUUID(right)`
+- A generated request ID: `fieldName == "requestId" && isUUID(right)`
 
-## Normalize a value before comparing
+## Tabs that don't take effect yet {#not-yet-effective}
 
-**Round or reshape a value so noise doesn't register** — e.g. round a float so precision differences don't count.
+<a id="transforms"></a><a id="decompress"></a>
 
-**How to add it:** open the **Value transform** tab, enter the field **path** and a CEL **expression** on the value (`value` is the field's original value), then click **Add transform**.
+The global default rules page also has **Transforms** and **Decompression** tabs, meant for normalizing values and decoding Base64- or Gzip-encoded fields before comparison. In the current version these rules have no effect once saved: comparison finds no handler for them, skips them and compares the original values. Don't rely on them.
 
-![Value transform rule walk-through](/img/docs/testing/en/rule-transform.gif)
+## When array order varies {#arrays}
 
-Example — round to two decimals: path `/data/orders/*/total`, expression `math.round(value * 100) / 100`.
+Arrays are compared by index by default. If the element order differs between recording and replay, you get a pile of false differences about missing and extra elements.
 
-## Decode an encoded field before comparing
-
-**Decode base64/gzip JSON so the comparison sees real data**, instead of reporting "these two encoded strings differ."
-
-**How to add it:** open the **Decompress** tab, enter the field **path**, and pick the **codec** (`Base64 + JSON`, `Gzip + Base64 + JSON`, or `Plain JSON`).
-
-![Decompress rule walk-through](/img/docs/testing/en/rule-decompress.gif)
-
-## Match array elements when order varies
-
-**Compare an unordered array as a set, not by position.** By default arrays are compared by index — when element order changes between record and replay, that produces false "missing / new element" differences.
-
-**How to add it:** open the **Array matching** tab, enter the array **path**, pick a **strategy**, and (for `By key`) enter the **key field(s)**. Click **Add array config**.
-
-![Array matching rule walk-through](/img/docs/testing/en/rule-arrays.gif)
+On the **Array matching** tab, enter the array path, pick a strategy and click **Add unordered config**:
 
 | Strategy | When to use |
 |---|---|
-| By index | Default — compare position by position. |
-| By key | Pair elements by a key field (enter the key, e.g. `orderId`). |
-| By LCS | Longest common subsequence — best-effort alignment without a key. |
+| By index | Default; compares position by position |
+| By primary key | Pairs elements by a key field, such as `orderId`; works even when the order changes |
 
-## Apply rules to specific endpoints only
+In YAML these are `BY_INDEX` and `BY_KEY`. The **LCS algorithm** option in the console has no effect in the current version and behaves like by index.
 
-The rules above apply to every endpoint. To add rules for just some endpoints, use the **Per-endpoint** section in an application panel. Click **Add endpoint rules**, enter the endpoints to match — exact names and/or glob patterns like `/api/order/*` — then fill in that group's own rule table.
+## Rules for some endpoints only {#operation-rules}
 
-## Where quick rules from the diff go
+The rules above apply to every endpoint of the application. For rules that should apply to some endpoints only, add them under **Per-endpoint** in the application rules: enter the endpoints to match (an exact name, or a pattern such as `/api/order/*`) and configure that group's own rules.
 
-When you [ignore a field in a run](/en/testing/review-diffs-in-the-web-ui#ignore-a-field), it writes into one of these rule types:
+## Where rules added in the diff view go {#from-diff-view}
 
-| Diff action | Becomes |
+When you [ignore a field while reviewing differences](/en/testing/review-diffs-in-the-web-ui#ignore-a-field), every scope except **Only this case** writes a diff rule:
+
+| Chosen in the diff view | Written as |
 |---|---|
-| Ignore this field's differences | An ignore-by-path rule |
-| Ignore all "…" fields | A CEL rule matching that field name |
-| Set as array key | An array rule (By key) |
+| By path | An ignore-by-path rule |
+| By field name (every field with that name) | A CEL rule matching that field name |
 
-Scoped to an endpoint, it lands in a per-endpoint group; scoped to the whole app, at the top level.
+With the scope set to the current endpoint or to a dependency call, the rule goes under **Per-endpoint**; with **Whole app**, into the app-wide rules.
 
-## Next
+## Next {#next}
 
-With rules in place, go back to [Replay](/en/testing/replay-and-diff) and run again (or use **Recompare** in [Review diffs](/en/testing/review-diffs-in-the-web-ui) to verify immediately) — whatever remains in the failure list is now worth looking at.
+Rules set here apply from the next [replay](/en/testing/replay-and-diff). To judge a finished replay by the new rules, replay again; you can only [recompare](/en/testing/review-diffs-in-the-web-ui#recompare) on the spot when you add or remove rules from that replay's diff view. What still fails is worth a proper look.
 
-To replay after each deploy and let the result decide whether the pipeline continues, see [Replay after deployment](/en/testing/webhook-and-ci); for rules in GitOps, see the [Policy YAML guide](/en/testing/policy-yaml-guide).
+To manage diff rules in Git, see [Manage policies in Git](/en/testing/examples/gitops-policies) and [Policy YAML reference](/en/testing/policy-yaml-guide#comparerulepolicy).

@@ -1,16 +1,30 @@
 ---
-title: Install Softprobe Server
+title: Kubernetes deployment (Helm)
 ---
 
-# Install Softprobe Server
+# Kubernetes deployment (Helm)
 
 Install the unified Softprobe backend on Kubernetes with Helm. The chart supports deploying in-cluster **bundled MongoDB and Redis**, or connecting to your **external MongoDB (standalone/replica set), external Redis (standalone/Sentinel), and external S3** data stores.
 
 Chart **v4.3.x+** also enables the [unified log pipeline](#unified-log-pipeline) by default (Vector, Parquet PVC, compaction). Fresh installs need only the MongoDB and encryption keys below — no separate `logPipeline` block required.
 
-**Prerequisites:** Kubernetes 1.24+, Helm 3.x, GCR pull credentials from Softprobe, and `encryption.secretKey` for at-rest payload encryption.
+**Prerequisites:** Kubernetes 1.24+, Helm 3.x, GCR pull credentials from SoftProbe, and `encryption.secretKey` for payload encryption (see [Data protection and retention](/en/testing/installation/data-protection#encryption)). Network rules are the same as for the single-server install: see [Before you deploy](/en/testing/installation/preparation#network).
 
 For **bundled** MongoDB, your cluster needs a default or configured `StorageClass` for the MongoDB PVC.
+
+## Resources {#resources}
+
+The chart defaults assume two dedicated node pools of about 8 vCPU and 32 GiB per node: one for MongoDB, one for the backend and Redis.
+
+| Component | Default requests | Default limits | Notes |
+|-----------|------------------|----------------|-------|
+| Backend (`spBackend`) | 6 CPU, 24 GiB | 8 CPU, 28 GiB | JVM heap `-Xms12g -Xmx22g` (`spBackend.javaOpts`) |
+| Bundled MongoDB (`mongodb.bundled`) | 6 CPU, 24 GiB | 8 CPU, 28 GiB | 250 GiB PVC |
+| Redis | 0.2 CPU, 512 MiB | 1 CPU, 4 GiB | |
+| Console (`spwebui`) | 0.5 CPU, 1 GiB | 2 CPU, 4 GiB | |
+| Vector (log pipeline) | 0.1 CPU, 256 MiB | 1 CPU, 1 GiB | |
+
+Check what your nodes can allocate with `kubectl describe node | grep -A5 Allocatable`. For a POC or light traffic, scale each component's `resources` and `spBackend.javaOpts` down together, keeping the heap below the container memory limit.
 
 ## MongoDB modes (pick one)
 
@@ -609,11 +623,6 @@ kubectl get cronjob,jobs -n "$NAMESPACE" -l 'app.kubernetes.io/component=log-pip
 kubectl logs -n "$NAMESPACE" job/<compaction-job-name>
 ```
 
-### Out of scope (v1)
-
-- Iceberg, ad hoc SQL, direct Parquet access for end users.
-- Dual-write to local PVC and S3.
-- Dedicated log-pipeline health/status API.
 
 ## Uninstall
 
@@ -653,8 +662,8 @@ Point instrumented applications at the in-cluster service:
 
 ## Next step
 
-After sp-backend is healthy, install Softprobe on developer machines: [Install Softprobe Client](./).
+- [Attach the Java agent](/en/testing/java-agent)
+- [Your first record and replay](/en/testing/getting-started)
+- [Maintenance and troubleshooting](/en/testing/installation/operations)
 
-For a shared team web workbench on Linux, see [Spcode Service](./index#spcode-service) on the client install page.
-
-Related: [`sp logs`](/en/testing/commands/logs) · [Concepts and IDs](/en/testing/agents/concepts#ids)
+Related: [`sp logs`](/en/testing/commands/logs) · [Apps, cases and replay IDs](/en/testing/agents/concepts#ids)
