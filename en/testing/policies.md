@@ -1,150 +1,119 @@
 ---
-title: Policies
+title: Recording and replay settings
 ---
 
-# Policies overview
+# Recording and replay settings
 
-Softprobe Testing uses **declarative YAML policies** (`apiVersion: softprobe.ai/v1`), merged by `metadata.priority` and applied by sp-backend at runtime.
+What gets recorded, which dependencies are answered from the recording during replay, which classes need special handling, and which fields are masked when you view them — all of this is set under **Config** in the console's left sidebar, per application. Without any configuration the built-in defaults apply, and recording and replay work out of the box.
 
-::: tip Policies are optional tuning, not a prerequisite
-Built-in global defaults (priority 0) make recording and replay work out of the box. You only write your own policy when you want to **change** the default behavior — control sampling, narrow operation scope, ignore noisy fields (`priority > 0` overrides). Get the core workflow running first, then come back to tighten.
+| Page | Controls |
+|------|----------|
+| [Recording](#recording) | Which machines record, how many requests per minute, when, and which endpoints are left out |
+| [Replay](#replay) | Which dependencies are answered from the recording and which make real calls; how many requests per second each instance receives |
+| [Dynamic classes](#dynamic-classes) | Class methods that need special handling during recording and replay |
+| [Diff rules](/en/testing/compare-rules-web-ui)<a id="compare-policy"></a> | Which differences don't count |
+| [Redact](#sensitive) | Which fields are masked when you view recordings in the console |
+
+The **Replay**, **Diff rules** and **Redact** pages switch between **Visual** and **YAML**; recording settings and dynamic classes are edited on the page only. YAML fields are described in [Policy YAML reference](/en/testing/policy-yaml-guide); to keep these settings in Git, see [Manage policies in Git](/en/testing/examples/gitops-policies).
+
+Click **Save** and you're done — no restart of the service under test. The agent picks up the change the next time it loads its configuration.
+
+## Recording {#recording}
+
+<a id="recording-policy"></a>
+
+![Recording settings](/img/docs/testing/en/config-recording.png)
+
+### Sampling rules {#sampling-rules}
+
+Which machines record and how much. Rules match machines by environment tag, **top to bottom, and the first match wins**; machines that match no rule use the **Default rule** at the bottom.
+
+Each rule has:
+
+| Setting | Meaning |
+|---------|---------|
+| Active environments | Matches machines by environment tag, such as `env=prod`; several values separated by commas (`env=fat1,fat2`) match any of them. Set the tag with `-Dsp.tags.env=prod` in the agent's start flags |
+| Sample rate (per minute) | Roughly how many entry requests per endpoint each machine records per minute. 0 means machines matching this rule don't record |
+| Max recording machines | How many machines in the environment may record at the same time; unlimited by default |
+| Recording time window | The weekdays and hours when recording is allowed |
+
+The **Default rule** can't be deleted; by default it records one per minute, all day. To stop machines that match no rule from recording, set its sample rate to 0.
+
+Move rules up or down to change the order: higher rules match first.
+
+::: warning Be careful with a machine limit of 1
+With a limit of 1, when the machine holding the slot goes offline the slot may stay taken for a while, and the other machines keep showing that they don't record. Usually leave it unset, or set it to at least the number of instances.
 :::
 
-Separate **how to run each phase** from **policy configuration**:
+### App-wide settings {#app-wide}
 
-| Phase | Operations | Policy config |
-|-------|------------|---------------|
-| **1 · Record** | [Record traffic](/en/testing/recording) | [RecordingPolicy](#recording-policy) below |
-| **2 · Replay** | [Replay and diff](/en/testing/replay-and-diff) | [MockPolicy](#mock-policy), [CompareRulePolicy](#compare-policy) below |
+Apply to every machine of the application, regardless of the rules above.
 
-Field reference and full examples: [Policy YAML guide](/en/testing/policy-yaml-guide) · [sp policy command](/en/testing/commands/policy)
+**Coverage packages**: package prefixes of your business code, comma-separated, such as `com.example.order,com.example.payment`. Calls to local caches (`@Cacheable`, Caffeine, Guava) are only recorded under these packages; without them, those cache calls aren't recorded.
 
-## CLI quick reference
+### Endpoint filter {#operation-filter}
 
-```bash
-sp policy recording validate -f recording.yaml --json
-sp policy recording apply -f recording.yaml --json
-sp policy mock apply -f mock.yaml --json
-sp policy compare apply -f compare.yaml --json
-```
+- **Blacklist** (default): record every endpoint except the ones you select.
+- **Whitelist**: record nothing except the ones you select.
 
-Higher **`metadata.priority`** wins on conflicts. Built-in priority-0 globals exist; use `priority > 0` on app policies.
+The list comes from endpoints already recorded; you can also type an endpoint name and add it. The endpoint filter also limits which endpoints can be chosen for replay.
 
-## Lifecycle phases
+## Replay {#replay}
 
-| Phase | Kind | When to configure | CLI |
-|-------|------|-------------------|-----|
-| **1 · Record** | `RecordingPolicy` | Before traffic | `sp policy recording` |
-| **2 · Replay** | `MockPolicy` | Before `sp replay run` | `sp policy mock` |
-| **2 · Replay** | `CompareRulePolicy` | Before `sp replay run` | `sp policy compare` |
+<a id="mock-policy"></a>
 
-Full lifecycle: [Getting started](/en/testing/getting-started)
+![Replay settings](/img/docs/testing/en/config-replay.png)
 
----
+### Dependency mock {#mock}
 
-## RecordingPolicy {#recording-policy}
+During replay, whether external dependencies (databases, caches, third-party endpoints …) are answered with the recorded data or call the real service.
 
-**For the [Record](/en/testing/recording) stage · apply before traffic**
+- **Default mock**: when on, every dependency is answered from the recording and real services aren't touched; when off, dependencies call the real service by default.
+- **Exceptions**: with default mock on, set individual dependencies to make real calls (**Real-request exceptions**); with it off, set individual dependencies to be mocked (**Mock exceptions**). Set them per type (such as all Redis) or per dependency.
+- **Mock miss strategy**: what happens when a call has no matching result in the recording. The default, **Mark failed (default, safest)**, is the safest; you can also **Call real service** (may really reach external systems — only in an isolated test environment) or **Return preset response** (an HTTP status code and body).
 
-Controls **what the agent records**: sampling, time window, operation include/exclude, serialize skip, record-time time mock.
+Calls for system time and random numbers are always answered from the recording; exceptions and the default mock switch don't apply to them.
 
-- **Sampling** — `ratePerHundredSeconds` (`0` = no record), optional `machineCountLimit` (omit = unlimited)
-- **Time window** — `daysOfWeek`, `from` / `to` (agent JVM local timezone)
-- **Operations** — `exclude` globs; non-empty `include` switches to whitelist mode
-- **Serialize skip** — `serializeSkip` by class and field names
-- **`timeMock`** — fix `java.time.*` at record time
+**Force all dependencies to make real calls for this run**, when ticked in a replay plan, overrides these settings for that run.
 
-**Operational steps:** [Record traffic](/en/testing/recording)
+### Send rate {#rate}
 
-**YAML fields and examples:** [Policy YAML guide · RecordingPolicy](/en/testing/policy-yaml-guide#recordingpolicy)
+**Per-instance QPS cap**: the most requests per second each target instance receives during replay; 5 by default, preferably no more than 20. Each target address in a replay plan counts as one instance. A single run can override it under **Advanced options** in the replay plan.
 
-::: info Notes
-- `spec.sensitiveData` is **not** applied on the agent record path yet; use `matchTolerance` for mock-key noise and `SensitivePolicy` for view-time masking (see YAML guide).
-- Changing `operations` include/exclude updates **replay schedule** operation scope without a separate schedule edit.
-:::
+## Dynamic classes {#dynamic-classes}
 
-```bash
-sp policy recording validate -f my-recording.yaml --json
-```
+Some methods return something different every time or depend on the environment: reading the clock, generating random numbers, local caches, encryption. Registered as dynamic classes, their return values are recorded, and during replay the recorded value is returned, so replay follows the same code path as the recording.
 
----
+Click **Add** and fill in:
 
-## MockPolicy {#mock-policy}
+| Field | Meaning |
+|-------|---------|
+| Full class name | Such as `com.example.MyClass` |
+| Method | The method name |
+| Parameter types | Fully qualified, separated by `@`, such as `java.lang.String@int`; empty means any |
+| Key formula | Optional; tells different calls of the same method apart |
+| Base class | When ticked, the rule applies to every subclass as well |
 
-**For the [Replay](/en/testing/replay-and-diff) stage · apply before `sp replay run`**
+System time and random numbers are built in: you don't need to add them, and replay always returns the recorded values.
 
-Controls **whether dependencies are mocked** at replay, mock-key tolerance, cross-app dependencies, and fallback when no mock matches.
+## Redact {#sensitive}
 
-- **`mockByDefault`** — mock all deps by default (`skipMock` exceptions), or the inverse with `forceMock`
-- **`Category:operationGlob`** — e.g. `HttpClient:/payment/**` (**not** entry types like `Servlet`)
-- **`matchTolerance`** — ignore volatile headers, query params, body paths
-- **`multiServiceDependencies`** — mock downstream apps from the same session
-- **`fallback`** — `FAIL` (default), `PASS_THROUGH`, `RETURN_DEFAULT`
+Masks sensitive fields such as ID numbers and phone numbers when you **view** recordings and comparison results in the console. Redaction only affects what's displayed: the database keeps the full, encrypted payload, because replay needs the original. How storage encryption is configured: [Deploy the backend](/en/testing/installation/server).
 
-Global defaults **force-mock** `DynamicClass:SystemTime.**` and `RandomSource.**`; user `skipMock` has no effect.
+![Redact rules](/img/docs/testing/en/config-sensitive.png)
 
-**YAML fields and examples:** [Policy YAML guide · MockPolicy](/en/testing/policy-yaml-guide#mockpolicy)
+- **System defaults**: built in, for every application, with a set of field name rules and content rules.
+- **App rules**: for the current application only, added on top of the defaults; a rule with the same pattern as a default overrides the default's masking type.
 
-[Full dependency category list](/en/testing/policy-yaml-guide#dependency-categories)
+Each rule is a regular expression plus a label (name, phone, email, ID card, passport, generic, or no masking):
 
----
+- **Field name rules** match JSON field names, such as `(?i)^password$`.
+- **Content rules** match field values.
 
-## CompareRulePolicy {#compare-policy}
+Redaction only works on JSON payloads; payloads longer than about one million characters, or that fail to process, are shown as they are. The system defaults are edited under **Settings → Redact rules**.
 
-**For the [Replay](/en/testing/replay-and-diff) stage · apply before `sp replay run`**
+## Related {#related}
 
-Controls **diff noise** during replay comparison (not mock behavior).
-
-- **`excludePaths` / `includePaths`** — JSON Pointer (with globs)
-- **`defaults.timeToleranceMs`** and CEL **`validations`** — drop diffs by rule (including per-`category` rules)
-- **`operationSpecs`** — per-entry-operation overlays (**do not** put operation names on `selector`)
-
-**YAML fields and examples:** [Policy YAML guide · CompareRulePolicy](/en/testing/policy-yaml-guide#comparerulepolicy)
-
-Use `sp replay diff` after replay, then tighten policy rather than changing application code.
-
----
-
-## Dynamic classes (not RecordingPolicy)
-
-Register methods in **dynamic class configuration** (dashboard/API), not in `RecordingPolicy`. Control replay mocking via **MockPolicy** `UserDynamic` / `DynamicClass` rules. See [Policy YAML guide · Related configuration](/en/testing/policy-yaml-guide#related-configuration).
-
-## Policy kinds and server modules
-
-| Kind | CLI | Server module |
-|------|-----|---------------|
-| `RecordingPolicy` | `sp policy recording` | `RecordingPolicyService` |
-| `MockPolicy` | `sp policy mock` | `MockPolicyService` |
-| `CompareRulePolicy` | `sp policy compare` | `CompareRulesService` |
-
-Example files ship in `sp-policy-rules/src/main/resources/examples/`.
-
-## Agent workflow
-
-```bash
-# Always validate before apply
-sp policy recording validate -f recording.yaml --json
-sp policy recording apply -f recording.yaml --json
-```
-
-CI should fail on `valid: false` or a non-zero exit.
-
-## GitOps
-
-```bash
-sp policy recording export prod-policy-id -o policies/recording-prod.yaml
-git commit -m "chore: sync recording policy"
-```
-
-See [GitOps policies](/en/testing/examples/gitops-policies).
-
-## Relationship to legacy config
-
-`sp config legacy schedule` and Mongo `ServiceCollectConfiguration` are **not** the source of truth after the policy-rules migration. Use `sp policy recording` for operation include/exclude that affects both agent and replay scope.
-
-## Related
-
-- [Record traffic](/en/testing/recording)
-- [Replay and diff](/en/testing/replay-and-diff)
-- [Policy YAML guide](/en/testing/policy-yaml-guide)
-- [CLI: policy command](/en/testing/commands/policy)
+- [Policy YAML reference](/en/testing/policy-yaml-guide): the YAML fields of every setting
+- [sp policy](/en/testing/commands/policy): export, validate and apply settings from the command line
+- [Manage policies in Git](/en/testing/examples/gitops-policies)

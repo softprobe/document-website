@@ -1,152 +1,119 @@
 ---
-title: Replay and diff
+title: Run and schedule replays
 ---
 
-# Replay and diff
+# Run and schedule replays
 
-Replay turns the cases you collected in [Record](/en/testing/recording) into a **regression run**: the original entry requests are sent to your **test instance** as-is, dependency calls (database, external HTTP, …) are automatically mocked from recorded data, and when the run finishes each case gets an automatic pass/fail from comparing recorded vs replayed responses.
+A replay sends recorded entry requests to a service in a test environment. The service runs its real business code; when it calls a dependency, the recorded result answers; finally the recorded and replayed results are compared. One replay run is a **replay plan**.
 
-Continuing the `order-service` example: production traffic has built a corpus of cases, and now you want to verify a new build in the test environment for regressions.
+Start a replay by hand, or create a **scheduled task** to replay automatically every day. To replay after each deployment from your pipeline, see [Replay after deployment](/en/testing/webhook-and-ci).
 
-## Step 1 · Prepare the test instance
+## Prepare the test instance {#prepare}
 
-Run the **new build** in the test environment, same agent, same `appId`:
+Start the version you want to check in a test environment, with the agent attached and **the same application ID as when recording** (`-Dsp.app.id`). Note its address, for example `order-service.test:8080`: that's the replay's **target environment**.
 
-```bash
-java -javaagent:sp-agent.jar \
-     -Dsp.app.id=<your appId> \
-     -Dsp.api.url=http://<backend-host>:8090 \
-     -jar order-service-new.jar
-```
+::: warning Replay really calls the target service
+Entry requests really reach the target service and its business code really runs. Whether dependency calls are answered from the recording depends on **Config → Replay** (see [Recording and replay settings](/en/testing/policies#replay)). So:
 
-Note its base URL, e.g. `http://order-service.test:8080` — this is **`targetEnv`**, the destination for replayed traffic.
-
-::: warning Record in prod, replay in test
-Replay sends **real HTTP requests** to `targetEnv` (only downstream dependencies are mocked), so the replay target should be a non-production instance unless you explicitly accept the risk. Also turn recording off (or near zero) on the replay host so the run doesn't capture a second corpus on top of the replay.
+- Use a test environment as the target, never production.
+- Turn recording off, or very low, on the replay target, so replayed requests aren't recorded again.
 :::
 
-## Step 2 · Start the replay
+The backend that runs the replay must be able to reach the target. If you use SoftProbe Cloud and the target only runs on your machine, use [`sp tunnel`](/en/testing/commands/tunnel).
+
+## Replay now {#run}
 
 <InterfaceTabs :tabs="['ui','cli']">
 <Interface id="ui">
 
-1. Open the application's Workbench and navigate to **Replay** in the left sidebar.
-2. Click **+ New Plan**, and enter the test service URL in **Target Environment (targetEnv)** (e.g. `http://order-service.test:8080`).
-3. Choose the replay scope (All endpoints, Select endpoints, or Pinned cases), then click **Create Plan** to monitor real-time execution progress.
+Open **Replay plans → Run records**, click **Run replay now**, and fill in **New replay plan**:
 
-![Starting a replay run in the Workbench](/img/docs/testing/en/replay-recordings.gif)
+![New replay plan](/img/docs/testing/en/new-plan.png)
+
+| Field | Meaning |
+|-------|---------|
+| Plan name | Optional; helps you find it in Run records |
+| Target environment (targetEnv) | Pick the protocol on the left (`http://`, `https://`, `dubbo://` …) and enter `host:port` on the right |
+| Replay scope | **All endpoints**, **Pick endpoints** or **Pinned cases**. When picking endpoints you can search by name, description or tag, or **Select by tag** |
+| Recording from / Recording to | Replays the cases recorded in this period; presets for the last hour, 24 hours or 7 days. Ignored when replaying pinned cases |
+| Case limit per interface | Counted per endpoint; leave empty to replay all |
+| Filter by case tags | Only replays cases with the given tags, such as `env:prod` |
+
+**Advanced options** add:
+
+| Option | Meaning |
+|--------|---------|
+| Pressure and rate | **Standard (adaptive)** slows down on errors, suited to daily regression; **Serial** sends the next case only after the previous one finishes; **Fixed total RPS (load test)** keeps a constant rate. Standard mode takes a speed multiplier from 0.25× to 4× |
+| Per-case timeout | How long to wait for one case's response (milliseconds); empty uses the default |
+| Dependency calls | **Force all dependencies to make real calls for this run** stops this run from answering any dependency from the recording. Only in an isolated test environment |
+| Agent version | Only replay cases recorded by the given agent versions. After an agent upgrade, cases from older versions sometimes have compatibility problems; use this to leave them out |
+| Traffic coloring | Adds custom request headers to every replayed request so the service can recognize replay traffic |
+
+Click **Create plan**. The plan starts sending requests right away and doesn't wait for the agent to reconnect, so check that the test instance is running and the agent is online before you create it. The console warns you when the agent is offline, but still lets you create the plan.
 
 </Interface>
 <Interface id="cli">
 
 ```bash
-sp replay run --app <your appId> --env http://order-service.test:8080 --json
+sp replay run --app <appId> --env http://order-service.test:8080 --from -24h --json
+sp replay status <planId> --watch --json
 ```
 
-The command returns a `planId`. Watch it to completion:
-
-```bash
-sp replay status <planId> --watch
-```
+Common flags: `--suite Pinned` (pinned cases only), `--operation <endpoint>` (repeatable), `--limit <cases per endpoint>`, `--no-mock` (all dependencies make real calls). All flags: [sp replay](/en/testing/commands/replay).
 
 </Interface>
 </InterfaceTabs>
 
-::: tip Don't mix up the two URLs
-`--env` (`targetEnv`) is the address of the **service under test**; `SP_API_URL` is the address of the **sp-backend service**. Confusing them is the most common integration mistake — see [CLI concepts](/en/testing/agents/concepts#replay-target-url-targetenv).
+The most requests per second are set by **Per-instance QPS cap** under **Config → Replay**: one target address counts as one instance, 5 per second by default. **Standard (adaptive)** mode starts lower and climbs to that cap. You can change it for a single run under **Advanced options**.
+
+## Run records {#records}
+
+**Replay plans → Run records** lists every replay plan. Filter by status (running, all passed, differences, run error), by trigger (one-off replay, scheduled, CI, API) and by time.
+
+![Run records](/img/docs/testing/en/replay-records.png)
+
+Each row shows the number of cases, passed, failed (with differences) and **Replay failed** (the request couldn't complete, for example the target was unreachable), plus the report's verdict. Click the plan name to open the [replay report](/en/testing/replay-report). A running plan can be stopped with **Stop plan**; **Delete plan** removes the plan together with its results, comparisons and logs.
+
+## Scheduled replay {#scheduled}
+
+Replay automatically at a fixed time every day or every workday, for example as a nightly regression run.
+
+Open **Replay plans → Scheduled tasks** and click **New scheduled task**:
+
+![New scheduled task](/img/docs/testing/en/new-task.png)
+
+| Field | Meaning |
+|-------|---------|
+| Task name | Required |
+| Target environment, Replay scope | As for Replay now. The scope can be **Pinned cases** too |
+| Recurrence Days | Pick weekdays, or **Workdays** / **Every day** |
+| Daily Start Time | When to run each day; the next run time and time zone are shown below |
+| Start before each run, Window length | Which recordings to replay: a window that starts "Start before each run" before the trigger and lasts "Window length". For example, starting 10 hours before and lasting 8 hours, a 02:00 run replays what was recorded between 16:00 and 24:00 the day before. The window must be at least one minute and no longer than "Start before each run" |
+| Case limit, case tags, advanced options | As for Replay now |
+
+Click **Save task**, or **Save and run now** to try it once.
+
+The task list shows each task's trigger rule, next run and an **Auto-schedule** switch: turning it off pauses the task without deleting it. Each task can be **Run** once right away, **Edit**ed or deleted. Replays started by a task appear in Run records with the trigger "Scheduled task".
+
+If creating the plan fails when the time comes — for example there are no recordings in the window, or another replay is being created for the same application — that scheduled run doesn't start, and the reason shows in Run records.
+
+::: info SoftProbe Cloud
+Scheduled replays on SoftProbe Cloud are started from the cloud, so the target must be reachable from the internet. For a target on an internal network, use **Run replay now** in the desktop client.
 :::
 
-What happens during the run: the schedule service preloads the cases' mocks into Redis, then re-sends each recorded entry request to `targetEnv`; your service executes its real business code, but on every dependency call the agent returns the **recorded** response — no real database or external system is touched; replay-side traffic is stored and automatically compared against the recorded side.
+## During a replay {#during}
 
-sp-backend logs **`Replay send start`** before each dispatched entry call and **`Replay send done`** / **`Replay send failed`** after — the entry/exit boundary for replay HTTP dispatch. See [Replay send log markers](/en/testing/reference/replay-send-log-markers).
+The backend sends the recorded entry requests to the target one by one:
 
-## Step 3 · Read the results
+1. The target runs its real business code.
+2. When it calls a dependency, the agent follows **Config → Replay**: answer from the recording, or make the real call.
+3. The replayed response and dependency calls are recorded and compared with the recording.
 
-A case **passes** when compare finds no material differences. **Failed** cases show a diff scene:
+Before and after sending each request the backend logs `Replay send start` / `Replay send done` / `Replay send failed`, which tells you whether a request reached the service: see [Replay send log markers](/en/testing/reference/replay-send-log-markers).
 
-- **Value diff** — the dependency was called, but the response body differs
-- **Missing call** — a dependency called during record was not called during replay
-- **Main response diff** — the entry response differs from the recording
+## After a replay {#after}
 
-<InterfaceTabs :tabs="['ui','cli']">
-<Interface id="ui">
+1. Read the [replay report](/en/testing/replay-report) first: the verdict, and failed cases grouped by cause.
+2. For differences, go through them with [Review differences](/en/testing/review-diffs-in-the-web-ui); fields that change every time, such as timestamps and random IDs, become [diff rules](/en/testing/compare-rules-web-ui).
 
-1. Open the replay from **Run records**. Start with the conclusion and causes on the **Report** tab (see [Replay report](/en/testing/replay-report)), then switch to **Cases** to go through individual cases.
-2. Select a failed case on the left to reveal the side-by-side Diff comparison drawer (recorded vs. replayed response).
-3. Hover over differences to ignore dynamic noise fields or use **Recompare** in the header to re-evaluate immediately.
-
-![Reviewing replay results and diffs in the Workbench](/img/docs/testing/en/review-diffs.gif)
-
-</Interface>
-<Interface id="cli">
-
-Quick triage from the command line:
-
-```bash
-sp replay case list --plan <planId> --json     # which cases failed
-sp diagnose replay <planId> --failed-only --out-dir .sp-work --json   # failure detail + diff artifacts on disk
-```
-
-Once you have a difference's `diffId`, inspect the full single diff: `sp replay diff get <diffId> --out-dir .sp-work --json`.
-
-</Interface>
-</InterfaceTabs>
-
-## Failures? Don't call them bugs yet
-
-**Most failures are not bugs.** Timestamps, random IDs, pod IPs, and session tokens change on every run — they will always "differ" without anything being wrong. The last two workflow steps exist for exactly this:
-
-- **[Review diffs](/en/testing/review-diffs-in-the-web-ui)** — read each diff in the workbench, accept the ones that aren't real bugs, and let true failures stand out
-- **[Configure compare rules](/en/testing/compare-rules-web-ui)** — turn always-changing fields into rules so future replays stop false-alarming
-
-Rules can also be declared in YAML (`sp policy compare`) for CI and GitOps — see [Policy YAML guide · CompareRulePolicy](/en/testing/policy-yaml-guide#comparerulepolicy).
-
-## Terminology
-
-| Concept | Meaning |
-|---------|---------|
-| `targetEnv` / `--env` | Base URL of the service receiving replayed entry traffic |
-| `planId` | Container for the whole run |
-| `planItemId` | One operation (API path) within the plan |
-| `replayId` | One replay execution of a single case |
-| Case | One recorded entry request + its dependency mockers |
-
-## Replay scope
-
-For a normal replay, the plan's time range and operation filters determine which cases replay, together with the recording policy's `operations` include/exclude. Rolling replay uses this time-window-based selection by default.
-
-Replay has two case-selection modes:
-
-| Mode | Selection | Time range |
-|------|-----------|------------|
-| Rolling (default) | Recorded cases matching the plan's time range and operation filters | Applied; omitted flags use the normal rolling window |
-| `--suite Pinned` | Cases manually saved in the application's `Pinned` collection | Not applied; `--from` and `--to` are ignored |
-
-`Pinned` is intended for a stable regression suite. It includes manual pinned cases only and excludes automatically managed `AutoPinned` cases. A pinned case can therefore be replayed even when its recording is older than the normal rolling window.
-
-To run the pinned suite:
-
-```bash
-sp replay run \
-  --app <your appId> \
-  --env http://order-service.test:8080 \
-  --suite Pinned \
-  --watch \
-  --json
-```
-
-An empty manual collection fails with `NO_PINNED_CASES`; it does not create a misleading empty passing run. To expand a Rolling corpus, go back to [Record](/en/testing/recording) and record more traffic. To change a Pinned suite, pin or unpin cases in the Workbench.
-
-To replay recordings after their normal retention window in Workbench, use the **Pinned cases** scope when creating a plan and select the saved cases that should make up that test set. See [Pin cases & test sets](/en/testing/pinned-cases).
-
-If a pinned case's API has been deleted or renamed, Workbench marks it **API gone** and skips it. Update the application configuration or remove that case from the test set.
-
-## Automation
-
-Humans review diffs in the workbench; CI and AI agents should use `sp diagnose replay <planId> --json` and the `--out-dir` artifacts from the [output contract](/en/testing/agents/output-contract). To replay automatically after each deploy and let the result decide whether the pipeline continues, see [Replay after deployment](/en/testing/webhook-and-ci).
-
-## Next
-
-Once the run finishes, start with the **[Replay report](/en/testing/replay-report)**: what the conclusion is and what caused the differences.
-
-The run has failing cases → **[Review diffs](/en/testing/review-diffs-in-the-web-ui)**: understand them and clear the noise.
+Most differences aren't bugs: timestamps, serial numbers and random IDs differ on every replay without anything being wrong. Ignore them and the real problems stand out.

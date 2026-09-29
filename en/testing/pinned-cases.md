@@ -1,112 +1,77 @@
 ---
-title: Pin cases and build test sets
+title: Pinned cases
 ---
 
-# Pin cases and build test sets
+# Pinned cases
 
-Default recordings are kept only for their configured retention period. If a recording is useful for a regression test, pin it before it expires. Pinning copies the complete recorded trace—including the entry request and its recorded dependency calls—into the pinned-case library. The pinned copy is retained until you delete it.
+Rolling recordings are deleted when they pass the retention period. Recordings you want to keep and replay again and again — core business flows, requests that caused incidents, scenarios that are hard to reproduce — should be **pinned** before they expire. Pinning copies the whole recording (the entry request and all of its dependency calls at the time) and keeps it until you delete it.
 
-A test set is the group of pinned cases that you select when creating a replay plan. You do not need to keep the original recording inside its time window to replay a pinned case.
+## Pin a recording {#pin}
 
-## When to pin a case
+In the call chain of a recording (**Recordings → Rolling recordings**, then open a recording), or on a case in a replay result, click **Pin**.
 
-Pin cases that you want to reuse, for example:
+![Pin this case](/img/docs/testing/en/pin-popover.png)
 
-- a checkout or booking path that must stay working;
-- a production regression that you want to reproduce in a test environment;
-- a representative case for an API that is difficult to exercise by hand.
+In **Pin this case**:
 
-Pinning is currently a Workbench action. The `sp` CLI can start and inspect replay plans, but it does not create or manage pinned-case sets.
+- **Name**: optional; better to give it a name that says what the business case is, such as "Member price order". Left empty, the list shows the endpoint name and recording time.
+- **Note**: optional.
+- Below, the recording's source time and number of downstream calls are shown, and the retention is **Forever**.
 
-![The Workbench recordings list](/img/docs/testing/pinned-cases-recordings.png)
+Click **Pin**. Pinning the same recording again doesn't create a second copy.
 
-The recordings list shows the endpoint-level recording inventory before you open a trace and pin a case.
-
-## Pin a recording
-
-1. Open the application in **Workbench**.
-2. Open a case from a replay result or from the recording trace details.
-3. Select **Pin**.
-4. Optionally enter a name and note, then select **Pin** again.
-5. Select **View case**, or open **Recording → Pinned cases** later.
-
-![Pinning a recording walk-through](/img/docs/testing/en/pinned-cases.gif)
-
-The name and note help you identify the case when you build a test set. If the case is already pinned, the operation is idempotent: it remains one pinned case rather than creating a duplicate.
-
-::: warning Pin before the recording expires
-If the source recording has already expired, Workbench shows **Recording past retention** and cannot copy it. Pinning does not restore an expired recording.
+::: warning A recording that has expired can't be pinned
+Pinning copies a recording that still exists. It can't bring back one that has already been deleted.
 :::
 
-## Review your pinned cases
+## Browse pinned cases {#list}
 
-Open **Recording → Pinned cases** to review the permanent library. You can:
+Open **Recordings → Pinned cases**. The list shows name, endpoint and recording time, and you can search by name or endpoint. Each row can **Replay this one** (a new replay plan with just this case) or be deleted.
 
-- search by case name or API;
-- open the case details;
-- replay one pinned case; and
-- delete a pinned case you no longer need.
+![Pinned cases](/img/docs/testing/en/pinned-list.png)
 
-The list can contain cases pinned by you and cases automatically pinned by the system. Review the list before using it as a curated regression set. Deleting a pinned case removes it from the library.
+Cases marked **Auto** were pinned by the system, not by a person. They aren't kept for good: by default they're deleted after 14 days, and a newer recording of the same scenario can replace them. Pin cases yourself to keep them.
 
-![The pinned-case library](/img/docs/testing/pinned-cases-library.png)
-
-The pinned-case library keeps the saved trace available after the rolling recording window ends.
-
-## Create and run a test set
+## Replay pinned cases {#replay}
 
 <InterfaceTabs :tabs="['ui','cli']">
 <Interface id="ui">
 
-1. Open the **Replay** tab and select **New plan**.
-2. Choose the replay target environment. This is the test service that receives the recorded entry requests.
-3. For replay scope, choose **Pinned cases**.
-4. Select the cases for this test set. All eligible pinned cases are selected initially; search, select all, or deselect individual cases as needed.
-5. Click **Create plan**, wait for it to finish, and review the results and diffs.
+1. Open **Replay plans → Run records** and click **Run replay now**.
+2. Fill in **Target environment (targetEnv)**.
+3. Set **Replay scope** to **Pinned cases**. All pinned cases are selected by default; search, select all, or deselect individual cases.
+4. Click **Create plan**.
 
-![Selecting Pinned cases for a replay plan walk-through](/img/docs/testing/en/replay-pinned-scope.gif)
+![Replaying pinned cases](/img/docs/testing/en/new-plan-pinned.png)
 
-The selected pinned cases are the test set for that replay plan. You can create another plan later with a different selection without changing the pinned library.
+Scheduled tasks can also use pinned cases as their scope; see [Run and schedule replays](/en/testing/replay-and-diff#scheduled).
 
 </Interface>
 <Interface id="cli">
 
-Trigger a regression test run directly for your pinned suite using `--suite Pinned`:
-
 ```bash
 sp replay run \
-  --app <your appId> \
+  --app <appId> \
   --env http://order-service.test:8080 \
   --suite Pinned \
-  --watch \
-  --json
+  --watch --json
 ```
 
-If the manual pinned set is empty, the command returns `NO_PINNED_CASES`.
+Replays all cases pinned by hand for the application (not auto-pinned ones). With none, it fails with `NO_PINNED_CASES`.
 
 </Interface>
 </InterfaceTabs>
 
-::: warning Replay only against a non-production target
-Replay sends real entry requests to the target environment. Recorded downstream calls are mocked, but the application under test still executes its entry path. Use a test or staging target and turn recording off, or set it to a minimal level, on the replay host. See [Replay and diff](/en/testing/replay-and-diff).
-:::
+Replaying pinned cases ignores the recording time range, so they replay even after the original recording has expired.
 
-## Important lifecycle details
+## Good to know {#notes}
 
-### A pinned case is independent of the source recording
+- **Pinning copies; the original is unchanged.** The original recording is still deleted at the end of its retention period; the pinned copy isn't affected.
+- **One recording, one case.** The entry request and all of its dependency calls are kept together, not split into several cases.
+- **Removing or renaming an endpoint invalidates its cases.** Pinned cases replay against the application's current endpoint configuration. Once an endpoint is removed from the application's configuration, its cases are marked **API gone** when you create a replay plan, and skipped.
 
-Pinning makes a permanent copy of the full trace. It does not extend the source recording's retention period and does not modify the original recording. The pinned copy remains available until it is deleted.
+## Related {#related}
 
-### API changes can make a case unavailable
-
-Pinned cases are replayed through the current application configuration. If an API is deleted or renamed after a case is pinned, Workbench marks the case **API gone** and skips it from the plan. Restore the API configuration if the case is still needed, or remove the unavailable case from the set.
-
-### One trace produces one pinned case
-
-A recording can contain an entry request and multiple downstream interactions. Pinning preserves that complete trace as one case; it does not create one test case per dependency call. Pinning the same trace again does not add another copy.
-
-## Related workflow pages
-
-- [Record traffic](/en/testing/recording) — capture cases from real requests.
-- [Replay and diff](/en/testing/replay-and-diff) — run cases against a test service.
-- [Review diffs](/en/testing/review-diffs-in-the-web-ui) — investigate replay differences.
+- [Recordings](/en/testing/recording)
+- [Run and schedule replays](/en/testing/replay-and-diff)
+- [Review differences](/en/testing/review-diffs-in-the-web-ui)

@@ -2,90 +2,74 @@
 title: How it works
 ---
 
-# How record-and-replay works
+# How record and replay works
 
-Softprobe Testing captures a **transaction**: one inbound request plus every dependency the code touched on that path. On replay, the same code path runs again; external calls are satisfied from stored data instead of live systems.
+SoftProbe records one complete **request handling**: an entry request and every dependency the code called while handling it. During replay the same business code runs again; when it calls a dependency, the recorded result answers, depending on your settings.
 
-## End-to-end sequence
+## End to end {#end-to-end}
 
 ```mermaid
 sequenceDiagram
-  participant App as App under test
-  participant Agent as Java agent
-  participant Storage as sp-backend storage
-  participant Redis as Redis mock cache
-  participant Mongo as MongoDB
-  participant Schedule as Replay schedule
+  participant App as Service under test (with agent)
+  participant Backend as SoftProbe backend
+  participant Target as New version in test (with agent)
 
-  Note over App,Mongo: Recording
-  App->>Agent: dependency call
-  Agent->>Storage: upload SpMocker
-  Storage->>Mongo: persist
+  Note over App,Backend: Record
+  App->>App: Handles real requests
+  App->>Backend: Uploads entry request, response and dependency calls
 
-  Note over Schedule,Redis: Replay prep
-  Schedule->>Storage: preload mocks
-  Storage->>Redis: record category keys
+  Note over Backend,Target: Replay
+  Backend->>Target: Resends the recorded entry request
+  Target->>Backend: Asks for the recorded result when calling a dependency
+  Backend-->>Target: Returns the recorded result
+  Target->>Backend: Uploads this run's response and dependency calls
 
-  Note over App,Redis: Replay
-  App->>Agent: same call path
-  Agent->>Storage: query mock
-  Storage->>Redis: get recorded response
-  Storage-->>Agent: Zstd payload
-  Agent-->>App: mocked dependency
-
-  Note over Schedule,Mongo: Compare
-  Schedule->>Storage: record vs replay lists
-  Storage->>Schedule: diff results
+  Note over Backend: Compare
+  Backend->>Backend: Compares recording and replay, builds the report
 ```
 
-## Recording phase {#recording-phase}
+## Recording {#recording-phase}
 
-When recording is enabled, the agent intercepts:
+The agent records two kinds of calls in the service:
 
-| Kind | Examples | What is stored |
-|------|----------|----------------|
-| **Entry** | `Servlet`, `DubboProvider`, `NettyProvider` | Inbound API request and response |
-| **Dependency** | `HttpClient`, `Database`, `Redis`, `DubboConsumer`, `DynamicClass`, … | Outbound request and response per call |
+| Kind | Examples | What is recorded |
+|------|----------|------------------|
+| **Entry** | HTTP endpoints (Servlet), Dubbo services, message consumers | The request received and the response returned |
+| **Dependency** | Databases, Redis, HTTP clients, Dubbo calls, local caches, system time | Each call's parameters and result |
 
-Each interaction is a **mocker** row keyed by `appId`, trace/case identifiers, category, and operation name.
+One entry request with all the dependency calls it triggered is a **case**. Recording is sampled — by default about one per minute, per instance, per endpoint. The agent uploads in a background thread, so business requests don't wait for the network.
 
-**How to produce cases:** [Record traffic](/en/testing/recording) · **Recording scope config:** [Recording policy](/en/testing/policies#recording-policy)
+Cases only come from recording; they can't be written by hand. Browsing recordings: [Recordings](/en/testing/recording). Changing what's recorded: [Recording settings](/en/testing/policies#recording).
 
-::: tip
-Cases are created only from **instrumented traffic**. There is no supported workflow to hand-author cases in the CLI; send real or synthetic traffic through the app while the agent is recording.
-:::
+## Replay {#replay-phase}
 
-## Replay phase
+A replay (replay plan) picks a set of cases and sends their entry requests to the **target environment**: the address of a running service in a test environment, such as `http://order-service.test:8080`. The target also runs the agent, with the same application ID.
 
-A **replay plan** selects recorded cases and drives entry HTTP traffic to **`targetEnv`** — the base URL of the service under test (for example `http://order-service.test:8080`). This is **not** the same as `SP_API_URL`, which points at sp-backend.
+1. The backend sends the recorded entry requests to the target.
+2. The target runs its real business code: controllers and business logic all execute.
+3. When the code calls a dependency, the agent follows **Config → Replay**: answer with the recorded result (mock), or really make the call. By default everything is mocked.
+4. This run's response and dependency calls are recorded.
 
-During replay:
+Mocking only works for dependency types the agent supports. Dependencies set to make real calls, dependencies the agent doesn't support, and replay plans that force every dependency to make real calls all reach real external systems. That's why the target should be a test environment.
 
-1. The schedule service sends the recorded entry request to `targetEnv`.
-2. The app under test must run with the agent attached (recording frequency can be set to zero on the replay machine).
-3. On each dependency call, the agent asks storage for the **recorded response** matching that call.
-4. Storage serves from Redis when preloaded; otherwise it loads from MongoDB.
+## Comparison {#comparison}
 
-**Entry vs dependency behavior:**
+After a replay, each case's recorded and replayed results are compared item by item:
 
-- **Entry** (`entryPoint` categories): storage records the replay request; the live app still executes your controller/handler.
-- **Dependency**: storage returns the recorded mock body so the app does not hit the real database or external API.
+- **Entry response**: whether what's returned to the caller is the same.
+- **Dependency calls**: whether the parameters match, and whether calls are missing or extra.
 
-## Compare phase
+Common differences:
 
-After replay, the compare engine pairs recorded and replay mockers. Failures mean a mismatch on the main response or a dependency (missing call, wrong value, extra call).
+- **Value differs**: a field has a different value in recording and replay.
+- **Missing call**: a dependency called during recording isn't called during replay.
+- **Extra call**: replay calls a dependency the recording doesn't have.
 
-Typical diff patterns:
+Fields that change every time, such as timestamps and random IDs, are ignored with [diff rules](/en/testing/compare-rules-web-ui). The results add up to the [replay report](/en/testing/replay-report); with AI diagnosis set up, the report also says whether a difference was caused by a code change.
 
-- **Value diff** — same dependency was called but response body differs
-- **Missing call** — replay did not invoke a dependency that was recorded
-- **Extra call** — replay invoked something not present in the recording
+## An example {#example}
 
-Use [compare policy](/en/testing/policies) and [Replay and diff](/en/testing/replay-and-diff) to ignore noisy fields (timestamps, tokens, IPs).
-
-## Pedagogical example
-
-Consider a method that parses an IP string and calls a validator:
+This method parses an IP address:
 
 ```java
 public Integer parseIp(String ip) {
@@ -101,24 +85,11 @@ public Integer parseIp(String ip) {
 }
 ```
 
-**Recording** — the agent saves arguments and return values when `needRecord()` is true.
+If `checkFormat` depends on external configuration or the environment, register it as a [dynamic class](/en/testing/policies#dynamic-classes): during recording the agent keeps its arguments and return value; during replay it returns the recorded value, so `parseIp` behaves as it did when recorded even if the test environment is configured differently. Local caches, encryption and the system clock are handled the same way, without code changes.
 
-**Replay** — the agent short-circuits with stored results so `checkFormat` and parsing behave as they did during capture, even if the test environment differs.
+## Related {#related}
 
-Dynamic classes (local cache, encryption helpers, system time) use the same model; configure them via recording policy and mock policy rather than changing application code.
-
-## Storage layout (conceptual)
-
-| Store | Role |
-|-------|------|
-| **MongoDB** | Durable recordings, replay plans, compare results |
-| **Redis** | Hot mock cache during replay (`record:{category}:{recordId}:…`) |
-
-When self-hosted, `sp-backend` is typically a single process on port **8090** serving API, storage, and schedule.
-
-## Related
-
-- [Java agent](/en/testing/java-agent)
-- [Policies](/en/testing/policies)
-- [Replay and diff](/en/testing/replay-and-diff)
-- [CLI concepts](/en/testing/agents/concepts)
+- [Attach the Java agent](/en/testing/java-agent)
+- [Recording and replay settings](/en/testing/policies)
+- [Run and schedule replays](/en/testing/replay-and-diff)
+- [Concepts and IDs](/en/testing/agents/concepts)
