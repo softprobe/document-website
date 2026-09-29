@@ -20,7 +20,7 @@ title: 配置对比规则
 
 应用规则页顶部会显示全局默认规则有几条，点「查看全局 →」可以查看和修改。全局默认规则已经内置了几条常用规则，例如两边都是 UUID、两边都是 IP 地址、两边都是容差内的时间戳时忽略差异。
 
-应用规则点右上角「编辑」修改，也可以切到「YAML」直接编辑。
+应用规则点右上角「编辑」修改，改完点「保存」；也可以切到「YAML」直接编辑。全局默认规则页的每个页签，添加或修改后都要点页签里的「保存配置」才会保存，只点「添加」不会生效。
 
 ![全局默认规则](/img/docs/testing/zh/compare-global.png)
 
@@ -28,7 +28,7 @@ title: 配置对比规则
 
 最常用：不再对比某个字段。适合时间戳、traceId、随机 token 这类字段；这个字段和它下面的内容都不再参与对比。
 
-在「按路径忽略（快）」页签的「忽略字段」里填字段路径，点「添加」。路径可以写成 `data.traceId`，也可以写成 JSON Pointer `/data/traceId`；`*` 匹配一层，`**` 匹配任意多层，例如 `/data/*/updatedAt`。
+在「按路径忽略（快）」页签的「忽略字段（回放时不参与对比）」里填字段路径，点「添加」。路径可以写成 `data.traceId`，也可以写成 JSON Pointer `/data/traceId`；`*` 匹配一层，`**` 匹配任意多层，例如 `/data/*/updatedAt`。
 
 ::: tip 包含路径（白名单）
 同一页签上还有「包含路径（白名单）」。填了之后，**只**对比这些路径，其余全部忽略，与忽略字段正好相反。一般留空，即全部对比。
@@ -55,21 +55,15 @@ title: 配置对比规则
 - 两边都是时间戳：`isTimestamp(left) && isTimestamp(right)`
 - 生成的请求 ID：`fieldName == "requestId" && isUUID(right)`
 
-## 对比前统一数值 {#transforms}
+## 暂不生效的页签 {#not-yet-effective}
 
-先把值处理一下再对比，让无关紧要的差别不算差异，例如把金额四舍五入到两位小数，精度上的差别就不再报出。
+<a id="transforms"></a><a id="decompress"></a>
 
-在「值转换」页签填字段路径和表达式（`value` 是字段原来的值），点「添加转换规则」。例如路径 `/data/orders/*/total`，表达式 `math.round(value * 100) / 100`。
-
-## 对比前解码字段 {#decompress}
-
-字段里放的是 Base64 或 Gzip 编码的 JSON 时，先解码再对比，看到的是真正的数据差异，而不是「两个编码串不一样」。
-
-在「解压配置」页签填字段路径，选编码格式：`Base64 + JSON`、`Gzip + Base64 + JSON` 或 `Plain JSON`。
+全局默认规则页上还有「值转换」和「解压配置」两个页签，分别用来在对比前归一化数值、解码 Base64 或 Gzip 编码的字段。当前版本里这两类规则保存后不会生效：对比时找不到对应的处理程序，会跳过这些规则、按原值对比。请不要依赖它们。
 
 ## 数组元素顺序会变时 {#arrays}
 
-数组默认按下标逐个对比。录制和回放时元素顺序不同，就会报出一堆「缺少元素」「多出元素」的假差异。
+数组默认按下标逐个对比。录制和回放时元素顺序不同，就会报出一堆缺元素、多元素的假差异。
 
 在「数组匹配」页签填数组路径，选策略，点「添加数组配置」：
 
@@ -77,9 +71,8 @@ title: 配置对比规则
 |---|---|
 | 按索引 | 默认，按位置逐个对比 |
 | 按主键 | 按主键字段配对元素，填主键，如 `orderId`；顺序变了也能对上 |
-| LCS 算法 | 最长公共子序列，没有主键时尽量对齐 |
 
-写 YAML 时对应 `BY_INDEX`、`BY_KEY`、`BY_LCS`。
+写 YAML 时对应 `BY_INDEX`、`BY_KEY`。界面上的「LCS 算法」当前版本不生效，选了等同于按索引。
 
 ## 只对部分接口生效 {#operation-rules}
 
@@ -98,6 +91,6 @@ title: 配置对比规则
 
 ## 下一步 {#next}
 
-规则配好后，[重新对比](/zh/testing/review-diffs-in-the-web-ui#recompare)这次回放立刻看效果，或者下次[回放](/zh/testing/replay-and-diff)时生效。剩下的失败，就是值得认真看的差异。
+在这里配的规则从下次[回放](/zh/testing/replay-and-diff)开始生效。想让已经跑完的回放按新规则判定，再回放一次；只有在回放的差异视图里直接加删规则时，才能当场[重新对比](/zh/testing/review-diffs-in-the-web-ui#recompare)。剩下的失败，就是值得认真看的差异。
 
 用 Git 管理对比规则，见 [用 Git 管理策略](/zh/testing/examples/gitops-policies) 和 [策略 YAML 参考](/zh/testing/policy-yaml-guide#comparerulepolicy)。

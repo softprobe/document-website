@@ -14,7 +14,7 @@ In the call chain of a recording (**Recordings → Rolling recordings**, then op
 
 In **Pin this case**:
 
-- **Name**: the endpoint name by default; better to give it a name that says what the business case is, such as "Member price order".
+- **Name**: optional; better to give it a name that says what the business case is, such as "Member price order". Left empty, the list shows the endpoint name and recording time.
 - **Note**: optional.
 - Below, the recording's source time and number of downstream calls are shown, and the retention is **Forever**.
 
@@ -30,7 +30,7 @@ Open **Recordings → Pinned cases**. The list shows name, endpoint and recordin
 
 ![Pinned cases](/img/docs/testing/en/pinned-list.png)
 
-Cases marked **Auto** were pinned by the system, not by a person.
+Cases marked **Auto** were pinned by the system, not by a person. They aren't kept for good: by default they're deleted after 14 days, and a newer recording of the same scenario can replace them. Pin cases yourself to keep them.
 
 ## Replay pinned cases {#replay}
 
@@ -38,7 +38,7 @@ Cases marked **Auto** were pinned by the system, not by a person.
 <Interface id="ui">
 
 1. Open **Replay plans → Run records** and click **Run replay now**.
-2. Fill in the target environment.
+2. Fill in **Target environment (targetEnv)**.
 3. Set **Replay scope** to **Pinned cases**. All pinned cases are selected by default; search, select all, or deselect individual cases.
 4. Click **Create plan**.
 

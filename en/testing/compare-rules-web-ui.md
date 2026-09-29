@@ -20,7 +20,7 @@ This page covers the console. The same rules can be written as YAML and kept in 
 
 The application page shows how many global default rules there are; **View global →** opens them. Several common global rules are built in, for example ignoring a difference when both values are UUIDs, both are IP addresses, or both are timestamps within the tolerance.
 
-Change application rules with **Edit** at the top right, or switch to **YAML** and edit it directly.
+Change application rules with **Edit** at the top right and click **Save** when you're done, or switch to **YAML** and edit it directly. On the global default rules page, every tab needs **Save config** after you add or change something; **Add** alone doesn't save it.
 
 ![Global default rules](/img/docs/testing/en/compare-global.png)
 
@@ -55,21 +55,15 @@ For example:
 - Both values are timestamps: `isTimestamp(left) && isTimestamp(right)`
 - A generated request ID: `fieldName == "requestId" && isUUID(right)`
 
-## Normalize values before comparing {#transforms}
+## Tabs that don't take effect yet {#not-yet-effective}
 
-Process a value before comparing so that insignificant differences drop out, for example rounding amounts to two decimals so precision noise isn't reported.
+<a id="transforms"></a><a id="decompress"></a>
 
-On the **Transforms** tab, enter the field path and an expression (`value` is the field's original value), then click **Add transform rule**. For example path `/data/orders/*/total`, expression `math.round(value * 100) / 100`.
-
-## Decode a field before comparing {#decompress}
-
-When a field holds Base64- or Gzip-encoded JSON, decode it first so you see the real data differences rather than "these two encoded strings differ".
-
-On the **Decompression** tab, enter the field path and pick the format: `Base64 + JSON`, `Gzip + Base64 + JSON` or `Plain JSON`.
+The global default rules page also has **Transforms** and **Decompression** tabs, meant for normalizing values and decoding Base64- or Gzip-encoded fields before comparison. In the current version these rules have no effect once saved: comparison finds no handler for them, skips them and compares the original values. Don't rely on them.
 
 ## When array order varies {#arrays}
 
-Arrays are compared by index by default. If the element order differs between recording and replay, you get a pile of false "missing" and "extra" elements.
+Arrays are compared by index by default. If the element order differs between recording and replay, you get a pile of false differences about missing and extra elements.
 
 On the **Array matching** tab, enter the array path, pick a strategy and click **Add unordered config**:
 
@@ -77,9 +71,8 @@ On the **Array matching** tab, enter the array path, pick a strategy and click *
 |---|---|
 | By index | Default; compares position by position |
 | By primary key | Pairs elements by a key field, such as `orderId`; works even when the order changes |
-| LCS algorithm | Longest common subsequence; best-effort alignment without a key |
 
-In YAML these are `BY_INDEX`, `BY_KEY` and `BY_LCS`.
+In YAML these are `BY_INDEX` and `BY_KEY`. The **LCS algorithm** option in the console has no effect in the current version and behaves like by index.
 
 ## Rules for some endpoints only {#operation-rules}
 
@@ -98,6 +91,6 @@ With the scope set to the current endpoint or to a dependency call, the rule goe
 
 ## Next {#next}
 
-Once the rules are in place, [recompare](/en/testing/review-diffs-in-the-web-ui#recompare) the replay to see the effect now, or wait for the next [replay](/en/testing/replay-and-diff). What still fails is worth a proper look.
+Rules set here apply from the next [replay](/en/testing/replay-and-diff). To judge a finished replay by the new rules, replay again; you can only [recompare](/en/testing/review-diffs-in-the-web-ui#recompare) on the spot when you add or remove rules from that replay's diff view. What still fails is worth a proper look.
 
 To manage diff rules in Git, see [Manage policies in Git](/en/testing/examples/gitops-policies) and [Policy YAML reference](/en/testing/policy-yaml-guide#comparerulepolicy).

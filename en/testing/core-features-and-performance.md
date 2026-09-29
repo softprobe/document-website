@@ -13,11 +13,11 @@ For people evaluating SoftProbe: what it does, what kind of systems it fits, how
 | Traffic recording | Add the agent to a Java service's start flags — no code changes — to record entry requests and responses, plus calls to databases, caches and downstream services |
 | Traffic replay | Send recorded requests to a new version in a test environment; dependency calls can be answered from the recording, so the test environment doesn't need every dependency |
 | Automatic comparison | Compares recorded and replayed results field by field; diff rules ignore fields that change every time, such as timestamps and random IDs |
-| Replay report | A verdict, and failed cases grouped by cause; with a large language model connected, an analysis of whether each difference comes from a code change, pointing to the code. Exports to Excel and PDF |
+| Replay report | A verdict, and failed cases grouped by cause; with AI diagnosis connected, an analysis of whether each difference comes from a code change, pointing to the code. Exports to Excel and PDF |
 | Pinned cases | Keep important recordings for good and replay them again and again |
 | Scheduled and pipeline replays | Replay automatically every day; or trigger a replay from your pipeline after a deploy, gate the release on the verdict, and send the result to Feishu, DingTalk or your own system |
 | Data protection | Recorded payloads are encrypted in the database; masked by rule when viewed |
-| Several ways in | Web console, the `sp` command line, and the replay trigger Open API; AI agents can drive the command line |
+| Several ways in | The console, the `sp` command line, and the replay trigger Open API; AI agents can drive the command line |
 
 ## Scope {#scope}
 
@@ -40,7 +40,7 @@ For people evaluating SoftProbe: what it does, what kind of systems it fits, how
 
 ## Load on the replay target {#replay-load}
 
-- By default each online instance receives at most 5 requests per second; a whole replay plan runs at about that times the number of instances. Change the default under **Config → Replay**.
+- By default at most 5 requests per second go to the target (each target address in a replay plan counts as one instance). Change the default under **Config → Replay**.
 - A single run can use Standard (slows down on errors), Serial (one case at a time), or Fixed total RPS (for load tests). Standard mode takes a speed multiplier from 0.25× to 4×.
 
 ## Platform resources {#platform-resources}

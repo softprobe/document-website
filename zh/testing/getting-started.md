@@ -15,6 +15,7 @@ title: 第一次录制回放
 - **SoftProbe 控制台地址**和**后端地址**。单机部署（All-in-One）时两者都是平台服务器的 `8090` 端口，例如 `http://10.0.0.5:8090`。还没有部署平台，先看 [部署后端](/zh/testing/installation/server)。
 - **一个可以重启的 Java 服务**，JDK 8、11、17 或 21，最好在测试环境。支持的框架见 [支持的 Java 版本与框架](/zh/testing/supported-frameworks)。
 - 服务所在机器能访问后端地址；后端能访问这个服务的业务端口（回放时要把请求发给它）。
+- 用命令行操作时，先按 [安装 sp 命令行](/zh/testing/installation/) 安装并连接到同一个后端，完成 [认证](/zh/testing/agents/authentication)。服务启动参数里的 `-Dsp.api.url` 只给 Agent 用，不会配置命令行。
 
 ## 1. 接入服务 {#attach}
 
@@ -111,7 +112,7 @@ sp record case list --app order-service --since -1h --json
 1. 打开「回放 → 执行记录」，点「立即回放」。
 2. 「目标环境（targetEnv）」选 `http://`，填 `order-service.test:8080`。
 3. 「回放范围」保持「全量接口」，「录制起始时间」选「近 24 小时」。
-4. 点「创建计划」。执行记录里会出现这次回放，状态从「执行中」变为结果。
+4. 点「创建计划」。执行记录里会出现这次回放，状态从「执行中」变为最终结果，例如「全部通过」「有差异」。
 
 ![新建回放计划](/img/docs/testing/zh/new-plan.png)
 

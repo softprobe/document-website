@@ -17,7 +17,7 @@ In the replay report, switch to **Cases**. The left side lists cases by endpoint
 At the top of a case:
 
 - The endpoint and its result (such as a value difference). For cases the AI has analysed, the next line is its conclusion; **View in report** jumps back to that place in the report.
-- Buttons on the right: **Mark as passed**, **Replay this one** (creates a new plan with just this recording; this plan is untouched), **Pin this case**, **View case logs**, view the full span tree and recorded data, and **Ask AI about this case**.
+- Buttons on the right: **Mark as passed**, **Replay this one** (creates a new plan with just this recording; this plan is untouched), **Pin**, **View case logs**, **View recording detail** (the full call chain and data recorded for this case), and **Ask AI about this case**.
 
 Below that, the entry and each dependency call of the request are listed in call order, each with:
 
@@ -28,7 +28,12 @@ Below that, the entry and each dependency call of the request are listed in call
 
 ## Read a difference {#read-a-diff}
 
-Click a call with differences to open the diff view: **Recorded response · baseline** on the left, **Replayed response · this run** on the right. Values that differ are highlighted; fields held back by an ignore rule are struck through and don't count.
+Click a call with differences to open the diff view, with the recording on the left and this replay on the right:
+
+- For the **entry**, responses are compared: **Recorded response · baseline** and **Replayed response · this run**.
+- For **dependency calls** (database, Redis, downstream endpoints …), requests are compared: **Recorded request · baseline** and **Replayed request · this run**, showing whether the service sent the same arguments as when recorded. When a call is missing or extra, only one side has content.
+
+Values that differ are highlighted; fields held back by an ignore rule are struck through and don't count.
 
 The top shows how many differences the call has; the up and down arrows move between them.
 
@@ -76,15 +81,21 @@ In short: to change this one verdict, mark it as passed; to never see it again, 
 
 A new diff rule applies from the next replay on; it doesn't change a replay that has already finished. To see its effect now without replaying:
 
-After you add or remove a rule, **Rules changed · recompare** appears at the top of the replay. Click **Recompare now**: SoftProbe re-checks the results this replay already stored against the latest rules, then tells you how many cases turned into passes and failures, and updates the case list, counts and pass rate.
+After you add or remove a rule from this replay's diff view, a notice offers **Recompare now**, and **Rules changed · recompare** appears at the top of the replay. Click either: SoftProbe re-checks the results this replay already stored against the latest rules, then tells you how many cases turned into passes and failures, and updates the case list, counts and pass rate.
 
 ::: warning Recompare isn't replay
 Recompare only re-judges the stored responses under the new rules. Nothing is sent to your service.
 :::
 
+This entry only lasts for the current page; it's gone after a refresh or once you leave. Rules changed on the **Diff rules** config page don't bring it up either: to judge a finished replay by the new rules, replay again.
+
 ## Stop ignoring {#unignore}
 
-Changed your mind: on a struck-through field, click **Stop ignoring** and it's compared again. SoftProbe removes whatever held it back — the rule or the mark — and tells you what it removed. If the rule is one of the global defaults, you're pointed to the diff rules page.
+Changed your mind: on a struck-through field, click **Stop ignoring**. SoftProbe removes whatever held it back and tells you what it removed:
+
+- An **Only this case** mark: removed and effective immediately; the field is compared again right away.
+- An endpoint or application rule: removed, effective from the next replay. To see the effect in this replay, click **Recompare now** in the notice. If the rule matched by field name or wildcard, other fields it held back are compared again too.
+- A global default rule: you're pointed to the diff rules page.
 
 ## See what a case ignores {#ignored-summary}
 

@@ -15,6 +15,7 @@ Each card below has a switch at the top between the console and the command line
 - The **console URL** and the **backend URL**. On a single-server (All-in-One) deployment both are port `8090` of the platform server, for example `http://10.0.0.5:8090`. No platform yet? See [Deploy the backend](/en/testing/installation/server).
 - **A Java service you can restart**, on JDK 8, 11, 17 or 21, preferably in a test environment. Supported frameworks: [Supported frameworks](/en/testing/supported-frameworks).
 - The service's host can reach the backend, and the backend can reach the service's business port (replay sends requests to it).
+- For the command line: [install sp](/en/testing/installation/), point it at the same backend and [authenticate](/en/testing/agents/authentication). The service's `-Dsp.api.url` flag is for the agent only; it doesn't configure the command line.
 
 ## 1. Attach the service {#attach}
 
@@ -111,7 +112,7 @@ Replay really sends the recorded requests to the target service. Point it at a t
 1. Open **Replay plans → Run records** and click **Run replay now**.
 2. Under **Target environment (targetEnv)**, pick `http://` and enter `order-service.test:8080`.
 3. Leave **Replay scope** on **All endpoints**, and set **Recording from** to **Last 24 hours**.
-4. Click **Create plan**. The run appears in Run records and goes from **Running** to its result.
+4. Click **Create plan**. The run appears in Run records and goes from **Running** to its final result, such as **All passed** or **Differences**.
 
 ![New replay plan](/img/docs/testing/en/new-plan.png)
 

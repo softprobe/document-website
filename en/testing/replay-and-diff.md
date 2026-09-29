@@ -49,7 +49,7 @@ Open **Replay plans → Run records**, click **Run replay now**, and fill in **N
 | Agent version | Only replay cases recorded by the given agent versions. After an agent upgrade, cases from older versions sometimes have compatibility problems; use this to leave them out |
 | Traffic coloring | Adds custom request headers to every replayed request so the service can recognize replay traffic |
 
-Click **Create plan**. You can create a plan while the agent is offline, but it only starts once the agent reconnects.
+Click **Create plan**. The plan starts sending requests right away and doesn't wait for the agent to reconnect, so check that the test instance is running and the agent is online before you create it. The console warns you when the agent is offline, but still lets you create the plan.
 
 </Interface>
 <Interface id="cli">
@@ -64,7 +64,7 @@ Common flags: `--suite Pinned` (pinned cases only), `--operation <endpoint>` (re
 </Interface>
 </InterfaceTabs>
 
-How many requests per second are sent is set by **Per-instance QPS cap** under **Config → Replay** (5 per instance by default; the whole plan runs at about that times the number of online instances). You can change it for a single run under **Advanced options**.
+The most requests per second are set by **Per-instance QPS cap** under **Config → Replay**: one target address counts as one instance, 5 per second by default. **Standard (adaptive)** mode starts lower and climbs to that cap. You can change it for a single run under **Advanced options**.
 
 ## Run records {#records}
 
@@ -95,7 +95,7 @@ Click **Save task**, or **Save and run now** to try it once.
 
 The task list shows each task's trigger rule, next run and an **Auto-schedule** switch: turning it off pauses the task without deleting it. Each task can be **Run** once right away, **Edit**ed or deleted. Replays started by a task appear in Run records with the trigger "Scheduled task".
 
-A scheduled run doesn't start when there's no recorded traffic in its window, another replay is being created for the same application, or no agent instance is online. The reason shows in Run records.
+If creating the plan fails when the time comes — for example there are no recordings in the window, or another replay is being created for the same application — that scheduled run doesn't start, and the reason shows in Run records.
 
 ::: info SoftProbe Cloud
 Scheduled replays on SoftProbe Cloud are started from the cloud, so the target must be reachable from the internet. For a target on an internal network, use **Run replay now** in the desktop client.

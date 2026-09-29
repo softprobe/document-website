@@ -14,7 +14,7 @@ What gets recorded, which dependencies are answered from the recording during re
 | [Diff rules](/en/testing/compare-rules-web-ui)<a id="compare-policy"></a> | Which differences don't count |
 | [Redact](#sensitive) | Which fields are masked when you view recordings in the console |
 
-Each page switches between **Visual** and **YAML**. YAML fields are described in [Policy YAML reference](/en/testing/policy-yaml-guide); to keep these settings in Git, see [Manage policies in Git](/en/testing/examples/gitops-policies).
+The **Replay**, **Diff rules** and **Redact** pages switch between **Visual** and **YAML**; recording settings and dynamic classes are edited on the page only. YAML fields are described in [Policy YAML reference](/en/testing/policy-yaml-guide); to keep these settings in Git, see [Manage policies in Git](/en/testing/examples/gitops-policies).
 
 Click **Save** and you're done — no restart of the service under test. The agent picks up the change the next time it loads its configuration.
 
@@ -70,13 +70,15 @@ During replay, whether external dependencies (databases, caches, third-party end
 
 - **Default mock**: when on, every dependency is answered from the recording and real services aren't touched; when off, dependencies call the real service by default.
 - **Exceptions**: with default mock on, set individual dependencies to make real calls (**Real-request exceptions**); with it off, set individual dependencies to be mocked (**Mock exceptions**). Set them per type (such as all Redis) or per dependency.
-- **Mock miss strategy**: what happens when a call has no matching result in the recording. The default, **Mark failed**, is the safest; you can also **Call real service** (may really reach external systems — only in an isolated test environment) or **Return preset response** (an HTTP status code and body).
+- **Mock miss strategy**: what happens when a call has no matching result in the recording. The default, **Mark failed (default, safest)**, is the safest; you can also **Call real service** (may really reach external systems — only in an isolated test environment) or **Return preset response** (an HTTP status code and body).
+
+Calls for system time and random numbers are always answered from the recording; exceptions and the default mock switch don't apply to them.
 
 **Force all dependencies to make real calls for this run**, when ticked in a replay plan, overrides these settings for that run.
 
 ### Send rate {#rate}
 
-**Per-instance QPS cap**: the most requests per second each online instance receives during replay; 5 by default, preferably no more than 20. A whole plan runs at about this value times the number of online instances. A single run can override it under **Advanced options** in the replay plan.
+**Per-instance QPS cap**: the most requests per second each target instance receives during replay; 5 by default, preferably no more than 20. Each target address in a replay plan counts as one instance. A single run can override it under **Advanced options** in the replay plan.
 
 ## Dynamic classes {#dynamic-classes}
 
@@ -92,7 +94,7 @@ Click **Add** and fill in:
 | Key formula | Optional; tells different calls of the same method apart |
 | Base class | When ticked, the rule applies to every subclass as well |
 
-System time, random numbers and similar common cases are built in; you don't need to add them.
+System time and random numbers are built in: you don't need to add them, and replay always returns the recorded values.
 
 ## Redact {#sensitive}
 
@@ -108,7 +110,7 @@ Each rule is a regular expression plus a label (name, phone, email, ID card, pas
 - **Field name rules** match JSON field names, such as `(?i)^password$`.
 - **Content rules** match field values.
 
-Redaction only works on JSON payloads. The system defaults are edited under **Settings → Redact rules**.
+Redaction only works on JSON payloads; payloads longer than about one million characters, or that fail to process, are shown as they are. The system defaults are edited under **Settings → Redact rules**.
 
 ## Related {#related}
 
