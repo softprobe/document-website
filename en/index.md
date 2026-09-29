@@ -30,9 +30,9 @@ features:
     link: /en/testing/getting-started
     linkText: Onboard your app
   - title: I run the platform / CI
-    details: Install the Softprobe server with Helm, gate replays in CI, and drive the whole flow from AI coding agents with the sp CLI.
+    details: Deploy the Softprobe server with Helm. After each release to a test environment, have the pipeline replay automatically and let the result decide whether it continues.
     link: /en/testing/webhook-and-ci
-    linkText: Automate & AI agents
+    linkText: Replay after deployment
   - title: I need observability
     details: Istio Wasm agent and SESSIFY session context feed a business-flow dashboard — deploy on GKE with the platform guides.
     link: /en/platform/getting-started/quick-start

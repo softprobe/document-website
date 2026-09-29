@@ -71,7 +71,7 @@ A case **passes** when compare finds no material differences. **Failed** cases s
 <InterfaceTabs :tabs="['ui','cli']">
 <Interface id="ui">
 
-1. Click into the plan details from the replay list to inspect the overall pass rate and per-endpoint test statistics.
+1. Open the replay from **Run records**. Start with the conclusion and causes on the **Report** tab (see [Replay report](/en/testing/replay-report)), then switch to **Cases** to go through individual cases.
 2. Select a failed case on the left to reveal the side-by-side Diff comparison drawer (recorded vs. replayed response).
 3. Hover over differences to ignore dynamic noise fields or use **Recompare** in the header to re-evaluate immediately.
 
@@ -143,8 +143,10 @@ If a pinned case's API has been deleted or renamed, Workbench marks it **API gon
 
 ## Automation
 
-Humans review diffs in the workbench; CI and AI agents should use `sp diagnose replay <planId> --json` and the `--out-dir` artifacts from the [output contract](/en/testing/agents/output-contract). For deploy-triggered replays and pipeline gates, see [Webhook and CI/CD](/en/testing/webhook-and-ci).
+Humans review diffs in the workbench; CI and AI agents should use `sp diagnose replay <planId> --json` and the `--out-dir` artifacts from the [output contract](/en/testing/agents/output-contract). To replay automatically after each deploy and let the result decide whether the pipeline continues, see [Replay after deployment](/en/testing/webhook-and-ci).
 
 ## Next
 
-The run finished with failing cases → **[Review diffs](/en/testing/review-diffs-in-the-web-ui)**: understand them and clear the noise.
+Once the run finishes, start with the **[Replay report](/en/testing/replay-report)**: what the conclusion is and what caused the differences.
+
+The run has failing cases → **[Review diffs](/en/testing/review-diffs-in-the-web-ui)**: understand them and clear the noise.

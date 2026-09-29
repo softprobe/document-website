@@ -6,6 +6,8 @@ title: Review replay diffs
 
 After a replay run from [Replay](/en/testing/replay-and-diff), the workbench shows which cases failed and why. This page covers the human review workflow in the **Web console** — reading a diff, and accepting the differences that aren't real bugs. Prefer the command line? `sp replay case list --plan <planId>` and `sp diagnose replay <planId>` yield the same failure data (see [Replay and diff](/en/testing/replay-and-diff)).
 
+For the replay's overall conclusion and causes, and for exporting the report, see [Replay report](/en/testing/replay-report).
+
 Most differences aren't bugs. Timestamps, random tokens, and IDs change on every call — they'll always "differ" without anything being wrong. Your job is to accept those, so the real failures stand out.
 
 ## Accept a difference: one-off, or permanent

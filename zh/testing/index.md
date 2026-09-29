@@ -77,5 +77,7 @@ flowchart LR
 - [Java Agent](/zh/testing/java-agent) — 挂载、JVM 参数与生产安全。
 - [策略概览](/zh/testing/policies) — 按阶段配置 YAML。
 - [回放与对比](/zh/testing/replay-and-diff) — 核心流程第 2 步：回归运行。
-- [Webhook 与 CI/CD](/zh/testing/webhook-and-ci) — 部署后触发回放与流水线门禁。
+- [回放报告](/zh/testing/replay-report) — 查看回放结论和差异原因，导出报告。
+- [发版后自动回放](/zh/testing/webhook-and-ci) — 部署后自动触发回放，并根据结论决定流水线是否继续。
+- [回放结果通知](/zh/testing/notifications) — 把回放结论推送到飞书群、钉钉群或自己的系统。
 - [支持的框架](/zh/testing/supported-frameworks)

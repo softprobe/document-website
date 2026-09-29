@@ -30,9 +30,9 @@ features:
     link: /zh/testing/getting-started
     linkText: 接入你的应用
   - title: 我负责平台 / CI
-    details: 用 Helm 安装 Softprobe 服务端，在 CI 中对回放做卡点，用 sp CLI 让 AI 编码 Agent 驱动整个流程。
+    details: 用 Helm 部署 Softprobe 服务端。新版本发布到测试环境后，由流水线自动回放，并根据结论决定是否继续。
     link: /zh/testing/webhook-and-ci
-    linkText: 自动化与 AI 代理
+    linkText: 发版后自动回放
   - title: 我需要可观测性
     details: Istio Wasm 代理与 SESSIFY 会话上下文汇入业务流仪表盘 —— 按平台指南部署到 GKE。
     link: /zh/platform/getting-started/quick-start

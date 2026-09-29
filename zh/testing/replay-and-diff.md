@@ -71,7 +71,7 @@ sp-backend 在每次入口请求发出前记录 **`Replay send start`**，发出
 <InterfaceTabs :tabs="['ui','cli']">
 <Interface id="ui">
 
-1. 在回放列表中点击进入目标计划详情，查看整体通过率与各接口用例列表。
+1. 在「执行记录」中打开这次回放，先在「报告」页签查看结论和差异原因（详见 [回放报告](/zh/testing/replay-report)），再切换到「用例列表」查看每条用例。
 2. 选中左侧标记为失败的用例，右侧调用树即刻展开并排 Diff 视图（左侧为录制响应，右侧为回放响应）。
 3. 悬停差异行可快速添加忽略规则，并使用顶部的 **重新比对** 立即刷新判定结果。
 
@@ -143,8 +143,10 @@ sp replay run \
 
 ## 自动化
 
-人工看差异用工作台；CI 与 AI 代理用 `sp diagnose replay <planId> --json` 和 [输出约定](/zh/testing/agents/output-contract) 的 `--out-dir` 产物。部署后自动触发回放、流水线门禁的完整示例见 [Webhook 与 CI/CD](/zh/testing/webhook-and-ci)。
+人工查看差异时使用工作台；CI 与 AI 代理使用 `sp diagnose replay <planId> --json` 命令，以及 [输出约定](/zh/testing/agents/output-contract) 中说明的 `--out-dir` 输出内容。如需部署后自动触发回放，并根据结论决定流水线是否继续，见 [发版后自动回放](/zh/testing/webhook-and-ci)。
 
 ## 下一步
 
-回放跑完有失败的用例 → **[审查差异](/zh/testing/review-diffs-in-the-web-ui)**：看懂它们，把噪声清掉。
+回放结束后，先查看 **[回放报告](/zh/testing/replay-report)**，了解结论和差异原因。
+
+有失败用例时，按 **[审查差异](/zh/testing/review-diffs-in-the-web-ui)** 逐条查看差异、排除噪音。

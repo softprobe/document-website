@@ -117,4 +117,4 @@ title: 配置对比规则
 
 规则配好后，回到 [回放](/zh/testing/replay-and-diff) 再跑一次（或在 [审查差异](/zh/testing/review-diffs-in-the-web-ui) 里用**重新比对**立即验证），失败列表里剩下的就都是值得看的真差异了。
 
-想把整个流程自动化——部署后自动回放、流水线门禁——见 [Webhook 与 CI/CD](/zh/testing/webhook-and-ci)；规则进 GitOps 见 [策略 YAML 指南](/zh/testing/policy-yaml-guide)。
+如需部署后自动回放，并根据结论决定流水线是否继续，见 [发版后自动回放](/zh/testing/webhook-and-ci)；使用 GitOps 管理规则，见 [策略 YAML 指南](/zh/testing/policy-yaml-guide)。

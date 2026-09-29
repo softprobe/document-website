@@ -117,4 +117,4 @@ Scoped to an endpoint, it lands in a per-endpoint group; scoped to the whole app
 
 With rules in place, go back to [Replay](/en/testing/replay-and-diff) and run again (or use **Recompare** in [Review diffs](/en/testing/review-diffs-in-the-web-ui) to verify immediately) — whatever remains in the failure list is now worth looking at.
 
-To automate the whole workflow — deploy-triggered replays and pipeline gates — see [Webhook and CI/CD](/en/testing/webhook-and-ci); for rules in GitOps, see the [Policy YAML guide](/en/testing/policy-yaml-guide).
+To replay after each deploy and let the result decide whether the pipeline continues, see [Replay after deployment](/en/testing/webhook-and-ci); for rules in GitOps, see the [Policy YAML guide](/en/testing/policy-yaml-guide).
