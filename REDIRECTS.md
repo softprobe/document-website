@@ -2,7 +2,9 @@
 
 Canonical site: `https://docs.softprobe.ai` (Cloudflare Worker `softprobe-docs`).
 
-All redirects are Cloudflare rules in [`public/_redirects`](./public/_redirects). VitePress `rewrites` are not used (`npm run validate:testing-ia` rejects them). Rules are evaluated top to bottom and the first match wins, so exact rules must come before any wildcard that would also match them. Cloudflare limits the number of rules per file: use `:splat` wildcards for pure prefix moves and exact rules only where the destination differs.
+All redirects are Cloudflare rules in [`public/_redirects`](./public/_redirects). VitePress `rewrites` are not used (`npm run validate:testing-ia` rejects them). Rules are evaluated top to bottom and the first match wins.
+
+Cloudflare allows 2000 static rules but only 100 dynamic ones, and it counts **every rule after the first wildcard (`*` or `:placeholder`) as dynamic**. So the file has two parts: all exact rules first, then all wildcard rules. Add new exact rules to part 1, never below a wildcard — otherwise a deploy fails with "Maximum number of dynamic _redirects rules limit of 100 exceeded". Use `:splat` wildcards for pure prefix moves and exact rules only where the destination differs.
 
 ## What is redirected
 
