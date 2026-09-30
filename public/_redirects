@@ -1,10 +1,17 @@
 # =============================================================================
 # Cloudflare _redirects — first match wins, evaluated top to bottom.
-# Cloudflare limits the number of rules per file; keep this lean by using
-# :splat wildcards for pure-prefix moves and only listing exact rules where
-# the destination is NOT a simple prefix rename (e.g. cli/guide/*).
-# Specific rules MUST come before the wildcards that would also match them.
+#
+# ORDER MATTERS FOR THE RULE LIMIT: Cloudflare allows 2000 static rules but
+# only 100 dynamic ones, and it counts EVERY rule that comes after the first
+# dynamic rule (one with * or :placeholder) as dynamic. So this file has two
+# parts: all exact (static) rules first, then all wildcard (dynamic) rules.
+# Add new exact rules to part 1, never below a wildcard.
+#
+# Within part 2, a wildcard must not match a path that an exact rule in part 1
+# is meant to handle — part 1 already wins, but keep them disjoint anyway.
 # =============================================================================
+
+# ============================== PART 1: exact rules ==============================
 
 # --- Root: language split at the HTTP layer (was client-side JS in index.md) ---
 # Cloudflare cannot read Accept-Language in _redirects, so default to English;
@@ -13,11 +20,8 @@
 
 # --- Legacy auto-testing (AREX era) ---
 /auto-testing      /en/testing/                 301
-/auto-testing/*    /en/testing/getting-started  301
 /en/auto-testing   /en/testing/                 301
-/en/auto-testing/* /en/testing/getting-started  301
 /zh/auto-testing   /zh/testing/                 301
-/zh/auto-testing/* /zh/testing/                 301
 
 # --- cli/guide/* → destinations are NOT a simple prefix rename, list exactly ---
 /en/cli/guide/for-agents /en/testing/agents/overview 301
@@ -48,14 +52,6 @@
 
 # --- cli/* → testing/* — pure prefix renames, collapsed to wildcards ---
 # commands / examples / reference all map cli/<x>/:splat → testing/<x>/:splat
-/en/cli/commands/*  /en/testing/commands/:splat   301
-/zh/cli/commands/*  /zh/testing/commands/:splat   301
-/en/cli/examples/*  /en/testing/examples/:splat   301
-/zh/cli/examples/*  /zh/testing/examples/:splat   301
-/en/cli/reference/* /en/testing/reference/:splat  301
-/zh/cli/reference/* /zh/testing/reference/:splat  301
-/en/cli/policies/*  /en/testing/policies          301
-/zh/cli/policies/*  /zh/testing/policies          301
 /en/cli/            /en/testing/                  301
 /zh/cli/            /zh/testing/                  301
 
@@ -65,27 +61,10 @@
 /guide/configuration  /en/testing/installation/configuration  301
 /guide/spcode         /en/testing/installation/#web-ui         301
 /guide/overview       /en/testing/agents/overview             301
-/guide/*              /en/testing/                            301
-/commands/*           /en/testing/commands/:splat             301
-/examples/*           /en/testing/examples/:splat             301
-/reference/*          /en/testing/reference/:splat            301
-/policies/*           /en/testing/policies                    301
 
 # --- Legacy Docusaurus platform paths ---
-/getting-started/*  /en/platform/getting-started/:splat 301
-/deployment/*       /en/platform/deployment/:splat      301
-/configuration/*    /en/platform/configuration/:splat   301
-/production/*       /en/platform/production/:splat      301
-/advanced-guides/*  /en/platform/advanced-guides/:splat 301
-/billing/*          /en/platform/billing/:splat         301
-/support/*          /en/platform/support/:splat         301
 /sessify            /en/platform/sessify                301
 /web-sdk            /en/platform/sessify                301
-
-# --- Short-path convenience (no locale prefix) → English tree ---
-/cli/*      /en/testing/commands/:splat  301
-/platform/* /en/platform/:splat          301
-/testing/*  /en/testing/:splat           301
 
 # --- Merged Policies dir index → single overview page ---
 /en/testing/policies/ /en/testing/policies 301
@@ -135,3 +114,42 @@
 /zh/best-practices/ /zh/testing/best-practices/release-regression 301
 /en/best-practices /en/testing/best-practices/release-regression 301
 /zh/best-practices /zh/testing/best-practices/release-regression 301
+
+# ============================= PART 2: wildcard rules =============================
+
+# --- Legacy auto-testing (AREX era) ---
+/auto-testing/*    /en/testing/getting-started  301
+/en/auto-testing/* /en/testing/getting-started  301
+/zh/auto-testing/* /zh/testing/                 301
+
+# --- cli/* → testing/* — pure prefix renames, collapsed to wildcards ---
+# commands / examples / reference all map cli/<x>/:splat → testing/<x>/:splat
+/en/cli/commands/*  /en/testing/commands/:splat   301
+/zh/cli/commands/*  /zh/testing/commands/:splat   301
+/en/cli/examples/*  /en/testing/examples/:splat   301
+/zh/cli/examples/*  /zh/testing/examples/:splat   301
+/en/cli/reference/* /en/testing/reference/:splat  301
+/zh/cli/reference/* /zh/testing/reference/:splat  301
+/en/cli/policies/*  /en/testing/policies          301
+/zh/cli/policies/*  /zh/testing/policies          301
+
+# --- Legacy short paths (Docusaurus / early docs, no locale prefix) → English tree ---
+/guide/*              /en/testing/                            301
+/commands/*           /en/testing/commands/:splat             301
+/examples/*           /en/testing/examples/:splat             301
+/reference/*          /en/testing/reference/:splat            301
+/policies/*           /en/testing/policies                    301
+
+# --- Legacy Docusaurus platform paths ---
+/getting-started/*  /en/platform/getting-started/:splat 301
+/deployment/*       /en/platform/deployment/:splat      301
+/configuration/*    /en/platform/configuration/:splat   301
+/production/*       /en/platform/production/:splat      301
+/advanced-guides/*  /en/platform/advanced-guides/:splat 301
+/billing/*          /en/platform/billing/:splat         301
+/support/*          /en/platform/support/:splat         301
+
+# --- Short-path convenience (no locale prefix) → English tree ---
+/cli/*      /en/testing/commands/:splat  301
+/platform/* /en/platform/:splat          301
+/testing/*  /en/testing/:splat           301
