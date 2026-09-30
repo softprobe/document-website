@@ -46,6 +46,7 @@ const testingSidebarEn = [
     text: 'Pipelines and notifications',
     collapsed: false,
     items: [
+      { text: 'Best practice: regression testing on every release', link: '/en/testing/cicd-best-practice' },
       { text: 'Replay after deployment (CI/CD)', link: '/en/testing/webhook-and-ci' },
       { text: 'Replay notifications', link: '/en/testing/notifications' },
       { text: 'Manage policies in Git', link: '/en/testing/examples/gitops-policies' },
@@ -143,6 +144,7 @@ const testingSidebarZh = [
     text: '流水线与通知',
     collapsed: false,
     items: [
+      { text: '最佳实践：发版后自动回归', link: '/zh/testing/cicd-best-practice' },
       { text: '发版后自动回放（CI/CD）', link: '/zh/testing/webhook-and-ci' },
       { text: '回放结果通知', link: '/zh/testing/notifications' },
       { text: '用 Git 管理策略', link: '/zh/testing/examples/gitops-policies' },

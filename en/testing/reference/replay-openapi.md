@@ -124,7 +124,7 @@ Works for replays started from the web console too; those just don't send notifi
 
 | Field | Description |
 |---|---|
-| `status` | `PENDING` (not started), `RUNNING`, `COMPLETED` (finished); `UNKNOWN` when the planId doesn't exist |
+| `status` | `PENDING` (not started), `RUNNING`, `COMPLETED` (finished, findings settled); `UNKNOWN` when the planId doesn't exist |
 | `progress` | Progress, 0 to 1 |
 | `verdict` | `PASS` or `FAIL`, based on the pass rate; see [below](#verdict) |
 | `passRate` | Pass rate, 0 to 1 |

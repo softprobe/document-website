@@ -124,7 +124,7 @@ curl -X POST http://sp-backend.internal:8090/openapi/v1/replay-triggers \
 
 | 字段 | 说明 |
 |---|---|
-| `status` | `PENDING`（尚未开始）、`RUNNING`（执行中）、`COMPLETED`（已结束）；planId 不存在时为 `UNKNOWN` |
+| `status` | `PENDING`（尚未开始）、`RUNNING`（执行中）、`COMPLETED`（已结束，结论已确定）；planId 不存在时为 `UNKNOWN` |
 | `progress` | 进度，0 到 1 |
 | `verdict` | `PASS` 或 `FAIL`，根据通过率判断，见 [下文](#verdict) |
 | `passRate` | 通过率，0 到 1 |
