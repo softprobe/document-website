@@ -98,6 +98,8 @@ sp record case list --app order-service --since -1h --json
 
 Reading recordings, and what to check when nothing is recorded: [Recordings](/en/testing/recording).
 
+![Viewing recorded data](/img/docs/testing/en/view-recorded-data.gif)
+
 ## 3. Replay in a test environment {#replay}
 
 Start the **changed version** in a test environment, also with the agent and the same `sp.app.id`. Note its address, for example `order-service.test:8080`.
@@ -114,7 +116,7 @@ Replay really sends the recorded requests to the target service. Point it at a t
 3. Leave **Replay scope** on **All endpoints**, and set **Recording from** to **Last 24 hours**.
 4. Click **Create plan**. The run appears in Run records and goes from **Running** to its final result, such as **All passed** or **Differences**.
 
-![New replay plan](/img/docs/testing/en/new-plan.png)
+![Starting a replay](/img/docs/testing/en/replay-recordings.gif)
 
 </Interface>
 <Interface id="cli">

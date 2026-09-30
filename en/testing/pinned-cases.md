@@ -10,7 +10,7 @@ Rolling recordings are deleted when they pass the retention period. Recordings y
 
 In the call chain of a recording (**Recordings → Rolling recordings**, then open a recording), or on a case in a replay result, click **Pin**.
 
-![Pin this case](/img/docs/testing/en/pin-popover.png)
+![Pinning a recording](/img/docs/testing/en/pinned-cases.gif)
 
 In **Pin this case**:
 
@@ -42,7 +42,7 @@ Cases marked **Auto** were pinned by the system, not by a person. They aren't ke
 3. Set **Replay scope** to **Pinned cases**. All pinned cases are selected by default; search, select all, or deselect individual cases.
 4. Click **Create plan**.
 
-![Replaying pinned cases](/img/docs/testing/en/new-plan-pinned.png)
+![Replaying pinned cases](/img/docs/testing/en/replay-pinned-scope.gif)
 
 Scheduled tasks can also use pinned cases as their scope; see [Run and schedule replays](/en/testing/replay-and-diff#scheduled).
 

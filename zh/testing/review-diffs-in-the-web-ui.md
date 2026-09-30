@@ -12,7 +12,7 @@ title: 审查差异
 
 在回放报告里切到「用例列表」。左边按接口列出用例，可以只看「有差异」「回放失败」或「通过」的，也可以按接口、描述或用例 ID 搜索。点一个用例，右边显示它的详情。
 
-![用例列表和差异视图](/img/docs/testing/zh/case-diff.png)
+![打开用例查看差异](/img/docs/testing/zh/trace-diff-open.gif)
 
 用例详情的顶部：
 
@@ -56,6 +56,8 @@ title: 审查差异
 
 「仅当前用例」只改这一次的判定。其余三种会写成一条[对比规则](/zh/testing/compare-rules-web-ui)，以后每次回放都生效；对已经跑完的这次回放，要[重新对比](#recompare)才能看到效果。
 
+![忽略一个字段](/img/docs/testing/zh/review-diffs.gif)
+
 ## 标记用例通过 {#mark-passed}
 
 有时差异确实存在，但可以接受：比如这是一次有意的改动，或者差异来自 SoftProbe 自己的录制或对比问题。这时不必逐个忽略字段，直接把整条用例标记为通过。
@@ -67,6 +69,8 @@ title: 审查差异
 只改判这一个用例，计入通过率；原因和备注会留档。
 
 报告里「按原因」的每张卡片可以一次标记一组用例，见 [回放报告](/zh/testing/replay-report)。
+
+![标记用例通过](/img/docs/testing/zh/mark-passed.gif)
 
 ## 忽略还是标记通过 {#ignore-or-mark}
 
@@ -89,6 +93,8 @@ title: 审查差异
 
 这个入口只在当前页面有效，刷新或离开后就没有了。在「对比规则」配置页改的规则，也不会出现这个入口：要让已经跑完的回放按新规则判定，再回放一次。
 
+![加规则后重新对比](/img/docs/testing/zh/recompare.gif)
+
 ## 取消忽略 {#unignore}
 
 改主意了：在划了删除线的字段上点「取消忽略」。SoftProbe 会删掉挡住它的那条标记或规则，并提示删了什么：
@@ -100,6 +106,8 @@ title: 审查差异
 ## 查看这个用例忽略了什么 {#ignored-summary}
 
 点用例上的「N 处已忽略」，面板按调用列出每个被忽略的字段和挡住它的规则，也可以在这里直接取消忽略。
+
+![查看用例忽略了什么](/img/docs/testing/zh/ignored-summary.gif)
 
 ## 下一步 {#next}
 

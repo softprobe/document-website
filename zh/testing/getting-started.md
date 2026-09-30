@@ -98,6 +98,8 @@ sp record case list --app order-service --since -1h --json
 
 录制怎么看、为什么没录到，见 [查看录制](/zh/testing/recording)。
 
+![查看录制的数据](/img/docs/testing/zh/view-recorded-data.gif)
+
 ## 3. 在测试环境回放 {#replay}
 
 在测试环境启动**改过代码的新版本**，同样挂上 Agent、用同一个 `sp.app.id`。记下它的地址，例如 `order-service.test:8080`。
@@ -114,7 +116,7 @@ sp record case list --app order-service --since -1h --json
 3. 「回放范围」保持「全量接口」，「录制起始时间」选「近 24 小时」。
 4. 点「创建计划」。执行记录里会出现这次回放，状态从「执行中」变为最终结果，例如「全部通过」「有差异」。
 
-![新建回放计划](/img/docs/testing/zh/new-plan.png)
+![发起一次回放](/img/docs/testing/zh/replay-recordings.gif)
 
 </Interface>
 <Interface id="cli">
