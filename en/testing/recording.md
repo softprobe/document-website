@@ -44,6 +44,8 @@ Click an endpoint to list its recordings with trace ID and time. Each row has fo
 
 **Delete endpoint recordings** at the top right deletes all recordings of the endpoint.
 
+![Viewing recorded data](/img/docs/testing/en/view-recorded-data.gif)
+
 ## A recording's call chain {#trace}
 
 The recording detail lists every step of the request in call order: the entry (such as `SERVLET /order/price`) and the databases, Redis, HTTP downstreams, dynamic classes and so on it called. Each step expands to show the request and response. **Recording complete** at the top means all of the request's calls were captured.

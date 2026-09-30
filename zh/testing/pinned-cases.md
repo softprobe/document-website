@@ -10,7 +10,7 @@ title: 固化用例
 
 在录制的调用链详情页（「录制 → 滚动录制」里点开一条录制），或者回放结果里某个用例的详情页，点「固化」。
 
-![固化这条用例](/img/docs/testing/zh/pin-popover.png)
+![固化一条录制](/img/docs/testing/zh/pinned-cases.gif)
 
 在弹出的「固化这条用例」里：
 
@@ -42,7 +42,7 @@ title: 固化用例
 3. 「回放范围」选「固化用例」。默认选中全部固化用例，可以搜索、全选或逐条取消。
 4. 点「创建计划」。
 
-![按固化用例回放](/img/docs/testing/zh/new-plan-pinned.png)
+![按固化用例回放](/img/docs/testing/zh/replay-pinned-scope.gif)
 
 定时任务也可以把回放范围设为固化用例，见 [发起回放与定时回放](/zh/testing/replay-and-diff#scheduled)。
 

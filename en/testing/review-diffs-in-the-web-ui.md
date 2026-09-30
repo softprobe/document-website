@@ -12,7 +12,7 @@ Most differences aren't bugs. Timestamps, serial numbers and random IDs differ o
 
 In the replay report, switch to **Cases**. The left side lists cases by endpoint; show only those with differences, those whose replay failed, or those that passed, or search by endpoint, description or case ID. Click a case to see its details on the right.
 
-![Case list and diff view](/img/docs/testing/en/case-diff.png)
+![Opening a case and its differences](/img/docs/testing/en/trace-diff-open.gif)
 
 At the top of a case:
 
@@ -56,6 +56,8 @@ The most common action. A field such as a timestamp changes every time and shoul
 
 **Only this case** changes only this verdict. The other three write a [diff rule](/en/testing/compare-rules-web-ui) that applies to every future replay; to see it on a replay that has already finished, [recompare](#recompare).
 
+![Ignoring a field](/img/docs/testing/en/review-diffs.gif)
+
 ## Mark a case as passed {#mark-passed}
 
 Sometimes the difference is real but acceptable: an intended change, or a problem in SoftProbe's own recording or comparison. Instead of ignoring fields one by one, accept the whole case.
@@ -67,6 +69,8 @@ Sometimes the difference is real but acceptable: an intended change, or a proble
 Only this case's verdict changes; it counts towards the pass rate, and the reason and note are kept.
 
 The **By cause** cards in the report can mark a group of cases at once; see [Replay report](/en/testing/replay-report).
+
+![Marking a case as passed](/img/docs/testing/en/mark-passed.gif)
 
 ## Ignore, or mark as passed? {#ignore-or-mark}
 
@@ -89,6 +93,8 @@ Recompare only re-judges the stored responses under the new rules. Nothing is se
 
 This entry only lasts for the current page; it's gone after a refresh or once you leave. Rules changed on the **Diff rules** config page don't bring it up either: to judge a finished replay by the new rules, replay again.
 
+![Recomparing after adding a rule](/img/docs/testing/en/recompare.gif)
+
 ## Stop ignoring {#unignore}
 
 Changed your mind: on a struck-through field, click **Stop ignoring**. SoftProbe removes whatever held it back and tells you what it removed:
@@ -100,6 +106,8 @@ Changed your mind: on a struck-through field, click **Stop ignoring**. SoftProbe
 ## See what a case ignores {#ignored-summary}
 
 Click the **N ignored** chip on a case: a panel lists every ignored field by call, and the rule that held it back. You can stop ignoring from there too.
+
+![Seeing what a case ignores](/img/docs/testing/en/ignored-summary.gif)
 
 ## Next {#next}
 

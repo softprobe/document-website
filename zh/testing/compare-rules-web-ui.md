@@ -20,7 +20,7 @@ title: 配置对比规则
 
 应用规则页顶部会显示全局默认规则有几条，点「查看全局 →」可以查看和修改。全局默认规则已经内置了几条常用规则，例如两边都是 UUID、两边都是 IP 地址、两边都是容差内的时间戳时忽略差异。
 
-应用规则点右上角「编辑」修改，改完点「保存」；也可以切到「YAML」直接编辑。全局默认规则页的每个页签，添加或修改后都要点页签里的「保存配置」才会保存，只点「添加」不会生效。
+应用规则点右上角「编辑」修改，改完点「保存」；也可以切到「YAML」直接编辑。全局默认规则页上，「按路径忽略（快）」和「数组匹配」页签添加或修改后要点「保存配置」才会保存，只点「添加」不会生效；「按条件忽略（CEL）」和「依赖类型」添加后立即保存。
 
 ![全局默认规则](/img/docs/testing/zh/compare-global.png)
 
@@ -34,6 +34,8 @@ title: 配置对比规则
 同一页签上还有「包含路径（白名单）」。填了之后，**只**对比这些路径，其余全部忽略，与忽略字段正好相反。一般留空，即全部对比。
 :::
 
+![按路径忽略字段](/img/docs/testing/zh/compare-rules.gif)
+
 ## 整类忽略某种依赖 {#categories}
 
 粗粒度的开关：某一类下游调用的差异全部不算，例如所有 Redis 调用，或者某一个数据库操作。
@@ -41,6 +43,8 @@ title: 配置对比规则
 在「依赖类型」页签填类型（如 `Redis`、`Database`、`Dubbo`、`HttpClient`），需要时再填具体的依赖名；依赖名留空表示整类忽略。
 
 回放结果里，被整类忽略的调用标着「本类已整类忽略」，不逐字段对比。
+
+![整类忽略某种依赖](/img/docs/testing/zh/rule-ignore-category.gif)
 
 ## 按条件忽略（CEL） {#cel}
 
@@ -54,6 +58,8 @@ title: 配置对比规则
 
 - 两边都是时间戳：`isTimestamp(left) && isTimestamp(right)`
 - 生成的请求 ID：`fieldName == "requestId" && isUUID(right)`
+
+![添加 CEL 忽略规则](/img/docs/testing/zh/rule-cel.gif)
 
 ## 暂不生效的页签 {#not-yet-effective}
 
@@ -73,6 +79,8 @@ title: 配置对比规则
 | 按主键 | 按主键字段配对元素，填主键，如 `orderId`；顺序变了也能对上 |
 
 写 YAML 时对应 `BY_INDEX`、`BY_KEY`。界面上的「LCS 算法」当前版本不生效，选了等同于按索引。
+
+![配置数组匹配](/img/docs/testing/zh/rule-arrays.gif)
 
 ## 只对部分接口生效 {#operation-rules}
 

@@ -20,7 +20,7 @@ This page covers the console. The same rules can be written as YAML and kept in 
 
 The application page shows how many global default rules there are; **View global →** opens them. Several common global rules are built in, for example ignoring a difference when both values are UUIDs, both are IP addresses, or both are timestamps within the tolerance.
 
-Change application rules with **Edit** at the top right and click **Save** when you're done, or switch to **YAML** and edit it directly. On the global default rules page, every tab needs **Save config** after you add or change something; **Add** alone doesn't save it.
+Change application rules with **Edit** at the top right and click **Save** when you're done, or switch to **YAML** and edit it directly. On the global default rules page, the **Ignore by path (fast)** and **Array matching** tabs need **Save config** after you add or change something (**Add** alone doesn't save it); **Ignore by condition (CEL)** and **Dependency types** save as soon as you add.
 
 ![Global default rules](/img/docs/testing/en/compare-global.png)
 
@@ -34,6 +34,8 @@ On the **Ignore by path (fast)** tab, enter the path under **Ignored fields (ski
 The same tab has **Include paths (whitelist)**. Once filled, **only** those paths are compared and everything else is ignored — the opposite of ignored fields. Usually left empty, meaning everything is compared.
 :::
 
+![Ignoring a field by path](/img/docs/testing/en/compare-rules.gif)
+
 ## Ignore a whole dependency type {#categories}
 
 A coarse switch: differences in one kind of downstream call don't count at all, for example every Redis call, or one particular database operation.
@@ -41,6 +43,8 @@ A coarse switch: differences in one kind of downstream call don't count at all, 
 On the **Dependency types** tab, enter the type (such as `Redis`, `Database`, `Dubbo`, `HttpClient`) and, if needed, the specific dependency name; with no name, the whole type is ignored.
 
 In replay results, calls ignored this way are marked **Category ignored** and aren't compared field by field.
+
+![Ignoring a dependency type](/img/docs/testing/en/rule-ignore-category.gif)
 
 ## Ignore by condition (CEL) {#cel}
 
@@ -54,6 +58,8 @@ For example:
 
 - Both values are timestamps: `isTimestamp(left) && isTimestamp(right)`
 - A generated request ID: `fieldName == "requestId" && isUUID(right)`
+
+![Adding a CEL ignore rule](/img/docs/testing/en/rule-cel.gif)
 
 ## Tabs that don't take effect yet {#not-yet-effective}
 
@@ -73,6 +79,8 @@ On the **Array matching** tab, enter the array path, pick a strategy and click *
 | By primary key | Pairs elements by a key field, such as `orderId`; works even when the order changes |
 
 In YAML these are `BY_INDEX` and `BY_KEY`. The **LCS algorithm** option in the console has no effect in the current version and behaves like by index.
+
+![Configuring array matching](/img/docs/testing/en/rule-arrays.gif)
 
 ## Rules for some endpoints only {#operation-rules}
 
