@@ -29,6 +29,7 @@ export function navForLocale(locale: DocLocale): DefaultTheme.NavItem[] {
     return [
       { text: '首页', link: `${p}/` },
       { text: '流量回放测试', link: `${p}/testing/`, activeMatch: '/zh/testing/' },
+      { text: '最佳实践', link: `${p}/best-practices/`, activeMatch: '/zh/best-practices/' },
       { text: 'Agent QA', link: `${p}/agent-qa/`, activeMatch: '/zh/agent-qa/' },
       { text: 'Agent Evaluation', link: `${p}/evaluation/`, activeMatch: '/zh/evaluation/' },
       { text: '业务观测', link: `${p}/platform/getting-started/quick-start`, activeMatch: '/zh/platform/' },
@@ -37,6 +38,7 @@ export function navForLocale(locale: DocLocale): DefaultTheme.NavItem[] {
   return [
     { text: 'Home', link: `${p}/` },
     { text: 'Replay Testing', link: `${p}/testing/`, activeMatch: '/en/testing/' },
+    { text: 'Best Practices', link: `${p}/best-practices/`, activeMatch: '/en/best-practices/' },
     { text: 'Agent QA', link: `${p}/agent-qa/`, activeMatch: '/en/agent-qa/' },
     { text: 'Agent Evaluation', link: `${p}/evaluation/`, activeMatch: '/en/evaluation/' },
     { text: 'Business Observability', link: `${p}/platform/getting-started/quick-start`, activeMatch: '/en/platform/' },

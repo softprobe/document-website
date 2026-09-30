@@ -46,7 +46,7 @@ const testingSidebarEn = [
     text: 'Pipelines and notifications',
     collapsed: false,
     items: [
-      { text: 'Best practice: regression testing on every release', link: '/en/testing/cicd-best-practice' },
+      { text: 'Best practice: regression testing on every release', link: '/en/best-practices/release-regression' },
       { text: 'Replay after deployment (CI/CD)', link: '/en/testing/webhook-and-ci' },
       { text: 'Replay notifications', link: '/en/testing/notifications' },
       { text: 'Manage policies in Git', link: '/en/testing/examples/gitops-policies' },
@@ -144,7 +144,7 @@ const testingSidebarZh = [
     text: '流水线与通知',
     collapsed: false,
     items: [
-      { text: '最佳实践：发版后自动回归', link: '/zh/testing/cicd-best-practice' },
+      { text: '最佳实践：发版后自动回归', link: '/zh/best-practices/release-regression' },
       { text: '发版后自动回放（CI/CD）', link: '/zh/testing/webhook-and-ci' },
       { text: '回放结果通知', link: '/zh/testing/notifications' },
       { text: '用 Git 管理策略', link: '/zh/testing/examples/gitops-policies' },
@@ -539,6 +539,26 @@ const evaluationSidebarZh = [
   },
 ]
 
+const bestPracticesSidebarEn = [
+  {
+    text: 'Best practices',
+    items: [
+      { text: 'Overview', link: '/en/best-practices/' },
+      { text: 'Regression testing on every release', link: '/en/best-practices/release-regression' },
+    ],
+  },
+]
+
+const bestPracticesSidebarZh = [
+  {
+    text: '最佳实践',
+    items: [
+      { text: '总览', link: '/zh/best-practices/' },
+      { text: '发版后自动回归', link: '/zh/best-practices/release-regression' },
+    ],
+  },
+]
+
 function sidebarForLocale(locale: DocLocale) {
   const platform = locale === 'zh' ? platformSidebarZh : platformSidebarEn
   const testing = locale === 'zh' ? testingSidebarZh : testingSidebarEn
@@ -551,9 +571,11 @@ function sidebarForLocale(locale: DocLocale) {
   if (locale === 'en') {
     sidebars['/en/agent-qa/'] = agentQaSidebarEn
     sidebars['/en/evaluation/'] = evaluationSidebarEn
+    sidebars['/en/best-practices/'] = bestPracticesSidebarEn
   } else {
     sidebars['/zh/agent-qa/'] = agentQaSidebarZh
     sidebars['/zh/evaluation/'] = evaluationSidebarZh
+    sidebars['/zh/best-practices/'] = bestPracticesSidebarZh
   }
   return sidebars
 }

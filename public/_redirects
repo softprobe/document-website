@@ -127,3 +127,5 @@
 /zh/testing/installation/upgrade /zh/testing/installation/#upgrade 301
 /zh/testing/commands/recorder /zh/testing/commands/logs#legacy 301
 /zh/testing/commands/config-legacy /zh/testing/commands/config 301
+/en/testing/cicd-best-practice /en/best-practices/release-regression 301
+/zh/testing/cicd-best-practice /zh/best-practices/release-regression 301

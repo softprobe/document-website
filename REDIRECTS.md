@@ -17,6 +17,7 @@ All redirects are Cloudflare rules in [`public/_redirects`](./public/_redirects)
 | `/getting-started/*`, `/deployment/*`, `/configuration/*`, `/production/*`, `/advanced-guides/*`, `/billing/*`, `/support/*` (Docusaurus) | `/en/platform/…` |
 | `/cli/*`, `/platform/*`, `/testing/*` | The English tree |
 | Pages merged in the 2026-09 restructure (for example `testing/download-java-agent`, `testing/installation/doctor`, `testing/agents/versioning`, `testing/reference/exit-codes`) | The section of the page that now holds their content |
+| `/{en,zh}/testing/cicd-best-practice` (2026-09-30, moved to the new Best practices section) | `/{en,zh}/best-practices/release-regression` |
 
 When you merge or move a page, add an exact rule for the old URL of both languages, with a fragment pointing at the right section if there is one.
 
