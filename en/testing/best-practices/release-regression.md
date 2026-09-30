@@ -6,15 +6,15 @@ title: Regression testing on every release
 
 On every release, the pipeline takes real requests recorded in production and replays them against the new version in the test environment. If the results match production, the release continues. If they don't, the pipeline stops, and the report and chat notification say which endpoint changed. With AI set up, they also say which commit changed it.
 
-![The replay report from a real release](/img/docs/testing/en/cicd-report.png)
+![The replay report from the example release](/img/docs/testing/en/cicd-report.png)
 
-## A real release {#example}
+## An example release (demo environment) {#example}
 
-The screenshot above comes from this release:
+The screenshot above comes from the release below. It was a real run, but on a demo environment: application ID `sp-diag-e2e-app` with 3 endpoints, production and test instances on one machine, production traffic simulated by a script, only the last hour of recordings replayed, and a Webhook as the notification channel. The AI wrote its analysis in Chinese. `openapi-sp-diag-e2e-app-128` at the top of the screenshot is the plan name, which includes the application ID and the pipeline run number. The **10 replays in a row** label next to the difference is there because the demo environment had run the same change many times before; in a real project it wouldn't say 10 the first time.
 
 1. The pricing service in production had been recording requests all along.
 2. A developer committed `0026097` ("调整会员价计算", adjust the member price calculation), which changed member-price rounding from half up to rounding down.
-3. Once the new version was deployed to the test environment, the pipeline replayed the 237 requests recorded in production over the last hour (the report calls them "cases"). About 2 minutes later, the pipeline stopped with the result `NEEDS_ACTION`, meaning results changed and someone needs to check:
+3. Once the new version was deployed to the test environment, the pipeline replayed the 237 requests recorded in production over the last hour (the report calls them "cases"). The replay took 1 min 39 s; with the wait for AI noise reduction, the pipeline stopped about 2 minutes in, with the result `NEEDS_ACTION`, meaning results changed and someone needs to check:
 
    ```text
    回放结论：NEEDS_ACTION
@@ -27,7 +27,13 @@ The screenshot above comes from this release:
 
 Had the change been intended, clicking **Mark passed** in the report and approving the release in the pipeline would have been enough.
 
-This run used a demo environment: application ID `sp-diag-e2e-app` with 3 endpoints, production and test instances on one machine, production traffic simulated by a script, only the last hour of recordings replayed, and a Webhook as the notification channel. The AI wrote its analysis in Chinese. The **10 replays in a row** label next to the difference in the screenshot is there because the demo environment had run the same change many times before; in a real project it wouldn't say 10 the first time.
+## Impact on production and data {#impact}
+
+- **Production**: the agent runs in the same JVM as the service; reserve about 512 MB of extra memory for the service. When CPU or memory runs high, or the SoftProbe platform has a fault, the agent automatically records less and drops pending data that doesn't fit, so it doesn't hold up the business. See [Capabilities, scope and resources](/en/testing/core-features-and-performance).
+- **Recorded data**: it stays on the platform the customer deploys; payloads are encrypted before they're written to the database (AES-256-GCM, or SM4 instead); fields can be masked when shown in the console; recordings are kept for 2 days by default, which can be changed. See [Data protection and retention](/en/testing/installation/data-protection).
+- **Downstream calls during replay**: pipeline-triggered replays mock dependencies by default. Database, cache and downstream API calls taken over by the agent are answered from the recording; a call with no matching recording is marked failed by default. But an application can set individual dependencies to make real calls, and a few instrumentations let the real call through when no recording matches, so keep the test environment isolated from production — don't connect it to production databases or downstream services. For which frameworks are taken over, see [Supported Java versions and frameworks](/en/testing/supported-frameworks#dependencies); for the settings, see [Dependency mock](/en/testing/policies#mock).
+- **AI and code**: the AI sends replay differences, the related recorded payloads and code snippets to the model service you connect. With a model deployed inside your network, none of this leaves the network. See [Set up AI diagnosis and code repositories](/en/testing/installation/ai-diagnosis#network).
+- **Keep the trigger endpoint internal**: the endpoint that triggers replays has no authentication, so restrict it at the network level (a firewall or gateway, for example) to CI machines on the internal network. See [Before you start](/en/testing/webhook-and-ci#before-you-start).
 
 ## What to set up {#setup}
 
@@ -74,9 +80,13 @@ How to read the report: [Replay report](/en/testing/replay-report).
 
 ## FAQ {#faq}
 
+**How does this relate to existing API automation tests?**
+
+They complement each other. API automation checks whether results are *right*, against assertions someone wrote; replay needs no test cases and checks whether the new version *changed* compared with production, using real production requests, so it covers parameter combinations the automation never spelled out. The baseline is how production behaves: if production has a bug and the new version fixes it, the replay reports a difference too — confirm it and mark it passed.
+
 **How long does the pipeline step take?**
 
-The replay itself, plus waiting for AI noise reduction. In the example above, the first run took about 2 minutes; the run after the fix passed completely, yet took about 8 minutes — 1 min 36 s of replay, and the rest waiting for AI noise reduction to wrap up. By default the script waits at most 30 minutes.
+The replay itself, plus waiting for AI noise reduction. In the example above, the first run took about 2 minutes; the run after the fix passed completely, yet took about 8 minutes: 1 min 36 s of replay, and the rest waiting for AI noise reduction — when no case fails, AI noise reduction waits a few extra minutes to make sure the replay statistics are fully written before it finishes. By default the script waits at most 30 minutes.
 
 **Why does the chat notification arrive later than the pipeline result?**
 
