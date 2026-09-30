@@ -19,7 +19,7 @@ title: 回放触发 Open API
 | `POST` | `/openapi/v1/replay-triggers` | [触发一次回放](#trigger) |
 | `GET` | `/openapi/v1/replay-runs/{planId}` | [查询进度和结论](#run-status) |
 | `GET` | `/openapi/v1/replay-runs/{planId}/diagnosis` | [读取已保存的结论和发版信息](#diagnosis) |
-| `POST` | `/openapi/v1/replay-runs/{planId}/diagnosis` | 供 SoftProbe 分析服务写回分析结果，使用者无需调用 |
+| `POST` | `/openapi/v1/replay-runs/{planId}/diagnosis` | 供 Softprobe 分析服务写回分析结果，使用者无需调用 |
 | `GET` | `/openapi/v1/notification-channels` | [列出通知渠道](#channels) |
 | `POST` | `/openapi/v1/notification-channels` | [新建或修改通知渠道](#channels) |
 | `DELETE` | `/openapi/v1/notification-channels/{id}` | [删除通知渠道](#channels) |
@@ -275,7 +275,7 @@ curl -X POST http://sp-backend.internal:8090/openapi/v1/replay-triggers \
 | `NO_CONCLUSION_YET` | 已触发，回放尚未结束。此时已可读取 `attributes` |
 | `NOT_FOUND` | 没有这次回放的结论，例如回放不是通过接口触发的 |
 
-同一路径的 `POST` 供 SoftProbe 分析服务写回分析结果，调用它不会启动分析，使用者无需调用。如需在回放结束后自动分析，请在 [流程设置](/zh/testing/replay-report#flow-settings) 中开启「CI 触发的回放」。
+同一路径的 `POST` 供 Softprobe 分析服务写回分析结果，调用它不会启动分析，使用者无需调用。如需在回放结束后自动分析，请在 [流程设置](/zh/testing/replay-report#flow-settings) 中开启「CI 触发的回放」。
 
 ## 通知渠道 {#channels}
 

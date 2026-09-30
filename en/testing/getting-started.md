@@ -4,7 +4,7 @@ title: Your first record and replay
 
 # Your first record and replay
 
-On a SoftProbe that's already deployed: attach a Java service, record a few requests, replay them once in a test environment, and read the report. Everything is done in the console; each step also shows the matching `sp` command.
+On a Softprobe that's already deployed: attach a Java service, record a few requests, replay them once in a test environment, and read the report. Everything is done in the console; each step also shows the matching `sp` command.
 
 ::: tip Pick how you work
 Each card below has a switch at the top between the console and the command line. The site remembers your choice.
@@ -51,7 +51,7 @@ java -javaagent:/path/to/sp-agent.jar \
      -jar order-service.jar
 ```
 
-- `sp.app.id` is the service's application ID in SoftProbe. Pick a stable name; it's registered on first start. All instances of one service use the same ID.
+- `sp.app.id` is the service's application ID in Softprobe. Pick a stable name; it's registered on first start. All instances of one service use the same ID.
 - `sp.api.url` is the backend URL and must include `http://` or `https://`.
 
 Tomcat, Docker, Kubernetes and other setups: [Attach the Java agent](/en/testing/java-agent).
@@ -151,5 +151,5 @@ sp demo traffic
 sp demo replay --watch
 ```
 
-If the backend is SoftProbe Cloud and the demo app runs on your machine, run [`sp tunnel`](/en/testing/commands/tunnel) in another terminal. Command reference: [sp demo](/en/testing/commands/demo).
+If the backend is Softprobe Cloud and the demo app runs on your machine, run [`sp tunnel`](/en/testing/commands/tunnel) in another terminal. Command reference: [sp demo](/en/testing/commands/demo).
 :::

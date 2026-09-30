@@ -98,7 +98,7 @@ docker logs --tail 300 sp-mongodb      # 数据库
 |------|---------|
 | 控制台打不开 | 办公电脑到平台服务器 8090 的网络策略；`docker ps` 里 `sp-allinone` 是否在运行 |
 | 控制台显示没有应用，或者页面一直加载、查询超时 | 数据库是否正常：`docker logs sp-mongodb` 里有没有 `Too many open files` 或进程退出。数据库异常时，控制台的现象往往看不出是数据库的问题 |
-| 应用一直不在线 | 被测应用服务器到平台 8090 的网络；Agent 的 `-Dsp.api.url` 地址是否正确；被测服务启动日志里 `[SoftProbe]` 开头的行。见 [接入 Java Agent](/zh/testing/java-agent) |
+| 应用一直不在线 | 被测应用服务器到平台 8090 的网络；Agent 的 `-Dsp.api.url` 地址是否正确；被测服务启动日志里 `[Softprobe]` 开头的行。见 [接入 Java Agent](/zh/testing/java-agent) |
 | 应用在线，但录制零星丢失 | 中间的防火墙、NAT 设备是否限制了会话数或空闲超时，见 [部署前准备](/zh/testing/installation/preparation#firewall)；Agent 的上报队列是否满过，见 [接入 Java Agent — 生产环境保护](/zh/testing/java-agent#queue-overflow) |
 | 回放请求全部失败 | 平台服务器到被测服务业务端口的网络；回放计划里填的目标地址。见 [回放发送日志标记](/zh/testing/reference/replay-send-log-markers) |
 | 回放中很多用例被判为无效 | 缓存是否在淘汰数据：见上文 [巡检](#health-check) 的 `evicted_keys` |
@@ -106,7 +106,7 @@ docker logs --tail 300 sp-mongodb      # 数据库
 | 报告里 AI 分析显示「分析服务未连接」 | 是否设置了 `SP_DISABLE_AI=1`；AI 服务是否因内存不足被终止：`docker logs sp-allinone` 里搜索 `opencode`，必要时调大 `SP_ALLINONE_MEM_LIMIT` |
 | 升级后控制台里的模型配置没了 | 早期安装包的配置目录挂载有误，新版启动脚本会自动改正并提示。按提示重新填一次，之后不会再丢 |
 
-## 联系 SoftProbe 时请提供 {#support}
+## 联系 Softprobe 时请提供 {#support}
 
 - 安装包文件名（含打包时间），以及「设置 → 通用 → 关于」里的前端版本和后端版本
 - `docker ps -a` 的输出
@@ -114,4 +114,4 @@ docker logs --tail 300 sp-mongodb      # 数据库
 - Agent 相关的问题：被测服务的启动参数（去掉密码等敏感信息），以及 Agent 的日志（在 `sp-agent.jar` 所在目录下的 `logs` 目录）
 - 具体的应用 ID、Trace ID、回放计划 ID 和出问题的时间段，见 [应用、用例与回放编号](/zh/testing/agents/concepts#ids)
 
-反馈问题时不要附上加密密钥和业务报文。确实需要报文时，先和 SoftProbe 约定传输方式。
+反馈问题时不要附上加密密钥和业务报文。确实需要报文时，先和 Softprobe 约定传输方式。

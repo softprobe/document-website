@@ -6,7 +6,7 @@ title: Replay Testing
 
 Record real requests in production or test, replay them against a new version in a test environment, and compare the results automatically to find what your change broke. No hand-written test cases, no changes to your business code.
 
-For **Java** services: add the SoftProbe Java agent to the service's start command and recording begins.
+For **Java** services: add the Softprobe Java agent to the service's start command and recording begins.
 
 ## What it solves {#why}
 
@@ -19,7 +19,7 @@ For **Java** services: add the SoftProbe Java agent to the service's start comma
 ```mermaid
 flowchart LR
   A[Real requests] --> B[Service with the agent]
-  B -->|records requests and dependency calls| C[(SoftProbe backend)]
+  B -->|records requests and dependency calls| C[(Softprobe backend)]
   C -->|replays the entry requests| D[New version in test]
   D -->|dependency calls answered from the recording| C
   C --> E[Comparison and replay report]
@@ -39,8 +39,8 @@ More detail: [How it works](/en/testing/how-it-works).
 
 | Part | Role |
 |------|------|
-| **SoftProbe Java agent** | A jar that starts with your service; records, and answers dependency calls during replay |
-| **SoftProbe backend** | Stores recordings, runs replays and comparisons, builds reports |
+| **Softprobe Java agent** | A jar that starts with your service; records, and answers dependency calls during replay |
+| **Softprobe backend** | Stores recordings, runs replays and comparisons, builds reports |
 | **Console** | Browse recordings, start replays, read reports, configure rules, and ask AI why a replay failed |
 | **`sp` command line** (optional) | For scripts, CI jobs and AI agents |
 
@@ -48,7 +48,7 @@ More detail: [How it works](/en/testing/how-it-works).
 
 | You are | Start here |
 |---------|-----------|
-| A tester or developer using SoftProbe for regression | [Your first record and replay](/en/testing/getting-started), then the "Everyday use" section |
+| A tester or developer using Softprobe for regression | [Your first record and replay](/en/testing/getting-started), then the "Everyday use" section |
 | An operator or platform admin deploying it | [Choose a deployment](/en/testing/installation/deployment), [Attach the Java agent](/en/testing/java-agent) |
 | Maintaining a pipeline that should replay after each deploy | [Replay after deployment](/en/testing/webhook-and-ci) |
 | Writing scripts or plugins, or wiring up an AI agent | [Choose how to integrate](/en/testing/agents/overview) |
@@ -56,5 +56,5 @@ More detail: [How it works](/en/testing/how-it-works).
 Supported Java versions and frameworks: [Supported frameworks](/en/testing/supported-frameworks).
 
 ::: info Business Observability
-The "Business Observability" section of this site covers mesh traffic capture with Istio/Envoy on SoftProbe Cloud only. It is separate from Java-agent record and replay.
+The "Business Observability" section of this site covers mesh traffic capture with Istio/Envoy on Softprobe Cloud only. It is separate from Java-agent record and replay.
 :::

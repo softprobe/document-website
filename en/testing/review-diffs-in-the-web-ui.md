@@ -60,10 +60,10 @@ The most common action. A field such as a timestamp changes every time and shoul
 
 ## Mark a case as passed {#mark-passed}
 
-Sometimes the difference is real but acceptable: an intended change, or a problem in SoftProbe's own recording or comparison. Instead of ignoring fields one by one, accept the whole case.
+Sometimes the difference is real but acceptable: an intended change, or a problem in Softprobe's own recording or comparison. Instead of ignoring fields one by one, accept the whole case.
 
 1. Click **Mark as passed** at the top of the case.
-2. Pick a reason: **Difference is expected (by design)** or **SoftProbe recording/compare issue**.
+2. Pick a reason: **Difference is expected (by design)** or **Softprobe recording/compare issue**.
 3. Add a note if you like, and click **Confirm**.
 
 Only this case's verdict changes; it counts towards the pass rate, and the reason and note are kept.
@@ -85,7 +85,7 @@ In short: to change this one verdict, mark it as passed; to never see it again, 
 
 A new diff rule applies from the next replay on; it doesn't change a replay that has already finished. To see its effect now without replaying:
 
-After you add or remove a rule from this replay's diff view, a notice offers **Recompare now**, and **Rules changed · recompare** appears at the top of the replay. Click either: SoftProbe re-checks the results this replay already stored against the latest rules, then tells you how many cases turned into passes and failures, and updates the case list, counts and pass rate.
+After you add or remove a rule from this replay's diff view, a notice offers **Recompare now**, and **Rules changed · recompare** appears at the top of the replay. Click either: Softprobe re-checks the results this replay already stored against the latest rules, then tells you how many cases turned into passes and failures, and updates the case list, counts and pass rate.
 
 ::: warning Recompare isn't replay
 Recompare only re-judges the stored responses under the new rules. Nothing is sent to your service.
@@ -97,7 +97,7 @@ This entry only lasts for the current page; it's gone after a refresh or once yo
 
 ## Stop ignoring {#unignore}
 
-Changed your mind: on a struck-through field, click **Stop ignoring**. SoftProbe removes whatever held it back and tells you what it removed:
+Changed your mind: on a struck-through field, click **Stop ignoring**. Softprobe removes whatever held it back and tells you what it removed:
 
 - An **Only this case** mark: removed and effective immediately; the field is compared again right away.
 - An endpoint or application rule: removed, effective from the next replay. To see the effect in this replay, click **Recompare now** in the notice. If the rule matched by field name or wildcard, other fields it held back are compared again too.

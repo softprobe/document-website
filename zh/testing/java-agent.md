@@ -22,7 +22,7 @@ onMounted(async () => {
 
 # 接入 Java Agent
 
-SoftProbe Java Agent 是一个 jar 文件（`sp-agent.jar`），通过 `-javaagent` 参数随被测服务一起启动。录制时它记下入口请求和依赖调用，回放时它用录制结果应答依赖调用。接入不改业务代码，只改启动参数、重启一次服务。
+Softprobe Java Agent 是一个 jar 文件（`sp-agent.jar`），通过 `-javaagent` 参数随被测服务一起启动。录制时它记下入口请求和依赖调用，回放时它用录制结果应答依赖调用。接入不改业务代码，只改启动参数、重启一次服务。
 
 ::: info 不是网格 Agent
 「业务观测」里基于 Istio/Envoy 的采集见 [平台 Agent 架构](/zh/platform/advanced-guides/agent-architecture)，与本页无关。
@@ -31,7 +31,7 @@ SoftProbe Java Agent 是一个 jar 文件（`sp-agent.jar`），通过 `-javaage
 ## 前提 {#prerequisites}
 
 - JDK 8、11、17 或 21。框架支持情况见 [支持的 Java 版本与框架](/zh/testing/supported-frameworks)。
-- 被测服务所在机器能访问 SoftProbe 后端（单机部署时是平台服务器的 `8090` 端口）。
+- 被测服务所在机器能访问 Softprobe 后端（单机部署时是平台服务器的 `8090` 端口）。
 - 为被测服务预留约 512 MB 内存，Agent 与服务共用 JVM 内存。
 - 可以改启动参数、重启服务。生产环境请先按变更流程申请窗口。
 
@@ -45,7 +45,7 @@ curl -fL -o sp-agent.jar http://<平台地址>:8090/api/agent/sp-agent.jar
 
 也可以在控制台「应用管理 → 接入新应用」的向导里下载。
 
-**能访问互联网时**，也可以从 SoftProbe 官网下载：
+**能访问互联网时**，也可以从 Softprobe 官网下载：
 
 ```bash
 curl -fsSL -o sp-agent.jar https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar
@@ -134,7 +134,7 @@ env:
 
 ## 确认接入成功 {#verify}
 
-1. 服务启动日志里有 `[SoftProbe]` 开头的行，没有报错。
+1. 服务启动日志里有 `[Softprobe]` 开头的行，没有报错。
 2. 控制台「应用管理」里出现这个应用，状态为「Agent 在线」。也可以用命令行查：`sp app status order-service --json`，返回 `online`。
 3. 给服务发几个请求。默认每个接口大约每分钟录 1 条，等一两分钟后打开「录制 → 滚动录制」，能看到对应接口的录制。
 4. 打开一条录制，调用链里除了入口，还有数据库、缓存、下游接口等依赖调用。缺了某类调用，见 [查看录制 — 没录到？](/zh/testing/recording#troubleshooting)。
@@ -196,7 +196,7 @@ Agent 不修改服务的任何文件，也不在服务器上留下常驻进程�
 
 ### 与其他 Agent 共存 {#coexistence}
 
-与 OpenTelemetry 等其他 `-javaagent` 冲突时，让 SoftProbe 跳过它们的类：
+与 OpenTelemetry 等其他 `-javaagent` 冲突时，让 Softprobe 跳过它们的类：
 
 ```bash
 -Dsp.ignore.type.prefixes=io.opentelemetry

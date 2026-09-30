@@ -4,7 +4,7 @@ title: sp tenant：租户密钥
 
 # sp tenant：租户密钥
 
-**仅适用于 SoftProbe Cloud。** 管理 Java Agent 向你的租户上报数据时使用的租户 API 密钥。自建部署用不到。
+**仅适用于 Softprobe Cloud。** 管理 Java Agent 向你的租户上报数据时使用的租户 API 密钥。自建部署用不到。
 
 ## `tenant key ensure`
 

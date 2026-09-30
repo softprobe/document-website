@@ -4,7 +4,7 @@ title: Choose how to integrate
 
 # Choose how to integrate
 
-This section is for people who write scripts, CI jobs, plugins or AI-agent skills against SoftProbe, and for the AI agents themselves (OpenCode / spcode, Claude Code, Codex, Cursor and other hosts that call SoftProbe through shell tools).
+This section is for people who write scripts, CI jobs, plugins or AI-agent skills against Softprobe, and for the AI agents themselves (OpenCode / spcode, Claude Code, Codex, Cursor and other hosts that call Softprobe through shell tools).
 
 ## Pick an interface {#pick-an-interface}
 
@@ -32,13 +32,13 @@ Point your agent at `/llms.txt` first; it follows links into the full text or pe
 | Part | Role |
 |------|------|
 | **Your Java service** | Started with `-javaagent:/path/to/sp-agent.jar` |
-| **SoftProbe Java agent** | Weaves bytecode at runtime and records HTTP, database, cache, RPC and other dependency data without code changes; mocks those calls during replay |
-| **SoftProbe backend (sp-backend)** | Stores recordings, policies, replay plans, logs, diff results and agent heartbeats; `sp` commands that read or change data talk to it over HTTP (`:8090` by default) |
+| **Softprobe Java agent** | Weaves bytecode at runtime and records HTTP, database, cache, RPC and other dependency data without code changes; mocks those calls during replay |
+| **Softprobe backend (sp-backend)** | Stores recordings, policies, replay plans, logs, diff results and agent heartbeats; `sp` commands that read or change data talk to it over HTTP (`:8090` by default) |
 | **`sp` CLI** | Registers apps, applies policies, checks agent status, queries recorded data, starts replays and diagnoses failures. Stable JSON output, predictable exit codes, and files for large payloads — see [Output contract](/en/testing/agents/output-contract) |
 
 A replay needs recorded cases from an app that actually ran with the agent, so replay is never the first step on a fresh system.
 
-The agent is attached with a JVM flag. Pin the app ID explicitly; it is how SoftProbe isolates recordings, pulls config and matches replay data (it is separate from `OTEL_SERVICE_NAME`). Use the ID returned by `sp app create`, or any stable non-empty name such as `order-service` — an unknown ID is normally registered automatically the first time the agent loads its config (exceptions: [Concepts and IDs](/en/testing/agents/concepts#application-appid)):
+The agent is attached with a JVM flag. Pin the app ID explicitly; it is how Softprobe isolates recordings, pulls config and matches replay data (it is separate from `OTEL_SERVICE_NAME`). Use the ID returned by `sp app create`, or any stable non-empty name such as `order-service` — an unknown ID is normally registered automatically the first time the agent loads its config (exceptions: [Concepts and IDs](/en/testing/agents/concepts#application-appid)):
 
 ```bash
 java \

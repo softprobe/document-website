@@ -4,14 +4,14 @@ title: How it works
 
 # How record and replay works
 
-SoftProbe records one complete **request handling**: an entry request and every dependency the code called while handling it. During replay the same business code runs again; when it calls a dependency, the recorded result answers, depending on your settings.
+Softprobe records one complete **request handling**: an entry request and every dependency the code called while handling it. During replay the same business code runs again; when it calls a dependency, the recorded result answers, depending on your settings.
 
 ## End to end {#end-to-end}
 
 ```mermaid
 sequenceDiagram
   participant App as Service under test (with agent)
-  participant Backend as SoftProbe backend
+  participant Backend as Softprobe backend
   participant Target as New version in test (with agent)
 
   Note over App,Backend: Record

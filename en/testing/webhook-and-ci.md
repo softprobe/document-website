@@ -17,7 +17,7 @@ The replay trigger endpoints (`/openapi/v1/...`) have no authentication. Anyone 
 :::
 
 - **Self-hosted deployments only.** SaaS doesn't expose these endpoints yet.
-- **The CI machine must reach the SoftProbe backend, and the backend must reach the service under test.** In a standalone deployment, CI calls the backend directly, on port 8090 by default.
+- **The CI machine must reach the Softprobe backend, and the backend must reach the service under test.** In a standalone deployment, CI calls the backend directly, on port 8090 by default.
 - **All-in-One deployments need forwarding turned on first.** Set `SP_REPLAY_OPENAPI=true` in the deployment's environment and restart the service (recreate the container for Docker). Until then, requests get a 404, a 405 or an HTML page.
 - **A replay sends real requests to the service under test**; downstream database, Redis and HTTP calls return recorded data. Point it at a test environment, never production. Turn recording off (or way down) where replays run, so replay traffic doesn't get recorded again.
 - **The machine running the script needs bash, curl and jq.**
@@ -77,7 +77,7 @@ Poll every few seconds:
 curl http://sp-backend.internal:8090/openapi/v1/replay-runs/6abb8559e5eb34767296c557
 ```
 
-Keep waiting while `status` is `PENDING` or `RUNNING`. `COMPLETED` means the replay has finished and its findings are settled — not that it found no problems. For that, look at the findings. After the replay itself finishes, SoftProbe waits for AI noise reduction to end before settling the findings; until then `status` stays `RUNNING`. Noise reduction being skipped or failing counts as ending; without AI deployed, the findings are settled 3 minutes after the replay finishes.
+Keep waiting while `status` is `PENDING` or `RUNNING`. `COMPLETED` means the replay has finished and its findings are settled — not that it found no problems. For that, look at the findings. After the replay itself finishes, Softprobe waits for AI noise reduction to end before settling the findings; until then `status` stays `RUNNING`. Noise reduction being skipped or failing counts as ending; without AI deployed, the findings are settled 3 minutes after the replay finishes.
 
 ## Step 4: Decide whether to continue {#decide}
 
@@ -131,7 +131,7 @@ This script ties the four steps together: it triggers the replay, waits for it, 
 #             2 = not verified, or the call failed.
 set -euo pipefail
 
-# Required: SP_BACKEND (SoftProbe backend URL), SP_APP_ID (application appId),
+# Required: SP_BACKEND (Softprobe backend URL), SP_APP_ID (application appId),
 #           SP_TARGET (URL of the service under test)
 for name in SP_BACKEND SP_APP_ID SP_TARGET; do
   if [ -z "${!name:-}" ]; then
@@ -224,7 +224,7 @@ The script reads these environment variables:
 
 | Variable | Required | Description |
 |---|---|---|
-| `SP_BACKEND` | Yes | SoftProbe backend URL, for example `http://sp-backend.internal:8090` |
+| `SP_BACKEND` | Yes | Softprobe backend URL, for example `http://sp-backend.internal:8090` |
 | `SP_APP_ID` | Yes | The application's appId |
 | `SP_TARGET` | Yes | URL of the service under test |
 | `SP_OPERATIONS` | No | Replay only these endpoints, comma-separated, for example `/order/create,/order/pay` |
@@ -245,7 +245,7 @@ Run this step after the deployment to the test environment, once the service is 
 ### Jenkins
 
 ```groovy
-stage('SoftProbe replay') {
+stage('Softprobe replay') {
   environment {
     SP_BACKEND          = 'http://sp-backend.internal:8090'
     SP_APP_ID           = 'order-service'
@@ -292,7 +292,7 @@ jobs:
     runs-on: [self-hosted, intranet]
     steps:
       - uses: actions/checkout@v4
-      - name: SoftProbe replay
+      - name: Softprobe replay
         env:
           SP_BACKEND: http://sp-backend.internal:8090
           SP_APP_ID: order-service

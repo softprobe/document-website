@@ -4,9 +4,9 @@ title: Install the sp command line
 
 # Install the sp command line
 
-`sp` is the SoftProbe command line. You need it to script SoftProbe, run it from CI, let AI agents drive it, or run the web workbench on your own machine. People who only use the web console that has already been set up for them don't need it.
+`sp` is the Softprobe command line. You need it to script Softprobe, run it from CI, let AI agents drive it, or run the web workbench on your own machine. People who only use the web console that has already been set up for them don't need it.
 
-You need a reachable SoftProbe backend first — see [Choose a deployment](/en/testing/installation/deployment) if you don't have one.
+You need a reachable Softprobe backend first — see [Choose a deployment](/en/testing/installation/deployment) if you don't have one.
 
 ## Install {#install}
 
@@ -16,7 +16,7 @@ With internet access:
 curl -fsSL https://install.softprobe.ai/install.sh | bash
 ```
 
-This installs the `sp` command line, the Java agent, and the web workbench. On a machine without internet access, get the install package from your SoftProbe implementation team.
+This installs the `sp` command line, the Java agent, and the web workbench. On a machine without internet access, get the install package from your Softprobe implementation team.
 
 Check that `sp` is available:
 
@@ -90,7 +90,7 @@ sudo sp setup --api-url http://sp-backend.corp:8090 --install-spcode-service
 
 `--install-spcode-service` and `--uninstall-spcode-service` can't be combined.
 
-Run the install and `sp setup` as the account that should own the machine's SoftProbe settings; the service uses the same settings (backend URL, MCP, agent instructions, skills). Restart the service after changing them.
+Run the install and `sp setup` as the account that should own the machine's Softprobe settings; the service uses the same settings (backend URL, MCP, agent instructions, skills). Restart the service after changing them.
 
 | Task | Command |
 |------|---------|
@@ -104,7 +104,7 @@ To uninstall:
 sp setup --uninstall-spcode-service
 ```
 
-This removes the systemd unit. SoftProbe config files under the install account stay unless you delete them.
+This removes the systemd unit. Softprobe config files under the install account stay unless you delete them.
 
 MCP tools, agent instructions and skills: [Client configuration](/en/testing/installation/configuration).
 

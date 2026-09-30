@@ -82,7 +82,7 @@ sp record completeness <traceId> --json                   # 这条录制是否�
 
 | 现象 | 先查什么 |
 |------|---------|
-| 「应用管理」里应用状态不是「Agent 在线」 | Agent 没启动或连不上后端：看服务启动日志里 `[SoftProbe]` 开头的行，确认 `-Dsp.api.url` 地址可达。见 [接入 Java Agent](/zh/testing/java-agent) |
+| 「应用管理」里应用状态不是「Agent 在线」 | Agent 没启动或连不上后端：看服务启动日志里 `[Softprobe]` 开头的行，确认 `-Dsp.api.url` 地址可达。见 [接入 Java Agent](/zh/testing/java-agent) |
 | 应用在线，但一条录制都没有 | 「录制配置」里命中这台机器的规则采样率是否为 0、是否不在录制时段内、接口是否被排除；「录制机器上限」是否已被其他实例占满 |
 | 有录制，但比预期少 | 默认每个接口每分钟约 1 条；需要多录时调高采样率 |
 | 某个接口一直没有 | 接口是否在「录制配置 → 接口过滤」里被排除；这个接口的入口框架是否受支持（见 [支持的 Java 版本与框架](/zh/testing/supported-frameworks)） |

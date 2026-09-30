@@ -56,7 +56,7 @@ When an AI analysis is available, problems are grouped by cause into three tiers
 |---|---|---|
 | Differences caused by code changes | The AI judged these differences to be caused by code changes | A developer confirms whether the change is intended |
 | Cause not established | The AI couldn't confirm whether code is to blame | Investigate manually |
-| Invalid | Found not to be caused by code; split further into suspected noise, configuration, replay failed and SoftProbe issues | Follow the handling note on each group |
+| Invalid | Found not to be caused by code; split further into suspected noise, configuration, replay failed and Softprobe issues | Follow the handling note on each group |
 
 The screenshot below comes from a different replay: the cause of all 4 failing cases was established, and they sit under **Invalid → Suspected noise** (expanded here).
 
@@ -100,7 +100,7 @@ Click **By difference** in the top-right corner to group by the differences them
 - **The three steps**: the state and result of Replay, AI noise reduction and AI cause analysis. Once the replay has finished, you can start them by hand here: **Start noise reduction**, **Analyze this replay**, or **Run noise reduction again**, **Analyze again**.
 - **Flow settings**: see [below](#flow-settings).
 - **Ignored noise**: see [Ignored noise](#ignored-noise).
-- **Code version**: the branch and commit the AI analysis read. SoftProbe doesn't check that this is the code the replayed service was running, and the page says so.
+- **Code version**: the branch and commit the AI analysis read. Softprobe doesn't check that this is the code the replayed service was running, and the page says so.
 
 ![Replay details expanded: interfaces, replay settings and the three steps](/img/docs/testing/en/report-info.png)
 

@@ -8,7 +8,7 @@ title: sp config：CLI 配置
 
 ## 概要 {#synopsis}
 
-管理基于 XDG 的 SoftProbe 配置、配置档案和后端 URL。
+管理基于 XDG 的 Softprobe 配置、配置档案和后端 URL。
 
 ## 子命令 {#subcommands}
 
@@ -43,7 +43,7 @@ ${XDG_DATA_HOME:-~/.local/share}/softprobe/           # 持久数据、Agent jar
 ${XDG_STATE_HOME:-~/.local/state}/softprobe/          # 日志和状态
 ```
 
-`config.jsonc` 与其他 SoftProbe 工具共享。`sp.jsonc` 只供本 CLI 使用，会覆盖共享配置中的同名项。`spcode.jsonc`（全局的和项目级 `.softprobe/` 里的）由 `spcode` AI 助手引擎单独解析。
+`config.jsonc` 与其他 Softprobe 工具共享。`sp.jsonc` 只供本 CLI 使用，会覆盖共享配置中的同名项。`spcode.jsonc`（全局的和项目级 `.softprobe/` 里的）由 `spcode` AI 助手引擎单独解析。
 
 
 ### JSON 输出（`init`） {#json-output-init}

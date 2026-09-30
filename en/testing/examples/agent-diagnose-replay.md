@@ -114,7 +114,7 @@ Don't send the user to the console to find a trace ID when an extraction rule al
 ## Prompt snippet for a skill
 
 ```markdown
-When diagnosing a failed SoftProbe replay:
+When diagnosing a failed Softprobe replay:
 1. `sp replay case list --plan <id> --failed --json` for replayId and traceId of each failed case
 2. `sp diagnose replay <id> --out-dir .sp-work --json`, then read the files in data.artifacts; don't parse large stdout
 3. Logs: `curl "$SP_API_URL/api/recorder/logs?trace_id=<traceId>&replay_id=<replayId>"`; read warnings first; count rows by source; read backend, then agent, then app ERROR/WARN lines

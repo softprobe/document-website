@@ -4,7 +4,7 @@ title: sp tunnel：反向隧道
 
 # sp tunnel：反向隧道
 
-从后端到你本机服务开一条反向隧道，让 **SoftProbe Cloud** 上发起的回放能到达只监听 `localhost` 的服务。自建后端能直接访问被测服务时，不需要它。
+从后端到你本机服务开一条反向隧道，让 **Softprobe Cloud** 上发起的回放能到达只监听 `localhost` 的服务。自建后端能直接访问被测服务时，不需要它。
 
 ```bash
 sp tunnel --port 8080 --app <appId>
@@ -24,7 +24,7 @@ sp tunnel --port 8080 --app <appId>
 
 ## 配合演示环境 {#with-the-demo}
 
-演示应用跑在你本机、后端是 SoftProbe Cloud 时，`sp demo replay` 需要这条隧道：
+演示应用跑在你本机、后端是 Softprobe Cloud 时，`sp demo replay` 需要这条隧道：
 
 ```bash
 sp demo start

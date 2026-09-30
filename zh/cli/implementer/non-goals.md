@@ -4,7 +4,7 @@ The `sp` CLI intentionally does **not** expose:
 
 ## Embedded source / code leakage
 
-The public `sp` binary must **not** ship a `sp c` (or similar) command that reads encrypted or embedded SoftProbe Java/backend source. That surface risks distributing proprietary code to end users and agents.
+The public `sp` binary must **not** ship a `sp c` (or similar) command that reads encrypted or embedded Softprobe Java/backend source. That surface risks distributing proprietary code to end users and agents.
 
 - Internal agent tooling (e.g. private `sp_read` / `sp_grep` in controlled environments) is out of scope for this spec.
 - Public documentation and skills must only describe **HTTP API** commands.

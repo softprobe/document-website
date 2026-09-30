@@ -82,7 +82,7 @@ sp record completeness <traceId> --json                         # whether it is 
 
 | Symptom | Check first |
 |---------|-------------|
-| The application isn't **Agent online** in Applications | The agent didn't start or can't reach the backend: look for lines starting with `[SoftProbe]` in the service's startup output, and make sure the `-Dsp.api.url` address is reachable. See [Attach the Java agent](/en/testing/java-agent) |
+| The application isn't **Agent online** in Applications | The agent didn't start or can't reach the backend: look for lines starting with `[Softprobe]` in the service's startup output, and make sure the `-Dsp.api.url` address is reachable. See [Attach the Java agent](/en/testing/java-agent) |
 | Online, but no recordings at all | In **Config → Recording**: whether the rule that matches this machine has a sample rate of 0, whether you're outside the recording time window, whether the endpoint is excluded, and whether **Max recording machines** is already used up by other instances |
 | Fewer recordings than expected | The default is about one per endpoint per minute; raise the sample rate |
 | One endpoint never shows up | Whether it's excluded under **Endpoint filter**, and whether its entry framework is supported ([Supported frameworks](/en/testing/supported-frameworks)) |

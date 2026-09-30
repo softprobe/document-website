@@ -4,7 +4,7 @@ title: 功能、适用范围与资源需求
 
 # 功能、适用范围与资源需求
 
-写给要评估 SoftProbe 的人：它能做什么、适用于什么样的系统、对被测服务有什么影响、平台需要多少资源。
+写给要评估 Softprobe 的人：它能做什么、适用于什么样的系统、对被测服务有什么影响、平台需要多少资源。
 
 ## 能做什么 {#features}
 
@@ -22,9 +22,9 @@ title: 功能、适用范围与资源需求
 ## 适用范围 {#scope}
 
 - **语言**：Java，JDK 8、11、17、21。
-- **框架和中间件**：常见的 Web 框架、HTTP 客户端、数据库访问、缓存、RPC 框架都支持，完整清单见 [支持的 Java 版本与框架](/zh/testing/supported-frameworks)。清单外的框架，由 SoftProbe 在接入前评估和适配。
+- **框架和中间件**：常见的 Web 框架、HTTP 客户端、数据库访问、缓存、RPC 框架都支持，完整清单见 [支持的 Java 版本与框架](/zh/testing/supported-frameworks)。清单外的框架，由 Softprobe 在接入前评估和适配。
 - **回放入口**：HTTP/HTTPS，以及 Dubbo 等 RPC 入口。
-- **部署**：SoftProbe Cloud；或私有化部署在单台服务器（All-in-One）或 Kubernetes 上，可完全离线运行。
+- **部署**：Softprobe Cloud；或私有化部署在单台服务器（All-in-One）或 Kubernetes 上，可完全离线运行。
 
 ## 对被测服务的影响 {#impact}
 

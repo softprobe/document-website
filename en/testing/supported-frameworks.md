@@ -6,7 +6,7 @@ title: Supported Java versions and frameworks
 
 This page lists what Java agent 4.3.36 supports. Where no version is given, the agent doesn't restrict the version.
 
-If your stack isn't listed, or you're unsure about a version, send the service's `pom.xml` to SoftProbe for a compatibility check, ideally with the output of `mvn dependency:tree`. Only the dependency list is needed, not source code or application packages.
+If your stack isn't listed, or you're unsure about a version, send the service's `pom.xml` to Softprobe for a compatibility check, ideally with the output of `mvn dependency:tree`. Only the dependency list is needed, not source code or application packages.
 
 ## Java versions {#jdk}
 
@@ -63,7 +63,7 @@ During replay, the results of these calls must also match the recording, or the 
 | Authentication | Spring Security, Apache Shiro, jCasbin, JWT (Auth0, JJWT) | During replay the recorded request's login has expired; the agent lets authentication pass as it did when recorded |
 | Configuration | Apollo, Nacos, Spring configuration | Configuration read during recording returns the recorded values during replay |
 | Thread pools | Java `Executor`, Disruptor | When a request continues on another thread, recording and mocking stay linked to the original request |
-| Logging | Logback, Log4j2, `java.util.logging` | Service logs carry the trace ID, so you can look up logs per request in SoftProbe |
+| Logging | Logback, Log4j2, `java.util.logging` | Service logs carry the trace ID, so you can look up logs per request in Softprobe |
 
 ## Related {#related}
 

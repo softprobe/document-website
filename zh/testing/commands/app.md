@@ -8,7 +8,7 @@ title: sp app：应用管理
 
 ## 概要 {#synopsis}
 
-列出、创建和查看 SoftProbe **应用**。应用就是一个已注册的服务；录制、回放和策略都按 `appId` 划分。见 [概念 —— 应用](/zh/testing/agents/concepts#application-appid)。
+列出、创建和查看 Softprobe **应用**。应用就是一个已注册的服务；录制、回放和策略都按 `appId` 划分。见 [概念 —— 应用](/zh/testing/agents/concepts#application-appid)。
 
 所有子命令都请带 `--json`。见 [输出约定](/zh/testing/agents/output-contract)。
 

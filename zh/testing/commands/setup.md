@@ -4,7 +4,7 @@ title: sp setup
 
 # sp setup
 
-命令参考。安装、Spcode Service 与运维说明见 [安装 SoftProbe](/zh/testing/installation/#spcode-service)。
+命令参考。安装、Spcode Service 与运维说明见 [安装 Softprobe](/zh/testing/installation/#spcode-service)。
 
 ```bash
 sp setup

@@ -19,7 +19,7 @@ title: 发起回放与定时回放
 - 回放目标上的录制关掉或调到很低，避免把回放请求又录一遍。
 :::
 
-发起回放的后端要能访问目标地址。使用 SoftProbe Cloud、目标只在你本机时，用 [`sp tunnel`](/zh/testing/commands/tunnel)。
+发起回放的后端要能访问目标地址。使用 Softprobe Cloud、目标只在你本机时，用 [`sp tunnel`](/zh/testing/commands/tunnel)。
 
 ## 立即回放 {#run}
 
@@ -97,7 +97,7 @@ sp replay status <planId> --watch --json
 
 到点时如果创建计划失败（例如这段时间没有录制、同一应用正在创建另一次回放），这次定时回放就不会启动，原因会显示在执行记录里。
 
-::: info SoftProbe Cloud
+::: info Softprobe Cloud
 定时回放由云端在排定时刻发起，目标地址必须能从公网访问；目标在内网时，请用桌面客户端的「立即回放」。
 :::
 

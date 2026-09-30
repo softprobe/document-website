@@ -4,7 +4,7 @@ title: Concepts and IDs
 
 # Concepts and IDs
 
-The objects you meet when you script SoftProbe, and the IDs that tie recording, replay, diffs and logs together. For how record and replay work end to end, see [How it works](/en/testing/how-it-works).
+The objects you meet when you script Softprobe, and the IDs that tie recording, replay, diffs and logs together. For how record and replay work end to end, see [How it works](/en/testing/how-it-works).
 
 ## Application (`appId`) {#application-appid}
 
@@ -15,7 +15,7 @@ A service under test. Recordings, replays, policies and extraction rules all bel
 | `appName` | The name you register with `sp app create <appName>` |
 | `appId` | The application's ID. Configure the Java agent and the CLI with it |
 
-`sp app create` returns a generated 16-character hex `appId`. That format is not required: the agent can also use any stable, non-empty name such as `order-service`, and an unknown `appId` is normally registered automatically the first time the agent loads its config (the app name is then the same as the ID). The exception is an ID that is already used by a scheduled replay task. All instances of one service must use the same `appId`; if it changes between recording and replay, SoftProbe can't find the original cases.
+`sp app create` returns a generated 16-character hex `appId`. That format is not required: the agent can also use any stable, non-empty name such as `order-service`, and an unknown `appId` is normally registered automatically the first time the agent loads its config (the app name is then the same as the ID). The exception is an ID that is already used by a scheduled replay task. All instances of one service must use the same `appId`; if it changes between recording and replay, Softprobe can't find the original cases.
 
 **Agent status** comes from the agents' heartbeats:
 

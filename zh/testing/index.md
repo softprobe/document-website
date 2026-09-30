@@ -6,7 +6,7 @@ title: 流量回放测试
 
 把线上或测试环境的真实请求录下来，改完代码后在测试环境回放一遍，自动对比前后结果，找出改动带来的行为变化。不用手写用例，也不用改业务代码。
 
-适用于 **Java** 服务：在服务的启动参数里加上 SoftProbe Java Agent 即可开始录制。
+适用于 **Java** 服务：在服务的启动参数里加上 Softprobe Java Agent 即可开始录制。
 
 ## 解决什么问题 {#why}
 
@@ -19,7 +19,7 @@ title: 流量回放测试
 ```mermaid
 flowchart LR
   A[真实请求] --> B[挂了 Agent 的服务]
-  B -->|录制请求和依赖调用| C[(SoftProbe 后端)]
+  B -->|录制请求和依赖调用| C[(Softprobe 后端)]
   C -->|回放入口请求| D[测试环境的新版本]
   D -->|依赖调用用录制结果应答| C
   C --> E[对比与回放报告]
@@ -39,16 +39,16 @@ flowchart LR
 
 | 部分 | 作用 |
 |------|------|
-| **SoftProbe Java Agent** | 随被测服务一起启动的 jar，负责录制和回放时应答依赖调用 |
-| **SoftProbe 后端** | 保存录制数据，执行回放和对比，生成报告 |
+| **Softprobe Java Agent** | 随被测服务一起启动的 jar，负责录制和回放时应答依赖调用 |
+| **Softprobe 后端** | 保存录制数据，执行回放和对比，生成报告 |
 | **控制台** | 在浏览器里查看录制、发起回放、看报告、配置规则，也可以让 AI 分析失败原因 |
-| **`sp` 命令行**（可选） | 写脚本、接 CI、让 AI 代理操作 SoftProbe 时使用 |
+| **`sp` 命令行**（可选） | 写脚本、接 CI、让 AI 代理操作 Softprobe 时使用 |
 
 ## 从哪里开始 {#where-to-start}
 
 | 你是 | 从这里开始 |
 |------|-----------|
-| 测试、开发，要用 SoftProbe 做回归 | [第一次录制回放](/zh/testing/getting-started)，然后看「日常使用」这一组 |
+| 测试、开发，要用 Softprobe 做回归 | [第一次录制回放](/zh/testing/getting-started)，然后看「日常使用」这一组 |
 | 运维或平台管理员，要部署平台 | [选择部署方式](/zh/testing/installation/deployment)、[接入 Java Agent](/zh/testing/java-agent) |
 | 维护流水线，要在发版后自动回放 | [发版后自动回放](/zh/testing/webhook-and-ci) |
 | 写脚本、插件，或让 AI 代理对接 | [选择接入方式](/zh/testing/agents/overview) |
@@ -56,5 +56,5 @@ flowchart LR
 支持哪些 Java 版本和框架，见 [支持的 Java 版本与框架](/zh/testing/supported-frameworks)。
 
 ::: info 业务观测
-站内「业务观测」部分讲的是基于 Istio/Envoy 的网格流量采集，仅适用于 SoftProbe Cloud，与这里的 Java Agent 录制回放是两套东西。
+站内「业务观测」部分讲的是基于 Istio/Envoy 的网格流量采集，仅适用于 Softprobe Cloud，与这里的 Java Agent 录制回放是两套东西。
 :::

@@ -56,7 +56,7 @@ Upgrades don't overwrite `docker-compose.yml`, so the key stays in place.
 
 ### SM4 {#sm4}
 
-The platform can encrypt payloads with the Chinese national standard SM4 (SM4-GCM) instead of AES; only one of the two is used. If you need SM4, contact SoftProbe before installing.
+The platform can encrypt payloads with the Chinese national standard SM4 (SM4-GCM) instead of AES; only one of the two is used. If you need SM4, contact Softprobe before installing.
 
 ### Encryption in transit {#tls}
 
@@ -75,7 +75,7 @@ Masking changes what's displayed, not what's stored:
 
 A self-hosted deployment has no user accounts or permissions yet, and the platform's interfaces don't authenticate callers: anyone who can reach port 8090 on the platform server can see every application's recordings. Control access with network rules:
 
-- Open port 8090 only to the people who use SoftProbe and to the application servers; see [Before you deploy — Network rules](/en/testing/installation/preparation#network).
+- Open port 8090 only to the people who use Softprobe and to the application servers; see [Before you deploy — Network rules](/en/testing/installation/preparation#network).
 - Keep the platform server's other ports closed.
 - The replay trigger endpoints (`SP_REPLAY_OPENAPI`) don't authenticate callers and are off by default; only turn them on when port 8090 is reachable from your internal network alone.
 
