@@ -4,7 +4,7 @@ title: "Best practice: regression testing on every release"
 
 # Best practice: regression testing on every release (the full CI/CD flow)
 
-This page puts recording, replay, AI analysis, the pipeline gate and chat notifications together: the full path from onboarding a service to "every release is regression-tested automatically", followed by the record of a real run. Each step links to the page with the details.
+This page walks through recording, replay, AI analysis, a CI/CD gate and chat notifications — the full path from onboarding a service to "every release is regression-tested automatically" — followed by a real example. Each step links to the page with the details.
 
 The result: once a new version is deployed to the test environment, the pipeline replays requests recorded in production against it. If something is wrong, the pipeline stops and the group chat is told which endpoint and which field changed; with AI set up, it also analyzes whether a code change caused the difference and where. If nothing is wrong, the release continues.
 
@@ -34,14 +34,14 @@ flowchart LR
 
 ### 1. Record in production {#record-prod}
 
-Attach the agent in the start flags of your production (or pre-production) instances and give them an environment tag:
+Add the agent to the JVM startup arguments of your production (or pre-production) instances and give them an environment tag:
 
 ```bash
 -javaagent:/opt/softprobe/sp-agent.jar -Dsp.app.id=order-service \
 -Dsp.api.url=http://sp-backend.internal:8090 -Dsp.tags.env=prod
 ```
 
-By default each machine records at most one request per endpoint per minute, which is usually enough. To record more, add a sampling rule under **Config → Recording settings**: set **Active environments** to `env=prod` and raise the sample rate.
+By default each machine records at most one request per endpoint per minute, which is usually enough. To record more, add a sampling rule under **Config → Recording**: set **Active environments** to `env=prod` and raise the sample rate.
 
 The same rule can also be written as YAML and kept in Git; to apply it, see [Manage policies in Git](/en/testing/examples/gitops-policies). `ratePerHundredSeconds` is the console's **Sample rate (per minute)** — the field name is historical:
 
@@ -60,7 +60,7 @@ spec:
     ratePerHundredSeconds: 10
 ```
 
-How much is enough: a few dozen requests for each main endpoint, covering the common parameter combinations. You don't need everything. If the service uses local caches, set **Coverage packages** in the recording settings. Register business methods that return something different on every call (encryption, your own serial-number generator and the like) as [dynamic classes](/en/testing/policies#dynamic-classes) so the replay can reproduce them; system time and random numbers are handled built-in and don't need registering. See [Attach the Java agent](/en/testing/java-agent) and [Recording and replay settings](/en/testing/policies).
+How much is enough: a few dozen requests for each main endpoint, covering the common parameter combinations. You don't need everything. If the service uses local caches, set **Coverage packages** in the recording settings. Register business methods that return something different on every call (encryption, your own serial-number generator and the like) as [dynamic classes](/en/testing/policies#dynamic-classes) so the replay can reproduce them; system time and random numbers are handled by built-in instrumentation and need no dynamic-class configuration. See [Attach the Java agent](/en/testing/java-agent) and [Recording and replay settings](/en/testing/policies).
 
 ### 2. The test environment {#test-env}
 
@@ -104,21 +104,21 @@ See [Replay after deployment — main endpoints](/en/testing/webhook-and-ci#main
 
 ### 4. Set up AI and the code repository (recommended) {#ai}
 
-With a model service set up and a code repository bound to the application, pipeline-triggered replays first go through AI noise reduction, which recognizes fields that change on every run (timestamps, random IDs and the like) as noise and ignores them. The cases that still fail are then analyzed, and the report and chat notification say which differences came from code changes and on which line. See [Set up AI diagnosis and code repositories](/en/testing/installation/ai-diagnosis).
+With a model service set up and a code repository bound to the application, under the default flow settings pipeline-triggered replays first go through automatic AI noise reduction, which recognizes fields that change on every run (timestamps, random IDs and the like) as noise and ignores them. If cases still fail, their cause is then analyzed automatically. The results go into the report and the chat notification; when a difference is traced to a code change, the analysis points to the file and line. Some cases may remain without an established cause. See [Set up AI diagnosis and code repositories](/en/testing/installation/ai-diagnosis).
 
 - The AI reads the code on the bound branch and doesn't check that it matches the version actually running in the test environment. Bind the branch that gets deployed to test, such as the release branch. The report notes which branch and commit the analysis read.
-- By default at most 10 analyses run automatically per day. If you release often, raise it in the report's [flow settings](/en/testing/replay-report#flow-settings).
+- Whether automatic noise reduction and analysis run depends on the switches and daily limits in the report's [flow settings](/en/testing/replay-report#flow-settings). By default at most 10 analyses run automatically per day; raise it there if you release often.
 
 Without AI you can still record, replay and judge by diff rules; you just don't get automatic noise reduction or cause analysis.
 
-### 5. Clear the noise down to a baseline {#baseline}
+### 5. Establish a clean replay baseline {#baseline}
 
 Deploy **the same version that runs in production** to the test environment, trigger a replay with the script from [Wire it into the pipeline](#pipeline) below using the pipeline's parameters, open the report link it prints, and deal with the differences in the report:
 
 - Fields that change on every run, such as timestamps, serial numbers and random IDs: add [diff rules](/en/testing/compare-rules-web-ui), or use **Ignore permanently** on the noise the AI found, under **Ignored noise** in the report.
 - Differences caused by configuration that differs between test and production: adjust the test environment first; only for calls that genuinely can't match, consider registering them as dynamic classes.
 
-Trigger again after each round, until the script prints `CLEAN`. Skip this step and every later release gets stopped by the same noise.
+Trigger again after each round, until the script prints `CLEAN`. A clean baseline keeps the same noise from blocking later releases again and again.
 
 ### 6. Notification channel {#notify}
 
@@ -158,7 +158,7 @@ Exit codes:
 For Jenkins, GitLab CI and GitHub Actions, see [Wire it into your pipeline](/en/testing/webhook-and-ci#wire-it-into-your-pipeline). Once it's wired up, run it once with an unchanged version and once with a deliberately broken one, to confirm the exit code really stops the release. If your team lets releases through after review, set up a manual approval step in the pipeline in advance.
 
 ::: tip How long the pipeline waits
-The script gets its answer once the replay has finished and AI noise reduction is done; it doesn't wait for the AI cause analysis. The analysis continues in the background, then goes into the report and triggers the chat notification. In [the real run below](#example): the first run had differences — from trigger to script exit took about 2 minutes, and the notification arrived about 10 minutes after the script exited. The second run passed completely, yet the step took about 8 minutes: 1 min 36 s of replay, and the rest was AI noise reduction wrapping up, not cause analysis. Leave room for both the replay and AI noise reduction in `SP_TIMEOUT_SECONDS`.
+The script gets its answer once the replay has finished and AI noise reduction is done; it doesn't wait for the AI cause analysis. The analysis continues in the background, then goes into the report and triggers the chat notification. In [the example below](#example), the first run had differences — from trigger to script exit took about 2 minutes, and the notification arrived about 10 minutes after the script exited. The second run passed completely, yet the step took about 8 minutes: 1 min 36 s of replay, and the rest was AI noise reduction wrapping up, not cause analysis. Leave room for both the replay and AI noise reduction in `SP_TIMEOUT_SECONDS`.
 :::
 
 ## After the findings are in {#triage}
@@ -214,7 +214,7 @@ The report: of 237 cases, 158 passed and 79 didn't. `/order/price` replayed 81 c
 
 ![A pipeline-triggered replay report: one difference caused by a code change](/img/docs/testing/en/cicd-report.png)
 
-The **10 replays in a row** next to the difference's title is there because the demo environment had replayed the same version many times before.
+The **10 replays in a row** label next to the difference's title reflects earlier replays of the same version in the demo environment.
 
 ### The notification {#example-notify}
 
@@ -238,13 +238,13 @@ The change wasn't intended, so the developer put the rounding back to half up an
 报告：https://<console-address>/sp/workbench/sp-diag-e2e-app/runs/6abc8e97e5eb34767296cfcf
 ```
 
-The exit code was `0` and the release continued. All 237 cases passed and the replay took 1 min 36 s; the step took about 8 minutes in total, the extra time spent on AI noise reduction wrapping up (see [How long the pipeline waits](#pipeline)).
+The exit code was `0` and the release continued. All 237 cases passed and the replay took 1 min 36 s; the step took about 8 minutes in total, including the wait for AI noise reduction to finish (see [How long the pipeline waits](#pipeline)).
 
 Both runs are listed under **Replay plans → Run records**; the 128 and 129 in the plan names are the pipeline run numbers:
 
 ![The two pipeline replays in Run records](/img/docs/testing/en/cicd-runs.png)
 
-Had the change been intended, the next step would have been **Mark passed (79)** in the report, then letting the release through by hand in the pipeline.
+Had the change been intended, the next step would have been to click **Mark passed (79)** in the report, then approve the release manually in the pipeline.
 
 ## Day-to-day upkeep {#maintenance}
 
