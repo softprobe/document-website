@@ -101,7 +101,7 @@ Controls **what the agent records**: sampling, schedule, operation filters, opti
 
 | Section | Field | Type | Semantics |
 |---------|-------|------|-----------|
-| `sampling` | `ratePerHundredSeconds` | integer ≥ 0 | Max requests recorded per 100-second window. `0` = no recording |
+| `sampling` | `ratePerHundredSeconds` | integer ≥ 0 | Max requests recorded per minute, per machine and per endpoint — the **Sample rate (per minute)** setting in the console. The field name is historical; the window is one minute, not 100 seconds. `0` = no recording |
 | `sampling` | `machineCountLimit` | integer ≥ 1 or omit | Max concurrent recording instances in the env group. **Omit = unlimited.** Avoid `1` unless you understand quota pinning |
 | `timeWindow` | `daysOfWeek` | `MON`…`SUN` or `*` | Omit section = 24/7 |
 | `timeWindow` | `from` / `to` | `HH:mm` | Both required together; `from` strictly before `to` (validator). Agent uses JVM local timezone |

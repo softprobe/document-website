@@ -77,7 +77,7 @@ Poll every few seconds:
 curl http://sp-backend.internal:8090/openapi/v1/replay-runs/6abb8559e5eb34767296c557
 ```
 
-Keep waiting while `status` is `PENDING` or `RUNNING`. `COMPLETED` means the replay has finished — not that it found no problems. For that, look at the findings.
+Keep waiting while `status` is `PENDING` or `RUNNING`. `COMPLETED` means the replay has finished and its findings are settled — not that it found no problems. For that, look at the findings. After the replay itself finishes, SoftProbe waits for AI noise reduction to end before settling the findings; until then `status` stays `RUNNING`. Noise reduction being skipped or failing counts as ending; without AI deployed, the findings are settled 3 minutes after the replay finishes.
 
 ## Step 4: Decide whether to continue {#decide}
 

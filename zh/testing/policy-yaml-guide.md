@@ -103,7 +103,7 @@ Mongo 加载超时时安全降级（录制：不录；Mock：透传）。
 
 | 区块 | 字段 | 类型 | 语义 |
 |------|------|------|------|
-| `sampling` | `ratePerHundredSeconds` | integer ≥ 0 | 每 100 秒窗口最多录制请求数；`0` = 不录 |
+| `sampling` | `ratePerHundredSeconds` | integer ≥ 0 | 每台机器、每个接口每分钟最多录制的请求数，即页面上的「采样率（次/分钟）」；字段名是沿用下来的，单位不是 100 秒。`0` = 不录 |
 | `sampling` | `machineCountLimit` | integer ≥ 1 或省略 | 同环境组内同时录制的实例上限。**省略 = 不限**。慎用 `1`（容易导致单个实例长期占用录制名额） |
 | `timeWindow` | `daysOfWeek` | `MON`…`SUN` 或 `*` | 省略整段 = 7×24 |
 | `timeWindow` | `from` / `to` | `HH:mm` | 必须成对；`from` 严格早于 `to`。Agent 使用 JVM 本地时区 |

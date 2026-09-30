@@ -77,7 +77,7 @@ curl -X POST http://sp-backend.internal:8090/openapi/v1/replay-triggers \
 curl http://sp-backend.internal:8090/openapi/v1/replay-runs/6abb8559e5eb34767296c557
 ```
 
-`status` 为 `PENDING` 或 `RUNNING` 时继续等待，变为 `COMPLETED` 表示回放已结束。回放结束不代表没有问题，还需要查看回放结论。
+`status` 为 `PENDING` 或 `RUNNING` 时继续等待，变为 `COMPLETED` 表示回放已结束、结论已确定。回放跑完后，SoftProbe 先等 AI 降噪结束再确定结论，在此之前 `status` 仍为 `RUNNING`。降噪被跳过或失败也算结束；没有部署 AI 时，回放跑完 3 分钟后确定结论。`COMPLETED` 不代表没有问题，还需要查看回放结论。
 
 ## 根据结论决定是否继续 {#decide}
 
