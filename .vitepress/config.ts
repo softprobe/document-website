@@ -17,7 +17,7 @@ const testingSidebarEn = [
   {
     text: 'Best practices',
     items: [
-      { text: 'Regression testing on every release', link: '/en/testing/best-practices/release-regression' },
+      { text: 'CI/CD release regression', link: '/en/testing/best-practices/release-regression' },
     ],
   },
   {
@@ -120,7 +120,7 @@ const testingSidebarZh = [
   {
     text: '最佳实践',
     items: [
-      { text: '发版后自动回归', link: '/zh/testing/best-practices/release-regression' },
+      { text: 'CI/CD 发版回归', link: '/zh/testing/best-practices/release-regression' },
     ],
   },
   {
