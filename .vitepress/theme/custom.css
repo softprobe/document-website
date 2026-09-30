@@ -645,3 +645,228 @@ a.button {
 .sp-scope-note {
   margin: 0 0 32px;
 }
+
+/* Pipeline figure on best-practice pages (sp-flow-*) */
+/* Pipeline Overview: Circuit Board Layout */
+.sp-flow-board {
+  margin: 24px 0;
+  padding: 24px;
+  background-color: var(--vp-c-bg-soft);
+  border: 1px solid var(--vp-c-border);
+  border-radius: 8px;
+  font-family: var(--vp-font-family-base);
+  
+  /* Desktop Grid: 9 columns (5 nodes + 4 edges), 5 rows */
+  display: grid;
+  grid-template-columns: 1fr 16px 1fr 16px 1fr 16px 1fr 16px 1fr;
+  grid-template-rows: auto 16px auto 48px auto;
+  align-items: stretch; /* Modified: stretch cards to equal height */
+  justify-items: center;
+  grid-template-areas:
+    ".  .  .  .  p  .  .  .  ."
+    ".  .  .  .  ep .  .  .  ."
+    "n1 e1 n2 e2 n3 e3 n4 e4 n8"
+    "eu .  .  .  .  .  ed .  ."
+    "n7 e7 n6 e6 n5 e5 ns .  .";
+}
+
+/* Base Card Styles */
+.vp-doc .sp-flow-board a.sp-flow-card,
+.sp-flow-card {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  background-color: var(--vp-c-bg);
+  border: 1px solid var(--vp-c-border);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-decoration: none;
+  color: var(--vp-c-text-1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.vp-doc .sp-flow-board a.sp-flow-card:hover {
+  border-color: var(--vp-c-brand-1);
+  box-shadow: 0 2px 8px var(--vp-c-brand-soft);
+  transform: translateY(-1px);
+}
+
+.sp-flow-static {
+  cursor: default;
+  background-color: transparent;
+  border-style: dashed;
+  box-shadow: none;
+}
+
+/* Card Typography */
+.sp-flow-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.sp-flow-card-title {
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  line-height: 1.2;
+}
+
+.sp-flow-card-title svg {
+  color: var(--vp-c-text-3);
+}
+
+.sp-flow-card-time {
+  font-family: var(--vp-font-family-mono);
+  font-size: 11px;
+  color: var(--vp-c-text-2);
+  background-color: var(--vp-c-bg-alt);
+  padding: 1px 4px;
+  border-radius: 4px;
+  border: 1px solid var(--vp-c-divider);
+}
+
+.sp-flow-card-sub {
+  font-size: 12px;
+  color: var(--vp-c-text-2);
+  line-height: 1.3;
+}
+
+/* Status Modifiers */
+.vp-doc .sp-flow-board a.sp-flow-card-success {
+  border-color: var(--vp-c-green-2, #10b981);
+}
+.sp-flow-card-success .sp-flow-card-title svg {
+  color: var(--vp-c-green-2, #10b981);
+}
+
+.vp-doc .sp-flow-board a.sp-flow-card-error {
+  border-color: var(--vp-c-red-2, #ef4444);
+}
+.sp-flow-card-error .sp-flow-card-title svg {
+  color: var(--vp-c-red-2, #ef4444);
+}
+
+/* Edges (Arrows) */
+.sp-flow-edge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--vp-c-text-3);
+  width: 100%;
+  height: 100%;
+}
+
+.sp-flow-edge svg {
+  width: 16px;
+  height: 16px;
+  opacity: 0.6;
+}
+
+.sp-flow-edge-success { color: var(--vp-c-green-2, #10b981); }
+.sp-flow-edge-error { color: var(--vp-c-red-2, #ef4444); }
+.sp-flow-edge-dashed { color: var(--vp-c-brand-1); }
+
+.sp-flow-edge-up {
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sp-flow-edge-label {
+  font-size: 10px;
+  text-align: center;
+  line-height: 1.3;
+  color: var(--vp-c-text-2);
+  white-space: nowrap;
+}
+
+/* Mobile Return Note */
+.sp-flow-mobile-return {
+  display: none;
+}
+
+/* Dark Mode Tweaks */
+.dark .sp-flow-card {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Mobile: Vertical Timeline Layout */
+@media (max-width: 640px) {
+  .sp-flow-board {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 16px 16px 24px;
+    border-left: 2px solid var(--vp-c-divider);
+    margin-left: 12px;
+    border-radius: 0 8px 8px 0;
+  }
+  
+  /* Hide desktop grid arrows */
+  .sp-flow-edge {
+    display: none;
+  }
+
+  /* Transform cards into timeline nodes */
+  .vp-doc .sp-flow-board a.sp-flow-card,
+  .sp-flow-card {
+    grid-area: auto !important;
+    padding: 12px;
+  }
+
+  /* Timeline Dots */
+  .sp-flow-card::before {
+    content: "";
+    position: absolute;
+    left: -29px; /* Align with the board's left border */
+    top: 16px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--vp-c-border);
+    border: 2px solid var(--vp-c-bg-soft);
+    box-sizing: border-box;
+  }
+
+  .sp-flow-card-success::before { background-color: var(--vp-c-green-2, #10b981); }
+  .sp-flow-card-error::before { background-color: var(--vp-c-red-2, #ef4444); }
+  .sp-flow-static::before { background-color: var(--vp-c-text-3); }
+
+  /* Mobile Return Note Styles */
+  .sp-flow-mobile-return {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--vp-c-text-2);
+    padding: 12px;
+    margin-top: 4px;
+    position: relative;
+  }
+  
+  .sp-flow-mobile-return svg {
+    color: var(--vp-c-brand-1);
+  }
+
+  .sp-flow-mobile-return::before {
+    content: "";
+    position: absolute;
+    left: -29px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--vp-c-bg-soft);
+    border: 2px dashed var(--vp-c-brand-1);
+    box-sizing: border-box;
+  }
+}
