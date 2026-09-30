@@ -98,7 +98,7 @@ Detailed backend logs are in `/logs/storage.log` inside the container and are ke
 |---------|-------------|
 | The console doesn't load | The network rule from office computers to port 8090; whether `sp-allinone` is running in `docker ps` |
 | The console shows no applications, or pages keep loading and queries time out | Whether the database is healthy: look for `Too many open files` or an exited process in `docker logs sp-mongodb`. When the database fails, what you see in the console rarely points to it |
-| An application never comes online | The network from the application server to port 8090; the agent's `-Dsp.api.url`; lines starting with `[SoftProbe]` in the service's start-up log. See [Attach the Java agent](/en/testing/java-agent) |
+| An application never comes online | The network from the application server to port 8090; the agent's `-Dsp.api.url`; lines starting with `[Softprobe]` in the service's start-up log. See [Attach the Java agent](/en/testing/java-agent) |
 | The application is online but recordings go missing now and then | Whether a firewall or NAT device limits sessions or idle time, see [Before you deploy](/en/testing/installation/preparation#firewall); whether the agent's upload queue filled up, see [Attach the Java agent — Protecting production](/en/testing/java-agent#queue-overflow) |
 | Every replay request fails | The network from the platform server to the service's port; the target address in the replay plan. See [Replay send log markers](/en/testing/reference/replay-send-log-markers) |
 | Many cases are marked invalid during replay | Whether the cache is evicting data: see `evicted_keys` under [Health checks](#health-check) |
@@ -106,7 +106,7 @@ Detailed backend logs are in `/logs/storage.log` inside the container and are ke
 | The report says the analysis service isn't connected | Whether `SP_DISABLE_AI=1` is set; whether the AI service was killed for lack of memory: search `docker logs sp-allinone` for `opencode`, and raise `SP_ALLINONE_MEM_LIMIT` if needed |
 | Model settings disappeared after an upgrade | Early packages mounted the configuration directory wrongly; newer start scripts fix it and say so. Enter the settings once more and they'll stay |
 
-## When you contact SoftProbe {#support}
+## When you contact Softprobe {#support}
 
 - The package file name (it includes the build time), and the console and backend versions under **Settings → General → About**
 - The output of `docker ps -a`
@@ -114,4 +114,4 @@ Detailed backend logs are in `/logs/storage.log` inside the container and are ke
 - For agent problems: the service's start-up flags (with passwords and other secrets removed), and the agent log from the `logs` directory next to `sp-agent.jar`
 - The application ID, trace ID, replay plan ID and time window involved; see [Concepts and IDs](/en/testing/agents/concepts#ids)
 
-Don't include encryption keys or business payloads when you report a problem. If payloads are really needed, agree on how to transfer them with SoftProbe first.
+Don't include encryption keys or business payloads when you report a problem. If payloads are really needed, agree on how to transfer them with Softprobe first.

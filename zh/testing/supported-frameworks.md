@@ -6,7 +6,7 @@ title: 支持的 Java 版本与框架
 
 本页按 Java Agent 4.3.36 列出支持范围。没写版本的，表示 Agent 没有限定版本。
 
-你的技术栈不在这里，或者拿不准某个版本行不行，把被测服务的 `pom.xml`（最好再加上 `mvn dependency:tree` 的输出）发给 SoftProbe 做兼容性评估。只需要依赖清单，不需要源码或应用包。
+你的技术栈不在这里，或者拿不准某个版本行不行，把被测服务的 `pom.xml`（最好再加上 `mvn dependency:tree` 的输出）发给 Softprobe 做兼容性评估。只需要依赖清单，不需要源码或应用包。
 
 ## Java 版本 {#jdk}
 
@@ -63,7 +63,7 @@ Apache HttpClient 5.x 暂不支持。
 | 认证 | Spring Security、Apache Shiro、jCasbin、JWT（Auth0、JJWT） | 回放时，录制的请求带的登录态已经过期，Agent 让认证按录制时的结果通过 |
 | 配置中心 | Apollo、Nacos、Spring 配置 | 录制时读到的配置，回放时按录制的值返回 |
 | 线程池 | Java `Executor`、Disruptor | 请求切换到其他线程执行时，录制和 Mock 仍然能关联到原来的请求 |
-| 日志 | Logback、Log4j2、`java.util.logging` | 服务日志带上 Trace ID，可以在 SoftProbe 里按请求查看日志 |
+| 日志 | Logback、Log4j2、`java.util.logging` | 服务日志带上 Trace ID，可以在 Softprobe 里按请求查看日志 |
 
 ## 相关文档 {#related}
 

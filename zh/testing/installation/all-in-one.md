@@ -4,15 +4,15 @@ title: 单机部署（All-in-One）
 
 # 单机部署（All-in-One）
 
-把整个 SoftProbe 平台装在一台 Linux 虚拟机上：后端、控制台、数据库、缓存、日志组件都在这台机器上，用 Docker 运行。安装包是离线的，装在不能访问互联网的内网里也可以。
+把整个 Softprobe 平台装在一台 Linux 虚拟机上：后端、控制台、数据库、缓存、日志组件都在这台机器上，用 Docker 运行。安装包是离线的，装在不能访问互联网的内网里也可以。
 
 开始前，先按 [部署前准备](/zh/testing/installation/preparation) 准备好机器和网络策略。
 
 ## 安装包 {#package}
 
-安装包是一个自解压的 shell 脚本，由 SoftProbe 按 CPU 架构提供，文件名形如 `softprobe-linux-amd64-<打包时间>.sh`，约 1.1 GB。里面包括：
+安装包是一个自解压的 shell 脚本，由 Softprobe 按 CPU 架构提供，文件名形如 `softprobe-linux-amd64-<打包时间>.sh`，约 1.1 GB。里面包括：
 
-- SoftProbe 平台镜像，以及 MongoDB、Redis、日志组件的镜像
+- Softprobe 平台镜像，以及 MongoDB、Redis、日志组件的镜像
 - 离线版 Docker 和 Docker Compose（机器上没有 Docker 时自动安装）
 - 启动、停止脚本
 - 免 root 部署需要的程序
@@ -129,7 +129,7 @@ PUBLIC_BACKEND_HOST=10.0.0.5 bash softprobe-linux-amd64-<打包时间>.sh
 softprobe/rootless/sp-rootless-up.sh --check
 ```
 
-安装包还没传到服务器时，可以先向 SoftProbe 要单独的自检脚本 `sp-rootless-precheck-<架构>-<打包时间>.sh`（十几 KB），用 `bash sp-rootless-precheck-*.sh --check` 运行。
+安装包还没传到服务器时，可以先向 Softprobe 要单独的自检脚本 `sp-rootless-precheck-<架构>-<打包时间>.sh`（十几 KB），用 `bash sp-rootless-precheck-*.sh --check` 运行。
 
 自检逐条输出 PASS 或 FAIL。主要检查：
 

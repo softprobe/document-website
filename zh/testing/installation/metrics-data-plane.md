@@ -1,24 +1,24 @@
 # 指标数据平面
 
-SoftProbe 的指标复用**与日志相同的采集器和 Parquet 存储体系**：OTLP → Vector → 一分钟聚合 → `metrics/` 数据集下的 Parquet → 产品的 HTTP 查询接口。它面向**临时诊断**场景（例如「我们是否收到了 Agent 日志？」），不用于替代 Prometheus/Grafana 仪表盘。
+Softprobe 的指标复用**与日志相同的采集器和 Parquet 存储体系**：OTLP → Vector → 一分钟聚合 → `metrics/` 数据集下的 Parquet → 产品的 HTTP 查询接口。它面向**临时诊断**场景（例如「我们是否收到了 Agent 日志？」），不用于替代 Prometheus/Grafana 仪表盘。
 
 需要 Chart **v4.3.x+**，并启用 [统一日志管道](./server#unified-log-pipeline)（默认启用）。指标复用同一个 Vector Deployment，不需要第二个时序数据库，也不需要额外的 Pod。
 
 ## 摄入 —— `POST /v1/metrics`
 
-客户端把 OpenTelemetry 指标 POST 到 SoftProbe；遥测管道就绪后，sp-backend 会将其代理转发给 Vector。
+客户端把 OpenTelemetry 指标 POST 到 Softprobe；遥测管道就绪后，sp-backend 会将其代理转发给 Vector。
 
 | Content-Type | 请求体 |
 |--------------|--------|
 | `application/x-protobuf` | OTLP `ExportMetricsServiceRequest` |
 | `application/json` | OTLP metrics JSON（`resourceMetrics` …） |
 
-**接受的格式：** 仅 OTLP protobuf 和 OTLP JSON。这个端点不接受扁平 JSON 风格的指标格式。OTLP JSON 由 SoftProbe 接收后，以 protobuf 形式转发给 Vector。
+**接受的格式：** 仅 OTLP protobuf 和 OTLP JSON。这个端点不接受扁平 JSON 风格的指标格式。OTLP JSON 由 Softprobe 接收后，以 protobuf 形式转发给 Vector。
 
 | 管道状态 | 响应 |
 |----------|------|
 | 就绪 | 接受并代理后返回 `200` |
-| 未就绪 | `503`：SoftProbe 不会在丢弃数据的同时返回成功 |
+| 未就绪 | `503`：Softprobe 不会在丢弃数据的同时返回成功 |
 
 示例（OTLP JSON）：
 
@@ -32,7 +32,7 @@ curl -sS -X POST "$SP_API_URL/v1/metrics" \
 
 ## 查询 —— `GET /api/recorder/metrics`
 
-对 `metrics/` 下的 SoftProbe Parquet 数据做有界、只读的查询。
+对 `metrics/` 下的 Softprobe Parquet 数据做有界、只读的查询。
 
 **必填查询参数：**
 

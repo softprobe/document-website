@@ -4,7 +4,7 @@ title: 策略 YAML 指南
 
 # 策略 YAML 指南
 
-SoftProbe 测试通过**声明式 YAML 策略**（`apiVersion: softprobe.ai/v1`）控制录制、回放 Mock 与差异对比。策略按应用（及可选的环境、操作）匹配，按优先级合并，由 sp-backend 在运行时生效。
+Softprobe 测试通过**声明式 YAML 策略**（`apiVersion: softprobe.ai/v1`）控制录制、回放 Mock 与差异对比。策略按应用（及可选的环境、操作）匹配，按优先级合并，由 sp-backend 在运行时生效。
 
 三种策略类型都通过 CLI 管理：
 

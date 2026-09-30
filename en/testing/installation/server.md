@@ -8,7 +8,7 @@ Install the unified Softprobe backend on Kubernetes with Helm. The chart support
 
 Chart **v4.3.x+** also enables the [unified log pipeline](#unified-log-pipeline) by default (Vector, Parquet PVC, compaction). Fresh installs need only the MongoDB and encryption keys below — no separate `logPipeline` block required.
 
-**Prerequisites:** Kubernetes 1.24+, Helm 3.x, GCR pull credentials from SoftProbe, and `encryption.secretKey` for payload encryption (see [Data protection and retention](/en/testing/installation/data-protection#encryption)). Network rules are the same as for the single-server install: see [Before you deploy](/en/testing/installation/preparation#network).
+**Prerequisites:** Kubernetes 1.24+, Helm 3.x, GCR pull credentials from Softprobe, and `encryption.secretKey` for payload encryption (see [Data protection and retention](/en/testing/installation/data-protection#encryption)). Network rules are the same as for the single-server install: see [Before you deploy](/en/testing/installation/preparation#network).
 
 For **bundled** MongoDB, your cluster needs a default or configured `StorageClass` for the MongoDB PVC.
 

@@ -8,7 +8,7 @@ What to prepare before a self-hosted deployment: the machine, the account and th
 
 Two kinds of machine are involved:
 
-- **Platform server**: the VM SoftProbe is installed on.
+- **Platform server**: the VM Softprobe is installed on.
 - **Application servers**: the servers running the services you test, where the Java agent is attached.
 
 ## Checklist {#checklist}

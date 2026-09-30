@@ -4,7 +4,7 @@
 
 ## Synopsis
 
-List, create, and inspect SoftProbe **applications**. An application is a registered service; recording, replay, and policies are scoped by `appId`. See [Concepts — Application](/en/testing/agents/concepts#application-appid).
+List, create, and inspect Softprobe **applications**. An application is a registered service; recording, replay, and policies are scoped by `appId`. See [Concepts — Application](/en/testing/agents/concepts#application-appid).
 
 Use `--json` on all subcommands. See [Output contract](/en/testing/agents/output-contract).
 

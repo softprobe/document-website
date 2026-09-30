@@ -4,14 +4,14 @@ title: 工作原理
 
 # 录制回放如何工作
 
-SoftProbe 录的是一次完整的**请求处理**：一条入口请求，以及处理它时代码调用的每一个依赖。回放时，同一段业务代码再执行一遍；它调用依赖时，按配置用录制下来的结果应答。
+Softprobe 录的是一次完整的**请求处理**：一条入口请求，以及处理它时代码调用的每一个依赖。回放时，同一段业务代码再执行一遍；它调用依赖时，按配置用录制下来的结果应答。
 
 ## 全过程 {#end-to-end}
 
 ```mermaid
 sequenceDiagram
   participant App as 被测服务（挂 Agent）
-  participant Backend as SoftProbe 后端
+  participant Backend as Softprobe 后端
   participant Target as 测试环境的新版本（挂 Agent）
 
   Note over App,Backend: 录制

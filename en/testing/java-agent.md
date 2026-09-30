@@ -22,7 +22,7 @@ onMounted(async () => {
 
 # Attach the Java agent
 
-The SoftProbe Java agent is a jar file (`sp-agent.jar`) that starts with the service under test through the `-javaagent` flag. During recording it captures entry requests and dependency calls; during replay it answers dependency calls from the recording. Attaching it doesn't change your code: you add start-up flags and restart the service once.
+The Softprobe Java agent is a jar file (`sp-agent.jar`) that starts with the service under test through the `-javaagent` flag. During recording it captures entry requests and dependency calls; during replay it answers dependency calls from the recording. Attaching it doesn't change your code: you add start-up flags and restart the service once.
 
 ::: info Not the mesh agent
 Istio/Envoy-based capture for business observability is covered in [Platform agent architecture](/en/platform/advanced-guides/agent-architecture) and is unrelated to this page.
@@ -31,7 +31,7 @@ Istio/Envoy-based capture for business observability is covered in [Platform age
 ## Before you start {#prerequisites}
 
 - JDK 8, 11, 17 or 21. Framework support: [Supported Java versions and frameworks](/en/testing/supported-frameworks).
-- The service's host can reach the SoftProbe backend (port `8090` on the platform server for a single-server install).
+- The service's host can reach the Softprobe backend (port `8090` on the platform server for a single-server install).
 - About 512 MB of memory headroom for the service; the agent shares the JVM's memory.
 - You can change start-up flags and restart the service. In production, book a window through your change process first.
 
@@ -45,7 +45,7 @@ curl -fL -o sp-agent.jar http://<platform address>:8090/api/agent/sp-agent.jar
 
 You can also download it from the wizard under **Applications → Connect new application** in the console.
 
-**With internet access**, you can also download it from SoftProbe:
+**With internet access**, you can also download it from Softprobe:
 
 ```bash
 curl -fsSL -o sp-agent.jar https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar
@@ -134,7 +134,7 @@ env:
 
 ## Check that it's connected {#verify}
 
-1. The service's start-up log has lines starting with `[SoftProbe]` and no errors.
+1. The service's start-up log has lines starting with `[Softprobe]` and no errors.
 2. The application appears under **Applications** in the console with **Agent online**. From the command line: `sp app status order-service --json` returns `online`.
 3. Send the service a few requests. By default about one request per endpoint per minute is recorded; after a minute or two, open **Recordings → Rolling recordings** and look for that endpoint.
 4. Open a recording: besides the entry call, the call chain shows database, cache and downstream calls. If a kind of call is missing, see [Recordings — Nothing recorded?](/en/testing/recording#troubleshooting).
@@ -196,7 +196,7 @@ High CPU or memory on the host also switches the agent to fast-reject and lowers
 
 ### Running alongside other agents {#coexistence}
 
-If SoftProbe conflicts with another `-javaagent` such as OpenTelemetry, tell it to skip that agent's classes:
+If Softprobe conflicts with another `-javaagent` such as OpenTelemetry, tell it to skip that agent's classes:
 
 ```bash
 -Dsp.ignore.type.prefixes=io.opentelemetry

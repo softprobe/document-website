@@ -17,7 +17,7 @@ title: 发版后自动回放（CI/CD）
 :::
 
 - **部署方式**：仅私有化部署可用，SaaS 暂未开放这组接口。
-- **网络**：CI 机器需要能访问 SoftProbe 后端，后端需要能访问被测服务。独立部署时，CI 直接访问后端，默认端口为 8090。
+- **网络**：CI 机器需要能访问 Softprobe 后端，后端需要能访问被测服务。独立部署时，CI 直接访问后端，默认端口为 8090。
 - **All-in-One 部署**：需要先开启转发。在部署的环境变量中设置 `SP_REPLAY_OPENAPI=true`，然后重启服务（Docker 部署需重建容器）。未开启时，请求会返回 404、405 或一个网页。
 - **回放环境**：回放会向被测服务发送真实请求，下游的数据库、Redis、HTTP 调用使用录制时的数据。被测服务应部署在测试环境，回放目标地址不要指向生产环境。建议关闭回放环境的录制，或减少录制量，避免再次录制回放流量。
 - **工具**：执行脚本的机器需要安装 bash、curl 和 jq。
@@ -77,7 +77,7 @@ curl -X POST http://sp-backend.internal:8090/openapi/v1/replay-triggers \
 curl http://sp-backend.internal:8090/openapi/v1/replay-runs/6abb8559e5eb34767296c557
 ```
 
-`status` 为 `PENDING` 或 `RUNNING` 时继续等待，变为 `COMPLETED` 表示回放已结束、结论已确定。回放跑完后，SoftProbe 先等 AI 降噪结束再确定结论，在此之前 `status` 仍为 `RUNNING`。降噪被跳过或失败也算结束；没有部署 AI 时，回放跑完 3 分钟后确定结论。`COMPLETED` 不代表没有问题，还需要查看回放结论。
+`status` 为 `PENDING` 或 `RUNNING` 时继续等待，变为 `COMPLETED` 表示回放已结束、结论已确定。回放跑完后，Softprobe 先等 AI 降噪结束再确定结论，在此之前 `status` 仍为 `RUNNING`。降噪被跳过或失败也算结束；没有部署 AI 时，回放跑完 3 分钟后确定结论。`COMPLETED` 不代表没有问题，还需要查看回放结论。
 
 ## 根据结论决定是否继续 {#decide}
 
@@ -129,7 +129,7 @@ curl -X POST http://sp-backend.internal:8090/api/config/schedule/modify/UPDATE \
 # 退出码：0 = 未发现问题（CLEAN）；1 = 有问题需要处理或核对；2 = 未完成验证，或调用出错。
 set -euo pipefail
 
-# 必填：SP_BACKEND（SoftProbe 后端地址）、SP_APP_ID（应用 appId）、SP_TARGET（被测服务地址）
+# 必填：SP_BACKEND（Softprobe 后端地址）、SP_APP_ID（应用 appId）、SP_TARGET（被测服务地址）
 for name in SP_BACKEND SP_APP_ID SP_TARGET; do
   if [ -z "${!name:-}" ]; then
     echo "请设置 $name"
@@ -221,7 +221,7 @@ esac
 
 | 变量 | 必填 | 说明 |
 |---|---|---|
-| `SP_BACKEND` | 是 | SoftProbe 后端地址，如 `http://sp-backend.internal:8090` |
+| `SP_BACKEND` | 是 | Softprobe 后端地址，如 `http://sp-backend.internal:8090` |
 | `SP_APP_ID` | 是 | 应用的 appId |
 | `SP_TARGET` | 是 | 被测服务地址 |
 | `SP_OPERATIONS` | 否 | 只回放这些接口，多个接口用逗号分隔，如 `/order/create,/order/pay` |
@@ -242,7 +242,7 @@ esac
 ### Jenkins
 
 ```groovy
-stage('SoftProbe 回放') {
+stage('Softprobe 回放') {
   environment {
     SP_BACKEND          = 'http://sp-backend.internal:8090'
     SP_APP_ID           = 'order-service'
@@ -289,7 +289,7 @@ jobs:
     runs-on: [self-hosted, intranet]
     steps:
       - uses: actions/checkout@v4
-      - name: SoftProbe 回放
+      - name: Softprobe 回放
         env:
           SP_BACKEND: http://sp-backend.internal:8090
           SP_APP_ID: order-service

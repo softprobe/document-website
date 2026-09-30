@@ -114,7 +114,7 @@ sp record completeness <traceId> --json
 ## 给技能用的提示词片段 {#prompt-snippet-for-a-skill}
 
 ```markdown
-排查 SoftProbe 回放失败时：
+排查 Softprobe 回放失败时：
 1. `sp replay case list --plan <id> --failed --json`，取每个失败用例的 replayId 和 traceId
 2. `sp diagnose replay <id> --out-dir .sp-work --json`，再读取 data.artifacts 里的文件；不要解析大段标准输出
 3. 日志：执行 `curl "$SP_API_URL/api/recorder/logs?trace_id=<traceId>&replay_id=<replayId>"`；先看 warnings；按 source 统计行数；依次看 backend、agent、app 的 ERROR/WARN

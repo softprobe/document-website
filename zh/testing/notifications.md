@@ -4,7 +4,7 @@ title: 回放结果通知
 
 # 回放结果通知
 
-流水线触发的回放结束后，SoftProbe 可以把回放结论推送到飞书群、钉钉群，或你自己的系统。
+流水线触发的回放结束后，Softprobe 可以把回放结论推送到飞书群、钉钉群，或你自己的系统。
 
 ::: warning 仅推送通过接口触发的回放
 只有通过 [发版后自动回放](/zh/testing/webhook-and-ci) 中的接口（`POST /openapi/v1/replay-triggers`）发起的回放才会推送通知。在页面上手动发起的回放、定时回放，以及通过 `GET /api/createPlan` 或 `sp` 命令发起的回放，都不会推送。
@@ -68,7 +68,7 @@ title: 回放结果通知
 
 ## 接收 Webhook 事件 {#webhook}
 
-类型选择「Webhook」时，SoftProbe 会向填写的地址发送 POST 请求，请求体为 [CloudEvents 1.0](https://cloudevents.io/) 格式的 JSON。
+类型选择「Webhook」时，Softprobe 会向填写的地址发送 POST 请求，请求体为 [CloudEvents 1.0](https://cloudevents.io/) 格式的 JSON。
 
 - 事件有两种：`ai.softprobe.replay.run.completed` 表示结论已产生；`ai.softprobe.replay.run.diagnosed` 表示 AI 分析结果已写回。后者只发送给 Webhook，群机器人不会收到。
 - 填写了「加签密钥」时，密钥会原样放在请求头 `X-Webhook-Secret` 中，由接收方自行比对，不做签名。

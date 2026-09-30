@@ -19,7 +19,7 @@ All paths are relative to the backend, for example `http://sp-backend.internal:8
 | `POST` | `/openapi/v1/replay-triggers` | [Trigger a replay](#trigger) |
 | `GET` | `/openapi/v1/replay-runs/{planId}` | [Get progress and findings](#run-status) |
 | `GET` | `/openapi/v1/replay-runs/{planId}/diagnosis` | [Read the stored result and deployment details](#diagnosis) |
-| `POST` | `/openapi/v1/replay-runs/{planId}/diagnosis` | Used by SoftProbe's analysis service to write back results; you don't need to call it |
+| `POST` | `/openapi/v1/replay-runs/{planId}/diagnosis` | Used by Softprobe's analysis service to write back results; you don't need to call it |
 | `GET` | `/openapi/v1/notification-channels` | [List notification channels](#channels) |
 | `POST` | `/openapi/v1/notification-channels` | [Create or update a channel](#channels) |
 | `DELETE` | `/openapi/v1/notification-channels/{id}` | [Delete a channel](#channels) |
@@ -275,7 +275,7 @@ Reads the stored result for this replay: `verdict`, `passRate`, case counts, the
 | `NO_CONCLUSION_YET` | Triggered but not finished. `attributes` can already be read |
 | `NOT_FOUND` | No stored result for this replay, for example because it wasn't triggered through the API |
 
-A `POST` to the same path is how SoftProbe's analysis service writes back its results. It doesn't start an analysis, and you don't need to call it. To have replays analyzed automatically, turn on **Replays triggered by CI** in [flow settings](/en/testing/replay-report#flow-settings).
+A `POST` to the same path is how Softprobe's analysis service writes back its results. It doesn't start an analysis, and you don't need to call it. To have replays analyzed automatically, turn on **Replays triggered by CI** in [flow settings](/en/testing/replay-report#flow-settings).
 
 ## Notification channels {#channels}
 

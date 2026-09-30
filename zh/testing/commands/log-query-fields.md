@@ -23,7 +23,7 @@ title: 日志查询字段
 | 字段 | 是否一定有 | 说明 |
 |------|-----------|------|
 | `timestamp` | 有 | 日志的发生时间，JSON 中为 ISO-8601 UTC，如 `2026-06-27T10:00:10.123Z`。用于排序和按 `[since, until)` 过滤 |
-| `severity` | 有 | 日志级别，如 `DEBUG`、`INFO`、`WARN`、`ERROR`。每个组件打哪些级别由它自己的日志配置决定，SoftProbe 不统一过滤 |
+| `severity` | 有 | 日志级别，如 `DEBUG`、`INFO`、`WARN`、`ERROR`。每个组件打哪些级别由它自己的日志配置决定，Softprobe 不统一过滤 |
 | `body` | 有 | 完整的日志内容，不截断 |
 | `service_name` | 有 | 打这行日志的服务，如 `travel-ota`、`sp-backend` |
 | `source` | 有 | 日志来自哪个组件：`agent`、`app` 或 `backend`（见 [source 的取值](#source-values)） |
@@ -77,7 +77,7 @@ jq -r '.rows[] | select(.source=="backend") | .body' /tmp/sp-logs.json | head -2
 | `app` | 应用自己的 Logback、Log4j2 或 JUL 配置 |
 | `backend` | sp-backend 的日志配置和 OpenTelemetry 日志上报配置 |
 
-SoftProbe 只给各组件已经打出的日志加上关联 ID 并转发，不改应用的日志级别，也不统一过滤级别。
+Softprobe 只给各组件已经打出的日志加上关联 ID 并转发，不改应用的日志级别，也不统一过滤级别。
 
 ## 示例（JSON） {#example-row-json}
 

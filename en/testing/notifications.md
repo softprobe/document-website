@@ -4,7 +4,7 @@ title: Replay notifications
 
 # Replay notifications
 
-When a pipeline-triggered replay finishes, SoftProbe can post the result to a Feishu group, a DingTalk group, or your own system.
+When a pipeline-triggered replay finishes, Softprobe can post the result to a Feishu group, a DingTalk group, or your own system.
 
 ::: warning Only API-triggered replays are posted
 Only replays started through the endpoint in [Replay after deployment](/en/testing/webhook-and-ci) (`POST /openapi/v1/replay-triggers`) send notifications. Replays started from the web console, scheduled replays, and replays started with `GET /api/createPlan` or the `sp` command don't.
@@ -41,7 +41,7 @@ Things to watch for:
 
 ## When notifications are sent {#when}
 
-- After the replay finishes, SoftProbe waits for AI noise reduction to finish and the result to be settled, then sends.
+- After the replay finishes, Softprobe waits for AI noise reduction to finish and the result to be settled, then sends.
 - When the result is `NEEDS_ACTION` or `REVIEW_ONLY` and this replay will also be analyzed automatically (triggered from CI, enabled in [flow settings](/en/testing/replay-report#flow-settings)), it waits for the analysis to produce a result, for up to 20 minutes. If the analysis isn't done by then, the notification is sent anyway and says how far the analysis got. Other results don't wait for the analysis.
 - Feishu and DingTalk receive one message per replay. Recomparing, undoing an ignore or similar actions in the report don't send another; re-running the same replay plan counts as a new round and sends again.
 - **Only on failure** looks at the result, not the pass rate: a replay with a 100% pass rate but too few endpoints (low coverage) still sends a notification.
@@ -66,7 +66,7 @@ Notifications never include field values or raw error messages — only field na
 
 ## Receive events in your own system {#webhook}
 
-With the Webhook type, SoftProbe sends a POST request to your URL, with a JSON body in [CloudEvents 1.0](https://cloudevents.io/) format.
+With the Webhook type, Softprobe sends a POST request to your URL, with a JSON body in [CloudEvents 1.0](https://cloudevents.io/) format.
 
 - There are two event types: `ai.softprobe.replay.run.completed` when the result is in, and `ai.softprobe.replay.run.diagnosed` when the AI analysis has been written back. The second is only sent to webhooks, not to chat bots.
 - If you set **Signing secret**, it is sent as-is in the `X-Webhook-Secret` header for your receiver to compare. Nothing is signed.

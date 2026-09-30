@@ -4,7 +4,7 @@ title: Capabilities, scope and resources
 
 # Capabilities, scope and resources
 
-For people evaluating SoftProbe: what it does, what kind of systems it fits, how it affects the service under test, and what the platform needs.
+For people evaluating Softprobe: what it does, what kind of systems it fits, how it affects the service under test, and what the platform needs.
 
 ## What it does {#features}
 
@@ -24,7 +24,7 @@ For people evaluating SoftProbe: what it does, what kind of systems it fits, how
 - **Language**: Java, JDK 8, 11, 17 and 21.
 - **Frameworks and middleware**: common web frameworks, HTTP clients, database access, caches and RPC frameworks are supported; the full list is in [Supported frameworks](/en/testing/supported-frameworks). Frameworks outside the list are assessed and adapted before onboarding.
 - **Replay entry points**: HTTP/HTTPS, and RPC entry points such as Dubbo.
-- **Deployment**: SoftProbe Cloud, or self-hosted on a single server (All-in-One) or on Kubernetes; self-hosted can run fully offline.
+- **Deployment**: Softprobe Cloud, or self-hosted on a single server (All-in-One) or on Kubernetes; self-hosted can run fully offline.
 
 ## Impact on the service under test {#impact}
 

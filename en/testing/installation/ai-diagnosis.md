@@ -4,7 +4,7 @@ title: Set up AI diagnosis and code repositories
 
 # Set up AI diagnosis and code repositories
 
-With a model connected, SoftProbe can pick out noise automatically after each replay (AI noise reduction), work out whether failed cases were caused by a code change (AI root-cause analysis), and help you investigate through chat in the console. Bind an application to its code repository as well, and the analysis can point at the actual change in the code.
+With a model connected, Softprobe can pick out noise automatically after each replay (AI noise reduction), work out whether failed cases were caused by a code change (AI root-cause analysis), and help you investigate through chat in the console. Bind an application to its code repository as well, and the analysis can point at the actual change in the code.
 
 **Recording and replay work fully without a model.** Diff rules still filter out noise; you only lose automatic noise reduction and root-cause analysis.
 
@@ -55,7 +55,7 @@ To read code during analysis, the platform needs an account with access to your 
 You can remove the account here at any time.
 
 ::: tip Administrators: OAuth
-On a self-hosted platform, an administrator can set up OAuth apps for your internal GitLab or GitHub, so users authorize with their own Git accounts instead of each creating a token. The entry is **Admin · Configure OAuth providers** at the bottom of the **Git accounts** page. If the page says the server needs configuring first, contact SoftProbe.
+On a self-hosted platform, an administrator can set up OAuth apps for your internal GitLab or GitHub, so users authorize with their own Git accounts instead of each creating a token. The entry is **Admin · Configure OAuth providers** at the bottom of the **Git accounts** page. If the page says the server needs configuring first, contact Softprobe.
 :::
 
 ## 4. Bind applications to their repositories {#bind-repo}
@@ -72,10 +72,10 @@ Open **Applications** at the bottom left and click the bind button (the branch i
 
 Click **Save & clone**, and the platform clones the code onto the platform server. Once the status is **Ready**, it's in use. On **Clone failed**, check the token's permissions and the network from the platform server to the repository.
 
-The AI reads the bound branch. SoftProbe doesn't check that this code matches the version actually running in the service under test; the report records which branch and commit the analysis read.
+The AI reads the bound branch. Softprobe doesn't check that this code matches the version actually running in the service under test; the report records which branch and commit the analysis read.
 
 ::: info When the platform can't reach your repositories
-If your repositories are on a network the platform can't reach (for example with SoftProbe Cloud), use the [desktop client](/en/testing/installation/deployment#desktop): under **Applications**, click **Bind folder** on the application and point it at code already cloned on your computer. The AI reads the code on that computer, and the code never leaves it.
+If your repositories are on a network the platform can't reach (for example with Softprobe Cloud), use the [desktop client](/en/testing/installation/deployment#desktop): under **Applications**, click **Bind folder** on the application and point it at code already cloned on your computer. The AI reads the code on that computer, and the code never leaves it.
 :::
 
 ## Running without AI {#disable}

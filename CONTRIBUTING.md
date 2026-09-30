@@ -11,7 +11,7 @@ Replay Testing docs live under **`en/testing/`** and **`zh/testing/`**.
 | Deploy and operate (deployment choice, preparation, All-in-One, Helm, Java agent, data protection, AI diagnosis, maintenance) | `{en,zh}/testing/installation/*.md`, `{en,zh}/testing/java-agent.md`, `{en,zh}/testing/supported-frameworks.md` |
 | Pipelines and notifications | `{en,zh}/testing/{webhook-and-ci,notifications}.md`, `{en,zh}/testing/examples/gitops-policies.md` |
 | `sp` command line, AI agent contracts, references | `{en,zh}/testing/{agents,commands,reference,examples}/`, `{en,zh}/testing/policy-yaml-guide.md` |
-| Business observability (SoftProbe Cloud only) | `{en,zh}/platform/` |
+| Business observability (Softprobe Cloud only) | `{en,zh}/platform/` |
 | Agent Evaluation (`en/evaluation/implementer/` is internal, excluded from the build) | `{en,zh}/evaluation/` |
 
 Content for our own implementation engineers (on-site process, compatibility assessment, internal troubleshooting, schedules) does **not** belong on this public site; it lives in the internal field handbook.

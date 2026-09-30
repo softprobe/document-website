@@ -4,7 +4,7 @@ title: 选择接入方式
 
 # 选择接入方式
 
-这一部分写给要用脚本、CI 任务、插件或 AI 代理技能对接 SoftProbe 的人，也写给 AI 代理本身（OpenCode / spcode、Claude Code、Codex、Cursor 等通过命令行工具调用 SoftProbe 的宿主）。
+这一部分写给要用脚本、CI 任务、插件或 AI 代理技能对接 Softprobe 的人，也写给 AI 代理本身（OpenCode / spcode、Claude Code、Codex、Cursor 等通过命令行工具调用 Softprobe 的宿主）。
 
 ## 选哪种方式 {#pick-an-interface}
 
@@ -32,13 +32,13 @@ title: 选择接入方式
 | 组成部分 | 作用 |
 |------|------|
 | **你的 Java 服务** | 启动时带上 `-javaagent:/path/to/sp-agent.jar` |
-| **SoftProbe Java Agent** | 运行时织入字节码，不改代码就能录下 HTTP、数据库、缓存、RPC 等依赖调用；回放时用录制结果代替这些调用 |
-| **SoftProbe 后端（sp-backend）** | 保存录制数据、策略、回放计划、日志、对比结果和 Agent 心跳；读写数据的 `sp` 命令都通过 HTTP 访问它（默认端口 `:8090`） |
+| **Softprobe Java Agent** | 运行时织入字节码，不改代码就能录下 HTTP、数据库、缓存、RPC 等依赖调用；回放时用录制结果代替这些调用 |
+| **Softprobe 后端（sp-backend）** | 保存录制数据、策略、回放计划、日志、对比结果和 Agent 心跳；读写数据的 `sp` 命令都通过 HTTP 访问它（默认端口 `:8090`） |
 | **`sp` 命令行** | 注册应用、发布策略、查看 Agent 状态、查询录制数据、发起回放、诊断失败。JSON 输出稳定，退出码可预期，大块内容写到文件，见 [输出约定](/zh/testing/agents/output-contract) |
 
 回放需要先有录制用例，而用例只能来自挂着 Agent 真实运行过的应用，所以新系统上第一步永远不是回放。
 
-Agent 通过 JVM 参数挂载。请显式固定应用 ID：SoftProbe 靠它区分录制数据、拉取配置、匹配回放数据（它和 `OTEL_SERVICE_NAME` 无关）。可以用 `sp app create` 返回的 ID，也可以用 `order-service` 这类固定、非空的名字；后端没见过的 ID 通常会在 Agent 第一次拉取配置时自动注册（例外见 [概念与编号](/zh/testing/agents/concepts#application-appid)）：
+Agent 通过 JVM 参数挂载。请显式固定应用 ID：Softprobe 靠它区分录制数据、拉取配置、匹配回放数据（它和 `OTEL_SERVICE_NAME` 无关）。可以用 `sp app create` 返回的 ID，也可以用 `order-service` 这类固定、非空的名字；后端没见过的 ID 通常会在 Agent 第一次拉取配置时自动注册（例外见 [概念与编号](/zh/testing/agents/concepts#application-appid)）：
 
 ```bash
 java \

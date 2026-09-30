@@ -4,11 +4,11 @@ title: Kubernetes 部署（Helm）
 
 # Kubernetes 部署（Helm）
 
-使用 Helm 在 Kubernetes 上安装 SoftProbe 后端。Chart 支持部署集群内**内置 MongoDB 与 Redis**，也可以连接**外部 MongoDB（单机/副本集）、外部 Redis（单机/Sentinel 集群）与外部 S3 存储桶**。
+使用 Helm 在 Kubernetes 上安装 Softprobe 后端。Chart 支持部署集群内**内置 MongoDB 与 Redis**，也可以连接**外部 MongoDB（单机/副本集）、外部 Redis（单机/Sentinel 集群）与外部 S3 存储桶**。
 
 Chart **v4.3.x+** 默认启用 [统一日志管道](#unified-log-pipeline)（Vector、Parquet PVC、压缩）。全新安装只需配置下方的 MongoDB 与加密密钥——无需单独的 `logPipeline` 块。
 
-**前置条件：** Kubernetes 1.24+、Helm 3.x、SoftProbe 提供的 GCR 拉取凭据，以及用于加密报文的 `encryption.secretKey`（见 [数据保护与保留期](/zh/testing/installation/data-protection#encryption)）。网络策略与单机部署相同，见 [部署前准备](/zh/testing/installation/preparation#network)。
+**前置条件：** Kubernetes 1.24+、Helm 3.x、Softprobe 提供的 GCR 拉取凭据，以及用于加密报文的 `encryption.secretKey`（见 [数据保护与保留期](/zh/testing/installation/data-protection#encryption)）。网络策略与单机部署相同，见 [部署前准备](/zh/testing/installation/preparation#network)。
 
 若使用**内置** MongoDB，集群需有默认或已配置的 `StorageClass` 供 MongoDB PVC 使用。
 
@@ -238,7 +238,7 @@ curl -s http://127.0.0.1:8090/actuator/health
 
 ## 升级已有 Release {#upgrade-existing-release}
 
-使用安装时的 release 名称、命名空间与 `values.yaml`。SoftProbe 发布 tag 与 Helm Chart 版本的对应关系：
+使用安装时的 release 名称、命名空间与 `values.yaml`。Softprobe 发布 tag 与 Helm Chart 版本的对应关系：
 
 | 发布 tag | Chart `--version` | `image.tag` |
 |----------|-------------------|-------------|
@@ -282,7 +282,7 @@ helm upgrade softprobe softprobe/sp-backend \
   --set createNamespace=false
 ```
 
-若 release 名称不同，请将 `softprobe` 替换为实际名称。**`image.tag`** 须固定为 SoftProbe 提供的 semver 发布版本——不要用 `latest`。
+若 release 名称不同，请将 `softprobe` 替换为实际名称。**`image.tag`** 须固定为 Softprobe 提供的 semver 发布版本——不要用 `latest`。
 
 **示例——旧 values 文件无 `logPipeline` 块：** 文件仍为：
 
@@ -576,7 +576,7 @@ logPipeline:
       existingSecret: softprobe-log-azure-credentials
 ```
 
-容器需已存在。SoftProbe 使用账户名 + 访问密钥（Azure Shared Key）认证。此模式下**不会**创建 Parquet PVC。
+容器需已存在。Softprobe 使用账户名 + 访问密钥（Azure Shared Key）认证。此模式下**不会**创建 Parquet PVC。
 
 #### 压缩与保留（所有后端）
 

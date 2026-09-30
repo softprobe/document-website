@@ -43,7 +43,7 @@ export SP_TOKEN="eyJ..."
 sp app list --json
 ```
 
-**Java Agent** 在 SoftProbe Cloud 上使用**租户 API key**（长期有效，仅该组织可用）：
+**Java Agent** 在 Softprobe Cloud 上使用**租户 API key**（长期有效，仅该组织可用）：
 
 ```bash
 export SP_TENANT_API_KEY="…"   # 来自 sp tenant key ensure 或控制台的设置

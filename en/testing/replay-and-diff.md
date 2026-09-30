@@ -19,7 +19,7 @@ Entry requests really reach the target service and its business code really runs
 - Turn recording off, or very low, on the replay target, so replayed requests aren't recorded again.
 :::
 
-The backend that runs the replay must be able to reach the target. If you use SoftProbe Cloud and the target only runs on your machine, use [`sp tunnel`](/en/testing/commands/tunnel).
+The backend that runs the replay must be able to reach the target. If you use Softprobe Cloud and the target only runs on your machine, use [`sp tunnel`](/en/testing/commands/tunnel).
 
 ## Replay now {#run}
 
@@ -97,8 +97,8 @@ The task list shows each task's trigger rule, next run and an **Auto-schedule** 
 
 If creating the plan fails when the time comes — for example there are no recordings in the window, or another replay is being created for the same application — that scheduled run doesn't start, and the reason shows in Run records.
 
-::: info SoftProbe Cloud
-Scheduled replays on SoftProbe Cloud are started from the cloud, so the target must be reachable from the internet. For a target on an internal network, use **Run replay now** in the desktop client.
+::: info Softprobe Cloud
+Scheduled replays on Softprobe Cloud are started from the cloud, so the target must be reachable from the internet. For a target on an internal network, use **Run replay now** in the desktop client.
 :::
 
 ## During a replay {#during}

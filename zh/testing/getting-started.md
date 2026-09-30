@@ -4,7 +4,7 @@ title: 第一次录制回放
 
 # 第一次录制回放
 
-在已经部署好的 SoftProbe 上，把一个 Java 服务接进来，录几条请求，在测试环境回放一次，看懂报告。全程在控制台操作，每一步也给出了对应的 `sp` 命令。
+在已经部署好的 Softprobe 上，把一个 Java 服务接进来，录几条请求，在测试环境回放一次，看懂报告。全程在控制台操作，每一步也给出了对应的 `sp` 命令。
 
 ::: tip 选择操作方式
 下面每张卡片顶部可以切换「控制台」和「命令行」。站点会记住你的选择。
@@ -12,7 +12,7 @@ title: 第一次录制回放
 
 ## 准备 {#prerequisites}
 
-- **SoftProbe 控制台地址**和**后端地址**。单机部署（All-in-One）时两者都是平台服务器的 `8090` 端口，例如 `http://10.0.0.5:8090`。还没有部署平台的话，先看 [选择部署方式](/zh/testing/installation/deployment)。
+- **Softprobe 控制台地址**和**后端地址**。单机部署（All-in-One）时两者都是平台服务器的 `8090` 端口，例如 `http://10.0.0.5:8090`。还没有部署平台的话，先看 [选择部署方式](/zh/testing/installation/deployment)。
 - **一个可以重启的 Java 服务**，JDK 8、11、17 或 21，最好在测试环境。支持的框架见 [支持的 Java 版本与框架](/zh/testing/supported-frameworks)。
 - 服务所在机器能访问后端地址；后端能访问这个服务的业务端口（回放时要把请求发给它）。
 - 用命令行操作时，先按 [安装 sp 命令行](/zh/testing/installation/) 安装并连接到同一个后端，完成 [认证](/zh/testing/agents/authentication)。服务启动参数里的 `-Dsp.api.url` 只给 Agent 用，和命令行无关。
@@ -51,7 +51,7 @@ java -javaagent:/path/to/sp-agent.jar \
      -jar order-service.jar
 ```
 
-- `sp.app.id` 是这个服务在 SoftProbe 里的应用 ID，取一个固定的名字即可；第一次启动时会自动注册。同一个服务的所有实例用同一个 ID。
+- `sp.app.id` 是这个服务在 Softprobe 里的应用 ID，取一个固定的名字即可；第一次启动时会自动注册。同一个服务的所有实例用同一个 ID。
 - `sp.api.url` 是后端地址，必须带 `http://` 或 `https://`。
 
 Tomcat、Docker、Kubernetes 等部署方式的写法见 [接入 Java Agent](/zh/testing/java-agent)。
@@ -151,5 +151,5 @@ sp demo traffic
 sp demo replay --watch
 ```
 
-后端是 SoftProbe Cloud、演示应用跑在本机时，另开一个终端运行 [`sp tunnel`](/zh/testing/commands/tunnel)。命令说明见 [sp demo](/zh/testing/commands/demo)。
+后端是 Softprobe Cloud、演示应用跑在本机时，另开一个终端运行 [`sp tunnel`](/zh/testing/commands/tunnel)。命令说明见 [sp demo](/zh/testing/commands/demo)。
 :::

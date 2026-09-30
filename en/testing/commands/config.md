@@ -4,7 +4,7 @@
 
 ## Synopsis
 
-Manage XDG-backed SoftProbe config, profiles, and backend URL.
+Manage XDG-backed Softprobe config, profiles, and backend URL.
 
 ## Subcommands
 

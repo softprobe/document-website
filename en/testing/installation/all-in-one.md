@@ -4,15 +4,15 @@ title: Single-server install (All-in-One)
 
 # Single-server install (All-in-One)
 
-Install the whole SoftProbe platform on one Linux VM: backend, console, database, cache and log components all run on that machine under Docker. The package is fully offline, so it also works on internal networks without internet access.
+Install the whole Softprobe platform on one Linux VM: backend, console, database, cache and log components all run on that machine under Docker. The package is fully offline, so it also works on internal networks without internet access.
 
 Before you start, prepare the machine and network rules as described in [Before you deploy](/en/testing/installation/preparation).
 
 ## The package {#package}
 
-The package is a self-extracting shell script, built per CPU architecture and supplied by SoftProbe. It's named like `softprobe-linux-amd64-<build time>.sh` and is about 1.1 GB. It contains:
+The package is a self-extracting shell script, built per CPU architecture and supplied by Softprobe. It's named like `softprobe-linux-amd64-<build time>.sh` and is about 1.1 GB. It contains:
 
-- The SoftProbe platform image, plus the MongoDB, Redis and log component images
+- The Softprobe platform image, plus the MongoDB, Redis and log component images
 - Offline Docker and Docker Compose, installed automatically if the machine has no Docker
 - Start and stop scripts
 - What the rootless install needs
@@ -129,7 +129,7 @@ The rootless install has a few system requirements, and fixing them needs root. 
 softprobe/rootless/sp-rootless-up.sh --check
 ```
 
-If the package isn't on the server yet, ask SoftProbe for the standalone check script `sp-rootless-precheck-<arch>-<build time>.sh` (a small file of about 15 KB) and run `bash sp-rootless-precheck-*.sh --check`.
+If the package isn't on the server yet, ask Softprobe for the standalone check script `sp-rootless-precheck-<arch>-<build time>.sh` (a small file of about 15 KB) and run `bash sp-rootless-precheck-*.sh --check`.
 
 It prints PASS or FAIL for each item. The main ones:
 

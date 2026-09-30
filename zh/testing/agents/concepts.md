@@ -4,7 +4,7 @@ title: 概念与编号
 
 # 概念与编号
 
-用脚本操作 SoftProbe 时会碰到的几类对象，以及把录制、回放、差异和日志串起来的各种编号。录制回放的整体原理见 [工作原理](/zh/testing/how-it-works)。
+用脚本操作 Softprobe 时会碰到的几类对象，以及把录制、回放、差异和日志串起来的各种编号。录制回放的整体原理见 [工作原理](/zh/testing/how-it-works)。
 
 ## 应用（`appId`） {#application-appid}
 

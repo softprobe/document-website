@@ -1,6 +1,6 @@
 # Softprobe documentation (VitePress v2)
 
-Unified public docs, in English and Chinese: **Replay Testing** (`/{en,zh}/testing/…` — record and replay, deployment and operations, pipelines, the `sp` command line and AI agent contracts), **Business observability** (`/{en,zh}/platform/…`, SoftProbe Cloud only), **Agent QA** (`/{en,zh}/agent-qa/…`) and **Agent Evaluation** (`/{en,zh}/evaluation/…`).
+Unified public docs, in English and Chinese: **Replay Testing** (`/{en,zh}/testing/…` — record and replay, deployment and operations, pipelines, the `sp` command line and AI agent contracts), **Business observability** (`/{en,zh}/platform/…`, Softprobe Cloud only), **Agent QA** (`/{en,zh}/agent-qa/…`) and **Agent Evaluation** (`/{en,zh}/evaluation/…`).
 
 Legacy `/cli/*` and Docusaurus URLs are redirected by Cloudflare rules in [`public/_redirects`](./public/_redirects); see [REDIRECTS.md](./REDIRECTS.md).
 
@@ -51,7 +51,7 @@ See [REDIRECTS.md](./REDIRECTS.md) for legacy URL mapping.
 | Path | Contents |
 |------|----------|
 | `{en,zh}/testing/` | Replay Testing. Sidebar groups: getting started, everyday use, deploy and operate, pipelines and notifications, integrate and AI agents, command reference |
-| `{en,zh}/platform/` | Business observability (Istio/Envoy mesh capture), SoftProbe Cloud only |
+| `{en,zh}/platform/` | Business observability (Istio/Envoy mesh capture), Softprobe Cloud only |
 | `{en,zh}/agent-qa/` | Agent QA |
 | `{en,zh}/evaluation/` | Agent Evaluation |
 | `{en,zh}/cli/implementer/`, `en/evaluation/implementer/` | Internal notes, excluded from the build |

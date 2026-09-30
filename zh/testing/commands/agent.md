@@ -46,7 +46,7 @@ sp agent download 2.0.0 --out-dir ./libs --json
 
 ## `agent command`
 
-在 **SoftProbe Cloud** 上，先运行一次 `sp tenant key ensure`（或让本命令自动创建密钥）。输出会包含 Java Agent 使用的 `-Dsp.api.token=`。
+在 **Softprobe Cloud** 上，先运行一次 `sp tenant key ensure`（或让本命令自动创建密钥）。输出会包含 Java Agent 使用的 `-Dsp.api.token=`。
 
 ```bash
 sp tenant key ensure --json   # SaaS：每个租户一次

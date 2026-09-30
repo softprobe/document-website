@@ -39,8 +39,8 @@ title: 命令参考
 | [policy](./policy) | 录制、Mock、对比 YAML 策略 |
 | [replay](./replay) | 运行、查看进度、统计、报告、停止、重跑回放计划 |
 | [health](./health) | 集群健康检查 |
-| [tenant](./tenant) | 仅 SoftProbe Cloud：Agent 使用的租户 API 密钥 |
-| [tunnel](./tunnel) | 仅 SoftProbe Cloud：反向隧道，让回放请求能到达你本机的服务 |
+| [tenant](./tenant) | 仅 Softprobe Cloud：Agent 使用的租户 API 密钥 |
+| [tunnel](./tunnel) | 仅 Softprobe Cloud：反向隧道，让回放请求能到达你本机的服务 |
 
 ## 排查 {#investigation}
 
