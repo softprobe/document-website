@@ -131,7 +131,7 @@ sp replay status <planId> --watch --json
 
 ## 4. Read the replay report {#report}
 
-Open the run from Run records. The first line of the report is the verdict; below it, cases that didn't pass are grouped by cause: differences caused by code changes, cause not established, and invalid. Start with the code-change group and confirm whether each change was intended.
+Open the run from Run records and switch to the **Report** tab. The first line is the conclusion. When the replay has been analyzed by AI, the cases that didn't pass are listed below it as **Problems** (caused by code changes), **Cause not established** and **Other results**. Start with **Problems** and confirm whether each change was intended.
 
 How to read the report: [Replay report](/en/testing/replay-report). Going through differences one by one and removing noise: [Review differences](/en/testing/review-diffs-in-the-web-ui).
 
