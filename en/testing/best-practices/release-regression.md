@@ -201,7 +201,7 @@ The pipeline doesn't wait for the AI. About 9 minutes after it stopped, the AI f
 
 ![The replay report: one difference caused by a code change, first seen, traced to the commit and line](/img/docs/testing/en/cicd-report.png)
 
-**Watch out**: the AI sorts failed cases into **Differences caused by code changes**, **Cause not established** and **Invalid**, but it can be wrong, so its analysis doesn't change the result and a person always decides whether to release. The AI reads the code on the bound branch and doesn't check that it's the version being released, so bind the branch you release from.
+**Watch out**: the AI sorts failed cases into **Problems** (caused by code changes), **Cause not established** and **Other results**, but it can be wrong, so its analysis doesn't change the result and a person always decides whether to release. The AI reads the code on the bound branch and doesn't check that it's the version being released, so bind the branch you release from.
 
 ## ⑥ The group chat gets a notification {#notify}
 

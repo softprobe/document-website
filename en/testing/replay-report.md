@@ -4,175 +4,240 @@ title: Replay report
 
 # Replay report
 
-When a replay finishes, open it to see its report. The report answers three questions: are there differences, what caused them, and which ones need someone to act.
+Every replay produces a report. Read from top to bottom, it answers three questions: does this replay need attention (the first line is the conclusion); what needs attention, why, and what to do about it (the cards under **Problems**); and what happened to the remaining cases that did not pass (**Cause not established**, **Other results**, and **Replay settings & stats** at the bottom). This page follows the same order.
 
-For working through individual diffs — ignoring fields, marking cases passed — see [Review diffs](/en/testing/review-diffs-in-the-web-ui).
+For the basics of recording, replay and comparison, see [How it works](/en/testing/how-it-works). For working through individual differences (ignoring fields, marking cases passed), see [Review differences](/en/testing/review-diffs-in-the-web-ui).
 
-## Open the report
+## Open the report {#open-report}
 
-In the application workbench, go to **Replay plans → Run records** and click the run you want. The page opens on the **Report** tab; the **Cases** tab lists every case in this replay.
+In the application workbench, open **Replay plans → Run records** on the left, click a run, then switch to the **Report** tab. The **Cases** tab next to it lists every case in this replay.
 
-For replays triggered from a pipeline, the `reportUrl` returned by the API and the buttons on chat notifications open this same page. See [Replay after deployment](/en/testing/webhook-and-ci).
+For a replay triggered from a pipeline (CI), open the report directly from the `reportUrl` returned by the API or from the button in the group notification. See [Replay after deployment](/en/testing/webhook-and-ci).
 
-## Start with the conclusion
+The page header summarizes the replay:
 
-![The report's conclusion and first problem](/img/docs/testing/en/report-overview.png)
+- **Result tag**: once the analysis is done it reads **Code changes · N problems**, **Cause not established · N cases** or **No problems caused by code changes**. Before there is an analysis result it follows the replay result: **Passed**, **Not passed · N**, **Replay did not complete**, and so on.
+- **Duration**, **Pass rate** and the result bar. Pass rate = passed ÷ (passed + with differences + replay failed); in this example, 33 ÷ 50 = 66%. Every case ends in one of three results: **passed**, **with differences** (the replay ran, but the response or the calls differ from the recording), or **replay failed** (no comparable result was produced). The last two together are "not passed".
+- **Replay parameters** and **Replay again**: **Replay parameters** shows, read-only, the parameters this replay was created with. **Replay again** runs it once more with the same parameters: it opens a new replay pre-filled with them, and after you confirm it creates a new replay with its own report. It is disabled while this replay is still running. Use it to rerun after a code fix.
+- **Export** and **Ask AI**: for export, see [Export the report](#export-report). **Ask AI** opens the conversation for this replay; the AI can see the progress and conclusions of the replay and the analysis, and you can keep asking questions.
 
-The first line is the conclusion. What it says depends on how far the replay and the AI analysis have got:
+![The report header, the conclusion and the first problem](/img/docs/testing/en/report-overview.png)
 
-| Situation | Example conclusion |
+## Conclusion {#verdict}
+
+A report is produced in three steps: **Replay**, **AI noise reduction** and **AI cause analysis**. AI noise reduction looks for fields that change on every request, such as timestamps and random IDs. Fields it is sure about are ignored automatically; the ones it is less sure about are left as **Suspected noise** for a person to tick. AI cause analysis then examines the cases that still do not pass and judges whether the differences come from code changes. Replays triggered from a pipeline run both steps automatically by default. Manual replays only run noise reduction automatically; start the cause analysis from the report. Scheduled replays do not support automatic analysis yet; start it from the report as well. Change these defaults in [Flow settings](#flow-settings).
+
+The first line of the report is the conclusion. It changes with the progress of the replay and the analysis:
+
+| Situation | Example |
 |---|---|
-| Everything passed | "All 50 cases passed" |
-| AI analysis finished | "3 differences are caused by code changes; developers need to confirm they are intended", "No differences caused by code changes; cause not established for 3 cases", "No differences caused by code changes" |
-| AI analysis running | "AI is analyzing causes; the conclusion is still updating", with how many cases have been checked so far |
-| Analysis stopped partway | "Cause analysis did not finish", with the reason; anything already found is still listed |
-| Analysis never started | "Cause analysis did not run: …" with the reason (for example, today's automatic analyses are used up), or "Causes not analyzed yet" |
-| No AI analysis | "9 cases not passed, 3 kinds of differences to confirm" |
-| The replay itself had a problem | **Replay did not complete**, **No requests to replay**, or **Replay did not finish** |
+| Analysis finished, problems found | 2 problems caused by code changes; developers need to confirm whether they are expected; 1 not-passed with undetermined causes |
+| Analysis finished, no problems from code | No problems caused by code changes were detected in this replay |
+| Every problem confirmed by a person | 2 problems confirmed to be expected |
+| Analysis running | AI is analyzing causes; the conclusion is still updating |
+| Analysis did not finish | So far, 2 problems caused by code changes; developers need to confirm whether they are expected |
+| Analysis not started | Cause analysis did not run: today's automatic analyses are used up / Causes not analyzed yet |
+| No AI analysis (the Softprobe server is an older version) | 17 cases not passed, 5 kinds of differences to confirm |
+| All passed | All 50 cases passed |
+| Replay not finished or not completed | Replay in progress / Replay did not finish / Replay did not complete: the replay was interrupted / Replay did not complete: the replay was cancelled / No requests to replay |
 
-When the analysis didn't finish or never started, read the reason first, then click **Analyze this replay** or **Analyze again** under [Replay details](#replay-info). Cases that haven't been analyzed aren't known to be fine.
+**Replay did not finish** means part of the results came out, and what was replayed can be reviewed as usual. **Replay did not complete** means the whole replay was interrupted or cancelled, or there was nothing to replay.
 
-The second line breaks the case count down, for example:
+The second line, under the conclusion, also depends on the situation:
 
-> 50 cases: 41 passed (15 after ignoring noise), 9 not passed = 9 caused by code changes + 0 cause not established + 0 invalid
+- When the analysis is finished, it breaks the not-passed cases down by where they went, for example "50 cases: 33 passed · 17 not passed; of the not-passed, 13 are caused by code changes (see Problems) and 3 are in Other results". Add the 1 case with an undetermined cause from the conclusion and you get 17.
+- Before there is an analysis result, it only gives totals, for example "50 cases: 33 passed, 17 not passed". If some cases passed only after noise was ignored, that is stated after the passed count, as in "33 passed (15 after ignoring noise)".
+- After cases are marked passed, one more line shows the handling progress: how many problems are confirmed and how many are still waiting. The numbers in the conclusion do not change. They describe what the replay produced (including cases that passed after AI noise reduction) and are not affected by confirmation. Only the wording of the conclusion and this progress line change; the pass rate and the result bar in the header follow the same numbers.
 
-After someone marks cases passed, a progress line appears below it, such as "All 1 confirmed (9 cases marked passed)" or "1 confirmed (9 cases marked passed), 2 awaiting confirmation (6 cases)". The line above doesn't change: marking a case passed records that someone confirmed it; the replay result itself is the same.
+If the analysis did not finish, a yellow bar appears under the conclusion, for example "AI cause analysis did not finish (today's automatic analyses are used up); 3 cases were not analyzed, so the conclusion is incomplete.", with **Analyze again** on the bar. If nothing has been analyzed yet, **Analyze this replay** sits next to the conclusion; the status of each step and the manual entry points are also in [Replay settings & stats](#replay-info). A case that has not been analyzed yet is not a case without problems.
 
-Behind the report are three steps: Replay → AI noise reduction → AI cause analysis. AI noise reduction recognizes fields that change on every run (timestamps, random IDs and the like) as noise and ignores the ones that qualify; cases that still fail are then analyzed for their cause. Whether these two steps run automatically depends on [flow settings](#flow-settings): pipeline-triggered replays are analyzed automatically by default, while manual replays need the analysis started from the report.
+The bottom of the report states "Causes and next steps are given by AI, checked by AI, and not manually confirmed." **Analyze again** at the end of that line runs the analysis once more.
 
-::: warning The conclusion is about causes, not about whether to ship
-"No differences caused by code changes" doesn't mean there are no differences. Cases under **Cause not established** and **Invalid** still need someone to look at them.
+::: warning The conclusion is not a release decision
+"No problems caused by code changes were detected in this replay" does not mean there are no differences. Cases under **Cause not established** still need a person to investigate, and the AI can be wrong. Whether to release is always decided by people.
 :::
 
-::: info AI-written text is in Chinese by default
-Problem titles and explanations are written by the AI in the customer's language, which defaults to Chinese. That's why the screenshots on this page show Chinese text inside an English UI.
-:::
+## Problems {#problems}
 
-## Problems by cause
+When there is an analysis result, the not-passed cases are listed in three tiers: **Problems** (caused by code changes; developers to confirm), **Cause not established** and **Other results**. This section covers the first tier; for the other two, see [Cause not established and Other results](#other-tiers). In the header result tag, the case drawer title and the exported files, the Problems tier is written as "Code changes". For the **By cause / By difference** switch on the right of the title line, see [By difference](#by-diff).
 
-When an AI analysis is available, problems are grouped by cause into three tiers:
+Each problem is one card. From top to bottom:
 
-| Tier | Meaning | Next step |
-|---|---|---|
-| Differences caused by code changes | The AI judged these differences to be caused by code changes | A developer confirms whether the change is intended |
-| Cause not established | The AI couldn't confirm whether code is to blame | Investigate manually |
-| Invalid | Found not to be caused by code; split further into suspected noise, configuration, replay failed and Softprobe issues | Follow the handling note on each group |
+- **Number and title**: one sentence that sums up the change, such as "Member price now rounds down; payable is 1 lower". Tags next to the title: **Verified by AI** means the conclusion was re-checked and the code change matches the differences. **AI inference, not verified** means the conclusion is the AI's inference and the code has not been checked yet, so treat it only as a lead. **Judged by AI as a code defect** means the AI considers this a defect that needs a code fix (without this tag, handle the problem as a change to confirm). **includes N merged problems** means N other problems were judged by the AI to have the same cause and were merged into this one.
+- **Impact**: for example "Affects 11 cases (36 replayed)". The replayed count is the sum for the endpoints involved (22 for /order/price plus 14 for /order/detail), not the total of the whole replay. If some of the cases failed to replay, that is stated separately: "1 case failed to replay with no result to compare". The AI judges that these failures are also caused by this change.
+- **Evidence**: the endpoints involved, the code location, the change commit, and how many fields and paths changed. Paths are counted per value change: each distinct value change of a field counts as one. In this example, `payable` is one field with 4 value changes, shown as "fields: 1 · paths: 4". Click **View code change** to expand the code before and after the change in place; click **View the AI analysis** to see how the AI reached this conclusion.
+- **What to do**: "After developers confirm the differences are expected, a user with permission marks them as passed; otherwise developers fix the code and replay again". (For who counts as a user with permission, see [Handle a problem](#handle-a-problem).) If every case under the problem failed to replay, there is no result to confirm: the text becomes "Fix the code and replay again." and the card has no **Mark passed** button.
+- **Actions**: **Mark passed (N cases)**, **Copy problem** and **View N cases**. On a card tagged **Judged by AI as a code defect**, **Mark passed** is still there but is no longer the highlighted primary button.
 
-The screenshot below comes from a different replay: the cause of all 4 failing cases was established, and they sit under **Invalid → Suspected noise** (expanded here).
+What the card shows as code evidence depends on what the analysis could read:
 
-![The Cause not established and Invalid tiers](/img/docs/testing/en/report-tiers.png)
+- The application is bound to a code repository and the change was found: the evidence line shows the code location and the change commit, and **View code change** expands the code before and after. If the location was found but the commit was not, the card says "The code location was found, but the commit that last changed this line could not be read."
+- No repository is bound, but the Agent uploaded the packages the application loaded at runtime: the code block is still shown, titled "Code running when recorded → code running when replayed", with a note that the code is taken from those packages, has no comments, and may use variable names that differ from the source.
+- Neither a repository nor packages are available, or the code was read but the change could not be located: the card says "The analysis did not read a code repository, so the changed code and commit are not available; the cause was inferred from the response data." or "The analysis did not locate the changed code; the cause was inferred from the response data." Click **Bind a code repository**, bind one, and analyze again. See [Set up AI diagnosis and code repositories](/en/testing/installation/ai-diagnosis).
 
-**Invalid** is collapsed by default. **Cause not established** is always listed, even at 0 cases, for example "0 cases · the cause of all 4 failed cases was established". A title there marked **AI inference, not verified** is only the AI's guess; treat it as a lead.
+### Handle a problem {#handle-a-problem}
 
-### Differences caused by code changes
+Handling a problem comes down to one loop: a developer confirms whether the change is expected. If it is, mark it passed. If it is not, the developer fixes the code and replays again.
 
-Each difference gets one card. From top to bottom:
+"A user with permission" is not a separate role. Anyone who can sign in and open this application can click **Mark passed**, including the developer. The only exception is anonymous read-only access without signing in, where every button that changes something is locked.
 
-- **Title**: one sentence about what changed. The tag next to it says whether it's **First seen** or has appeared **N replays in a row**.
-- **Endpoint, case count and code location**, for example "/order/price · 9 cases (22 replayed on this interface) · PricingService.java:12".
-- **Explanation**: one concrete example of how the difference came about.
-- **How the response changed**: the field, its recorded value, its value this run, and how many cases.
-- **Code change**: when the code was located, its location; when the commit was found too, the commit and the code before and after.
+**Mark passed**: click **Mark passed (N cases)**. The results of those cases change to passed right away, and the card shows "N marked passed" and **Undo**. Once every case is marked, the card collapses into one line. When every problem is confirmed and no case has an undetermined cause, the conclusion becomes "N problems confirmed to be expected". Marking only affects this replay and can be undone at any time.
 
-After the AI gives a cause, it checks it against the replay data. The bottom-right corner of the card shows the result: **Verified** or **Not verified**.
+**Mark passed (N cases)** marks all cases under the problem in one go, with one exception: cases that failed to replay and came in through a merged problem are left out. They have no comparable result and cannot be confirmed in bulk; look at each one in the drawer, then mark it. The card says "N more can be marked individually in the case list on the right". The "case list" here is the drawer opened by **View N cases**, not the **Cases** tab.
 
-If the analysis couldn't read a code repository, or read it but couldn't locate the code, the card says the cause was inferred from the response data. Without a repository, click **Bind a code repository** on the card; once it's linked, analyze again so the AI can look for the cause in the code.
+The fields under a problem may include noise that has nothing to do with the change and differs on every request. If AI noise reduction suggested ignoring one of those fields and it has not been ignored yet, the primary button becomes **Mark passed and ignore &lt;field&gt; (N)**, with **Mark passed only** next to it. It marks and ignores in one step. The confirmation asks for two things:
 
-Actions at the bottom of the card:
+- **Duration**: **This replay only** or **Every future replay**.
+- **Scope**: **All interfaces of this application**, or "Only /order/price" (the current interface only). With **This replay only**, the scope is fixed to all interfaces in this replay, because a one-off ignore cannot be limited to one interface.
 
-- **Mark passed (N)**: confirm that these cases' differences are intended. When the difference sits in a single field, you can choose **Mark passed and ignore &lt;field&gt;** instead, then pick how long to ignore it (**This replay only** or **Every future replay**) and where.
-- **Copy problem**: copies a block of text with the endpoints, cause, code location and report link, ready to paste into a ticket or chat.
-- **View N cases**: opens the cases behind this difference.
-- **View the analysis**: shows how the AI reached its conclusion.
+Ignoring only writes the rule. Differences on the same field in other cases stop being reported after a [recompare](/en/testing/review-diffs-in-the-web-ui#recompare).
 
-### Problems by difference
+**Copy problem**: copies a ready-made piece of text — title, attribution, endpoints, code location and commit, number of cases, value changes, what to do, and the report link — to paste into a ticket or a chat and hand over to the developer.
 
-Click **By difference** in the top-right corner to group by the differences themselves, ignoring causes: differences to confirm, downstream call differences, replay failed, and suspected noise. Empty groups aren't shown. Without an AI analysis, this is the only view.
+**View N cases**: opens a drawer on the right with every case under this problem, grouped by how the response changed (cases with the same value change are in one group). You can search by case ID or value, click a case to see the field-by-field comparison and the call chain, and mark single cases passed. The bottom of the drawer also has the group-level **Mark passed (N cases)** and **Copy problem**.
 
-![Problems by difference](/img/docs/testing/en/report-by-diff.png)
+![The drawer opened by View N cases](/img/docs/testing/en/report-drawer.png)
 
-## Replay details {#replay-info}
+With more than 3 problems, a checkbox appears on the left of each card so you can select several and copy or mark them in bulk. If those problems also involve more than one endpoint, an endpoint filter appears on the **Problems (N)** line.
 
-**Replay details** sits at the bottom of the report and is collapsed by default. Its header already summarizes how many interfaces were replayed, which recordings were used and which code the analysis read. Expand it to see:
+### Problem details {#problem-detail}
 
-- **By interface**: how many cases each interface replayed, passed and didn't pass. With an analysis, the failures are split by tier.
-- **Replay settings**: the replay target, who started it, which recordings were used, how downstream calls were handled, and how long it took. When **Downstream** says "Responses fixed to the recorded values", database, Redis and HTTP calls and the system time all return what was recorded.
-- **The three steps**: the state and result of Replay, AI noise reduction and AI cause analysis. Once the replay has finished, you can start them by hand here: **Start noise reduction**, **Analyze this replay**, or **Run noise reduction again**, **Analyze again**.
-- **Flow settings**: see [below](#flow-settings).
-- **Ignored noise**: see [Ignored noise](#ignored-noise).
-- **Code version**: the branch and commit the AI analysis read. Softprobe doesn't check that this is the code the replayed service was running, and the page says so.
+**Problem details** at the bottom of the card is collapsed by default. Expanded, it contains:
 
-![Replay details expanded: interfaces, replay settings and the three steps](/img/docs/testing/en/report-info.png)
+- **Cause**: the AI explains, with one concrete set of data, how the difference came about.
+- **How the response changed**: grouped by value change, one group per row, with the field, the recorded value, the replayed value and the number of cases. More than 6 groups are folded; expand to see all.
+- **Replay result**: the cases under this problem that failed to replay, listed by error category.
+- **Merged problems**: one row for each other conclusion the AI judged to have the same cause and merged into this problem, with the number of cases it originally affected and its check status (**Verified by AI** or **AI inference, not verified**). If it was originally classified differently from this problem, the row also says "originally classified as: …". **The AI's reason for merging** can be expanded. These cases are already counted in the card's impact.
+
+![An expanded problem card: the code change and the problem details](/img/docs/testing/en/report-problem-detail.png)
+
+## Cause not established and Other results {#other-tiers}
+
+**Cause not established**: cases whose cause the AI could not confirm. The tier is listed only when it has cases and is expanded by default, because differences without an established cause may well include code problems. A title tagged **AI inference, not verified** is only the AI's guess; treat it as a lead. Expand an item to see the cause (for example "available for the same SKU changed from 12 to 11. No code change related to stock calculation was found in this release, and the data at hand is not enough to establish the cause."), the part that is **Not established**, the differences it produced (click **View difference** for details), how many cases the AI examined in detail, the **Evidence**, and **View the AI analysis**. Cases the analysis has not reached yet are also in this tier, labelled "N more queued", "N not analyzed yet", or "N ended without a conclusion" with the reason.
+
+Once the investigation has an answer: if it is a code problem, fix the code and replay again; if the differences are acceptable, mark the cases passed one by one in the **View N cases** drawer; or click **Analyze again** to let the AI look once more against the latest code.
+
+**Other results**: cases where the AI has established that the difference was not caused by a code change (cases that are not established yet are under **Cause not established**). The page uses other names for the same tier: "No problems needing developer action" next to the section title, and "No problems found in the new version" in the endpoint table and the exported files. It is collapsed into one line ("Other results (N cases)") by default, and expanded by default when it contains noise fields waiting to be ticked. Opened, it has one section per conclusion, and a grey line in each states why it is not counted as a problem. The page does not show the category name; match the line against this table:
+
+| Category | Why it is not a problem |
+|---|---|
+| Suspected noise | Difference from fields that change on every request, judged as noise |
+| Configuration | Related to configuration; not counted as a code-change problem |
+| Replay failed | Replay did not finish; no comparable result |
+| Softprobe issues | Issue in the Softprobe tool, unrelated to the code under test |
+| Recording does not fit the new version | The old recording does not apply to the new version; not compared this time |
+
+"Recording does not fit the new version" deserves a note. The difference is caused by a code change, but the new code took a path the recording does not cover, so the comparison could not be completed and the behavior of these endpoints was not verified this time. It needs no manual action: the Agent records automatically, and once the new version is running and requests reach these endpoints, later replays use the new recordings.
+
+For two of the other categories: with **Configuration**, adjust the configuration and replay again; with **Replay failed**, check the service under test first and replay again once it is back. Its note says these endpoints were not verified this time. A **Replay failed** section has a **View logs** link when it carries a representative case (one case picked as a sample). Every section ends with **View N cases** and **View the AI analysis**. This tier needs no action from developers and has no group-level **Mark passed**; single cases can still be marked in the drawer.
+
+Suspected noise fields are ticked and ignored here, with the same controls as in [By difference](#by-diff).
+
+![Cause not established and Other results](/img/docs/testing/en/report-other-tiers.png)
+
+## By difference {#by-diff}
+
+**By cause** is the main way to work through problems. Click **By difference** at the top right of the problems area for another angle: where the AI filed each kind of difference. The title of this area on the page changes to **Differences**. Differences on the same field, or with the same error, count as one kind, and the kinds are grouped by type: **Differences in detail** (field differences in the endpoint response), **Downstream call differences** (calls to the database, Redis or downstream services that differ from the recording), **Replay failed** and **Suspected noise**. Empty groups are not shown. When there is no AI analysis result (nothing was analyzed, or the Softprobe server is an older version), this is the only listing the report has.
+
+Rows in **Differences in detail** carry a tag showing where they went: "Problem 01", "Other results" or "Cause not yet determined", matching the problems under **By cause**. Fields in **Suspected noise** come from three sources: fields the AI cause analysis judged as noise; fields AI noise reduction considered noise-like but did not ignore automatically; and, when this replay has no noise reduction result, fields whose name or values look like common noise, such as timestamps, IDs and thread names.
+
+![By difference](/img/docs/testing/en/report-by-diff.png)
+
+Field rows have checkboxes. After you select one or more fields, the action bar at the bottom offers two ways to ignore them:
+
+- **Ignore for this replay**: applies to this replay only.
+- **Ignore permanently (N)**: writes the fields into the application's [diff rules](/en/testing/compare-rules-web-ui), so they are no longer compared in any future replay.
+
+Selecting a parent path also selects every child path under it, and the page lists what is included. Ignoring only writes the rule; the result of this replay does not change yet. Click **Recompare now** on the success message, and the related cases turn to passed after the recompare. The line on the page, "Once confirmed and ignored, the related cases pass", is shorthand for this.
+
+## Replay settings & stats {#replay-info}
+
+**Replay settings & stats** sits at the bottom of the report, collapsed by default. Expanded, it contains:
+
+- **The settings of this replay**: the replay target (with who started it), the traffic source (recording time range; all endpoints or selected endpoints), downstream handling and duration. When **Downstream** shows "Responses fixed to the recorded values", the database, Redis, HTTP and system time all use the recorded values. When it shows "Real downstream calls", these dependencies are really called.
+- **Endpoints with failures**: for each endpoint, the replayed, passed and not-passed counts. With an analysis result, the not-passed count is broken down by tier, as in "9 (code changes 9)". Click **View cases** to go to the case list. Endpoints where everything passed are folded into one line.
+- **The three steps**: the status and duration of Replay, AI noise reduction and AI cause analysis, including how many kinds of noise were ignored and how many cases pass as a result. After the replay completes you can **Start noise reduction** or **Analyze this replay** here, or **Run noise reduction again** and **Analyze again**. For **Flow settings** at the bottom right, see [Flow settings](#flow-settings).
+- **Ignored noise**: see below.
+- **Code version**: the branch and commit the AI read during the analysis, as in "The analysis read release/2.4 · 7c1e2ab (2026-09-29 10:34)." Softprobe does not check that this version is the code the service under test actually runs; the page says "Whether the replayed service runs the same code was not checked". When no repository is bound or there is no analysis, it shows "The code version used by the analysis was not recorded".
+
+![Replay settings & stats, expanded](/img/docs/testing/en/report-info.png)
+
+### Ignored noise {#ignored-noise}
+
+When some differences were ignored in this replay, **Ignored noise** appears inside **Replay settings & stats**. Its title line is a summary: how many kinds of differences the AI ignored for this replay only, how many cases passed as a result, and how many kinds and differences the configured rules skipped. Expanded, it has two kinds of rows:
+
+- **Fields ignored automatically by AI**: one row per field, with the reason the AI gave. They are ignored in this replay only. Each row ends with **Ignore permanently** and **Undo**. **Ignore permanently** writes the field into the application's [diff rules](/en/testing/compare-rules-web-ui) (for the whole application or only that endpoint), so it is no longer compared in any future replay. **Undo** puts it back into the comparison. The AI never changes diff rules on its own; ignoring permanently is always done by a person.
+- **Differences skipped by diff rules**: tagged **Configured rule**, with the number of times they were skipped. A field ignored automatically by AI also shows up here once more as a rule, so the same field can be listed in two rows, and the configured-rules figure in the summary includes it.
+
+The **Overview** sheet of the export counts these differences in another way, as in "Differences ignored by configured rules (not counted) 2 kinds, at least 22 cases": it leaves out the fields ignored automatically by AI and counts cases rather than occurrences. It does not contradict the 3 kinds and 59 differences shown on the page.
+
+![Ignored noise](/img/docs/testing/en/report-ignored-noise.png)
 
 ## Flow settings {#flow-settings}
 
-Under **Replay details**, click **Flow settings** below the three steps. Settings apply to the whole application and to every replay from then on. Replays that already finished aren't affected; to catch one up, start the step by hand.
+Click **Flow settings** at the bottom right of the three steps in **Replay settings & stats**. The settings apply to the whole application and take effect from the next replay; replays that are already finished are not affected. To run a step for a finished replay, start it manually from the three steps.
 
 ![Flow settings](/img/docs/testing/en/report-flow-settings.png)
 
 | Setting | Default | Notes |
 |---|---|---|
 | Reduce noise automatically after each replay | On | |
-| Daily noise reduction limit | 50 | 0 stops automatic noise reduction |
-| Model for noise reduction | Default model | Only connected, available models are listed |
-| Analyze causes automatically: Replays triggered by CI | On | Pipeline-triggered replays are analyzed automatically |
-| Analyze causes automatically: Manual replays | Off | When off, click **Analyze this replay** in the report |
-| Automatic analyses per day | 10 | Manual runs don't count; 0 stops automatic analysis |
-| Model used for analysis | Default model | Only connected models that use your own credentials are listed |
+| Daily noise reduction limit | 50 | Set to 0 to stop automatic noise reduction |
+| Model for noise reduction | Default model | Only lists models that are connected and available |
+| Analyze causes automatically after noise reduction: Replays triggered by CI | On | |
+| Analyze causes automatically after noise reduction: Manual replays | Off | When off, click **Analyze this replay** in the report |
+| Automatic analyses per day | 10 | Analyses started manually do not count; set to 0 to stop automatic analysis |
+| Model used for analysis | Default model | Only lists connected models that use your own credentials |
 
-- Scheduled replays aren't analyzed automatically yet; start the analysis from the report.
-- Noise reduction and analysis run on the server and don't follow the model picked in the chat box.
+Also:
 
-## Ignored noise {#ignored-noise}
-
-This section appears under **Replay details** when something was ignored in this replay. Its header says how many kinds the AI ignored, how many cases passed as a result, and how many kinds of difference the ignore rules skipped. Expanded, each ignored field takes one row:
-
-- Fields AI noise reduction judged to be noise are ignored in this replay only, and each row ends with **Undo** and **Ignore permanently**. **Undo** puts the field back into the comparison; **Ignore permanently** adds it to the application's compare rules so it's skipped on every future replay. The AI never changes compare rules on its own — making an ignore permanent is always a human action.
-- Differences skipped by your [compare rules](/en/testing/compare-rules-web-ui) are tagged **Configured rule**, with how many times each was skipped.
-
-![Ignored noise](/img/docs/testing/en/report-ignored-noise.png)
+- The noise reduction settings and the analysis settings are saved separately.
+- Noise reduction and analysis both run on the server with the models set here, regardless of the model chosen in the chat box.
+- To connect a model or bind a code repository, see [Set up AI diagnosis and code repositories](/en/testing/installation/ai-diagnosis).
 
 ## Export the report {#export-report}
 
-To archive the report, present it, or share it in chat, click **Export** in the page header.
+To archive the report, present it, or post it to a group, click **Export** in the page header.
 
 ![The export menu](/img/docs/testing/en/report-export-menu.png)
 
-| Menu item | What you get | Good for |
+| Menu item | Contents | Good for |
 |---|---|---|
-| Download Excel | A filterable Excel file; every row links back to the platform | Archiving, line-by-line checks |
-| Print / Save as PDF | A fixed A4 layout; choose "Save as PDF" as the printer to get a PDF | Reviews, archiving |
-| Copy summary | The conclusion and the differences with the most impact, as both plain and rich text | Chat, email |
-| Copy Markdown | The report with tables: conclusion, problems, differences and per-interface counts, without individual cases | Tickets, documents |
-| Copy link | The current page's URL, including the environment and filters | Sending to a teammate |
+| Download Excel | A filterable .xlsx; every row links back to the platform | Archiving, checking item by item |
+| Print / Save as PDF | A fixed A4 layout; choose "Save as PDF" in the print dialog | Presenting |
+| Copy summary | The conclusion and the 5 pending diffs with the largest impact, with a link to the full report; copied as both plain text and rich text | Chat, email |
+| Copy Markdown | The report with tables: conclusion, problems, differences and endpoint statistics, without individual cases | Tickets, documents |
+| Copy link | The address of the current page, including filters | Sending to a colleague |
 
-While the replay is queued or running, **Download Excel** and **Print / Save as PDF** are disabled; **Copy summary** and **Copy Markdown** still work and reflect the progress so far.
+While the replay is queued or running, **Download Excel** and **Print / Save as PDF** are unavailable ("Available after the replay finishes"). The three copy items work, with the progress at that moment.
 
-### What's in the Excel file
+### What's in the Excel file {#excel}
 
-The file has 5 sheets: Overview, Pending diffs, Ignored diffs, Endpoints and Case details. When the replay has an AI analysis, there's a sixth sheet, Problems.
+The Excel file has 5 sheets: Overview, Pending diffs, Ignored diffs, Endpoints and Case details. When there is an AI analysis record, a Problems sheet is added, for 6 in total.
 
-- **Overview**: the conclusion, the numbers and how this replay was run.
-- **Problems**: each problem the AI found, matching the cards in the report.
-- **Pending diffs**: sorted by the number of cases affected, each row linking back to the platform.
-- **Ignored diffs**: who ignored each one (AI noise reduction or an ignore rule), why, where it applies, and whether it's still in effect.
-- **Endpoints**: how many cases passed, differed and failed to replay for each interface.
-- **Case details**: by default, only cases with differences or replay failures. To include passing cases, tick **Excel includes passing cases** at the bottom of the menu first. Up to 20,000 cases.
+| Sheet | Contents |
+|---|---|
+| Overview | The conclusion, the numbers, the settings of this replay and what this export covers. The conclusion is written by case count and worded differently from the page, as in "13 caused by code changes, to be confirmed or fixed by the developer, 3 found no problems in the new version, another 1 with cause not established" |
+| Problems | The problems found by the AI analysis, matching the cards in the report. The Checked column reads "Verified by AI", "AI inference, not verified" or "From the error text". A merged problem follows the problem it was merged into, on the next row, and is not counted separately |
+| Pending diffs | Sorted by the number of cases affected; every row links to the platform |
+| Ignored diffs | Where the ignore came from (AI noise reduction or a rule), the reason, the scope, and whether it is still in effect |
+| Endpoints | Passed, with-differences and replay-failed counts per endpoint |
+| Case details | By default only cases with differences or replay failures. Tick **Excel includes passing cases** at the bottom of the menu to include every case, up to 20,000 |
+
+::: tip Incomplete data is flagged
+When there are too many differences and only the ones with the largest impact are listed, when some cases could not be fetched, or when the case count does not match the statistics, the **Overview** sheet says so. If some cases could not be fetched, the page also shows a notice with **Export again**.
+:::
 
 ![The Overview sheet](/img/docs/testing/en/report-export-excel.png)
 
-::: tip Missing data is always called out
-If only part of the differences were listed, some cases couldn't be fetched, or the case count doesn't match the statistics, the Overview sheet says so. When cases couldn't be fetched, the page also shows a notice with **Export again**.
-:::
+### The printed version {#print}
 
-### The printed version
-
-The print layout is a fixed A4 page. It covers the conclusion, replay details, problems (when there's an AI analysis), pending diffs (the top 20 only, with a note that the rest are on the platform), ignored diffs, the interfaces with problems, and what this export covers. Per-case detail is only in the Excel file.
+The printed version uses a fixed A4 layout. It contains the conclusion, the replay details, the problems (when there is an AI analysis; all three tiers are listed, each with its tier name, such as "Code changes:", "Cause not established:" and "Other results · Suspected noise:"), the pending diffs (only the first 20; the rest point to the platform), the ignored diffs, the endpoints with problems, and what this export covers. Individual case details are only in the Excel file.
 
 ![The first printed page](/img/docs/testing/en/report-export-print.png)
 
 ## Next steps
 
-- [Review diffs](/en/testing/review-diffs-in-the-web-ui): work through individual diffs, mark cases passed or ignore fields.
-- [Configure compare rules](/en/testing/compare-rules-web-ui): turn fields that change on every run into rules.
-- [Replay after deployment](/en/testing/webhook-and-ci): replay automatically after each deploy and let the result decide whether the pipeline continues.
+- [Review differences](/en/testing/review-diffs-in-the-web-ui): go through differences one by one, mark cases passed or ignore fields.
+- [Diff rules](/en/testing/compare-rules-web-ui): turn fields that change on every request into ignore rules.
+- [Replay after deployment](/en/testing/webhook-and-ci): replay automatically after a deployment and let the conclusion decide whether the pipeline continues.
