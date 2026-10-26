@@ -1,9 +1,20 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "document-website",
+  "account_id": "fb4b299688885a31058d94ee11ee1129",
+  "main": "worker/index.ts",
   "compatibility_date": "2026-06-02",
   "assets": {
+    "binding": "ASSETS",
+    "run_worker_first": true,
     "directory": ".vitepress/dist",
-    "not_found_handling": "single-page-application"
-  }
+    "not_found_handling": "404-page"
+  },
+  "secrets": { "required": ["DOCS_PASSWORD"] },
+  "ratelimits": [{
+    "name": "LOGIN_RATE_LIMIT",
+    "namespace_id": "2026102601",
+    "simple": { "limit": 10, "period": 60 }
+  }],
+  "observability": { "enabled": true, "head_sampling_rate": 1 }
 }

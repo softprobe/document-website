@@ -8,6 +8,10 @@ dist/
 
 # Environment variables
 .env
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+.wrangler/
 .env.local
 .env.development.local
 .env.test.local

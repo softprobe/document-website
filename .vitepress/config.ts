@@ -1,6 +1,7 @@
 import { defineConfig } from 'vitepress'
 import { withMermaid } from 'vitepress-plugin-mermaid'
 import llmstxt from 'vitepress-plugin-llms'
+import { accessAssets } from './access-assets'
 import { themeConfigForLocale, type DocLocale } from './theme/shared'
 
 // Testing sidebar, grouped by reader: everyone → best practices → console users → ops / delivery → pipelines → integrators → command reference.
@@ -574,6 +575,7 @@ export default withMermaid(
   description: 'Softprobe platform, Java record-replay testing, Agent QA, agent evaluation, and sp CLI documentation',
   base: '/',
   appearance: true,
+  router: { prefetchLinks: false },
   lastUpdated: true,
   mermaid: {
     theme: 'neutral',
@@ -584,6 +586,7 @@ export default withMermaid(
       include: ['mermaid', 'vitepress-plugin-mermaid'],
     },
     plugins: [
+      accessAssets(),
       // Generate /llms.txt (index) and /llms-full.txt (all docs) plus a .md
       // endpoint per page, so AI coding agents can consume the docs directly.
       llmstxt({
