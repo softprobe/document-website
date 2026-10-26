@@ -1,2 +1,2 @@
-# Copy to .dev.vars and replace with a random password of at least 16 characters.
+# Copy to .dev.vars and replace with your password (16+ random characters recommended).
 DOCS_PASSWORD=replace-with-a-long-random-password

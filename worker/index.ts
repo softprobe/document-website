@@ -113,7 +113,7 @@ async function login(request: Request, env: Env, url: URL): Promise<Response> {
   }
   const fields = new URLSearchParams(body)
   const next = safeNext(fields.get('next'))
-  if (!env.DOCS_PASSWORD || env.DOCS_PASSWORD.length < 16) {
+  if (!env.DOCS_PASSWORD) {
     return loginPage(next, next.startsWith('/zh/') ? '访问密码尚未配置，请联系管理员。' : 'Access is not configured. Please contact the administrator.', 503)
   }
   const password = fields.get('password') || ''
@@ -154,7 +154,7 @@ export default {
     if (path.startsWith('/__docs/') || /(?:^|\/)\.[^/]/.test(path)) return noStore(new Response('Not found', { status: 404 }))
     if (request.method !== 'GET' && request.method !== 'HEAD') return noStore(new Response('Method not allowed', { status: 405 }))
     const protectedPath = requiresAuth(path)
-    if (protectedPath && (!env.DOCS_PASSWORD || env.DOCS_PASSWORD.length < 16 || !await validSession(request, env.DOCS_PASSWORD))) {
+    if (protectedPath && (!env.DOCS_PASSWORD || !await validSession(request, env.DOCS_PASSWORD))) {
       if (request.headers.get('Accept')?.includes('text/html')) {
         return noStore(new Response(null, { status: 303, headers: { Location: '/__docs/login?next=' + encodeURIComponent(path + url.search) } }))
       }

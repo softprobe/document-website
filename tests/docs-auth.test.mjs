@@ -130,13 +130,23 @@ test('forged, expired and malformed cookies fail; password rotation revokes old 
   assert.equal((await worker.fetch(get('/en/testing/', { Cookie: cookie }), environment({ DOCS_PASSWORD: password + '-rotated' }))).status, 401)
 })
 
-test('missing or short production secrets fail closed while homepage stays open', async () => {
-  for (const secret of ['', 'too-short']) {
+test('missing production secrets fail closed while homepage stays open', async () => {
+  for (const secret of ['', undefined]) {
     const env = environment({ DOCS_PASSWORD: secret })
     assert.equal((await worker.fetch(get('/en/testing/'), env)).status, 401)
     assert.equal((await worker.fetch(post({ password }), env)).status, 503)
     assert.equal((await worker.fetch(get('/en/'), env)).status, 200)
   }
+})
+
+test('an administrator-selected six-character password can sign in', async () => {
+  const customPassword = 'demo42'
+  const env = environment({ DOCS_PASSWORD: customPassword })
+  const response = await worker.fetch(post({ password: customPassword, next: '/zh/testing/webhook-and-ci' }), env)
+  assert.equal(response.status, 303)
+  const cookie = response.headers.get('Set-Cookie').split(';')[0]
+  assert.equal((await worker.fetch(get('/zh/testing/webhook-and-ci', { Cookie: cookie }), env)).status, 200)
+  assert.equal((await worker.fetch(post({ password }), env)).status, 401)
 })
 
 test('cross-origin login, unsupported methods and content types are rejected', async () => {

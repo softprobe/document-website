@@ -37,7 +37,7 @@ For a local preview **with access control**:
 
 ```bash
 cp .dev.vars.example .dev.vars
-# Replace DOCS_PASSWORD in .dev.vars with a random password (16+ characters).
+# Replace DOCS_PASSWORD in .dev.vars (a random password of 16+ characters is recommended).
 npm run docs:serve
 ```
 
@@ -53,8 +53,8 @@ npx wrangler secret put DOCS_PASSWORD
 npm run deploy
 ```
 
-The secret is never committed. A missing or shorter-than-16-character secret
-blocks access to product documents. Configure the secret on every deployed
+The secret is never committed. A missing or empty secret
+blocks access to product documents. Administrators can choose a custom password. Configure the secret on every deployed
 Worker/environment, including previews. Only share document source through a
 private repository; the website password does not protect a public Git repository.
 
