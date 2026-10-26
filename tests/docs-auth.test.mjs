@@ -52,6 +52,18 @@ test('product navigation reaches the Worker without reloading initial hydration 
   assert.equal(shouldReloadProductNavigation('/en/', origin + '/zh/'), false)
 })
 
+test('VitePress HTML normalization cannot reload the same Cloudflare document', () => {
+  // VitePress passes the .html variant to onBeforeRouteChange on initial load;
+  // Cloudflare serves the document without .html and redirects that alias back.
+  const path = '/zh/testing/webhook-and-ci'
+  assert.equal(shouldReloadProductNavigation(path + '.html', origin + path), false)
+  assert.equal(shouldReloadProductNavigation(path, origin + path + '.html'), false)
+  assert.equal(shouldReloadProductNavigation(path + '.html#configuration', origin + path), false)
+  assert.equal(shouldReloadProductNavigation('/en/testing/index.html', origin + '/en/testing/'), false)
+  assert.equal(shouldReloadProductNavigation('/zh/testing/recording.html', origin + path), true)
+  assert.equal(shouldReloadProductNavigation(path + '?mode=ci', origin + path), true)
+})
+
 test('both product trees, raw Markdown, screenshots and aggregate exports are blocked', async () => {
   const env = environment()
   const paths = ['/en/testing', '/en/testing.html', '/en/testing.md', '/en/testing/installation/server.html', '/zh/testing/commands/ops.md', '/en/platform/', '/zh/platform.md', '/en/agent-qa/', '/zh/agent-qa.md', '/en/evaluation/', '/zh/evaluation/getting-started.md', '/img/docs/replay/trace-diff-open.png', '/llms.txt', '/llms-full.txt', '/assets/unknown-future-page.js', ...policy.privateAssets]

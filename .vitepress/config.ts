@@ -574,6 +574,7 @@ export default withMermaid(
   title: 'Softprobe',
   description: 'Softprobe platform, Java record-replay testing, Agent QA, agent evaluation, and sp CLI documentation',
   base: '/',
+  cleanUrls: true,
   appearance: true,
   router: { prefetchLinks: false },
   lastUpdated: true,

@@ -10,8 +10,12 @@ export function isProductModule(id: string): boolean {
 export function shouldReloadProductNavigation(to: string, current: string): boolean {
   const source = new URL(current)
   const target = new URL(to, source)
+  // Cloudflare serves file.html at /file and directory indexes at /directory/.
+  // VitePress may pass an HTML alias during initial hydration. Both spellings
+  // identify the same document and must never trigger a full-page reload.
+  const documentPath = (path: string) => path.replace(/\/index(?:\.html)?$/, '/').replace(/\.html$/, '')
   return target.origin === source.origin && isProductPath(target.pathname)
-    && (target.pathname !== source.pathname || target.search !== source.search)
+    && (documentPath(target.pathname) !== documentPath(source.pathname) || target.search !== source.search)
 }
 
 export function safeNext(value: string | null): string {
