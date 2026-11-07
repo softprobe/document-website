@@ -17,7 +17,7 @@ The browser key is visible in your site code. Use only an Agent ingest key; do n
 
 ## 1. Add the browser SDK
 
-Install the published SDK. It bundles the official OpenTelemetry browser SDK and Fetch/XHR instrumentation; your app imports only `RecordSdk` and does not configure OpenTelemetry:
+Install the published SDK. It bundles the official OpenTelemetry browser SDK and Fetch/XHR instrumentation. `RecordSdk.init()` configures those components internally, so your app imports only `RecordSdk`:
 
 ```sh
 npm install @softprobe/web-record
@@ -52,7 +52,7 @@ RecordSdk.init({
 
 The SDK creates a Session ID and keeps it in this tab across page loads. Add every browser API origin to `apiOrigins` and to the matching body rule. If your API has a different address from your website, allow `traceparent` and `tracestate` in the API's CORS settings. If your site has a Content Security Policy, allow `https://explorer.softprobe.ai` in `connect-src`.
 
-The SDK captures JSON bodies for the listed routes up to 64 KB. It replaces the listed payment fields with `[REDACTED]`. Other content types and larger bodies are omitted. Browser HTTP spans are created by OpenTelemetry; captured bodies are attached to their `softprobe.http.body.capture` child spans. The standard `session.id` and Softprobe `sp.session.id` attributes carry the same browser Session ID. Input masking applies to the page recording; it does not redact HTTP bodies.
+The SDK captures JSON bodies for the listed routes up to 64 KB. It replaces the listed payment fields with `[REDACTED]`. Other content types and larger bodies are omitted. OpenTelemetry's browser instrumentation creates the HTTP spans and provides the hooks used by body capture; Softprobe attaches the captured bodies to `softprobe.http.body.capture` child spans. OTel's standard `session.id` and Softprobe's `sp.session.id` compatibility attribute carry the same browser Session ID. Input masking applies to the page recording; it does not redact HTTP bodies.
 
 ## 2. Install the official OBI
 
