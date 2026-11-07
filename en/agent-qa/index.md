@@ -34,4 +34,4 @@ Today, Agent QA is the **online capture and review** path for AI agents. The pla
 4. [Investigate with a coding agent](/en/agent-qa/coding-agent-skills) — diagnose Sessions in Cursor, Claude Code, Codex, OpenCode
 5. [Concepts](/en/agent-qa/concepts) — Session and observation shape
 
-For the planned guided setup for a website and its backend services, see [Web application sessions](/en/agent-qa/application-session-capture).
+To capture a website session with backend HTTP bodies, see [Web application sessions](/en/agent-qa/application-session-capture).
