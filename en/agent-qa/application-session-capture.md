@@ -17,42 +17,36 @@ The browser key is visible in your site code. Use only an Agent ingest key; do n
 
 ## 1. Add the browser SDK
 
-Install the published SDK. It bundles the official OpenTelemetry browser SDK and Fetch/XHR instrumentation. `RecordSdk.init()` configures those components internally, so your app imports only `RecordSdk`:
+Install the published SDK and import `RecordSdk` only:
 
 ```sh
 npm install @softprobe/web-record
 ```
 
-Initialize it once in the shared layout or startup file that runs before the app makes API calls. Replace the example key and address with yours. This example assumes the website and API share an address.
+Initialize it once in the shared layout or startup file that runs before the app makes API calls. Replace the example key and API address with yours. With one API address, name each body route by method and path.
 
 ```ts
 import { RecordSdk } from "@softprobe/web-record";
 
 RecordSdk.init({
   apiKey: "<Agent API key>",
-  baseUrl: "https://explorer.softprobe.ai/api/thelake",
   serviceName: "travel-ota-web",
-  environment: "production",
   apiOrigins: ["https://travel.example.com"],
   httpBodyCapture: {
-    maxBodyBytes: 65536,
     routes: [
-      { origin: "https://travel.example.com", method: "POST", path: "/api/flights/search" },
-      { origin: "https://travel.example.com", method: "POST", path: "/api/flights/book" },
-      {
-        origin: "https://travel.example.com",
-        method: "POST",
-        path: "/api/flights/payandissue",
-        redactJsonPaths: ["$.paymentDetails.cardNumber", "$.paymentDetails.cvv"],
-      },
+      { method: "POST", path: "/api/flights/search" },
+      { method: "POST", path: "/api/flights/book" },
+      { method: "POST", path: "/api/flights/payandissue" },
     ],
   },
 });
 ```
 
-The SDK creates a Session ID and keeps it in this tab across page loads. Add every browser API origin to `apiOrigins` and to the matching body rule. If your API has a different address from your website, allow `traceparent` and `tracestate` in the API's CORS settings. If your site has a Content Security Policy, allow `https://explorer.softprobe.ai` in `connect-src`.
+That call uploads to `https://explorer.softprobe.ai/api/thelake/v1/traces`. To upload to a local or staging Explorer, pass `baseUrl` set to that Explorer's `/api/thelake` root, and pass `environment` when you want it on the span. `environment` does not choose the host.
 
-The SDK captures JSON bodies for the listed routes up to 64 KB. It replaces the listed payment fields with `[REDACTED]`. Other content types and larger bodies are omitted. OpenTelemetry's browser instrumentation creates the HTTP spans and provides the hooks used by body capture; Softprobe attaches the captured bodies to `softprobe.http.body.capture` child spans. OTel's standard `session.id` and Softprobe's `sp.session.id` compatibility attribute carry the same browser Session ID. Input masking applies to the page recording; it does not redact HTTP bodies.
+The SDK creates a Session ID and keeps it in this tab across page loads. List every browser API origin in `apiOrigins`. The SDK sends `traceparent` only to those origins. If your API has a different address from your website, allow `traceparent` in the API's CORS settings. If your site has a Content Security Policy, allow `https://explorer.softprobe.ai` in `connect-src`.
+
+The SDK captures JSON bodies for the listed routes up to 64 KiB. It replaces `cardNumber`, `cvv`, `cvc`, `password`, and `secret` with `[REDACTED]` anywhere in the JSON, including inside arrays. Add `redactJsonPaths` on a route for any other exact object path, such as `$.payment.token`. Other content types and larger bodies are omitted. The JSON is stored on the client span named `HTTP POST` as `http.request.body.content` and `http.response.body.content`. The Session ID is the `sp.session.id` attribute on that span. Input masking applies to the page recording. It does not redact HTTP bodies.
 
 ## 2. Install the official OBI
 
