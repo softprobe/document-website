@@ -46,7 +46,7 @@ That call uploads to `https://explorer.softprobe.ai/api/thelake/v1/traces`. To u
 
 The SDK creates a Session ID and keeps it in this tab across page loads. List every browser API origin in `apiOrigins`. The SDK sends `traceparent` only to those origins. If your API has a different address from your website, allow `traceparent` in the API's CORS settings. If your site has a Content Security Policy, allow `https://explorer.softprobe.ai` in `connect-src`.
 
-The SDK captures JSON bodies for the listed routes up to 64 KiB. It replaces `cardNumber`, `cvv`, `cvc`, `password`, and `secret` with `[REDACTED]` anywhere in the JSON, including inside arrays. Add `redactJsonPaths` on a route for any other exact object path, such as `$.payment.token`. Other content types and larger bodies are omitted. The JSON is stored on the client span named `HTTP POST` as `http.request.body.content` and `http.response.body.content`. The Session ID is the `sp.session.id` attribute on that span. Input masking applies to the page recording. It does not redact HTTP bodies.
+The SDK captures JSON bodies for the listed routes up to 64 KiB. It replaces `cardNumber`, `cvv`, `cvc`, `password`, and `secret` with `[REDACTED]` anywhere in the JSON, including inside arrays. Add `redactJsonPaths` on a route for any other exact object path, such as `$.payment.token`. Other content types and larger bodies are omitted. OpenTelemetry records the browser request as a span named `POST`. The JSON is stored on its child span, `softprobe.http.body.capture`, as `http.request.body.content` and `http.response.body.content`. The Session ID is `session.id` and `sp.session.id` on those spans. Input masking applies to the page recording. It does not redact HTTP bodies.
 
 ## 2. Install the official OBI
 
