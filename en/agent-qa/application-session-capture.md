@@ -9,7 +9,7 @@ This example uses a Java flight app. A search, booking, and payment appear in on
 You need:
 
 - An Agent for your app in Explorer and its ingest-only API key.
-- The website address and the API address the browser calls.
+- The API address the browser calls.
 - The Linux backend host, its listening port, and the HTTP paths to capture.
 - Permission to run OBI with `sudo` on that host.
 
