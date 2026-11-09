@@ -11,7 +11,6 @@ In the demo, a search, booking, and payment appear in one Session, with their ba
 You need:
 
 - An Agent for your app in Explorer and its ingest-only API key (`spk_...`).
-- The API address the browser calls.
 - The Linux backend host, its listening port, and the HTTP paths to capture.
 - Permission to run OBI with `sudo` on that host.
 
@@ -25,7 +24,7 @@ Install the published SDK and import `RecordSdk` only:
 npm install @softprobe/web-record
 ```
 
-Initialize it once in the shared layout or startup file that runs before the app makes API calls. Replace the example key and API address with yours. With one API address, name each body route by method and path.
+Initialize it once in the shared layout or startup file that runs before the app makes API calls. Replace the example key and routes with yours.
 
 ```ts
 import { RecordSdk } from "@softprobe/web-record";
@@ -33,7 +32,6 @@ import { RecordSdk } from "@softprobe/web-record";
 RecordSdk.init({
   apiKey: "<Agent API key>",
   serviceName: "travel-ota-web",
-  apiOrigins: ["https://travel.example.com"],
   httpBodyCapture: {
     routes: [
       { method: "POST", path: "/api/flights/search" },
@@ -46,7 +44,7 @@ RecordSdk.init({
 
 That call uploads to `https://explorer.softprobe.ai/api/thelake/v1/traces`. To upload to a local or staging Explorer, pass `baseUrl` set to that Explorer's `/api/thelake` root, and pass `environment` when you want it on the span. `environment` does not choose the host.
 
-The SDK creates a Session ID and keeps it in this tab across page loads. List every browser API origin in `apiOrigins`. The SDK sends `traceparent` only to those origins. If your API has a different address from your website, allow `traceparent` in the API's CORS settings. If your site has a Content Security Policy, allow `https://explorer.softprobe.ai` in `connect-src`.
+The SDK creates a Session ID and keeps it in this tab across page loads. It automatically traces and sends W3C `traceparent` headers for same-origin requests and for any origin declared in `httpBodyCapture.routes`. If a route calls a different host from your website, pass a full URL in `path` (such as `"https://api.travel.example.com/api/flights/search"`) or set `origin` on the route entry, and allow `traceparent` in that API's CORS settings. Pass `apiOrigins` only when the browser calls additional cross-origin API hosts without HTTP body capture. If your site has a Content Security Policy, allow `https://explorer.softprobe.ai` in `connect-src`.
 
 The SDK captures JSON bodies for the listed routes up to 64 KiB. It replaces `cardNumber`, `cvv`, `cvc`, `password`, and `secret` with `[REDACTED]` anywhere in the JSON, including inside arrays. Add `redactJsonPaths` on a route for any other exact object path, such as `$.payment.token`. Other content types and larger bodies are omitted. OpenTelemetry records the browser request as a span named `POST`. The JSON is stored on its child span, `softprobe.http.body.capture`, as `http.request.body.content` and `http.response.body.content`. The Session ID is `session.id` and `sp.session.id` on those spans. Input masking applies to the page recording. It does not redact HTTP bodies.
 
