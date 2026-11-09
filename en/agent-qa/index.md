@@ -28,10 +28,9 @@ Today, Agent QA is the **online capture and review** path for AI agents. The pla
 
 ## Start here
 
-1. [Quick start](/en/agent-qa/getting-started) — connect from Explorer
-2. [OpenCode install](/en/agent-qa/opencode) — plugin, credentials, troubleshooting
-3. [LangChain install](/en/agent-qa/langchain) — callback handler (Python / TypeScript)
-4. [Investigate with a coding agent](/en/agent-qa/coding-agent-skills) — diagnose Sessions in Cursor, Claude Code, Codex, OpenCode
-5. [Concepts](/en/agent-qa/concepts) — Session and observation shape
-
-To capture a website session with backend HTTP bodies, see [Web application sessions](/en/agent-qa/application-session-capture).
+1. [Capture web application sessions](/en/agent-qa/application-session-capture) — connect browser activity to backend HTTP bodies
+2. [Quick start](/en/agent-qa/getting-started) — connect from Explorer
+3. [OpenCode install](/en/agent-qa/opencode) — plugin, credentials, troubleshooting
+4. [LangChain install](/en/agent-qa/langchain) — callback handler (Python / TypeScript)
+5. [Investigate with a coding agent](/en/agent-qa/coding-agent-skills) — diagnose Sessions in Cursor, Claude Code, Codex, OpenCode
+6. [Concepts](/en/agent-qa/concepts) — Session and observation shape
