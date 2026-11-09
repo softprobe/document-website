@@ -8,12 +8,12 @@ This example uses a Java flight app. A search, booking, and payment appear in on
 
 You need:
 
-- An Agent for your app in Explorer and its ingest-only API key.
-- The website address and the API address the browser calls.
+- An Agent for your app in Explorer and its ingest-only API key (`spk_...`).
+- The API address the browser calls.
 - The Linux backend host, its listening port, and the HTTP paths to capture.
 - Permission to run OBI with `sudo` on that host.
 
-The browser key is visible in your site code. Use only an Agent ingest key; do not use a password, cookie, or admin key.
+The Agent API key is strictly ingest-only (`POST https://explorer.softprobe.ai/api/thelake/v1/traces`). Because it can only ingest telemetry and returns `403` on read or management endpoints, it is safe to pass directly to `RecordSdk.init({ apiKey })` in browser code. Do not use a password, cookie, or admin key in the browser. To inspect captured Sessions from a coding agent, use Softprobe MCP (`https://explorer.softprobe.ai/mcp`) with your Explorer OAuth account.
 
 ## 1. Add the browser SDK
 

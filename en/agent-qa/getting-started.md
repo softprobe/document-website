@@ -4,49 +4,52 @@ title: Quick start
 
 # Quick start
 
-Connect an agent to Softprobe Agent QA from Explorer, verify the first Session, then optionally attach Slack. Choose **OpenCode** or **LangChain** in the Connect agent flow.
+Create a Blackbox Agent in Softprobe Explorer, connect Softprobe MCP in your coding agent, paste the generated setup prompt, and verify your first captured Session.
 
 ## Flow
 
 ```mermaid
 flowchart LR
-  explorer["Explorer · Connect agent"]
-  prompt["Copy install prompt"]
+  explorer["Explorer · Create Blackbox Agent"]
+  mcp["Add Softprobe MCP + OAuth"]
+  prompt["Copy setup prompt"]
   paste["Paste into coding agent"]
   verify["Check connection"]
-  slack["Slack channel optional"]
-  explorer --> prompt --> paste --> verify --> slack
+  explorer --> mcp --> prompt --> paste --> verify
 ```
 
-## 1. Open Connect agent
+## 1. Create a Blackbox Agent
 
-In Softprobe Explorer, open **Agents** and click **+ Connect agent**. Name the Agent, choose an environment, and select the framework (**OpenCode** or **LangChain**). Softprobe mints a per-agent API key (`spk_…`) used for that Agent’s capture.
+In Softprobe Explorer, open **Agents** and click **+ Connect agent**. Name the Agent, select the environment, and choose the app integration (**Traditional web app**, **LangChain**, **Vercel AI**, or **OpenCode**).
 
-## 2. Paste the install prompt
+Softprobe mints an ingest-only Agent API key (`spk_...`). This key is valid only to ingest OTLP telemetry at `https://explorer.softprobe.ai/api/thelake/v1/traces`. It cannot read Sessions or manage Agents.
 
-Copy the short install prompt from the modal and paste it into your coding agent:
+## 2. Add Softprobe MCP and sign in
 
-| Framework | Where to paste | What it does |
-|-----------|----------------|--------------|
-| **OpenCode** | An OpenCode chat | Merges `@softprobe/opencode-plugin`, writes credentials, one real turn |
-| **LangChain** | Cursor / Codex / Claude Code | Installs Softprobe packages, sets env, attaches `CallbackHandler` |
+Add `https://explorer.softprobe.ai/mcp` to Claude Code, Codex, Cursor, or OpenCode using the commands shown in Explorer, then complete the Explorer OAuth sign-in flow. Your coding agent uses this OAuth connection to call `list_workspaces`, `search_sessions`, and `get_session_spans`.
 
-Full details: [OpenCode install](/en/agent-qa/opencode), [LangChain install](/en/agent-qa/langchain).
+Full details: [Investigate with a coding agent](/en/agent-qa/coding-agent-skills).
 
-## 3. Verify capture
+## 3. Send the Blackbox setup prompt
 
-After one real agent turn (prefer a turn that uses a **tool** for LangChain), click **Check connection** in Explorer. When verification succeeds, continue to Slack.
+Copy the generated Blackbox setup prompt from Explorer and paste it into your application repository in your coding agent. The prompt includes the Softprobe Blackbox architecture, your ingest-only Agent API key, the `@softprobe/web-record` browser SDK and official OpenTelemetry OBI v1.0.0 configuration templates, and framework instrumentation when an AI framework is selected.
 
-Open **Sessions** to browse captures. Use the range control (default last 7 days, rolling) and the Agent filter; both update the address bar so the view is shareable.
+| App integration | What the setup prompt configures |
+|-----------------|----------------------------------|
+| **Traditional web app** | `@softprobe/web-record` in the browser entrypoint and official OpenTelemetry OBI v1.0.0 (`obi.yaml`) on the backend |
+| **LangChain** | Browser + OBI capture plus `softprobe[langchain]` (Python) or `@softprobe/langchain` (TypeScript) |
+| **Vercel AI** | Browser + OBI capture plus `@softprobe/vercel-ai-sdk` and `@softprobe/tracing` |
+| **OpenCode** | Browser + OBI capture plus `@softprobe/opencode-plugin` |
 
-To diagnose a Session from Cursor, Claude Code, Codex, or OpenCode, see [Investigate with a coding agent](/en/agent-qa/coding-agent-skills).
+Full details: [Capture a web app session with HTTP bodies](/en/agent-qa/application-session-capture), [OpenCode install](/en/agent-qa/opencode), [LangChain install](/en/agent-qa/langchain).
 
-## 4. Slack last (optional)
+## 4. Verify capture
 
-Choose a Slack channel for Findings, or **Skip for now**. Workspace OAuth stays under **Integrations**; this step only attaches a channel to the Agent.
+Run a synthetic journey in your app, then ask your coding agent to verify the captured Session via Softprobe MCP or click **Check connection** in Explorer. Explorer checks that HTTP spans appear in **Graph** (and that generation and tool spans appear in **Trajectory** for AI framework apps).
 
 ## Next
 
+- [Capture a web app session with HTTP bodies](/en/agent-qa/application-session-capture)
 - [OpenCode install reference](/en/agent-qa/opencode)
 - [LangChain install reference](/en/agent-qa/langchain)
 - [Concepts](/en/agent-qa/concepts)
