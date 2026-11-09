@@ -2,7 +2,9 @@
 
 Add the browser SDK to your website and run the official OBI on the Linux host that runs your backend. The browser and backend use the same Agent key. OBI sends the HTTP request and response bodies you allow in its configuration.
 
-This example uses a Java flight app. A search, booking, and payment appear in one Session, with their backend and airline requests in the Session's **Graph**.
+This guide uses Softprobe's official Travel OTA demo, published as the [`docker.io/softprobe/demo-ota:v1.3.1` image](https://hub.docker.com/r/softprobe/demo-ota). See the [source repository on GitHub](https://github.com/softprobe/demo-ota). The app is a demo; you can use your own app instead. Replace the website address, API origins, and HTTP routes in the examples with your app's values.
+
+In the demo, a search, booking, and payment appear in one Session, with their backend and airline requests in the Session's **Graph**.
 
 ## Before you start
 
