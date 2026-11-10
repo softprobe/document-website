@@ -1,14 +1,14 @@
 # Capture a web app session with HTTP bodies
 
-This five-minute quick start uses the Travel OTA source code to exercise all three capture paths: browser recording with `@softprobe/web-record`, Vercel AI spans with `@softprobe/vercel-ai-sdk`, and backend HTTP spans and selected bodies with official OpenTelemetry eBPF Instrumentation (OBI).
+This source walkthrough shows how a developer adds all three capture paths to an app: browser recording with `@softprobe/web-record`, Vercel AI spans with `@softprobe/vercel-ai-sdk`, and backend HTTP spans and selected bodies with official OpenTelemetry eBPF Instrumentation (OBI). With the prerequisites ready, the code changes take about five minutes; the first dependency install and build can take longer.
 
 The official Travel OTA demo is also published as the [`docker.io/softprobe/demo-ota:v1.3.1` image](https://hub.docker.com/r/softprobe/demo-ota). This guide checks out the [`v1.3.1 source on GitHub`](https://github.com/softprobe/demo-ota/tree/v1.3.1) so you can add the SDKs to the app code. The published image is plain and has no Softprobe instrumentation. This is a demo; you can use your own app by replacing its site origin, routes, and OBI process selector with your app's values.
 
-## Five-minute source demo
+## Instrument and run the source demo
 
-For the full browser, Vercel AI, and OBI journey, run the Node gateway and Java service on the same supported Linux host so OBI can trace requests through both processes. OBI requires Linux. Open the demo in Chrome or Chromium on that host at the `127.0.0.1` address below.
+For the full browser, Vercel AI, and OBI journey, run the Node gateway and Java service on the same supported Linux host so OBI can trace requests through both processes. OBI requires Linux. If the host has a desktop, open the demo there in Chrome or Chromium. For a remote Linux host, forward port `4310` to your workstation and open the forwarded `127.0.0.1` address in your local browser.
 
-You need Node.js 22 or newer, Java 21, Maven, Chrome or Chromium, a Softprobe Explorer workspace, and a Google Gemini API key. Model-provider charges may apply. Use only synthetic travel details in this demo. For a remote Linux host, forward port `4310` to your workstation and keep the Agent website origin set to `http://127.0.0.1:4310`.
+You need Node.js 22 or newer, Java 21, Maven, Chrome or Chromium, a Softprobe Explorer workspace, and a Google Gemini API key. Model-provider charges may apply. Use only synthetic travel details in this demo.
 
 ### 1. Create a demo Agent
 
@@ -34,118 +34,113 @@ cd ..
 
 The Vercel AI integration already exists in `travel-agent-demo/src/start.mjs`; these commands update it to SDK `0.1.13` and add the browser SDK.
 
-### 3. Apply the integration patch
+### 3. Instrument the browser app
 
-From the `demo-ota` repository root, apply this patch. It bundles the browser SDK through esbuild, uses the app's existing chat ID for browser and Vercel AI spans, disables prompt and response recording, and allows the browser to send telemetry to Explorer.
+The demo's frontend is a classic JavaScript script, so keep the npm import in a small module and bundle it with esbuild. Create `travel-agent-demo/src/session-capture.mjs` with this code, replacing the placeholder with the Agent's ingest-only key:
 
-```sh
-git apply --unidiff-zero <<'PATCH'
-diff --git a/travel-agent-demo/public/app.js b/travel-agent-demo/public/app.js
-index e5e544c..32a5553 100644
---- a/travel-agent-demo/public/app.js
-+++ b/travel-agent-demo/public/app.js
-@@ -902,0 +903 @@
-+        window.dispatchEvent(new CustomEvent('travel-agent:session-id', { detail: { sessionId: created.id } }));
-diff --git a/travel-agent-demo/public/index.html b/travel-agent-demo/public/index.html
-index 0e41eb4..a0437eb 100644
---- a/travel-agent-demo/public/index.html
-+++ b/travel-agent-demo/public/index.html
-@@ -9,0 +10 @@
-+  <script src="/agent/capture.js" defer></script>
-diff --git a/travel-agent-demo/src/engine.mjs b/travel-agent-demo/src/engine.mjs
-index 1b5e9b6..ed769b9 100644
---- a/travel-agent-demo/src/engine.mjs
-+++ b/travel-agent-demo/src/engine.mjs
-@@ -212 +212 @@ export class VercelAIEngine {
--    const call = this.generateText({
-+    const runModel = () => this.generateText({
-@@ -226 +226,5 @@ export class VercelAIEngine {
--      telemetry: { includeRuntimeContext: { sessionId: true } },
-+      telemetry: {
-+        includeRuntimeContext: { sessionId: true },
-+        recordInputs: false,
-+        recordOutputs: false,
-+      },
-@@ -227,0 +232,10 @@ export class VercelAIEngine {
-+    const call = this.softprobeClient
-+      ? this.softprobeClient.withObservation(
-+          {
-+            name: 'travel-agent.turn',
-+            asType: 'agent',
-+            sessionId: id,
-+          },
-+          runModel,
-+        )
-+      : runModel();
-diff --git a/travel-agent-demo/src/server.mjs b/travel-agent-demo/src/server.mjs
-index f350929..896a98a 100644
---- a/travel-agent-demo/src/server.mjs
-+++ b/travel-agent-demo/src/server.mjs
-@@ -9 +9,6 @@ import { TRAVEL_POLICY } from './travel-policy.mjs';
--const STATIC = { '/': ['index.html', 'text/html; charset=utf-8'], '/app.js': ['app.js', 'text/javascript; charset=utf-8'], '/styles.css': ['styles.css', 'text/css; charset=utf-8'] };
-+const STATIC = {
-+  '/': ['index.html', 'text/html; charset=utf-8'],
-+  '/app.js': ['app.js', 'text/javascript; charset=utf-8'],
-+  '/capture.js': ['capture.bundle.js', 'text/javascript; charset=utf-8'],
-+  '/styles.css': ['styles.css', 'text/css; charset=utf-8'],
-+};
-@@ -125 +130 @@ export function createGateway({ root, engine, store, internalToken, travel = new
--    res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'");
-+    res.setHeader('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self' https://explorer.softprobe.ai; img-src 'self' data:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'");
-diff --git a/travel-agent-demo/src/session-capture.mjs b/travel-agent-demo/src/session-capture.mjs
-new file mode 100644
-index 0000000..9d5ec97
---- /dev/null
-+++ b/travel-agent-demo/src/session-capture.mjs
-@@ -0,0 +1,23 @@
-+import { RecordSdk } from '@softprobe/web-record';
-+
-+const storedSessionId = window.sessionStorage.getItem('demo-ota.travel.sessionId');
-+const sessionId = /^ses_[A-Za-z0-9_-]+$/.test(storedSessionId ?? '')
-+  ? storedSessionId
-+  : undefined;
-+
-+const capture = RecordSdk.init({
-+  apiKey: 'spk_REPLACE_WITH_AGENT_KEY',
-+  serviceName: 'demo-ota-web',
-+  environment: 'demo',
-+  sessionId,
-+  maskAllInputs: true,
-+  httpBodyCapture: {
-+    routes: [{ method: 'POST', path: '/agent/api/sessions' }],
-+  },
-+});
-+
-+window.addEventListener('travel-agent:session-id', (event) => {
-+  if (typeof event.detail?.sessionId === 'string') {
-+    capture.setSessionId(event.detail.sessionId);
-+  }
-+});
-diff --git a/travel-agent-demo/src/start.mjs b/travel-agent-demo/src/start.mjs
-index 78edc04..4f225e6 100644
---- a/travel-agent-demo/src/start.mjs
-+++ b/travel-agent-demo/src/start.mjs
-@@ -61 +61,9 @@ async function start() {
--    const [{ registerTelemetry }, { SoftprobeClient }, { SoftprobeVercelAiSdkIntegration }] = await Promise.all([
-+    const [
-+      { context },
-+      { AsyncLocalStorageContextManager },
-+      { registerTelemetry },
-+      { SoftprobeClient },
-+      { SoftprobeVercelAiSdkIntegration },
-+    ] = await Promise.all([
-+      import('@opentelemetry/api'),
-+      import('@opentelemetry/context-async-hooks'),
-@@ -65,0 +74 @@ async function start() {
-+    context.setGlobalContextManager(new AsyncLocalStorageContextManager().enable());
-@@ -67,0 +77 @@ async function start() {
-+    engine.softprobeClient = softprobeClient;
-PATCH
+```js
+import { RecordSdk } from '@softprobe/web-record';
+
+const storedSessionId = window.sessionStorage.getItem('demo-ota.travel.sessionId');
+const sessionId = /^ses_[A-Za-z0-9_-]+$/.test(storedSessionId ?? '')
+  ? storedSessionId
+  : undefined;
+
+window.softprobeCapture = RecordSdk.init({
+  apiKey: 'spk_REPLACE_WITH_AGENT_KEY',
+  serviceName: 'demo-ota-web',
+  environment: 'demo',
+  sessionId,
+  maskAllInputs: true,
+  httpBodyCapture: {
+    routes: [{ method: 'POST', path: '/agent/api/sessions' }],
+  },
+});
 ```
 
-Replace `spk_REPLACE_WITH_AGENT_KEY` in `travel-agent-demo/src/session-capture.mjs` with the Agent key you copied. The key is visible to browser visitors because it is in frontend code; use only this Agent's ingest-only key. Do not commit your local key.
+The SDK records the page and same-origin requests. It starts with the demo's saved conversation ID after a reload. When the app creates its first conversation, the browser recorder needs that new ID too. In `travel-agent-demo/public/app.js`, find `storeSession(created.id)` in the async message handler and add this immediately after it:
 
-### 4. Build and start the app
+```js
+await window.softprobeCapture?.setSessionId(created.id);
+```
+
+The capture bundle exposes the controller returned by `RecordSdk.init()` so the demo's classic script can call the SDK directly. Awaiting `setSessionId()` lets the SDK finish pending exports and switch to the same `ses_*` ID the backend uses before the app sends its next request. The optional call also lets the demo's existing UI tests run without the capture bundle. The example captures the JSON body only when the browser creates a conversation. Input masking protects the recording; it does not redact HTTP bodies.
+
+In `travel-agent-demo/public/index.html`, add the capture script immediately before the existing `/agent/app.js` script so the SDK controller is available before the app runs:
+
+```html
+<script src="/agent/capture.js" defer></script>
+```
+
+In `travel-agent-demo/src/server.mjs`, add this entry to the existing `STATIC` map so `/agent/capture.js` serves the browser bundle:
+
+```js
+'/capture.js': ['capture.bundle.js', 'text/javascript; charset=utf-8'],
+```
+
+Also add the Explorer origin to the existing `connect-src` directive in the Content Security Policy:
+
+```text
+connect-src 'self' https://explorer.softprobe.ai;
+```
+
+The bundled browser SDK uses this permission to send spans and recordings to Explorer. The website itself remains same-origin. Although the Agent key is in the browser bundle, it is an ingest-only key; never put a user password, cookie, or account token there, and do not commit your local key value.
+
+### 4. Instrument the Vercel AI backend
+
+The demo already registers the Vercel AI integration when `SOFTPROBE_PUBLIC_KEY` and `SOFTPROBE_BASE_URL` are set. In `travel-agent-demo/src/start.mjs`, replace the current contents of that `if` block with this code:
+
+```js
+const [
+  { context },
+  { AsyncLocalStorageContextManager },
+  { registerTelemetry },
+  { SoftprobeClient },
+  { SoftprobeVercelAiSdkIntegration },
+] = await Promise.all([
+  import('@opentelemetry/api'),
+  import('@opentelemetry/context-async-hooks'),
+  import('ai'),
+  import('@softprobe/tracing'),
+  import('@softprobe/vercel-ai-sdk'),
+]);
+
+context.setGlobalContextManager(new AsyncLocalStorageContextManager().enable());
+softprobeClient = SoftprobeClient.fromEnv({ serviceName: 'demo-ota-travel-agent' });
+registerTelemetry(new SoftprobeVercelAiSdkIntegration({ tracer: softprobeClient.tracer }));
+engine.softprobeClient = softprobeClient;
+```
+
+The async context manager carries the current trace across model and tool calls. The Vercel AI integration creates the generation and tool spans; the Softprobe client provides a parent Agent observation with the app's conversation ID.
+
+In `travel-agent-demo/src/engine.mjs`, find the `this.generateText({ ... })` call in the message handler. Change it to `const runModel = () => this.generateText({ ... })`, and set the telemetry options as shown:
+
+```js
+telemetry: {
+  includeRuntimeContext: { sessionId: true },
+  recordInputs: false,
+  recordOutputs: false,
+},
+```
+
+After that call closes, before `session.busy = true`, add the parent observation:
+
+```js
+const call = this.softprobeClient
+  ? this.softprobeClient.withObservation(
+      {
+        name: 'travel-agent.turn',
+        asType: 'agent',
+        sessionId: id,
+      },
+      runModel,
+    )
+  : runModel();
+```
+
+The observation makes each app turn a Session Graph parent. Inputs and outputs stay disabled in Vercel AI telemetry; the demo's selected HTTP bodies are configured separately in the browser SDK and OBI.
+
+### 5. Build and start the app
 
 From the `demo-ota` repository root, build the Java service and the browser bundle:
 
@@ -156,17 +151,16 @@ npx esbuild src/session-capture.mjs --bundle --format=iife --outfile=public/capt
 cd ..
 ```
 
-Start the Java service in one terminal:
+Open two terminals at the `demo-ota` repository root. Start the Java service in the first:
 
 ```sh
-cd demo-ota
 java -jar travel-ota/target/travel-ota-1.0-SNAPSHOT.jar --server.port=8080
 ```
 
-Start the Node gateway in another terminal. Set your Agent key and model-provider key:
+In the second terminal, start the Node gateway. Set your Agent key and model-provider key:
 
 ```sh
-cd demo-ota/travel-agent-demo
+cd travel-agent-demo
 export SOFTPROBE_PUBLIC_KEY='spk_REPLACE_WITH_AGENT_KEY'
 export SOFTPROBE_BASE_URL='https://explorer.softprobe.ai/api/thelake'
 export GOOGLE_GENERATIVE_AI_API_KEY='YOUR_MODEL_PROVIDER_KEY'
@@ -175,9 +169,9 @@ export TRAVEL_OTA_BASE_URL='http://127.0.0.1:8080'
 npm start
 ```
 
-Use a model ID supported by your provider in the app's model selector. The browser uses the same Agent key from `session-capture.mjs`. The Node SDK and OBI read it from `SOFTPROBE_PUBLIC_KEY`.
+Use a model ID supported by your provider in the app's model selector. The browser uses the same Agent key you added to `src/session-capture.mjs`. The Node SDK and OBI read it from `SOFTPROBE_PUBLIC_KEY`.
 
-### 5. Add OBI on the Linux backend host
+### 6. Add OBI on the Linux backend host
 
 Install the official OBI `1.0.0` release on the Linux host that runs both services. This version uses OBI Config v2. The config below targets only the demo's Node and Java processes. It lets OBI connect the browser request to the Java backend through Node's HTTP spans, while `@softprobe/vercel-ai-sdk` adds the Agent and model spans. The `OTEL_EBPF_EXCLUDE_OTEL_INSTRUMENTED_SERVICES` setting in the run command lets OBI add its HTTP spans to the Node process, which also exports Vercel AI spans. Set `ARCH` to `amd64` or `arm64`:
 
@@ -272,7 +266,7 @@ Header propagation is enabled in this config. See the official [OBI distributed 
 
 OBI requires a supported Linux kernel and elevated privileges. For Kubernetes or container deployments, follow the official [OBI setup guide](https://opentelemetry.io/docs/zero-code/obi/setup/) and [Config v2 reference](https://opentelemetry.io/docs/zero-code/obi/configure/config-v2/), and give OBI access to the app processes.
 
-### 6. Search and open the Session Graph
+### 7. Search and open the Session Graph
 
 Open [`http://127.0.0.1:4310/agent`](http://127.0.0.1:4310/agent). Select the configured model and send a synthetic request such as:
 
@@ -291,7 +285,7 @@ Stop OBI, Node, and Java with Ctrl+C when you finish.
 The Travel OTA source is a demo. Replace it with your own app when you are ready to instrument a real workflow.
 
 - Install [`@softprobe/web-record`](https://www.npmjs.com/package/@softprobe/web-record) in the browser app. Initialize `RecordSdk` before API calls, use the Agent's ingest-only key, and allow `https://explorer.softprobe.ai` in the page's `connect-src` policy.
-- Install [`@softprobe/vercel-ai-sdk`](https://www.npmjs.com/package/@softprobe/vercel-ai-sdk) and [`@softprobe/tracing`](https://www.npmjs.com/package/@softprobe/tracing) in the Vercel AI server. Pass your existing conversation ID to the browser SDK and the per-turn Agent span, as the patch does.
+- Install [`@softprobe/vercel-ai-sdk`](https://www.npmjs.com/package/@softprobe/vercel-ai-sdk) and [`@softprobe/tracing`](https://www.npmjs.com/package/@softprobe/tracing) in the Vercel AI server. Pass your existing conversation ID to the browser SDK and the per-turn Agent span.
 - Run official OBI with your backend process selector and exact HTTP routes. Keep the default body action `exclude`, then include only routes you want to inspect and redact sensitive fields.
 
 Replace the website origin, backend process selector, and HTTP paths in the examples with your app's values. Do not use a password, cookie, or account token as the Agent key.
