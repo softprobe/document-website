@@ -1,6 +1,6 @@
 # Softprobe documentation (VitePress v2)
 
-Unified public docs, in English and Chinese: **Replay Testing** (`/{en,zh}/testing/…` — record and replay, deployment and operations, pipelines, the `sp` command line and AI agent contracts), **Business observability** (`/{en,zh}/platform/…`, Softprobe Cloud only), **Agent QA** (`/{en,zh}/agent-qa/…`) and **Agent Evaluation** (`/{en,zh}/evaluation/…`).
+Unified public docs, in English and Chinese: **Replay Testing** (`/{en,zh}/testing/…` — record and replay, deployment and operations, pipelines, the `sp` command line and AI agent contracts), **Business observability** (`/{en,zh}/platform/…`, Softprobe Cloud only), **Blackbox** (`/{en,zh}/agent-qa/…`) and **Agent Evaluation** (`/{en,zh}/evaluation/…`).
 
 Legacy `/cli/*` and Docusaurus URLs are redirected by Cloudflare rules in [`public/_redirects`](./public/_redirects); see [REDIRECTS.md](./REDIRECTS.md).
 
@@ -23,7 +23,7 @@ npm run docs:preview
 ### Password protection
 
 The Cloudflare Worker checks the password before serving any product page. The
-same policy covers English and Chinese product areas (Testing, Platform, Agent QA and Evaluation), page JavaScript (including lean copies),
+same policy covers English and Chinese product areas (Testing, Platform, Blackbox and Evaluation), page JavaScript (including lean copies),
 search indexes, screenshots under `/img/docs/`, raw Markdown and `llms*.txt`.
 Internal `cli/implementer/` sources remain excluded from the build.
 
@@ -106,7 +106,7 @@ See [REDIRECTS.md](./REDIRECTS.md) for legacy URL mapping.
 |------|----------|
 | `{en,zh}/testing/` | Replay Testing. Sidebar groups: getting started, everyday use, deploy and operate, pipelines and notifications, integrate and AI agents, command reference |
 | `{en,zh}/platform/` | Business observability (Istio/Envoy mesh capture), Softprobe Cloud only |
-| `{en,zh}/agent-qa/` | Agent QA |
+| `{en,zh}/agent-qa/` | Blackbox |
 | `{en,zh}/evaluation/` | Agent Evaluation |
 | `{en,zh}/cli/implementer/`, `en/evaluation/implementer/` | Internal notes, excluded from the build |
 

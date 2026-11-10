@@ -302,7 +302,7 @@ const agentQaSidebarEn = [
   {
     text: 'Get started',
     items: [
-      { text: 'What is Agent QA', link: '/en/agent-qa/' },
+      { text: 'What is Blackbox', link: '/en/agent-qa/' },
       { text: 'Quick start', link: '/en/agent-qa/getting-started' },
       { text: 'Concepts', link: '/en/agent-qa/concepts' },
       { text: 'Coding agent skills', link: '/en/agent-qa/coding-agent-skills' },
@@ -311,7 +311,7 @@ const agentQaSidebarEn = [
   {
     text: 'Integrations',
     items: [
-      { text: 'Web application sessions (planned)', link: '/en/agent-qa/application-session-capture' },
+      { text: 'Web application sessions', link: '/en/agent-qa/application-session-capture' },
       { text: 'OpenCode', link: '/en/agent-qa/opencode' },
       { text: 'LangChain', link: '/en/agent-qa/langchain' },
     ],
@@ -429,7 +429,7 @@ const agentQaSidebarZh = [
   {
     text: '开始使用',
     items: [
-      { text: '什么是 Agent QA', link: '/zh/agent-qa/' },
+      { text: '什么是 Blackbox', link: '/zh/agent-qa/' },
       { text: '快速开始', link: '/zh/agent-qa/getting-started' },
       { text: '概念', link: '/zh/agent-qa/concepts' },
       { text: '用编码 Agent 排查', link: '/zh/agent-qa/coding-agent-skills' },
@@ -573,7 +573,7 @@ function sidebarForLocale(locale: DocLocale) {
 export default withMermaid(
   defineConfig({
   title: 'Softprobe',
-  description: 'Softprobe platform, Java record-replay testing, Agent QA, agent evaluation, and sp CLI documentation',
+  description: 'Softprobe platform, Java record-replay testing, Blackbox, agent evaluation, and sp CLI documentation',
   base: '/',
   cleanUrls: true,
   appearance: true,
@@ -594,7 +594,7 @@ export default withMermaid(
       llmstxt({
         ignoreFiles: ['**/implementer/**'],
         description:
-          'Softprobe — business observability (Istio/SESSIFY), Java record-replay testing, Agent QA for coding agents, and agent evaluation driven by the sp CLI and AI agents.',
+          'Softprobe — business observability (Istio/SESSIFY), Java record-replay testing, Blackbox session capture for web apps and coding agents, and agent evaluation driven by the sp CLI and AI agents.',
       }),
     ],
   },

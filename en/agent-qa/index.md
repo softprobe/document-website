@@ -1,22 +1,23 @@
 ---
-title: Softprobe Agent QA
+title: Softprobe Blackbox
 ---
 
-# Softprobe Agent QA
+# Softprobe Blackbox
 
-**Capture real agent sessions. Review steps and Findings. Improve agents with production evidence.**
+**Capture full-stack web and agent sessions. Review steps, HTTP bodies, and Findings. Improve apps and agents with production evidence.**
 
-Agent QA connects coding agents (OpenCode and LangChain / LangGraph) to Softprobe so every turn, model call, and tool use lands as a Session you can inspect in Explorer. It also supports [web application capture](/en/agent-qa/application-session-capture), which connects a visitor's browser activity to the backend requests it triggers.
+Blackbox connects coding agents and AI frameworks (OpenCode, LangChain / LangGraph, and Vercel AI) to Softprobe so every turn, model call, and tool use lands as a Session you can inspect in Explorer. It also supports [web application capture](/en/agent-qa/application-session-capture), which connects a visitor's browser activity to the backend requests it triggers.
 
-## What Agent QA does
+## What Blackbox does
 
-- **Install with one Explorer prompt** — paste into OpenCode or a coding agent (Cursor / Codex / Claude Code) for LangChain
+- **Install with one Explorer prompt** — paste into OpenCode or a coding agent (Cursor / Codex / Claude Code)
 - **Capture full Sessions** — user turns, generations, tools, retries, and errors
-- **Review in Explorer** — Sessions, Steps, and Findings for production behavior
+- **Review in Explorer** — Sessions, Graph, Trajectory, and Findings for production behavior
 - **Capture web application sessions** — see a visitor's browser session and related backend activity together in Explorer
+- **Investigate with Blackbox MCP** — query Sessions, spans, and traces directly from your coding agent over OAuth
 - **Optional Slack** — attach a channel after capture is verified
 
-## What Agent QA is not
+## What Blackbox is not
 
 | Product | Use when… |
 |---------|-----------|
@@ -24,7 +25,7 @@ Agent QA connects coding agents (OpenCode and LangChain / LangGraph) to Softprob
 | **[Testing](/en/testing/)** | Java record/replay regression with the JVM agent |
 | **[Platform](/en/platform/)** | Istio/SESSIFY business-flow observability |
 
-Today, Agent QA is the **online capture and review** path for AI and web applications. Agent Evaluation consumes evidence; Testing and Platform document their own capture flows.
+Today, Blackbox is the **online capture and review** path for AI and web applications. Agent Evaluation consumes evidence; Testing and Platform document their own capture flows.
 
 ## Start here
 

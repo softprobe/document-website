@@ -4,35 +4,47 @@ title: Investigate with a coding agent
 
 # Investigate with a coding agent
 
-Ask Cursor, Claude Code, Codex, OpenCode, or another coding agent to diagnose Softprobe Agent QA Sessions and traces. Evidence stays in your Softprobe workspace; access is **read-only**.
+Ask Cursor, Claude Code, Codex, OpenCode, or another coding agent to diagnose Softprobe Blackbox Sessions and traces. Evidence stays in your Softprobe workspace.
 
-This is separate from **capture** (Connect agent / OpenCode plugin). Capture records Sessions; this flow **investigates** them.
+This is separate from **capture** (the `@softprobe/web-record` browser SDK, OBI, or AI framework SDKs). Capture records Sessions; Blackbox MCP lets your coding agent **manage Agents and investigate Sessions**.
 
-## 1. Add Softprobe MCP
+## 1. Add Blackbox MCP
 
 **Claude Code**
 
 ```bash
-claude mcp add --transport http softprobe https://explorer.softprobe.ai/mcp
+claude mcp remove blackbox 2>/dev/null; claude mcp add --transport http blackbox https://explorer.softprobe.ai/mcp
 ```
 
-**Cursor**
+**Codex**
 
-Add an MCP server with URL:
+```bash
+codex mcp add blackbox --url https://explorer.softprobe.ai/mcp
+```
 
-`https://explorer.softprobe.ai/mcp`
+**Cursor (`.cursor/mcp.json`)**
 
-(or `cursor --add-mcp '{"name":"softprobe","url":"https://explorer.softprobe.ai/mcp"}'`)
+```json
+{"mcpServers":{"blackbox":{"url":"https://explorer.softprobe.ai/mcp"}}}
+```
 
-## 2. Ask your agent
+**OpenCode**
+
+```bash
+opencode mcp add blackbox --global --url https://explorer.softprobe.ai/mcp
+```
+
+## 2. Sign in and ask your agent
+
+Complete the Explorer OAuth sign-in flow in your coding agent: open `/mcp` in Claude Code, run `codex mcp login blackbox`, open Cursor MCP settings, or run `opencode mcp auth blackbox`.
 
 Examples:
 
-- Use Softprobe: why did session `sess_…` fail? Check tool errors and the last generation.
-- Softprobe: list Sessions from the last 24 hours with errors for agent `my-agent`.
-- Softprobe: open trace `…` and summarize tool results vs the model’s final answer.
+- Use Blackbox: why did session `sess_…` fail? Check tool errors and the last generation.
+- Blackbox: list Sessions from the last 24 hours with errors for agent `my-agent`.
+- Blackbox: open trace `…` and summarize tool results vs the model’s final answer.
 
-The first call opens Softprobe in the browser so you can sign in and Allow. After that, the agent uses tools like `get_session` and `search_sessions`. Cite `session_id` / `trace_id` / `span_id` and link Explorer:
+The first call opens Softprobe Explorer in the browser so you can sign in and click **Allow**. After that, the agent uses tools like `get_session`, `get_session_spans`, and `search_sessions`. Cite `session_id` / `trace_id` / `span_id` and link Explorer:
 
 `https://explorer.softprobe.ai?session=<session_id>`
 

@@ -17,10 +17,10 @@ hero:
       text: Testing
       link: /en/testing/getting-started
 features:
-  - title: I QA AI agents in production
-    details: Connect OpenCode or LangChain with one pasteable prompt, capture Sessions and Steps, review Findings, and optionally route alerts to Slack.
+  - title: I capture web and agent sessions in production
+    details: Connect web apps and AI agents with one pasteable prompt, capture correlated Sessions and Steps, review Findings, and optionally route alerts to Slack.
     link: /en/agent-qa/
-    linkText: Agent QA
+    linkText: Blackbox
   - title: I evaluate AI agents
     details: Author suites, run deterministic and outcome-based evals in CI, compare runs, and gate releases — Promptfoo-compatible imports with kernel-owned manifests and thelake storage.
     link: /en/evaluation/

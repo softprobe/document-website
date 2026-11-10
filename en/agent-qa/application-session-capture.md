@@ -88,7 +88,7 @@ When you finish, stop the demo container with **Ctrl+C** in the terminal where i
 
 ## Before integrating your app
 
-The browser and backend use the same Agent key. OBI sends only the HTTP request and response bodies allowed by its configuration. Keep the Agent key for that Agent; use an Explorer OAuth account (or Softprobe MCP at `https://explorer.softprobe.ai/mcp`) to inspect Sessions, since the Agent key cannot read them.
+The browser and backend use the same Agent key. OBI sends only the HTTP request and response bodies allowed by its configuration. Keep the Agent key for that Agent; use an Explorer OAuth account (or Blackbox MCP at `https://explorer.softprobe.ai/mcp`) to inspect Sessions, since the Agent key cannot read them.
 
 For the Travel OTA demo, the public Node gateway listens on port `8080` and forwards requests to a Java service on port `8081`. OBI must target the Java process, not the Node gateway. OBI requires a Linux host with eBPF support; Docker Desktop on macOS or Windows can run the quick start, but not this backend capture step.
 

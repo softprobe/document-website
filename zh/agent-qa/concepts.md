@@ -4,7 +4,7 @@ title: 概念
 
 # 概念
 
-Softprobe Agent QA 中 Session 与 observation 的简要词汇。
+Softprobe Blackbox 中 Session 与 observation 的简要词汇。
 
 ## Session
 

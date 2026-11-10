@@ -4,46 +4,33 @@ title: 快速开始
 
 # 快速开始
 
-在 Explorer 中将 Agent 接入 Softprobe Agent QA，验证首个 Session，然后按需绑定 Slack。在「连接 Agent」流程中选择 **OpenCode** 或 **LangChain**。
+在 Softprobe Explorer 中创建 Blackbox Agent，在编码 Agent 中连接 Blackbox MCP，粘贴生成的设置提示，并验证首个捕获的 Session。
 
 ## 流程
 
 ```mermaid
 flowchart LR
-  explorer["Explorer · 连接 Agent"]
-  prompt["复制安装提示"]
+  explorer["Explorer · 创建 Blackbox Agent"]
+  mcp["添加 Blackbox MCP + OAuth"]
+  prompt["复制设置提示"]
   paste["粘贴到编码 Agent"]
   verify["检查连接"]
-  slack["可选 Slack 频道"]
-  explorer --> prompt --> paste --> verify --> slack
+  explorer --> mcp --> prompt --> paste --> verify
 ```
 
-## 1. 打开「连接 Agent」
+## 1. 创建 Blackbox Agent
 
-在 Softprobe Explorer 打开 **Agents**，点击 **+ Connect agent**。命名 Agent、选择环境，并选择框架（**OpenCode** 或 **LangChain**）。Softprobe 会为该 Agent 签发捕获用 API key（`spk_…`）。
+在 Softprobe Explorer 打开 **Agents**，点击 **+ Connect agent**。命名 Agent、选择环境，并选择应用集成（**Traditional web app**、**LangChain**、**Vercel AI** 或 **OpenCode**）。Softprobe 会为该 Agent 签发仅用于上报的 API key（`spk_…`）。
 
-## 2. 粘贴安装提示
+## 2. 添加 Blackbox MCP 并登录
 
-从弹窗复制短安装提示，粘贴到你的编码 Agent：
+按照 Explorer 中显示的命令，在 Claude Code、Codex、Cursor 或 OpenCode 中将 `https://explorer.softprobe.ai/mcp` 添加为 `blackbox`，然后完成 Explorer OAuth 登录。
 
-| 框架 | 粘贴位置 | 作用 |
-|------|----------|------|
-| **OpenCode** | OpenCode 对话 | 合并 `@softprobe/opencode-plugin`、写入凭证、跑一轮真实对话 |
-| **LangChain** | Cursor / Codex / Claude Code | 安装 Softprobe 包、设置环境变量、挂上 `CallbackHandler` |
+完整说明见：[用编码 Agent 排查](/zh/agent-qa/coding-agent-skills)、[OpenCode 安装](/zh/agent-qa/opencode)、[LangChain 安装](/zh/agent-qa/langchain)。
 
-完整说明见：[OpenCode 安装](/zh/agent-qa/opencode)、[LangChain 安装](/zh/agent-qa/langchain)。
+## 3. 发送 Blackbox 设置提示与验证捕获
 
-## 3. 验证捕获
-
-完成一轮真实 Agent 对话后（LangChain 建议包含**工具**调用），在 Explorer 点击 **Check connection**。验证成功后再继续配置 Slack。
-
-打开 **Sessions** 浏览捕获。使用时间范围控件（默认最近 7 天、滚动）与 Agent 筛选；二者都会更新地址栏，便于分享视图。
-
-若要从 Cursor、Claude Code、Codex 或 OpenCode 诊断某个 Session，见 [用编码 Agent 排查](/zh/agent-qa/coding-agent-skills)。
-
-## 4. 最后再配 Slack（可选）
-
-为 Findings 选择 Slack 频道，或 **Skip for now**。工作区 OAuth 仍在 **Integrations**；本步骤只是把频道挂到该 Agent。
+在应用中运行一次合成旅程，然后让编码 Agent 通过 Blackbox MCP 验证捕获的 Session，或在 Explorer 点击 **Check connection**。
 
 ## 下一步
 

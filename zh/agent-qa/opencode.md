@@ -4,7 +4,7 @@ title: OpenCode
 
 # OpenCode 安装
 
-通过 `@softprobe/opencode-plugin` 为 [OpenCode](https://opencode.ai) 安装 Softprobe Agent QA。优先使用 Explorer 中的**复制粘贴提示**（见 [快速开始](/zh/agent-qa/getting-started)）；本页为完整参考。该提示会要求编码 Agent 直接完成配置步骤，仅在卡住时再查阅文档或检查包 / 二进制。
+通过 `@softprobe/opencode-plugin` 为 [OpenCode](https://opencode.ai) 安装 Softprobe Blackbox。优先使用 Explorer 中的**复制粘贴提示**（见 [快速开始](/zh/agent-qa/getting-started)）；本页为完整参考。该提示会要求编码 Agent 直接完成配置步骤，仅在卡住时再查阅文档或检查包 / 二进制。
 
 OpenCode 官方支持两种插件加载方式：配置中列出的 **npm 包**，或 plugins 目录下的**本地文件**。Softprobe 使用 npm 路径。参见 OpenCode 文档：
 

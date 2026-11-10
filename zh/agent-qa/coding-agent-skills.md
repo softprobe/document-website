@@ -4,35 +4,47 @@ title: 用编码 Agent 排查
 
 # 用编码 Agent 排查
 
-让 Cursor、Claude Code、Codex、OpenCode 或其他编码 Agent 诊断 Softprobe Agent QA 的 Session 与 trace。证据留在你的 Softprobe 工作区；访问为**只读**。
+让 Cursor、Claude Code、Codex、OpenCode 或其他编码 Agent 诊断 Softprobe Blackbox 的 Session 与 trace。证据留在你的 Softprobe 工作区。
 
-这与**捕获**（连接 Agent / OpenCode 插件）不同。捕获负责记录 Session；本流程负责**排查**。
+这与**捕获**（`@softprobe/web-record` 浏览器 SDK、OBI 或 AI 框架 SDK）不同。捕获负责记录 Session；Blackbox MCP 让编码 Agent **管理 Agent 并排查 Session**。
 
-## 1. 添加 Softprobe MCP
+## 1. 添加 Blackbox MCP
 
 **Claude Code**
 
 ```bash
-claude mcp add --transport http softprobe https://explorer.softprobe.ai/mcp
+claude mcp remove blackbox 2>/dev/null; claude mcp add --transport http blackbox https://explorer.softprobe.ai/mcp
 ```
 
-**Cursor**
+**Codex**
 
-添加 MCP 服务器，URL 为：
+```bash
+codex mcp add blackbox --url https://explorer.softprobe.ai/mcp
+```
 
-`https://explorer.softprobe.ai/mcp`
+**Cursor（`.cursor/mcp.json`）**
 
-（或 `cursor --add-mcp '{"name":"softprobe","url":"https://explorer.softprobe.ai/mcp"}'`）
+```json
+{"mcpServers":{"blackbox":{"url":"https://explorer.softprobe.ai/mcp"}}}
+```
 
-## 2. 向 Agent 提问
+**OpenCode**
+
+```bash
+opencode mcp add blackbox --global --url https://explorer.softprobe.ai/mcp
+```
+
+## 2. 登录并向 Agent 提问
+
+在编码 Agent 中完成 Explorer OAuth 登录：在 Claude Code 中打开 `/mcp`，执行 `codex mcp login blackbox`，打开 Cursor MCP 设置，或执行 `opencode mcp auth blackbox`。
 
 示例：
 
-- 用 Softprobe：为什么 session `sess_…` 失败了？检查工具错误和最后一次 generation。
-- Softprobe：列出过去 24 小时内 agent `my-agent` 有错误的 Session。
-- Softprobe：打开 trace `…`，总结工具结果与模型最终回答是否一致。
+- 用 Blackbox：为什么 session `sess_…` 失败了？检查工具错误和最后一次 generation。
+- Blackbox：列出过去 24 小时内 agent `my-agent` 有错误的 Session。
+- Blackbox：打开 trace `…`，总结工具结果与模型最终回答是否一致。
 
-首次调用会在浏览器打开 Softprobe，请登录并 Allow。之后 Agent 可使用 `get_session`、`search_sessions` 等工具。请引用 `session_id` / `trace_id` / `span_id`，并链接 Explorer：
+首次调用会在浏览器打开 Softprobe Explorer，请登录并点击 **Allow**。之后 Agent 可使用 `get_session`、`get_session_spans`、`search_sessions` 等工具。请引用 `session_id` / `trace_id` / `span_id`，并链接 Explorer：
 
 `https://explorer.softprobe.ai?session=<session_id>`
 
