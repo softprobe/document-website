@@ -311,7 +311,7 @@ const agentQaSidebarEn = [
   {
     text: 'Integrations',
     items: [
-      { text: 'Web application sessions (planned)', link: '/en/agent-qa/application-session-capture' },
+      { text: 'Application session capture', link: '/en/agent-qa/application-session-capture' },
       { text: 'OpenCode', link: '/en/agent-qa/opencode' },
       { text: 'LangChain', link: '/en/agent-qa/langchain' },
     ],
