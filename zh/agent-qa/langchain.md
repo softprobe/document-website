@@ -4,7 +4,7 @@ title: LangChain
 
 # LangChain 安装
 
-为 [LangChain](https://www.langchain.com/) / [LangGraph](https://langchain-ai.github.io/langgraph/) 安装 Softprobe Agent QA。优先使用 Explorer 中的**复制粘贴提示**（见 [快速开始](/zh/agent-qa/getting-started)）。
+为 [LangChain](https://www.langchain.com/) / [LangGraph](https://langchain-ai.github.io/langgraph/) 安装 Softprobe Blackbox。优先使用 Explorer 中的**复制粘贴提示**（见 [快速开始](/zh/agent-qa/getting-started)）。
 
 Softprobe 采用**你自己的**会话与用户 id（LangGraph `thread_id`、chat id、`user_id` 等），不会发明 Softprobe session UUID。Softprobe 是**增量**接入——从不替换你已有的 callbacks。
 

@@ -4,7 +4,7 @@ title: OpenCode
 
 # OpenCode install
 
-Install Softprobe Agent QA for [OpenCode](https://opencode.ai) with the `@softprobe/opencode-plugin` package. Prefer the **copy/paste prompt** from Explorer ([Quick start](/en/agent-qa/getting-started)); this page is the full reference. That prompt tells the coding agent to complete the config steps directly and to fetch docs or inspect packages/binaries only when stuck.
+Install Softprobe Blackbox for [OpenCode](https://opencode.ai) with the `@softprobe/opencode-plugin` package. Prefer the **copy/paste prompt** from Explorer ([Quick start](/en/agent-qa/getting-started)); this page is the full reference. That prompt tells the coding agent to complete the config steps directly and to fetch docs or inspect packages/binaries only when stuck.
 
 OpenCode loads plugins in two official ways: **npm packages** listed in config, or **local files** under a plugins directory. Softprobe uses the npm path. See OpenCode’s docs:
 

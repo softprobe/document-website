@@ -2,30 +2,30 @@
 title: 用编码 Agent 排查
 ---
 
-# 在编码 Agent 中使用 Softprobe MCP
+# 在编码 Agent 中使用 Blackbox MCP
 
-将 Claude Code、Codex、Cursor、OpenCode 或 Antigravity（`agy`）连接到 Softprobe Explorer，在浏览器中使用现有 Explorer 账号完成登录。MCP 可查询 Session、查看 Session 详情、列出和创建 Agent 应用，并在你明确请求时读取 Agent API key。
+将 Claude Code、Codex、Cursor、OpenCode 或 Antigravity（`agy`）连接到 Softprobe Explorer，在浏览器中使用现有 Explorer 账号完成登录。Blackbox MCP 可查询 Session、查看 Session 详情、列出和创建 Agent 应用，并在你明确请求时读取 Agent API key。
 
-这与**捕获**（连接 Agent / OpenCode 插件）不同。捕获负责记录 Session；本流程负责**排查**与管理。
+这与**捕获**（`@softprobe/web-record` 浏览器 SDK、OBI 或 AI 框架 SDK）不同。捕获负责记录 Session；Blackbox MCP 让编码 Agent **管理 Agent 并排查 Session**。
 
-## 1. 添加 Softprobe MCP
+## 1. 添加 Blackbox MCP
 
-选择你的编码 Agent 并添加 Softprobe MCP 服务（`https://explorer.softprobe.ai/mcp`）：
+选择你的编码 Agent，并将 Softprobe MCP 服务（`https://explorer.softprobe.ai/mcp`）添加为 `blackbox`：
 
 ::: code-group
 
 ```bash [Claude Code]
-claude mcp remove softprobe 2>/dev/null; claude mcp add --transport http softprobe https://explorer.softprobe.ai/mcp
+claude mcp remove blackbox 2>/dev/null; claude mcp add --transport http blackbox https://explorer.softprobe.ai/mcp
 ```
 
 ```bash [Codex]
-codex mcp add softprobe --url https://explorer.softprobe.ai/mcp
+codex mcp add blackbox --url https://explorer.softprobe.ai/mcp
 ```
 
 ```json [Cursor]
 {
   "mcpServers": {
-    "softprobe": {
+    "blackbox": {
       "url": "https://explorer.softprobe.ai/mcp"
     }
   }
@@ -33,13 +33,13 @@ codex mcp add softprobe --url https://explorer.softprobe.ai/mcp
 ```
 
 ```bash [OpenCode]
-opencode mcp add softprobe --global --url https://explorer.softprobe.ai/mcp
+opencode mcp add blackbox --global --url https://explorer.softprobe.ai/mcp
 ```
 
 ```json [Antigravity]
 {
   "mcpServers": {
-    "softprobe": {
+    "blackbox": {
       "url": "https://explorer.softprobe.ai/mcp"
     }
   }
@@ -48,7 +48,7 @@ opencode mcp add softprobe --global --url https://explorer.softprobe.ai/mcp
 
 :::
 
-- **Cursor**：将上述 JSON 写入 `.cursor/mcp.json` 或 `~/.cursor/mcp.json`，或直接点击 [Add Softprobe to Cursor](cursor://anysphere.cursor-deeplink/mcp/install?name=Softprobe&config=eyJ1cmwiOiJodHRwczovL2V4cGxvcmVyLnNvZnRwcm9iZS5haS9tY3AifQ%3D%3D)。
+- **Cursor**：将上述 JSON 写入 `.cursor/mcp.json` 或 `~/.cursor/mcp.json`，或直接点击 [Add Blackbox to Cursor](cursor://anysphere.cursor-deeplink/mcp/install?name=Blackbox&config=eyJ1cmwiOiJodHRwczovL2V4cGxvcmVyLnNvZnRwcm9iZS5haS9tY3AifQ%3D%3D)。
 - **Antigravity（`agy`）**：将上述 JSON 写入 `~/.gemini/config/mcp_config.json`（全局）或 `.agents/mcp_config.json`（工作区）。
 
 ## 2. 登录并验证访问权限
@@ -62,15 +62,15 @@ opencode mcp add softprobe --global --url https://explorer.softprobe.ai/mcp
 ```
 
 ```bash [Codex]
-codex mcp login softprobe
+codex mcp login blackbox
 ```
 
 ```bash [Cursor]
-agent mcp enable softprobe && agent mcp login softprobe
+agent mcp enable blackbox && agent mcp login blackbox
 ```
 
 ```bash [OpenCode]
-opencode mcp auth softprobe
+opencode mcp auth blackbox
 ```
 
 ```text [Antigravity]
@@ -80,19 +80,19 @@ opencode mcp auth softprobe
 :::
 
 - **Claude Code**：在 Claude Code 中运行 `/mcp`，在浏览器中使用 Explorer 账号登录并选择 **Allow**。
-- **Codex**：运行 `codex mcp login softprobe` 并在浏览器中完成 Explorer 登录授权。
-- **Cursor**：在终端运行 `agent mcp enable softprobe && agent mcp login softprobe`（或在 Cursor 编辑器中打开 **Customize → MCPs** 并点击 **Sign in**）。你可以通过 `agent mcp` 在终端管理与测试 MCP 服务：
+- **Codex**：运行 `codex mcp login blackbox` 并在浏览器中完成 Explorer 登录授权。
+- **Cursor**：在终端运行 `agent mcp enable blackbox && agent mcp login blackbox`（或在 Cursor 编辑器中打开 **Customize → MCPs** 并点击 **Sign in**）。你可以通过 `agent mcp` 在终端管理与测试 MCP 服务：
 
 | 命令 | 用途 |
 |------|------|
 | `agent mcp list` | 查看已配置的 MCP 服务、传输类型与当前状态 |
-| `agent mcp list-tools softprobe` | 列出 Softprobe MCP 暴露的所有工具与参数 |
-| `agent mcp login softprobe` | 通过外部 OAuth 流程完成 Softprobe MCP 认证 |
-| `agent mcp enable softprobe` | 批准并挂载 Softprobe MCP 供 Agent 使用 |
-| `agent mcp disable softprobe` | 卸载 Softprobe MCP 使其不再加载 |
+| `agent mcp list-tools blackbox` | 列出 Blackbox MCP 暴露的所有工具与参数 |
+| `agent mcp login blackbox` | 通过外部 OAuth 流程完成 Blackbox MCP 认证 |
+| `agent mcp enable blackbox` | 批准并挂载 Blackbox MCP 供 Agent 使用 |
+| `agent mcp disable blackbox` | 卸载 Blackbox MCP 使其不再加载 |
 
-- **OpenCode**：运行 `opencode mcp auth softprobe` 并在浏览器中完成 Explorer 登录授权。
-- **Antigravity（`agy`）**：在 `agy` 中运行 `/mcp`，选中 `softprobe` 并选择 **Authenticate** 在浏览器中完成登录授权（或在 Antigravity 桌面应用与 IDE 的 **MCP Servers** 中完成认证）。
+- **OpenCode**：运行 `opencode mcp auth blackbox` 并在浏览器中完成 Explorer 登录授权。
+- **Antigravity（`agy`）**：在 `agy` 中运行 `/mcp`，选中 `blackbox` 并选择 **Authenticate** 在浏览器中完成登录授权（或在 Antigravity 桌面应用与 IDE 的 **MCP Servers** 中完成认证）。
 
 随后可让编码 Agent 调用 `list_workspaces` 验证连接。
 
@@ -100,9 +100,9 @@ opencode mcp auth softprobe
 
 示例：
 
-- 用 Softprobe：为什么 session `sess_…` 失败了？检查工具错误和最后一次 generation。
-- Softprobe：列出过去 24 小时内 agent `my-agent` 有错误的 Session。
-- Softprobe：打开 trace `…`，总结工具结果与模型最终回答是否一致。
+- 用 Blackbox：为什么 session `sess_…` 失败了？检查工具错误和最后一次 generation。
+- Blackbox：列出过去 24 小时内 agent `my-agent` 有错误的 Session。
+- Blackbox：打开 trace `…`，总结工具结果与模型最终回答是否一致。
 
 Agent 可使用 `search_sessions`、`get_session` 与 `get_session_spans` 排查遥测数据，也可使用 `list_agents` 与 `create_agent` 管理 Agent 应用；仅在明确请求时通过 `get_agent_api_key` 获取 Agent 凭证。回答中请引用 `session_id` / `trace_id` / `span_id`，并附上 Explorer 链接：
 

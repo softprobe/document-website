@@ -2,30 +2,30 @@
 title: Investigate with a coding agent
 ---
 
-# Use Softprobe MCP with a coding agent
+# Use Blackbox MCP with a coding agent
 
-Connect Claude Code, Codex, Cursor, OpenCode, or Antigravity (`agy`) to Softprobe Explorer. Sign in through the browser with your existing Explorer account. MCP can query Sessions, inspect Session details, list and create Agent apps, and reveal an Agent API key when you request it.
+Connect Claude Code, Codex, Cursor, OpenCode, or Antigravity (`agy`) to Softprobe Explorer. Sign in through the browser with your existing Explorer account. Blackbox MCP can query Sessions, inspect Session details, list and create Agent apps, and reveal an Agent API key when you request it.
 
-This is separate from **capture** (Connect agent / OpenCode plugin). Capture records Sessions; this flow **investigates** them.
+This is separate from **capture** (the `@softprobe/web-record` browser SDK, OBI, or AI framework SDKs). Capture records Sessions; Blackbox MCP lets your coding agent **manage Agents and investigate Sessions**.
 
-## 1. Add Softprobe MCP
+## 1. Add Blackbox MCP
 
-Select your coding agent to add the Softprobe MCP server (`https://explorer.softprobe.ai/mcp`):
+Select your coding agent to add the Softprobe MCP server (`https://explorer.softprobe.ai/mcp`) as `blackbox`:
 
 ::: code-group
 
 ```bash [Claude Code]
-claude mcp remove softprobe 2>/dev/null; claude mcp add --transport http softprobe https://explorer.softprobe.ai/mcp
+claude mcp remove blackbox 2>/dev/null; claude mcp add --transport http blackbox https://explorer.softprobe.ai/mcp
 ```
 
 ```bash [Codex]
-codex mcp add softprobe --url https://explorer.softprobe.ai/mcp
+codex mcp add blackbox --url https://explorer.softprobe.ai/mcp
 ```
 
 ```json [Cursor]
 {
   "mcpServers": {
-    "softprobe": {
+    "blackbox": {
       "url": "https://explorer.softprobe.ai/mcp"
     }
   }
@@ -33,13 +33,13 @@ codex mcp add softprobe --url https://explorer.softprobe.ai/mcp
 ```
 
 ```bash [OpenCode]
-opencode mcp add softprobe --global --url https://explorer.softprobe.ai/mcp
+opencode mcp add blackbox --global --url https://explorer.softprobe.ai/mcp
 ```
 
 ```json [Antigravity]
 {
   "mcpServers": {
-    "softprobe": {
+    "blackbox": {
       "url": "https://explorer.softprobe.ai/mcp"
     }
   }
@@ -48,7 +48,7 @@ opencode mcp add softprobe --global --url https://explorer.softprobe.ai/mcp
 
 :::
 
-- **Cursor**: Save the JSON snippet in `.cursor/mcp.json` or `~/.cursor/mcp.json`, or select [Add Softprobe to Cursor](cursor://anysphere.cursor-deeplink/mcp/install?name=Softprobe&config=eyJ1cmwiOiJodHRwczovL2V4cGxvcmVyLnNvZnRwcm9iZS5haS9tY3AifQ%3D%3D).
+- **Cursor**: Save the JSON snippet in `.cursor/mcp.json` or `~/.cursor/mcp.json`, or select [Add Blackbox to Cursor](cursor://anysphere.cursor-deeplink/mcp/install?name=Blackbox&config=eyJ1cmwiOiJodHRwczovL2V4cGxvcmVyLnNvZnRwcm9iZS5haS9tY3AifQ%3D%3D).
 - **Antigravity (`agy`)**: Save the JSON snippet in `~/.gemini/config/mcp_config.json` (global) or `.agents/mcp_config.json` (workspace).
 
 ## 2. Sign in and verify access
@@ -62,15 +62,15 @@ Authenticate with your Explorer account in the browser:
 ```
 
 ```bash [Codex]
-codex mcp login softprobe
+codex mcp login blackbox
 ```
 
 ```bash [Cursor]
-agent mcp enable softprobe && agent mcp login softprobe
+agent mcp enable blackbox && agent mcp login blackbox
 ```
 
 ```bash [OpenCode]
-opencode mcp auth softprobe
+opencode mcp auth blackbox
 ```
 
 ```text [Antigravity]
@@ -79,20 +79,20 @@ opencode mcp auth softprobe
 
 :::
 
-- **Claude Code**: Run `/mcp` in Claude Code and authorize Softprobe with your Explorer account in the browser.
-- **Codex**: Run `codex mcp login softprobe` and complete Explorer sign-in in the browser.
-- **Cursor**: Run `agent mcp enable softprobe && agent mcp login softprobe` from the terminal (or open **Customize → MCPs** in Cursor and choose **Sign in**). You can manage and inspect the server from the terminal with `agent mcp`:
+- **Claude Code**: Run `/mcp` in Claude Code and authorize Blackbox with your Explorer account in the browser.
+- **Codex**: Run `codex mcp login blackbox` and complete Explorer sign-in in the browser.
+- **Cursor**: Run `agent mcp enable blackbox && agent mcp login blackbox` from the terminal (or open **Customize → MCPs** in Cursor and choose **Sign in**). You can manage and inspect the server from the terminal with `agent mcp`:
 
 | Command | Purpose |
 |---------|---------|
 | `agent mcp list` | Display configured servers, transport types, and current status |
-| `agent mcp list-tools softprobe` | List tools and parameters exposed by Softprobe MCP |
-| `agent mcp login softprobe` | Authenticate with Softprobe MCP through the browser OAuth flow |
-| `agent mcp enable softprobe` | Approve and mount Softprobe MCP for the agent |
-| `agent mcp disable softprobe` | Unload Softprobe MCP so the agent ignores it |
+| `agent mcp list-tools blackbox` | List tools and parameters exposed by Blackbox MCP |
+| `agent mcp login blackbox` | Authenticate with Blackbox MCP through the browser OAuth flow |
+| `agent mcp enable blackbox` | Approve and mount Blackbox MCP for the agent |
+| `agent mcp disable blackbox` | Unload Blackbox MCP so the agent ignores it |
 
-- **OpenCode**: Run `opencode mcp auth softprobe` and complete Explorer sign-in in the browser.
-- **Antigravity (`agy`)**: Run `/mcp` in `agy`, select `softprobe`, and choose **Authenticate** to sign in through the browser (or open **MCP Servers** in the Antigravity app or IDE).
+- **OpenCode**: Run `opencode mcp auth blackbox` and complete Explorer sign-in in the browser.
+- **Antigravity (`agy`)**: Run `/mcp` in `agy`, select `blackbox`, and choose **Authenticate** to sign in through the browser (or open **MCP Servers** in the Antigravity app or IDE).
 
 Then ask your coding agent to call `list_workspaces` to confirm access.
 
@@ -100,9 +100,9 @@ Then ask your coding agent to call `list_workspaces` to confirm access.
 
 Examples:
 
-- Use Softprobe: why did session `sess_…` fail? Check tool errors and the last generation.
-- Softprobe: list Sessions from the last 24 hours with errors for agent `my-agent`.
-- Softprobe: open trace `…` and summarize tool results vs the model’s final answer.
+- Use Blackbox: why did session `sess_…` fail? Check tool errors and the last generation.
+- Blackbox: list Sessions from the last 24 hours with errors for agent `my-agent`.
+- Blackbox: open trace `…` and summarize tool results vs the model’s final answer.
 
 The agent can use `search_sessions`, `get_session`, and `get_session_spans` to investigate telemetry. It can use `list_agents` and `create_agent` to manage Agent apps. `get_agent_api_key` reveals an Agent credential only when requested. Cite `session_id` / `trace_id` / `span_id` and link Explorer:
 

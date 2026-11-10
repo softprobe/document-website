@@ -4,7 +4,7 @@ title: Concepts
 
 # Concepts
 
-Short vocabulary for Softprobe Agent QA Sessions and observations.
+Short vocabulary for Softprobe Blackbox Sessions and observations.
 
 ## Session
 

@@ -1,21 +1,22 @@
 ---
-title: Softprobe Agent QA
+title: Softprobe Blackbox
 ---
 
-# Softprobe Agent QA
+# Softprobe Blackbox
 
-**捕获真实 Agent 会话，审查步骤与 Findings，用生产证据改进 Agent。**
+**捕获全栈 Web 与 Agent 会话，审查步骤、HTTP 消息体与 Findings，用生产证据改进应用与 Agent。**
 
-Agent QA 将编码 Agent（OpenCode 与 LangChain / LangGraph）接入 Softprobe，使每次对话轮次、模型调用与工具使用都以 Session 形式落入 Explorer，便于检查。
+Blackbox 将 Web 应用（`@softprobe/web-record` 与官方 OpenTelemetry OBI）和 AI Agent（OpenCode、LangChain / LangGraph 与 Vercel AI）接入 Softprobe Explorer，使每次浏览器请求、后端 span、模型调用与工具使用都以关联 Session 形式落入 Explorer，便于检查。
 
-## Agent QA 能做什么
+## Blackbox 能做什么
 
-- **用 Explorer 里的一条提示完成安装** — 粘贴到 OpenCode，或粘贴到 Cursor / Codex / Claude Code（LangChain）
-- **捕获完整 Session** — 用户轮次、生成、工具、重试与错误
-- **在 Explorer 中审查** — Sessions、Steps、Findings，观察生产行为
+- **用 Explorer 里的一条提示完成安装** — 粘贴到编码 Agent（Cursor、Claude Code、Codex 或 OpenCode）
+- **捕获完整 Session** — 浏览器活动、OBI 后端 HTTP 消息体，以及用户轮次、生成、工具、重试与错误
+- **在 Explorer 中审查** — Sessions、Graph、Trajectory、Findings，观察生产行为
+- **通过 Blackbox MCP 排查** — 在编码 Agent 中通过 OAuth 直接查询 Session、span 与 trace
 - **可选 Slack** — 验证捕获成功后再绑定频道
 
-## Agent QA 不是什么
+## Blackbox 不是什么
 
 | 产品 | 适用场景 |
 |------|----------|
@@ -23,7 +24,7 @@ Agent QA 将编码 Agent（OpenCode 与 LangChain / LangGraph）接入 Softprobe
 | **[测试](/zh/testing/)** | Java 录制 / 回放回归（JVM Agent） |
 | **[平台](/zh/platform/)** | Istio / SESSIFY 业务流可观测 |
 
-Agent QA 是 AI Agent 的**在线捕获与审查**路径。Evaluation 消费证据；测试与平台覆盖非 LLM 服务。
+Blackbox 是 Web 应用与 AI Agent 的**在线会话捕获与审查**路径。Evaluation 消费证据；测试与平台覆盖各自流程。
 
 ## 从这里开始
 

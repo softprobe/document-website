@@ -4,7 +4,7 @@ title: LangChain
 
 # LangChain install
 
-Install Softprobe Agent QA for [LangChain](https://www.langchain.com/) / [LangGraph](https://langchain-ai.github.io/langgraph/). Prefer the **copy/paste prompt** from Explorer ([Quick start](/en/agent-qa/getting-started)).
+Install Softprobe Blackbox for [LangChain](https://www.langchain.com/) / [LangGraph](https://langchain-ai.github.io/langgraph/). Prefer the **copy/paste prompt** from Explorer ([Quick start](/en/agent-qa/getting-started)).
 
 Softprobe adopts **your** conversation and user ids (LangGraph `thread_id`, chat id, `user_id`, …). It does not invent Softprobe session UUIDs. Softprobe is **additive** — it never replaces your existing callbacks.
 

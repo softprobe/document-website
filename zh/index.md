@@ -17,10 +17,10 @@ hero:
       text: 测试
       link: /zh/testing/getting-started
 features:
-  - title: 我在生产中做 AI Agent QA
-    details: 用一条可粘贴提示连接 OpenCode 或 LangChain，捕获 Session 与 Steps，审查 Findings，并可选择把告警路由到 Slack。
+  - title: 我在生产中捕获 Web 与 Agent 会话
+    details: 用一条可粘贴提示连接 Web 应用或 AI Agent，捕获关联的 Session 与 Steps，审查 Findings，并可选择把告警路由到 Slack。
     link: /zh/agent-qa/
-    linkText: Agent QA
+    linkText: Blackbox
   - title: 我做 AI Agent 评估
     details: 编写套件，在 CI 中跑确定性与基于结果的评估，对比运行并设置发布门禁 — 兼容 Promptfoo 导入，清单由内核拥有，存储走 thelake。
     link: /zh/evaluation/
