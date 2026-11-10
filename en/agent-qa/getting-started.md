@@ -26,7 +26,7 @@ Softprobe mints an ingest-only Agent API key (`spk_...`). This key is valid only
 
 ## 2. Add Softprobe MCP and sign in
 
-Add `https://explorer.softprobe.ai/mcp` to Claude Code, Codex, Cursor, or OpenCode using the commands shown in Explorer, then complete the Explorer OAuth sign-in flow. Your coding agent uses this OAuth connection to call `list_workspaces`, `search_sessions`, and `get_session_spans`.
+Add `https://explorer.softprobe.ai/mcp` to Claude Code, Codex, Cursor, OpenCode, or Antigravity (`agy`) using the commands shown in Explorer, then complete the Explorer OAuth sign-in flow. Your coding agent uses this OAuth connection to call `list_workspaces`, `search_sessions`, and `get_session_spans`.
 
 Full details: [Investigate with a coding agent](/en/agent-qa/coding-agent-skills).
 
