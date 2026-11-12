@@ -285,9 +285,9 @@ extensions:
                     url_path_patterns:
                       - /api/flights/payandissue
                     methods: [POST]
-                  json_paths:
-                    - $.paymentDetails.cardNumber
-                    - $.paymentDetails.cvv
+                    obfuscation_json_paths:
+                      - $.paymentDetails.cardNumber
+                      - $.paymentDetails.cvv
                 - action: include
                   type: body
                   scope: all
