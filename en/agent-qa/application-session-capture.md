@@ -339,9 +339,9 @@ Open [`http://127.0.0.1:4310/agent`](http://127.0.0.1:4310/agent), select your c
 
 In [Softprobe Explorer](https://explorer.softprobe.ai), open **Sessions**, filter for `travel-ota-source-demo`, and select the newest Session. Switch to **Graph** to inspect the unified trace across all three components:
 
-- **Web app**: RRWeb DOM replay and browser `POST /agent/api/sessions/*` spans with captured JSON payloads and `[REDACTED]` card details.
-- **Vercel AI server**: `invoke_agent` root spans, `chat` LLM generation spans, and `execute_tool` spans (`travel_search`, `travel_prepare`, `travel_book`).
-- **Java backend**: Inbound `POST /api/flights/search`, `/api/flights/book`, `/api/flights/orders/query`, and `/api/flights/payandissue` server spans alongside outbound `POST /ndc/v21.3/airshopping`, `/ndc/v21.3/offerprice`, `/ndc/v21.3/ordercreate`, `/ndc/v21.3/orderretrieve`, and `/ndc/v21.3/orderchange` client spans, all with extracted JSON bodies.
+- **Web app**: RRWeb DOM replay and browser `POST /agent/api/sessions/*` spans with captured JSON payloads.
+- **Vercel AI server**: `invoke_agent` root spans, `chat` LLM generation spans, and `execute_tool` spans (`travel_search`, `travel_prepare`, `travel_book`, `travel_order`).
+- **Java backend**: Inbound `POST /api/flights/search`, `/api/flights/book`, `/api/flights/orders/query`, and `/api/flights/payandissue` server spans (with `[REDACTED]` card details) alongside outbound `POST /ndc/v21.3/airshopping`, `/ndc/v21.3/offerprice`, `/ndc/v21.3/ordercreate`, `/ndc/v21.3/orderretrieve`, and `/ndc/v21.3/orderchange` client spans. HTTP/1.1 routes include extracted JSON bodies, while OkHttp HTTP/2 `/ndc/v21.3/ordercreate` records route, status, and parent-span correlation without body buffers in OBI `v1.0.0`.
 
 Stop OBI, the Node server, and the Java service with `Ctrl+C` when finished.
 
@@ -349,7 +349,7 @@ Stop OBI, the Node server, and the Java service with `Ctrl+C` when finished.
 
 To apply this pattern to your own stack:
 
-1. **Web app**: Install [`@softprobe/web-record`](https://www.npmjs.com/package/@softprobe/web-record) and call `RecordSdk.init({ apiKey })` in your browser entrypoint, or add `<script src="https://unpkg.com/@softprobe/web-record/dist/browser.js" data-api-key="spk_..." defer></script>` to `<head>`. Pass `httpBodyCapture: { routes: [...] }` only when you want to restrict body capture to specific routes or add custom `redactJsonPaths` rules.
+1. **Web app**: Install [`@softprobe/web-record`](https://www.npmjs.com/package/@softprobe/web-record) and call `RecordSdk.init({ apiKey })` in your browser entrypoint, or add `<script src="https://unpkg.com/@softprobe/web-record/dist/browser.js" data-api-key="spk_..." defer></script>` to `<head>`. Pass `httpBodyCapture: { routes: [...] }` when you want to scope browser `fetch`/`XHR` span and body capture to specific route paths or add custom `redactJsonPaths` rules.
 2. **Vercel AI server**: Install [`@softprobe/vercel-ai-sdk`](https://www.npmjs.com/package/@softprobe/vercel-ai-sdk) and [`@softprobe/tracing`](https://www.npmjs.com/package/@softprobe/tracing), and call `initVercelAiTelemetry({ apiKey })` at server startup.
 3. **Backend services**: Run OBI on your Linux host or Kubernetes node with your process selector (`cmd_args_glob`) and route allowlist (`url_path_patterns`).
 
