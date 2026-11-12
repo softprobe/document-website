@@ -111,7 +111,7 @@ The Travel OTA demo has three service components. A traveler chats in the browse
   </div>
 </div>
 
-All three components export telemetry with the same Agent key (`spk_...`) and correlate into a single Session via the conversation ID (`session.id`) and W3C `traceparent` header.
+All three components export telemetry with the same Agent key (`spk_...`) and correlate into a single Session through `gen_ai.conversation.id`, `session.id`, and the W3C `traceparent` header. Each tier sets a distinct OpenTelemetry `service.name` (`travel-web` in the browser, `travel-agent` in the Node.js AI server, and `travel-ota` on the Java backend) so Explorer's **Graph** and **Span Detail** views identify every service and outbound peer target separately.
 
 ## Instrument and run the source demo
 
@@ -137,13 +137,14 @@ cd ..
 
 ### 3. Instrument the web app (Browser JS)
 
-Add `RecordSdk.init` at line 1 of `travel-agent-demo/public/app.js` (outside and above the existing `(() => {` wrapper), replacing the placeholder with your Agent key:
+Add `RecordSdk.init` at line 1 of `travel-agent-demo/public/app.js` above the existing `(() => {` wrapper, replacing the placeholder with your Agent key:
 
 ```js
 import { RecordSdk } from '@softprobe/web-record';
 
 RecordSdk.init({
   apiKey: 'spk_REPLACE_WITH_AGENT_KEY',
+  serviceName: 'travel-web',
   httpBodyCapture: {
     routes: [
       { method: 'POST', path: '/agent/api/sessions' },
@@ -160,13 +161,14 @@ RecordSdk.init({
   'use strict';
 ```
 
-With this configuration, `@softprobe/web-record`:
+With this configuration, `@softprobe/web-record` performs the following actions:
 
-- Exports OTLP traces and DOM recordings to `https://explorer.softprobe.ai/api/thelake/v1/traces`.
+- Sets OpenTelemetry `service.name` to `travel-web` and exports OTLP traces and DOM recordings to `https://explorer.softprobe.ai/api/thelake/v1/traces`.
 - Traces only the listed business `POST` routes and injects W3C `traceparent` headers, skipping `/agent/api/status` health checks and 1-second `GET /agent/api/sessions/:id` polling requests.
+- Keeps low-cardinality HTTP client span names (`POST`) and sets `url.template` such as `/agent/api/sessions/*/messages` when a wildcard `*` route matches, so dynamic session IDs never appear in span names.
 - Captures JSON request and response bodies up to 64 KiB on matched routes and replaces `cardNumber`, `cvv`, `cvc`, `password`, and `secret` with `[REDACTED]`.
-- Masks all HTML input elements (`maskAllInputs: true`).
-- Automatically adopts the demo's `ses_*` session ID from `/agent/api/sessions` responses, `/sessions/:id` request URLs, and `sessionStorage`.
+- Masks all HTML input elements with `maskAllInputs: true`.
+- Adopts the demo's `ses_*` session ID from `/agent/api/sessions` responses, `/sessions/:id` request URLs, and `sessionStorage`.
 
 Next, update `Content-Security-Policy` in `travel-agent-demo/src/server.mjs` so the browser can upload traces to `https://explorer.softprobe.ai`:
 
@@ -186,13 +188,14 @@ import { initVercelAiTelemetry } from '@softprobe/vercel-ai-sdk';
 
 initVercelAiTelemetry({
   apiKey: 'spk_REPLACE_WITH_AGENT_KEY',
+  serviceName: 'travel-agent',
 });
 ```
 
-With only `apiKey`, `initVercelAiTelemetry` automatically instruments Vercel AI SDK calls (`generateText`, `streamText`, and tool executions), propagates W3C `traceparent` headers onto outgoing Node `fetch` and `http`/`https` requests to downstream services (excluding Softprobe OTLP trace uploads), and exports `agent`, `generation`, and `tool` spans to `https://explorer.softprobe.ai/api/thelake/v1/traces`:
+`initVercelAiTelemetry` sets OpenTelemetry `service.name` to `travel-agent`, instruments Vercel AI SDK calls (`generateText`, `streamText`, and tool executions), propagates W3C `traceparent` headers onto outgoing Node `fetch`, `http`, and `https` requests to downstream services while excluding Softprobe OTLP trace uploads, and exports `agent`, `generation`, and `tool` spans to `https://explorer.softprobe.ai/api/thelake/v1/traces`:
 
-- **From an instrumented browser (`@softprobe/web-record`)**: The browser SDK injects a W3C `traceparent` header on requests to the Node.js server. `initVercelAiTelemetry` extracts `traceparent` (plus any `/sessions/:id` or `x-session-id` on the request) and forwards `traceparent` when tool calls or route handlers call the Java backend, so browser, Vercel AI, and Java spans correlate into the same Session in Explorer.
-- **Without an incoming trace or session ID** (for example, a CLI script, cron job, or `curl` request): `initVercelAiTelemetry` starts a new trace and uses its `trace_id` as the fallback `session.id`, so each standalone run still appears as its own Session in Explorer.
+- **From an instrumented browser.** `@softprobe/web-record` injects a W3C `traceparent` header on requests to the Node.js server. `initVercelAiTelemetry` extracts `traceparent` along with any conversation or session ID from `/sessions/:id` URLs, request headers, metadata, or baggage. It sets both `gen_ai.conversation.id` and `session.id` to that ID and forwards `traceparent` when tool calls or route handlers call the Java backend, so browser, Vercel AI, and Java spans join the same Session in Explorer.
+- **Without an incoming conversation or session ID.** When a CLI script, cron job, or `curl` command runs without a session ID, `initVercelAiTelemetry` starts a new trace and leaves `gen_ai.conversation.id` and `session.id` unset instead of fabricating a conversation ID from `trace_id`. Pass `experimental_telemetry: { metadata: { sessionId } }` or `x-session-id` when you want standalone calls grouped into a Session.
 
 ### 5. Build and start the services
 
@@ -205,13 +208,13 @@ npx esbuild public/app.js --bundle --outfile=public/app.js --allow-overwrite
 cd ..
 ```
 
-Open two terminals in `demo-ota`. In the first terminal, start the Java backend on port `8080`:
+Open two terminals in `demo-ota`. In the first terminal, start the Java backend on port `8080` with `OTEL_SERVICE_NAME=travel-ota` so OBI assigns a distinct OpenTelemetry `service.name` to the backend service:
 
 ```sh
-java -jar travel-ota/target/travel-ota-1.0-SNAPSHOT.jar --server.port=8080
+OTEL_SERVICE_NAME=travel-ota java -jar travel-ota/target/travel-ota-1.0-SNAPSHOT.jar --server.port=8080
 ```
 
-In the second terminal, start the Vercel AI Node.js server with your Gemini API key (it listens on port `4310` and calls the Java backend at `http://127.0.0.1:8080` by default):
+In the second terminal, start the Vercel AI Node.js server with your Gemini API key. The server listens on port `4310` and calls the Java backend at `http://127.0.0.1:8080` by default:
 
 ```sh
 cd travel-agent-demo
@@ -221,7 +224,7 @@ npm start
 
 ### 6. Instrument the Java backend with OBI
 
-The Java backend (`travel-ota`) requires no code changes or JVM agent flags. Install the official OBI `1.0.0` binary on the Linux host to trace the Java process's inbound REST endpoints and outbound NDC airline calls at the kernel level. Set `ARCH` to `amd64` or `arm64`:
+The Java backend requires no code changes or JVM agent flags. OBI discovers `OTEL_SERVICE_NAME=travel-ota` from the Java process environment (or from pod metadata on Kubernetes) and sets `service.name` on every captured backend server and client span. Install the official OBI `1.0.0` binary on the Linux host to trace the Java process's inbound REST endpoints and outbound NDC airline calls at the kernel level. Set `ARCH` to `amd64` or `arm64`:
 
 ```sh
 VERSION=1.0.0
@@ -337,21 +340,21 @@ Open [`http://127.0.0.1:4310/agent`](http://127.0.0.1:4310/agent), select your c
 2. Select an offer (or reply `Prepare offer 1 for Alex Demo`), then click **Confirm demo booking** when the review card appears.
 3. Click **Pay & issue ticket** with the prefilled demo card to complete payment and ticket issuance.
 
-In [Softprobe Explorer](https://explorer.softprobe.ai), open **Sessions**, filter for `travel-ota-source-demo`, and select the newest Session. Switch to **Graph** to inspect the unified trace across all three components:
+In [Softprobe Explorer](https://explorer.softprobe.ai), open **Sessions**, filter for `travel-ota-source-demo`, and select the newest Session. Switch to **Graph** and open **Span Detail** on individual nodes to inspect the unified trace across each distinct `service.name` and outbound peer target:
 
-- **Web app**: RRWeb DOM replay and browser `POST /agent/api/sessions/*` spans with captured JSON payloads.
-- **Vercel AI server**: `invoke_agent` root spans, `chat` LLM generation spans, and `execute_tool` spans (`travel_search`, `travel_prepare`, `travel_book`, `travel_order`).
-- **Java backend**: Inbound `POST /api/flights/search`, `/api/flights/book`, `/api/flights/orders/query`, and `/api/flights/payandissue` server spans (with `[REDACTED]` card details) alongside outbound `POST /ndc/v21.3/airshopping`, `/ndc/v21.3/offerprice`, `/ndc/v21.3/ordercreate`, `/ndc/v21.3/orderretrieve`, and `/ndc/v21.3/orderchange` client spans. HTTP/1.1 routes include extracted JSON bodies, while OkHttp HTTP/2 `/ndc/v21.3/ordercreate` records route, status, and parent-span correlation without body buffers in OBI `v1.0.0`.
+- **Web app (`travel-web`).** RRWeb DOM replay and browser `POST` client spans with `url.template` route patterns and captured JSON payloads.
+- **Vercel AI server (`travel-agent`).** `invoke_agent` root spans, `chat` LLM generation spans, and `execute_tool` spans (`travel_search`, `travel_prepare`, `travel_book`, `travel_order`) linked by `gen_ai.conversation.id`.
+- **Java backend (`travel-ota`).** Inbound `POST /api/flights/search`, `/api/flights/book`, `/api/flights/orders/query`, and `/api/flights/payandissue` server spans with `[REDACTED]` card details, alongside outbound `POST /ndc/v21.3/airshopping`, `/ndc/v21.3/offerprice`, `/ndc/v21.3/ordercreate`, `/ndc/v21.3/orderretrieve`, and `/ndc/v21.3/orderchange` client spans to the external NDC airline host. HTTP/1.1 routes include extracted JSON bodies, while OkHttp HTTP/2 `/ndc/v21.3/ordercreate` records route, status, and parent-span correlation without body buffers in OBI `v1.0.0`.
 
 Stop OBI, the Node server, and the Java service with `Ctrl+C` when finished.
 
 ## Use your own app
 
-To apply this pattern to your own stack:
+To apply this pattern to your own stack, assign a distinct OpenTelemetry `service.name` to every tier:
 
-1. **Web app**: Install [`@softprobe/web-record`](https://www.npmjs.com/package/@softprobe/web-record) and call `RecordSdk.init({ apiKey })` in your browser entrypoint, or add `<script src="https://unpkg.com/@softprobe/web-record/dist/browser.js" data-api-key="spk_..." defer></script>` to `<head>`. Pass `httpBodyCapture: { routes: [...] }` when you want to scope browser `fetch`/`XHR` span and body capture to specific route paths or add custom `redactJsonPaths` rules.
-2. **Vercel AI server**: Install [`@softprobe/vercel-ai-sdk`](https://www.npmjs.com/package/@softprobe/vercel-ai-sdk) and [`@softprobe/tracing`](https://www.npmjs.com/package/@softprobe/tracing), and call `initVercelAiTelemetry({ apiKey })` at server startup.
-3. **Backend services**: Run OBI on your Linux host or Kubernetes node with your process selector (`cmd_args_glob`) and route allowlist (`url_path_patterns`).
+1. **Web app.** Install [`@softprobe/web-record`](https://www.npmjs.com/package/@softprobe/web-record) and call `RecordSdk.init({ apiKey, serviceName: 'my-web' })` in your browser entrypoint, or add `<script src="https://unpkg.com/@softprobe/web-record/dist/browser.js" data-api-key="spk_..." defer></script>` to `<head>`. Pass `httpBodyCapture: { routes: [...] }` with wildcard `*` path segments to scope browser `fetch` and `XHR` capture to business routes, stamp low-cardinality `url.template` attributes, and add custom `redactJsonPaths` rules.
+2. **AI agent server.** Install [`@softprobe/vercel-ai-sdk`](https://www.npmjs.com/package/@softprobe/vercel-ai-sdk) and [`@softprobe/tracing`](https://www.npmjs.com/package/@softprobe/tracing), then call `initVercelAiTelemetry({ apiKey, serviceName: 'my-agent' })` at server startup. If your agent uses standard OpenTelemetry GenAI (`gen_ai.*`), Arize OpenInference (`openinference.*`), Traceloop OpenLLMetry (`traceloop.*`), LangChain, or OpenCode, export OTLP HTTP traces to `https://explorer.softprobe.ai/api/thelake/v1/traces` with its own `OTEL_SERVICE_NAME` or `SOFTPROBE_SERVICE_NAME` and propagate your app's conversation ID in `gen_ai.conversation.id` or `session.id`.
+3. **Backend services.** Set `OTEL_SERVICE_NAME` on each backend process or Kubernetes workload, then run OBI on your Linux host or node with your process selector (`cmd_args_glob` or `open_ports`) and route allowlist (`url_path_patterns`). OBI discovers `OTEL_SERVICE_NAME` from the target service so **Graph** and **Span Detail** show each backend and outbound peer target clearly.
 
 <style scoped>
 .sp-arch-diagram {
