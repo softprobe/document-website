@@ -143,7 +143,7 @@ cd ..
 
 ### 3. Instrument the web app (Browser JS)
 
-Add `RecordSdk.init` at the top of `travel-agent-demo/public/app.js`, replacing the placeholder with your Agent key:
+Add `RecordSdk.init` at line 1 of `travel-agent-demo/public/app.js` (outside and above the existing `(() => {` wrapper), replacing the placeholder with your Agent key:
 
 ```js
 import { RecordSdk } from '@softprobe/web-record';
@@ -151,6 +151,9 @@ import { RecordSdk } from '@softprobe/web-record';
 RecordSdk.init({
   apiKey: 'spk_REPLACE_WITH_AGENT_KEY',
 });
+
+(() => {
+  'use strict';
 ```
 
 With only `apiKey`, `@softprobe/web-record` applies defaults for browser session capture:
