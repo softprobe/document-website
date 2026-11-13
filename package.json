@@ -13,6 +13,7 @@
     "deploy": "npm run docs:build && env -u CLOUDFLARE_API_TOKEN -u CF_API_TOKEN wrangler deploy",
     "docs:serve": "npm run docs:build && wrangler dev",
     "typecheck:worker": "tsc -p tsconfig.worker.json",
+    "test": "node --test",
     "test:auth": "node --test tests/docs-auth.test.mjs"
   },
   "devDependencies": {
