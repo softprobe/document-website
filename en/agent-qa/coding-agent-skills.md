@@ -172,7 +172,7 @@ Source: [github.com/softprobe/softprobe-skills](https://github.com/softprobe/sof
 | Symptom | Fix |
 |---------|-----|
 | Browser auth loop | Finish Allow on the Softprobe consent page; ensure you’re signed into Explorer |
-| Workspace picker / 409 | Pick a workspace in Explorer, or ask the agent to `list_workspaces` / `select_workspace` |
+| Workspace picker / 409 | Use the workspace picker at the bottom of Explorer's sidebar, or ask the agent to `list_workspaces` / `select_workspace` |
 | MCP tools missing | Re-add `https://explorer.softprobe.ai/mcp` in your client, then complete browser sign-in |
 | Confused with OpenCode capture | Capture uses `@softprobe/opencode-plugin` from Connect agent; MCP manages Agent records and investigates Sessions but does not capture telemetry |
 
