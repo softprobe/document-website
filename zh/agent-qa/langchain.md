@@ -36,7 +36,7 @@ export SOFTPROBE_ENVIRONMENT="Production"
 
 | 变量 | 必填 | 含义 |
 |------|------|------|
-| `SOFTPROBE_PUBLIC_KEY` | 是 | Explorer **Agents** 页面签发的仅限写入 Agent API key（`spk_...`） |
+| `SOFTPROBE_PUBLIC_KEY` | 是 | Explorer **Agents** 页面签发的 Ingestion Key（`spk_...`），仅限写入遥测数据 |
 | `SOFTPROBE_BASE_URL` | 是 | `https://explorer.softprobe.ai/api/thelake` |
 | `SOFTPROBE_OTLP_ENDPOINT` | 否 | 默认为 `{SOFTPROBE_BASE_URL}/v1/traces` |
 | `SOFTPROBE_SERVICE_NAME` | 否 | 当前 Agent 服务的 OpenTelemetry `service.name`，用于在 **Graph** 与 **Span Detail** 中区分多层服务 |

@@ -51,7 +51,7 @@ Create `opencode-softprobe.json` in the OpenCode config directory (this is a **S
 
 | Field | Required | Meaning |
 |-------|----------|---------|
-| `publicKey` | Yes | Agent API key (`spk_…`) from Explorer **Agents → + Connect agent** |
+| `publicKey` | Yes | Ingestion Key (`spk_…`) from Explorer **Agents → + Connect agent** |
 | `baseUrl` | Yes | `https://explorer.softprobe.ai/api/thelake` |
 | `otlpEndpoint` | No | Defaults to `{baseUrl}/v1/traces` |
 | `environment` | No | Label matching the Agent environment in Explorer (e.g. `Production`) |
@@ -66,7 +66,7 @@ export SOFTPROBE_OTLP_ENDPOINT="https://explorer.softprobe.ai/api/thelake/v1/tra
 export SOFTPROBE_ENVIRONMENT="Production"
 ```
 
-The Connect Agent install prompt embeds your agent API key and these URLs. Do not commit credentials to source control.
+The Connect Agent install prompt embeds your Ingestion Key and these URLs. Do not commit credentials to source control.
 
 ## 3. Verify
 
@@ -74,7 +74,7 @@ The Connect Agent install prompt embeds your agent API key and these URLs. Do no
 2. Ensure a Session was traced: the install prompt has OpenCode run `opencode run "What is 1+2?"`, or run one real chat turn yourself (with tools if you use them).
 3. In Explorer, open **Agents → + Connect agent** and **Check connection**, or browse **Sessions** for the new Session (range filter defaults to the last 7 days).
 
-Sessions are matched to the Explorer Agent via the agent API key (`publicKey`); you do not set an agent name in credentials.
+Sessions are matched to the Explorer Agent via the Ingestion Key (`publicKey`); you do not set an agent name in credentials.
 
 ## What is traced
 

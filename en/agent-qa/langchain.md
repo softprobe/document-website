@@ -36,7 +36,7 @@ export SOFTPROBE_ENVIRONMENT="Production"
 
 | Variable | Required | Meaning |
 |----------|----------|---------|
-| `SOFTPROBE_PUBLIC_KEY` | Yes | Ingest-only Agent API key (`spk_...`) from Explorer **Agents** |
+| `SOFTPROBE_PUBLIC_KEY` | Yes | Ingestion Key (`spk_...`) from Explorer **Agents** |
 | `SOFTPROBE_BASE_URL` | Yes | `https://explorer.softprobe.ai/api/thelake` |
 | `SOFTPROBE_OTLP_ENDPOINT` | No | Defaults to `{SOFTPROBE_BASE_URL}/v1/traces` |
 | `SOFTPROBE_SERVICE_NAME` | No | OpenTelemetry `service.name` for this agent service so multi-tier traces stay distinct in **Graph** and **Span Detail** |

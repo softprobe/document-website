@@ -44,7 +44,7 @@ A **Finding** is a policy or review signal attached to a Session or its Steps. F
 
 ## Agent
 
-In Explorer, an **Agent** is the named capture target you connect. It holds the integration type, environment label, capture status, optional Slack channel, assigned Policies, and an ingest-only API key (`spk_...`).
+In Explorer, an **Agent** is the named capture target you connect. It holds the integration type, environment label, capture status, optional Slack channel, assigned Policies, and an ingest-only **Ingestion Key** (`spk_...`).
 
 ## Related guides
 
