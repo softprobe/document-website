@@ -94,7 +94,49 @@ opencode mcp auth blackbox
 - **OpenCode**：运行 `opencode mcp auth blackbox` 并在浏览器中完成 Explorer 登录授权。
 - **Antigravity（`agy`）**：在 `agy` 中运行 `/mcp`，选中 `blackbox` 并选择 **Authenticate** 在浏览器中完成登录授权（或在 Antigravity 桌面应用与 IDE 的 **MCP Servers** 中完成认证）。
 
-随后可让编码 Agent 调用 `list_workspaces` 验证连接。
+随后可让编码 Agent 调用 `list_workspaces` 验证连接。如果有多个工作区，可让 Agent 调用 `select_workspace` 并传入目标 `workspace_id` 进行切换。
+
+### Staging / 开发环境（`blackbox-staging`）
+
+如需同时连接 staging 与生产环境而不覆盖生产环境登录态，可将 `https://explorer-staging.softprobe.ai/mcp` 注册为 `blackbox-staging`：
+
+::: code-group
+
+```bash [Claude Code]
+claude mcp remove blackbox-staging 2>/dev/null; claude mcp add --transport http blackbox-staging https://explorer-staging.softprobe.ai/mcp
+```
+
+```bash [Codex]
+codex mcp add blackbox-staging --url https://explorer-staging.softprobe.ai/mcp
+```
+
+```json [Cursor]
+{
+  "mcpServers": {
+    "blackbox-staging": {
+      "url": "https://explorer-staging.softprobe.ai/mcp"
+    }
+  }
+}
+```
+
+```bash [OpenCode]
+opencode mcp add blackbox-staging --global --url https://explorer-staging.softprobe.ai/mcp
+```
+
+```json [Antigravity]
+{
+  "mcpServers": {
+    "blackbox-staging": {
+      "url": "https://explorer-staging.softprobe.ai/mcp"
+    }
+  }
+}
+```
+
+:::
+
+使用相同的客户端命令并以 `blackbox-staging` 作为服务名完成登录授权（例如 `codex mcp login blackbox-staging`、`opencode mcp auth blackbox-staging`，或在 Claude Code、Antigravity 中运行 `/mcp`）。
 
 ## 3. 向 Agent 提问
 
