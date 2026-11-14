@@ -94,7 +94,49 @@ opencode mcp auth blackbox
 - **OpenCode**: Run `opencode mcp auth blackbox` and complete Explorer sign-in in the browser.
 - **Antigravity (`agy`)**: Run `/mcp` in `agy`, select `blackbox`, and choose **Authenticate** to sign in through the browser (or open **MCP Servers** in the Antigravity app or IDE).
 
-Then ask your coding agent to call `list_workspaces` to confirm access.
+Then ask your coding agent to call `list_workspaces` to confirm access. If you have multiple workspaces, ask it to call `select_workspace` with the target `workspace_id` to switch.
+
+### Staging / development (`blackbox-staging`)
+
+To use staging alongside production without overwriting your production login, register `https://explorer-staging.softprobe.ai/mcp` under `blackbox-staging`:
+
+::: code-group
+
+```bash [Claude Code]
+claude mcp remove blackbox-staging 2>/dev/null; claude mcp add --transport http blackbox-staging https://explorer-staging.softprobe.ai/mcp
+```
+
+```bash [Codex]
+codex mcp add blackbox-staging --url https://explorer-staging.softprobe.ai/mcp
+```
+
+```json [Cursor]
+{
+  "mcpServers": {
+    "blackbox-staging": {
+      "url": "https://explorer-staging.softprobe.ai/mcp"
+    }
+  }
+}
+```
+
+```bash [OpenCode]
+opencode mcp add blackbox-staging --global --url https://explorer-staging.softprobe.ai/mcp
+```
+
+```json [Antigravity]
+{
+  "mcpServers": {
+    "blackbox-staging": {
+      "url": "https://explorer-staging.softprobe.ai/mcp"
+    }
+  }
+}
+```
+
+:::
+
+Sign in to `blackbox-staging` with the same client command using `blackbox-staging` as the server name (for example, `codex mcp login blackbox-staging`, `opencode mcp auth blackbox-staging`, or `/mcp` in Claude Code or Antigravity).
 
 ## 3. Ask your agent
 
