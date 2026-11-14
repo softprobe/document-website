@@ -4,7 +4,7 @@ title: 用编码 Agent 排查
 
 # 在编码 Agent 中使用 Blackbox MCP
 
-将 Claude Code、Codex、Cursor、OpenCode 或 Antigravity（`agy`）连接到 Softprobe Explorer，在浏览器中使用现有 Explorer 账号完成登录。Blackbox MCP 可查询 Session、查看 Session 详情、列出和创建 Agent 应用，并在你明确请求时读取 Agent API key。
+将 Claude Code、Codex、Cursor、OpenCode 或 Antigravity（`agy`）连接到 Softprobe Explorer，在浏览器中使用现有 Explorer 账号完成登录。Blackbox MCP 可查询 Session、查看 Session 详情、列出和创建 Agent 应用，并在你明确请求时读取 Agent 的 Ingestion Key。
 
 这与**捕获**（`@softprobe/web-record` 浏览器 SDK、OBI 或 AI 框架 SDK）不同。捕获负责记录 Session；Blackbox MCP 让编码 Agent **管理 Agent 并排查 Session**。
 
@@ -123,7 +123,7 @@ npx skills add softprobe/softprobe-skills -g -y \
 - 托管 MCP 使用你的 Softprobe 用户登录（OAuth）。令牌留在你的 MCP 客户端。
 - Session、trace 与日志工具均为只读。
 - Agent 管理工具基于你当前选择的工作区成员身份运行；`create_agent` 创建 Agent 应用，`get_agent_api_key` 仅在请求时返回对应密钥。
-- Agent API key 仅限遥测写入（ingest-only），无法调用 MCP 或读取 Session。
+- Ingestion Key 仅限遥测写入（ingest-only），无法调用 MCP 或读取 Session。
 
 ## 排障
 

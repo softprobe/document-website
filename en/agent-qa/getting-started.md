@@ -22,7 +22,7 @@ flowchart LR
 
 In Softprobe Explorer, open **Agents** and click **+ Connect agent**. Name the Agent, select the environment, and choose the app integration (**Traditional web app**, **LangChain**, **Vercel AI**, or **OpenCode**).
 
-Softprobe mints an ingest-only Agent API key (`spk_...`). This key is valid only to ingest OTLP telemetry at `https://explorer.softprobe.ai/api/thelake/v1/traces`. It cannot read Sessions or manage Agents.
+Softprobe issues an **Ingestion Key** (`spk_...`) for telemetry ingestion. It can send OTLP telemetry to `https://explorer.softprobe.ai/api/thelake/v1/traces`. It cannot read Sessions or manage Agents.
 
 ## 2. Add Blackbox MCP and sign in
 
@@ -32,7 +32,7 @@ See [Investigate with a coding agent](/en/agent-qa/coding-agent-skills) for clie
 
 ## 3. Configure telemetry capture
 
-Copy the generated Blackbox setup prompt from Explorer and paste it into your application repository in your coding agent. The prompt includes your ingest-only Agent API key, `@softprobe/web-record` browser configuration, official OpenTelemetry OBI v1.0.0 (`obi.yaml`) backend configuration, and AI framework setup with distinct OpenTelemetry `service.name` values per tier:
+Copy the generated Blackbox setup prompt from the Agent's **Actions** menu with **Copy Blackbox setup prompt**, or from the **Connect Blackbox Agent** page. Paste it into your application repository in your coding agent. The prompt includes your Ingestion Key, `@softprobe/web-record` browser configuration, official OpenTelemetry OBI v1.0.0 (`obi.yaml`) backend configuration, and AI framework setup with distinct OpenTelemetry `service.name` values per tier:
 
 | App integration | What the setup prompt configures |
 |-----------------|----------------------------------|

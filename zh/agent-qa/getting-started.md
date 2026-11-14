@@ -22,7 +22,7 @@ flowchart LR
 
 在 Softprobe Explorer 打开 **Agents**，点击 **+ Connect agent**。命名 Agent、选择环境，并选择应用集成类型（**Traditional web app**、**LangChain**、**Vercel AI** 或 **OpenCode**）。
 
-Softprobe 会签发一把仅限写入的 Agent API key（`spk_...`）。该密钥仅可向 `https://explorer.softprobe.ai/api/thelake/v1/traces` 上报 OTLP 遥测数据，无法读取 Session 或管理 Agent。
+Softprobe 会签发一把仅限遥测写入的 **Ingestion Key**（`spk_...`）。该密钥可向 `https://explorer.softprobe.ai/api/thelake/v1/traces` 上报 OTLP 遥测数据，无法读取 Session 或管理 Agent。
 
 ## 2. 添加 Blackbox MCP 并登录
 
@@ -32,7 +32,7 @@ Softprobe 会签发一把仅限写入的 Agent API key（`spk_...`）。该密�
 
 ## 3. 配置遥测采集
 
-从 Explorer 复制生成的 Blackbox 设置提示，并在编码 Agent 中粘贴到你的应用仓库。该提示包含仅限写入的 Agent API key、`@softprobe/web-record` 浏览器配置、官方 OpenTelemetry OBI v1.0.0（`obi.yaml`）后端配置，以及各层具有独立 OpenTelemetry `service.name` 的 AI 框架埋点：
+从 Agent 的 **Actions** 菜单中选择 **Copy Blackbox setup prompt**，或从 **Connect Blackbox Agent** 页面复制 Blackbox 设置提示，再将其粘贴到应用仓库中的编码 Agent。该提示包含 Ingestion Key、`@softprobe/web-record` 浏览器配置、官方 OpenTelemetry OBI v1.0.0（`obi.yaml`）后端配置，以及各层具有独立 OpenTelemetry `service.name` 的 AI 框架埋点：
 
 | 应用集成 | 设置提示配置的内容 |
 |----------|--------------------|

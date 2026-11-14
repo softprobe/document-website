@@ -51,7 +51,7 @@ OpenCode 启动时会用 Bun 自动安装 npm 插件（缓存于 `~/.cache/openc
 
 | 字段 | 必填 | 含义 |
 |------|------|------|
-| `publicKey` | 是 | Explorer **Agents → + Connect agent** 中的 Agent API key（`spk_…`） |
+| `publicKey` | 是 | Explorer **Agents → + Connect agent** 中的 Ingestion Key（`spk_…`） |
 | `baseUrl` | 是 | `https://explorer.softprobe.ai/api/thelake` |
 | `otlpEndpoint` | 否 | 默认为 `{baseUrl}/v1/traces` |
 | `environment` | 否 | 与 Explorer 中 Agent 环境一致的标签（如 `Production`） |
@@ -66,7 +66,7 @@ export SOFTPROBE_OTLP_ENDPOINT="https://explorer.softprobe.ai/api/thelake/v1/tra
 export SOFTPROBE_ENVIRONMENT="Production"
 ```
 
-「连接 Agent」安装提示会嵌入你的 Agent API key 与上述 URL。不要把凭证提交到源码库。
+「连接 Agent」安装提示会嵌入你的 Ingestion Key 与上述 URL。不要把凭证提交到源码库。
 
 ## 3. 验证
 
@@ -74,7 +74,7 @@ export SOFTPROBE_ENVIRONMENT="Production"
 2. 确认已有 Session 被追踪：安装提示会让 OpenCode 执行 `opencode run "What is 1+2?"`，或你自己跑一轮真实对话（若使用工具则带上工具）。
 3. 在 Explorer 打开 **Agents → + Connect agent** 并 **Check connection**，或在 **Sessions** 中查看新 Session（时间范围默认最近 7 天）。
 
-Session 通过 Agent API key（`publicKey`）匹配到 Explorer Agent；凭证中无需设置 Agent 名称。
+Session 通过 Ingestion Key（`publicKey`）匹配到 Explorer Agent；凭证中无需设置 Agent 名称。
 
 ## 会追踪什么
 

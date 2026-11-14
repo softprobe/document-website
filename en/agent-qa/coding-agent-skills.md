@@ -4,7 +4,7 @@ title: Investigate with a coding agent
 
 # Use Blackbox MCP with a coding agent
 
-Connect Claude Code, Codex, Cursor, OpenCode, or Antigravity (`agy`) to Softprobe Explorer. Sign in through the browser with your existing Explorer account. Blackbox MCP can query Sessions, inspect Session details, list and create Agent apps, and reveal an Agent API key when you request it.
+Connect Claude Code, Codex, Cursor, OpenCode, or Antigravity (`agy`) to Softprobe Explorer. Sign in through the browser with your existing Explorer account. Blackbox MCP can query Sessions, inspect Session details, list and create Agent apps, and reveal an Agent's Ingestion Key when you request it.
 
 This is separate from **capture** (the `@softprobe/web-record` browser SDK, OBI, or AI framework SDKs). Capture records Sessions; Blackbox MCP lets your coding agent **manage Agents and investigate Sessions**.
 
@@ -123,7 +123,7 @@ Source: [github.com/softprobe/softprobe-skills](https://github.com/softprobe/sof
 - Hosted MCP uses your Softprobe user login (OAuth). Tokens stay with your MCP client.
 - Session, trace, and log tools are read-only.
 - Agent tools use your selected workspace membership. `create_agent` adds an Agent app; `get_agent_api_key` returns that Agent's key only when requested.
-- Agent API keys remain limited to telemetry ingestion. They cannot use MCP or read Sessions.
+- Ingestion Keys can only send telemetry. They cannot use MCP or read Sessions.
 
 ## Troubleshoot
 

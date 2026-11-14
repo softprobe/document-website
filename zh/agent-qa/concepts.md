@@ -44,7 +44,7 @@ Blackbox 在 `https://explorer.softprobe.ai/api/thelake/v1/traces` 原生接收�
 
 ## Agent
 
-在 Explorer 中，**Agent** 是你连接的命名采集目标，包含集成类型、环境标签、采集状态、可选 Slack 频道、已绑定策略，以及仅限写入的 API key（`spk_...`）。
+在 Explorer 中，**Agent** 是你连接的命名采集目标，包含集成类型、环境标签、采集状态、可选 Slack 频道、已绑定策略，以及仅限遥测写入的 Ingestion Key（`spk_...`）。
 
 ## 相关指南
 

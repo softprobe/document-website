@@ -111,7 +111,7 @@ The Travel OTA demo has three service components. A traveler chats in the browse
   </div>
 </div>
 
-All three components export telemetry with the same Agent key (`spk_...`) and correlate into a single Session through `gen_ai.conversation.id`, `session.id`, and the W3C `traceparent` header. Each tier sets a distinct OpenTelemetry `service.name` (`travel-web` in the browser, `travel-agent` in the Node.js AI server, and `travel-ota` on the Java backend) so Explorer's **Graph** and **Span Detail** views identify every service and outbound peer target separately.
+All three components export telemetry with the same Ingestion Key (`spk_...`) and correlate into a single Session through `gen_ai.conversation.id`, `session.id`, and the W3C `traceparent` header. Each tier sets a distinct OpenTelemetry `service.name` (`travel-web` in the browser, `travel-agent` in the Node.js AI server, and `travel-ota` on the Java backend) so Explorer's **Graph** and **Span Detail** views identify every service and outbound peer target separately.
 
 ## Instrument and run the source demo
 
@@ -121,7 +121,7 @@ You need Node.js 22 or newer, Java 21, Maven, Chrome or Chromium, a [Softprobe E
 
 ### 1. Create a demo Agent
 
-In [Explorer](https://explorer.softprobe.ai), open **Agents** and click **+ Connect agent**. Name the Agent `travel-ota-source-demo`, choose **Vercel AI**, set the environment to **demo**, and create the Agent. Copy its ingest-only API key (`spk_...`).
+In [Explorer](https://explorer.softprobe.ai), open **Agents** and click **+ Connect agent**. Name the Agent `travel-ota-source-demo`, choose **Vercel AI**, set the environment to **demo**, and create the Agent. Copy its Ingestion Key (`spk_...`).
 
 ### 2. Check out the demo source and install the SDKs
 
@@ -137,7 +137,7 @@ cd ..
 
 ### 3. Instrument the web app (Browser JS)
 
-Add `RecordSdk.init` at line 1 of `travel-agent-demo/public/app.js` above the existing `(() => {` wrapper, replacing the placeholder with your Agent key:
+Add `RecordSdk.init` at line 1 of `travel-agent-demo/public/app.js` above the existing `(() => {` wrapper, replacing the placeholder with your Ingestion Key:
 
 ```js
 import { RecordSdk } from '@softprobe/web-record';
@@ -177,11 +177,11 @@ Next, update `Content-Security-Policy` in `travel-agent-demo/src/server.mjs` so 
   "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self' https://explorer.softprobe.ai; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
 ```
 
-The `spk_...` key is an ingest-only Agent key designed for browser and collector use. Never place a user password, session cookie, or account token in browser code.
+The `spk_...` Ingestion Key can send telemetry from the browser and collector. Never place a user password, session cookie, or account token in browser code.
 
 ### 4. Instrument the Vercel AI server (Node.js)
 
-Add `initVercelAiTelemetry` at the top of `travel-agent-demo/src/start.mjs`, replacing the placeholder with the same Agent key:
+Add `initVercelAiTelemetry` at the top of `travel-agent-demo/src/start.mjs`, replacing the placeholder with the same Ingestion Key:
 
 ```js
 import { initVercelAiTelemetry } from '@softprobe/vercel-ai-sdk';
@@ -237,7 +237,7 @@ sudo install -m 0755 obi /usr/local/bin/obi
 obi --version
 ```
 
-Save the following configuration as `obi.yaml` and replace the Agent key. It selects only the Java `travel-ota` process (avoiding duplicate or OTLP-upload HTTP spans from Node), propagates W3C trace headers across inbound and outbound HTTP calls, redacts payment card fields, and extracts JSON request and response bodies for flight search, booking, order verification, payment, and NDC airline endpoints:
+Save the following configuration as `obi.yaml` and replace the Ingestion Key. It selects only the Java `travel-ota` process (avoiding duplicate or OTLP-upload HTTP spans from Node), propagates W3C trace headers across inbound and outbound HTTP calls, redacts payment card fields, and extracts JSON request and response bodies for flight search, booking, order verification, payment, and NDC airline endpoints:
 
 ```yaml
 file_format: "1.0"
