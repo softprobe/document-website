@@ -115,7 +115,7 @@ All three components export telemetry with the same Ingestion Key (`spk_...`) an
 
 ## Instrument and run the source demo
 
-Run the Java backend on a Linux host so OBI can observe the process. Run the Node server on the same host (or point it at the Java host). If the Linux host has a desktop, open the web app locally in Chrome or Chromium. If you use a remote Linux host, forward port `4310` (`ssh -L 4310:127.0.0.1:4310 user@host`) and open `http://127.0.0.1:4310/agent` in your local browser.
+Run the Java backend on a Linux host so OBI can observe the process. Run the Node server on the same host (or point it at the Java host). If the Linux host has a desktop, open the web app locally in Chrome or Chromium. If you use a remote Linux host on a private network, open `http://<host>:4310/agent` directly (or forward port `4310` with `ssh -L 4310:127.0.0.1:4310 user@host` and open `http://127.0.0.1:4310/agent`).
 
 You need Node.js 22 or newer, Java 21, Maven, Chrome or Chromium, a [Softprobe Explorer](https://explorer.softprobe.ai) workspace, and a Google Gemini API key. Model-provider charges may apply. Use only synthetic travel details in this demo.
 
@@ -214,11 +214,11 @@ Open two terminals in `demo-ota`. In the first terminal, start the Java backend 
 OTEL_SERVICE_NAME=travel-ota java -jar travel-ota/target/travel-ota-1.0-SNAPSHOT.jar --server.port=8080
 ```
 
-In the second terminal, start the Vercel AI Node.js server with your Gemini API key. The server listens on port `4310` and calls the Java backend at `http://127.0.0.1:8080` by default:
+In the second terminal, start the Vercel AI Node.js server with your Gemini API key (`GEMINI_KEY`, or `GOOGLE_GENERATIVE_AI_API_KEY`). The server listens on port `4310` and calls the Java backend at `http://127.0.0.1:8080` by default:
 
 ```sh
 cd travel-agent-demo
-export GOOGLE_GENERATIVE_AI_API_KEY='YOUR_MODEL_PROVIDER_KEY'
+export GEMINI_KEY='YOUR_MODEL_PROVIDER_KEY'
 npm start
 ```
 
