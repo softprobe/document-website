@@ -134,3 +134,8 @@ Generation spans capture `input_tokens`, `output_tokens`, and `total_tokens` aut
 | Split Sessions | Reuse the same thread or chat ID across turns |
 
 Published packages are [`softprobe`](https://pypi.org/project/softprobe/) for Python and [`@softprobe/langchain`](https://www.npmjs.com/package/@softprobe/langchain) for TypeScript.
+
+## API references
+
+- [Python SDK (`softprobe.langchain`)](/en/agent-qa/reference/softprobe-py#langchain-and-langgraph-softprobe-langchain) for `CallbackHandler`, `instrument()`, `uninstrument()`, and `SoftprobeClient`
+- [JavaScript / TypeScript SDK (`@softprobe/langchain`)](/en/agent-qa/reference/softprobe-js#softprobe-langchain) for `CallbackHandler`, `instrument()`, and `SoftprobeClient`

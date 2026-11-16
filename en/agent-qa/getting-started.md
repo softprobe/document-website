@@ -36,10 +36,10 @@ Copy the generated Blackbox setup prompt from the Agent's **Actions** menu with 
 
 | App integration | What the setup prompt configures |
 |-----------------|----------------------------------|
-| **Traditional web app** | `@softprobe/web-record` (`serviceName` for the browser) and official OpenTelemetry OBI v1.0.0 (`OTEL_SERVICE_NAME` on each backend) |
-| **LangChain** | Browser and OBI capture plus `softprobe[langchain]` in Python or `@softprobe/langchain` in TypeScript |
-| **Vercel AI** | Browser and OBI capture plus `@softprobe/vercel-ai-sdk` and `@softprobe/tracing` (`serviceName` for the AI server) |
-| **OpenCode** | Browser and OBI capture plus `@softprobe/opencode-plugin` |
+| **Traditional web app** | [`@softprobe/web-record`](/en/agent-qa/reference/softprobe-js#softprobe-web-record) (`serviceName` for the browser) and official OpenTelemetry OBI v1.0.0 (`OTEL_SERVICE_NAME` on each backend) |
+| **LangChain** | Browser and OBI capture plus [`softprobe[langchain]`](/en/agent-qa/reference/softprobe-py#langchain-and-langgraph-softprobe-langchain) in Python or [`@softprobe/langchain`](/en/agent-qa/reference/softprobe-js#softprobe-langchain) in TypeScript |
+| **Vercel AI** | Browser and OBI capture plus [`@softprobe/vercel-ai-sdk`](/en/agent-qa/reference/softprobe-js#softprobe-vercel-ai-sdk) and [`@softprobe/tracing`](/en/agent-qa/reference/softprobe-js#softprobe-tracing) (`serviceName` for the AI server) |
+| **OpenCode** | Browser and OBI capture plus [`@softprobe/opencode-plugin`](/en/agent-qa/reference/softprobe-js#softprobe-opencode-plugin) |
 | **OpenTelemetry GenAI, OpenInference, or OpenLLMetry** | Standard OTLP HTTP trace export to Blackbox with `OTEL_SERVICE_NAME` and no custom Softprobe attributes |
 
 ### Direct OTLP export for existing OpenTelemetry apps

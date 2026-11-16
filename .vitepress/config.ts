@@ -304,16 +304,29 @@ const agentQaSidebarEn = [
     items: [
       { text: 'What is Blackbox', link: '/en/agent-qa/' },
       { text: 'Quick start', link: '/en/agent-qa/getting-started' },
+      { text: 'Full-stack web app demo', link: '/en/agent-qa/application-session-capture' },
       { text: 'Concepts', link: '/en/agent-qa/concepts' },
-      { text: 'Coding agent skills', link: '/en/agent-qa/coding-agent-skills' },
     ],
   },
   {
-    text: 'Integrations',
+    text: 'Instrument your app',
     items: [
-      { text: 'Web application sessions', link: '/en/agent-qa/application-session-capture' },
+      { text: 'Vercel AI SDK', link: '/en/agent-qa/vercel-ai-sdk' },
+      { text: 'LangChain and LangGraph', link: '/en/agent-qa/langchain' },
       { text: 'OpenCode', link: '/en/agent-qa/opencode' },
-      { text: 'LangChain', link: '/en/agent-qa/langchain' },
+    ],
+  },
+  {
+    text: 'Investigate Sessions',
+    items: [
+      { text: 'Blackbox MCP (coding agents)', link: '/en/agent-qa/coding-agent-skills' },
+    ],
+  },
+  {
+    text: 'SDK & API reference',
+    items: [
+      { text: 'JavaScript / TypeScript (softprobe-js)', link: '/en/agent-qa/reference/softprobe-js' },
+      { text: 'Python (softprobe-py)', link: '/en/agent-qa/reference/softprobe-py' },
     ],
   },
 ]
