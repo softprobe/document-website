@@ -111,7 +111,7 @@ The Travel OTA demo has three service components. A traveler chats in the browse
   </div>
 </div>
 
-All three components export telemetry with the same Ingestion Key (`spk_...`) and correlate into a single Session through `gen_ai.conversation.id`, `session.id`, and the W3C `traceparent` header. Each tier sets a distinct OpenTelemetry `service.name` (`travel-web` in the browser, `travel-agent` in the Node.js AI server, and `travel-ota` on the Java backend) so Explorer's **Graph** and **Span Detail** views identify every service and outbound peer target separately.
+All three components export telemetry with the same Ingestion Key and correlate into a single Session through `gen_ai.conversation.id`, `session.id`, W3C `baggage`, and the W3C `traceparent` header. Softprobe routes `POST /v1/traces` through its external OpenTelemetry Collector, which correlates spans sharing a trace or `baggage` session before writing to TheLake. Each tier sets a distinct OpenTelemetry `service.name`, using `travel-web` in the browser, `travel-agent` in the Node.js AI server, and `travel-ota` on the Java backend, so Explorer **Graph** and **Span Detail** views identify every service and outbound peer target separately.
 
 ## Instrument and run the source demo
 
@@ -163,12 +163,11 @@ RecordSdk.init({
 
 With this configuration, `@softprobe/web-record` performs the following actions:
 
-- Sets OpenTelemetry `service.name` to `travel-web` and exports OTLP traces and DOM recordings to the configured Softprobe environment.
-- Traces only the listed business `POST` routes and injects W3C `traceparent` headers, skipping `/agent/api/status` health checks and 1-second `GET /agent/api/sessions/:id` polling requests.
-- Keeps low-cardinality HTTP client span names (`POST`) and sets `url.template` such as `/agent/api/sessions/*/messages` when a wildcard `*` route matches, so dynamic session IDs never appear in span names.
-- Captures JSON request and response bodies up to 64 KiB on matched routes and replaces `cardNumber`, `cvv`, `cvc`, `password`, and `secret` with `[REDACTED]`.
+- Sets OpenTelemetry `service.name` to `travel-web` and exports OTLP traces and DOM recordings to the configured Softprobe environment on a 1-second batch schedule (`pagehide` flushes buffered telemetry in both automatic and `manual: true` modes).
+- Propagates W3C `traceparent` headers across all same-origin and configured `apiOrigins` requests even when a route is omitted from `httpBodyCapture.routes`, and injects W3C `baggage` (`sp.session.id`) on same-origin `fetch` and `XMLHttpRequest` calls without adding cross-origin CORS preflights.
+- Clones JSON request and response bodies up to 64 KiB only on matched `httpBodyCapture.routes`, keeps low-cardinality HTTP client span names (`POST`), sets `url.template` such as `/agent/api/sessions/*/messages` when a wildcard `*` route matches, and replaces `cardNumber`, `cvv`, `cvc`, `password`, and `secret` with `[REDACTED]`.
 - Masks all HTML input elements with `maskAllInputs: true`.
-- Adopts the demo's `ses_*` session ID from `/agent/api/sessions` responses, `/sessions/:id` request URLs, and `sessionStorage`.
+- Adopts the demo's `ses_*` session ID from `/agent/api/sessions` responses, `/sessions/:id` request URLs, and `sessionStorage`, validating printable ASCII identifiers (`/^[!-~]{1,128}$/`).
 
 Next, update `Content-Security-Policy` in `travel-agent-demo/src/server.mjs` so the browser can upload traces to `https://explorer.softprobe.ai`:
 
@@ -292,6 +291,13 @@ extensions:
                   body: exclude
                 obfuscation_string: "[REDACTED]"
               rules:
+                - action: include
+                  type: headers
+                  scope: request
+                  match:
+                    patterns:
+                      - baggage
+                      - traceparent
                 - action: obfuscate
                   type: body
                   scope: request
@@ -351,11 +357,13 @@ Open [`http://127.0.0.1:4310/agent`](http://127.0.0.1:4310/agent), select your c
 2. Select an offer (or reply `Prepare offer 1 for Alex Demo`), then click **Confirm demo booking** when the review card appears.
 3. Click **Pay & issue ticket** with the prefilled demo card to complete payment and ticket issuance.
 
-In [Softprobe Explorer](https://explorer.softprobe.ai), open **Sessions**, filter for `travel-ota-source-demo`, and select the newest Session. Switch to **Graph** and open **Span Detail** on individual nodes to inspect the unified trace across each distinct `service.name` and outbound peer target:
+In [Softprobe Explorer](https://explorer.softprobe.ai), open **Sessions**, filter for `travel-ota-source-demo`, and select the newest Session. Sessions with HTTP and OBI spans and zero LLM generation spans open directly in **Graph** view; sessions with LLM turns open in **Trajectory** view, where you can switch to **Graph** and open **Span Detail** on individual nodes to inspect the unified trace across each distinct `service.name` and outbound peer target:
 
 - **Web app (`travel-web`).** RRWeb DOM replay and browser `POST` client spans with `url.template` route patterns and captured JSON payloads.
 - **Vercel AI server (`travel-agent`).** `invoke_agent` root spans, `chat` LLM generation spans, and `execute_tool` spans (`travel_search`, `travel_prepare`, `travel_book`, `travel_order`) linked by `gen_ai.conversation.id`.
 - **Java backend (`travel-ota`).** Inbound `POST /api/flights/search`, `/api/flights/book`, `/api/flights/orders/query`, and `/api/flights/payandissue` server spans with `[REDACTED]` card details, alongside outbound `POST /ndc/v21.3/airshopping`, `/ndc/v21.3/offerprice`, `/ndc/v21.3/ordercreate`, `/ndc/v21.3/orderretrieve`, and `/ndc/v21.3/orderchange` client spans to the external NDC airline host. HTTP/1.1 routes include extracted JSON bodies, while OkHttp HTTP/2 `/ndc/v21.3/ordercreate` records route, status, and parent-span correlation without body buffers in OBI `v1.0.0`.
+
+If a frontend `Content-Security-Policy`, an adblocker, or a standalone CLI request prevents browser OTLP spans from reaching Softprobe, backend OBI and Node.js spans are never dropped. Same-origin requests carry `sp.session.id` in W3C `baggage`, and `@softprobe/tracing` plus `softprobe` propagate `sp.session.id` across outgoing HTTP requests and child spans. When no session arrives within the 2-second collector correlation window, `thelake-collector` forwards the trace unmodified to stateless TheLake. Unassigned and orphan-parent backend traces appear under **Inspect -> Traces**, where you can run Tempo TraceQL queries such as `{ .sp.session.id !~ ".+" }` or `{ status = error }`, inspect Waterfall and E2E Graph views with captured HTTP request and response bodies, and read the **Browser span missing** diagnostic banner.
 
 Stop OBI, the Node server, and the Java service with `Ctrl+C` when finished.
 
