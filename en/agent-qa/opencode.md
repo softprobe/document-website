@@ -104,3 +104,8 @@ Sessions are matched to the Explorer Agent via the Ingestion Key; you do not set
 | Partial traces | Ensure the process stays alive long enough to flush; serverless/short-lived hosts may need an explicit flush |
 
 Package source: [`@softprobe/opencode-plugin`](https://www.npmjs.com/package/@softprobe/opencode-plugin).
+
+## API references
+
+- [`@softprobe/opencode-plugin` reference](/en/agent-qa/reference/softprobe-js#softprobe-opencode-plugin)
+- [JavaScript / TypeScript SDK environment variables](/en/agent-qa/reference/softprobe-js#environment-variables)
