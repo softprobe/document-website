@@ -153,3 +153,7 @@
 /cli/*      /en/testing/commands/:splat  301
 /platform/* /en/platform/:splat          301
 /testing/*  /en/testing/:splat           301
+
+# --- Renamed Blackbox pages ---
+/en/agent-qa/application-session-capture      /en/agent-qa/end-to-end-session-tracing 301
+/en/agent-qa/application-session-capture.html /en/agent-qa/end-to-end-session-tracing 301

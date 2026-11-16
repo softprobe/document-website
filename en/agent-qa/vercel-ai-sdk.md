@@ -74,4 +74,4 @@ await telemetry.forceFlush();
 
 - [`@softprobe/vercel-ai-sdk` API reference](/en/agent-qa/reference/softprobe-js#softprobe-vercel-ai-sdk)
 - [`@softprobe/tracing` API reference](/en/agent-qa/reference/softprobe-js#softprobe-tracing)
-- [Capture a web app session with HTTP bodies](/en/agent-qa/application-session-capture) for a full-stack walkthrough with `@softprobe/web-record` and OBI
+- [End-to-end session tracing with payloads](/en/agent-qa/end-to-end-session-tracing) for a full-stack walkthrough with `@softprobe/web-record` and OBI

@@ -11,14 +11,14 @@ Blackbox connects browser frontends ([`@softprobe/web-record`](/en/agent-qa/refe
 ## Start here
 
 1. **[Quick start](/en/agent-qa/getting-started).** Create an Agent in Explorer, get your Ingestion Key, and connect your app.
-2. **[Full-stack web app demo](/en/agent-qa/application-session-capture).** Walk through a complete browser, Vercel AI, and Java backend capture with HTTP bodies in five minutes.
+2. **[End-to-end session tracing with payloads](/en/agent-qa/end-to-end-session-tracing).** Run the three-tier Travel OTA demo (browser, Vercel AI, and Java backend with OBI) in one Docker Compose command.
 3. **[Concepts](/en/agent-qa/concepts).** Learn how Sessions, Steps, `gen_ai.conversation.id`, and Findings fit together.
 
 ## Instrument your app
 
 | Stack | Integration guide | SDK / API reference |
 |-------|-------------------|---------------------|
-| **Browser + backend HTTP bodies** | [Full-stack web app demo](/en/agent-qa/application-session-capture#use-your-own-app) | [`@softprobe/web-record`](/en/agent-qa/reference/softprobe-js#softprobe-web-record) |
+| **Browser + backend HTTP bodies** | [End-to-end session tracing](/en/agent-qa/end-to-end-session-tracing#use-your-own-app) | [`@softprobe/web-record`](/en/agent-qa/reference/softprobe-js#softprobe-web-record) |
 | **Vercel AI SDK (Node.js)** | [Vercel AI SDK](/en/agent-qa/vercel-ai-sdk) | [`@softprobe/vercel-ai-sdk`](/en/agent-qa/reference/softprobe-js#softprobe-vercel-ai-sdk) |
 | **LangChain or LangGraph** | [LangChain and LangGraph](/en/agent-qa/langchain) | [`@softprobe/langchain`](/en/agent-qa/reference/softprobe-js#softprobe-langchain), [`softprobe.langchain`](/en/agent-qa/reference/softprobe-py#langchain-and-langgraph-softprobe-langchain) |
 | **OpenCode** | [OpenCode](/en/agent-qa/opencode) | [`@softprobe/opencode-plugin`](/en/agent-qa/reference/softprobe-js#softprobe-opencode-plugin) |

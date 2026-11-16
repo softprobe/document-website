@@ -82,7 +82,7 @@ tracer_provider:
 
 Set `OTEL_RESOURCE_ATTRIBUTES=deployment.environment.name=staging` on each instrumented application/container so OBI can attach it to that workload's spans. Config v2's top-level `resource.attributes` supports only `service.name`, `service.namespace`, `host.name`, and `host.id`; it cannot set `deployment.environment.name` globally.
 
-See [Capture a web app session with HTTP bodies](/en/agent-qa/application-session-capture), [OpenCode install](/en/agent-qa/opencode), and [LangChain install](/en/agent-qa/langchain) for complete examples.
+See [End-to-end session tracing with payloads](/en/agent-qa/end-to-end-session-tracing), [OpenCode install](/en/agent-qa/opencode), and [LangChain install](/en/agent-qa/langchain) for complete examples.
 
 ## 4. Verify capture
 
@@ -90,7 +90,7 @@ Run a synthetic journey in your app, then ask your coding agent to verify the ca
 
 ## Next
 
-- [Capture a web app session with HTTP bodies](/en/agent-qa/application-session-capture)
+- [End-to-end session tracing with payloads](/en/agent-qa/end-to-end-session-tracing)
 - [OpenCode install](/en/agent-qa/opencode)
 - [LangChain install](/en/agent-qa/langchain)
 - [Concepts](/en/agent-qa/concepts)

@@ -49,7 +49,7 @@ In Explorer, an **Agent** is the named capture target you connect. It holds the 
 ## Related guides
 
 - [Agent Evaluation](/en/evaluation/). Run offline and CI evaluation suites and release gates over captured evidence.
-- [Capture a web app session with HTTP bodies](/en/agent-qa/application-session-capture). Connect browser, AI server, and backend tiers with distinct `service.name` values.
+- [End-to-end session tracing with payloads](/en/agent-qa/end-to-end-session-tracing). Connect browser, AI server, and backend tiers with distinct `service.name` values.
 - [OpenCode install](/en/agent-qa/opencode). Configure OpenCode plugin capture.
 - [LangChain install](/en/agent-qa/langchain). Configure LangChain and LangGraph callback or OpenTelemetry capture.
 - [Investigate with a coding agent](/en/agent-qa/coding-agent-skills). Query Sessions from Cursor, Claude Code, Codex, OpenCode, or Antigravity.
