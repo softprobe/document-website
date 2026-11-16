@@ -47,12 +47,34 @@ Softprobe 会签发一把仅限遥测写入的 **Ingestion Key**（`spk_...`）�
 如果服务已使用 OpenTelemetry GenAI（`gen_ai.*`）、Arize OpenInference（`openinference.*`）或 Traceloop OpenLLMetry（`traceloop.*`）生成 span，可将标准 OTLP HTTP Exporter 直接指向 Blackbox，无需添加自定义 span 属性：
 
 ```sh
+export INGESTION_KEY="spk_REPLACE_WITH_INGESTION_KEY"
 export OTEL_SERVICE_NAME="my-agent"
-export OTEL_EXPORTER_OTLP_TRACES_ENDPOINT="https://explorer.softprobe.ai/api/thelake/v1/traces"
-export OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer spk_REPLACE_WITH_AGENT_KEY"
+export OTEL_EXPORTER_OTLP_TRACES_ENDPOINT="https://explorer-staging.softprobe.ai/api/thelake/v1/traces"
+export OTEL_EXPORTER_OTLP_TRACES_HEADERS="Authorization=Bearer ${INGESTION_KEY}"
+export OTEL_EXPORTER_OTLP_TRACES_PROTOCOL="http/protobuf"
+export OTEL_RESOURCE_ATTRIBUTES="deployment.environment.name=staging"
 ```
 
 请在 Agent 或请求 span 上设置 `gen_ai.conversation.id` 或 `session.id` 以按会话归组轮次，并为浏览器应用、AI Agent 与后端服务分别设置不同的 `serviceName` 或 `OTEL_SERVICE_NAME`，以便 **Graph** 与 **Span Detail** 清晰区分各个服务。
+
+#### 官方 OBI Config v2
+
+OBI Config v2 不会自动把 OTLP 环境变量复制到 exporter 配置。在 `obi.yaml` 中引用完整 traces URL；`otlp_http` exporter 与 `encoding: protobuf` 用于 HTTP/protobuf。trace-specific endpoint 按原样使用；如果使用通用 `OTEL_EXPORTER_OTLP_ENDPOINT`，请在 YAML 中追加 `/v1/traces`。将 Ingestion Key 保存在 OBI 进程环境变量中，并在 YAML 中插值：
+
+```yaml
+tracer_provider:
+  processors:
+    - batch:
+        exporter:
+          otlp_http:
+            endpoint: ${OTEL_EXPORTER_OTLP_TRACES_ENDPOINT}
+            encoding: protobuf
+            headers:
+              - name: Authorization
+                value: "Bearer ${INGESTION_KEY}"
+```
+
+在每个被埋点的应用或容器上设置 `OTEL_RESOURCE_ATTRIBUTES=deployment.environment.name=staging`，使 OBI 为该工作负载的 span 附加环境属性。Config v2 顶层 `resource.attributes` 仅支持 `service.name`、`service.namespace`、`host.name` 与 `host.id`，不能全局设置 `deployment.environment.name`。
 
 完整说明见 [OpenCode 安装](/zh/agent-qa/opencode) 与 [LangChain 安装](/zh/agent-qa/langchain)。
 

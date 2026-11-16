@@ -10,7 +10,7 @@ Softprobe 提供用于录制、回放、打分与训练可执行 Agent 环境的
 
 | 包 | 用途 |
 |----|------|
-| `@softprobe/tracing` | Softprobe 凭证、OTLP endpoint 推导、session 遥测、scores |
+| `@softprobe/tracing` | Ingestion Key、标准 OTLP 配置、session 遥测、显式 score 调用 |
 | `@softprobe/agent` | Episode 上下文、依赖 tape、skip/inject 包装、FS overlay、closure 报告 |
 | `@softprobe/protocol-fabric` | 捕获/回放环境中的 Node `fetch` / undici HTTP（补充语义级 wrap） |
 | `@softprobe/promptfoo-adapter` | 原生调用 Promptfoo → `softprobe.framework-result/v1` |
@@ -22,12 +22,12 @@ Softprobe 提供用于录制、回放、打分与训练可执行 Agent 环境的
 
 | Softprobe 产品知识 | Host / adapter 关注点 |
 |--------------------|----------------------|
-| `SOFTPROBE_*` 环境变量名与解析 | Host 配置文件路径 |
-| 校验 `publicKey` / `baseUrl` | 发现顺序（先 env 后文件） |
-| 将 `otlpEndpoint` 推导为 `{baseUrl}/v1/traces` | 缺少凭证时软禁用 |
+| Ingestion Key 与标准 OTLP 环境变量解析 | Host 配置文件路径 |
+| 解析 `otlp.tracesEndpoint` 与通用 OTLP endpoint 的优先级 | 发现顺序（先 env 后文件） |
+| 未配置 OTLP endpoint 时将 trace 默认导出到 production | 缺少凭证时软禁用 |
 | `environment` / `userId` / `serviceName` 的含义 | Host 默认值（`serviceName: "opencode"` 等） |
 
-任何提及 `SOFTPROBE_*` 或推导 `{baseUrl}/v1/traces` 的代码，都必须调用 `@softprobe/tracing` 辅助函数——切勿在插件或 harness 中重新实现该逻辑。
+任何解析 Ingestion Key 或 OTLP 配置的代码，都必须调用 `@softprobe/tracing` 辅助函数——切勿从 score API 的 `baseUrl` 推导 trace endpoint，也不要在插件或 harness 中重新实现环境变量解析。
 
 ## 依赖类别
 
