@@ -160,7 +160,7 @@ See the [LangChain install guide](/en/agent-qa/langchain) for setup and troubles
 
 ### Auto-instrumentation
 
-Importing `softprobe.langchain` calls `auto_instrument_from_env()` automatically when OTLP credentials are set, unless `SOFTPROBE_LANGCHAIN` is `0`, `false`, `off`, or `no`.
+Importing `softprobe.langchain` calls `auto_instrument_from_env()` automatically when OTLP credentials are set, unless `SOFTPROBE_LANGCHAIN` is `0`, `false`, `off`, or `no`. Explicit hook helpers live in `softprobe.langchain_instrument`:
 
 - `instrument(**handler_kwargs) -> CallbackHandler`
 - `uninstrument() -> None`

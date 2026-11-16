@@ -137,7 +137,7 @@ cd ..
 
 ### 3. Instrument the web app (Browser JS)
 
-Add [`RecordSdk.init`](/en/agent-qa/reference/softprobe-js#recordsdk-initoptions) at line 1 of `travel-agent-demo/public/app.js` above the existing `(() => {` wrapper, replacing the placeholder with your Ingestion Key (see [`WebRecordInitOptions`](/en/agent-qa/reference/softprobe-js#webrecordinitoptions) and [`HttpBodyCaptureOptions`](/en/agent-qa/reference/softprobe-js#httpbodycaptureoptions-and-httpbodycaptureroute)):
+Add [`RecordSdk.init`](/en/agent-qa/reference/softprobe-js#recordsdk-init-options) at line 1 of `travel-agent-demo/public/app.js` above the existing `(() => {` wrapper, replacing the placeholder with your Ingestion Key (see [`WebRecordInitOptions`](/en/agent-qa/reference/softprobe-js#webrecordinitoptions) and [`HttpBodyCaptureOptions`](/en/agent-qa/reference/softprobe-js#httpbodycaptureoptions-and-httpbodycaptureroute)):
 
 ```js
 import { RecordSdk } from '@softprobe/web-record';
@@ -180,7 +180,7 @@ The `spk_...` Ingestion Key can send telemetry from the browser and collector. N
 
 ### 4. Instrument the Vercel AI server (Node.js)
 
-Add [`initVercelAiTelemetry`](/en/agent-qa/reference/softprobe-js#initvercelaitelemetryoptions) at the top of `travel-agent-demo/src/start.mjs`, replacing the placeholder with the same Ingestion Key:
+Add [`initVercelAiTelemetry`](/en/agent-qa/reference/softprobe-js#initvercelaitelemetry-options) at the top of `travel-agent-demo/src/start.mjs`, replacing the placeholder with the same Ingestion Key:
 
 ```js
 import { initVercelAiTelemetry } from '@softprobe/vercel-ai-sdk';
@@ -371,8 +371,8 @@ Stop OBI, the Node server, and the Java service with `Ctrl+C` when finished.
 
 To apply this pattern to your own stack, assign a distinct OpenTelemetry `service.name` to every tier:
 
-1. **Web app.** Install [`@softprobe/web-record`](/en/agent-qa/reference/softprobe-js#softprobe-web-record) and call [`RecordSdk.init`](/en/agent-qa/reference/softprobe-js#recordsdk-initoptions) (`{ ingestionKey, serviceName: 'my-web' }`) in your browser entrypoint, or add `<script src="https://unpkg.com/@softprobe/web-record/dist/browser.js" data-softprobe-options='{"ingestionKey":"spk_...","serviceName":"my-web"}' defer></script>` to `<head>`. Pass [`httpBodyCapture: { routes: [...] }`](/en/agent-qa/reference/softprobe-js#httpbodycaptureoptions-and-httpbodycaptureroute) with wildcard `*` path segments to scope browser `fetch` and `XHR` capture to business routes, stamp low-cardinality `url.template` attributes, and add custom `redactJsonPaths` rules.
-2. **AI agent server.** Install [`@softprobe/vercel-ai-sdk`](/en/agent-qa/reference/softprobe-js#softprobe-vercel-ai-sdk) and [`@softprobe/tracing`](/en/agent-qa/reference/softprobe-js#softprobe-tracing), then call [`initVercelAiTelemetry`](/en/agent-qa/reference/softprobe-js#initvercelaitelemetryoptions) (`{ ingestionKey, serviceName: 'my-agent' }`) at server startup. If your agent uses Python, OpenAI, LangChain, OpenCode, or standard OpenTelemetry GenAI (`gen_ai.*`), see the [Python SDK (`softprobe-py`)](/en/agent-qa/reference/softprobe-py) and [JavaScript / TypeScript SDK (`softprobe-js`)](/en/agent-qa/reference/softprobe-js) references, export OTLP HTTP traces with a distinct `OTEL_SERVICE_NAME`, and propagate your app's conversation ID in `gen_ai.conversation.id` or `session.id`.
+1. **Web app.** Install [`@softprobe/web-record`](/en/agent-qa/reference/softprobe-js#softprobe-web-record) and call [`RecordSdk.init`](/en/agent-qa/reference/softprobe-js#recordsdk-init-options) (`{ ingestionKey, serviceName: 'my-web' }`) in your browser entrypoint, or add `<script src="https://unpkg.com/@softprobe/web-record/dist/browser.js" data-softprobe-options='{"ingestionKey":"spk_...","serviceName":"my-web"}' defer></script>` to `<head>`. Pass [`httpBodyCapture: { routes: [...] }`](/en/agent-qa/reference/softprobe-js#httpbodycaptureoptions-and-httpbodycaptureroute) with wildcard `*` path segments to scope browser `fetch` and `XHR` capture to business routes, stamp low-cardinality `url.template` attributes, and add custom `redactJsonPaths` rules.
+2. **AI agent server.** Install [`@softprobe/vercel-ai-sdk`](/en/agent-qa/reference/softprobe-js#softprobe-vercel-ai-sdk) and [`@softprobe/tracing`](/en/agent-qa/reference/softprobe-js#softprobe-tracing), then call [`initVercelAiTelemetry`](/en/agent-qa/reference/softprobe-js#initvercelaitelemetry-options) (`{ ingestionKey, serviceName: 'my-agent' }`) at server startup. If your agent uses Python, OpenAI, LangChain, OpenCode, or standard OpenTelemetry GenAI (`gen_ai.*`), see the [Python SDK (`softprobe-py`)](/en/agent-qa/reference/softprobe-py) and [JavaScript / TypeScript SDK (`softprobe-js`)](/en/agent-qa/reference/softprobe-js) references, export OTLP HTTP traces with a distinct `OTEL_SERVICE_NAME`, and propagate your app's conversation ID in `gen_ai.conversation.id` or `session.id`.
 3. **Backend services.** Set `OTEL_SERVICE_NAME` on each backend process or Kubernetes workload, then run OBI on your Linux host or node with your process selector (`cmd_args_glob` or `open_ports`) and route allowlist (`url_path_patterns`). OBI discovers `OTEL_SERVICE_NAME` from the target service so **Graph** and **Span Detail** show each backend and outbound peer target clearly.
 
 ## API references

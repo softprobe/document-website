@@ -67,7 +67,7 @@ import "@softprobe/langchain"; // auto-instruments when OTLP authorization is se
 You can also call `instrument()` explicitly:
 
 ```python
-from softprobe.langchain import instrument
+from softprobe.langchain_instrument import instrument
 instrument()
 ```
 
@@ -137,5 +137,5 @@ Published packages are [`softprobe`](https://pypi.org/project/softprobe/) for Py
 
 ## API references
 
-- [Python SDK (`softprobe.langchain`)](/en/agent-qa/reference/softprobe-py#langchain-and-langgraph-softprobe-langchain) for `CallbackHandler`, `instrument()`, `uninstrument()`, and `SoftprobeClient`
+- [Python SDK (`softprobe.langchain` and `softprobe.langchain_instrument`)](/en/agent-qa/reference/softprobe-py#langchain-and-langgraph-softprobe-langchain) for `CallbackHandler`, `instrument()`, and `uninstrument()`, and [`SoftprobeClient`](/en/agent-qa/reference/softprobe-py#softprobeclient)
 - [JavaScript / TypeScript SDK (`@softprobe/langchain`)](/en/agent-qa/reference/softprobe-js#softprobe-langchain) for `CallbackHandler`, `instrument()`, and `SoftprobeClient`

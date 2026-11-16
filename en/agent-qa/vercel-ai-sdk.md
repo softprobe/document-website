@@ -16,7 +16,7 @@ npm install @softprobe/vercel-ai-sdk @softprobe/tracing
 
 ## 2. Configure credentials
 
-Set your Agent Ingestion Key (`spk_...`) and OpenTelemetry service name in the server environment, or pass options directly to [`initVercelAiTelemetry`](/en/agent-qa/reference/softprobe-js#initvercelaitelemetryoptions).
+Set your Agent Ingestion Key (`spk_...`) and OpenTelemetry service name in the server environment, or pass options directly to [`initVercelAiTelemetry`](/en/agent-qa/reference/softprobe-js#initvercelaitelemetry-options).
 
 ```bash
 export INGESTION_KEY="spk_REPLACE_WITH_INGESTION_KEY"
