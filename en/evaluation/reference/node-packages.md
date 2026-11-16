@@ -10,7 +10,7 @@ Softprobe ships Node packages for recording, replaying, scoring, and training ag
 
 | Package | Use it for |
 |---------|------------|
-| `@softprobe/tracing` | Softprobe credentials, OTLP endpoint derivation, session telemetry, scores |
+| `@softprobe/tracing` | Ingestion Key, standard OTLP configuration, session telemetry, explicit score calls |
 | `@softprobe/agent` | Episode context, dependency tape, skip/inject wraps, FS overlay, closure reports |
 | `@softprobe/protocol-fabric` | Capture/replay ambient Node `fetch` / undici HTTP (complements semantic wraps) |
 | `@softprobe/promptfoo-adapter` | Invoke Promptfoo natively → `softprobe.framework-result/v1` |
@@ -22,12 +22,12 @@ Softprobe ships Node packages for recording, replaying, scoring, and training ag
 
 | Softprobe product knowledge | Host / adapter concern |
 |-----------------------------|-------------------------|
-| `SOFTPROBE_*` env names and parsing | Host config file paths |
-| Validate `publicKey` / `baseUrl` | Discovery order (env then file) |
-| Derive `otlpEndpoint` as `{baseUrl}/v1/traces` | Soft-disable when credentials missing |
+| Ingestion Key and standard OTLP env parsing | Host config file paths |
+| Resolve `otlp.tracesEndpoint` and generic OTLP endpoint precedence | Discovery order (env then file) |
+| Default trace export to production when no OTLP endpoint is configured | Soft-disable when credentials missing |
 | Meaning of `environment` / `userId` / `serviceName` | Host defaults (`serviceName: "opencode"`, …) |
 
-Any code that mentions `SOFTPROBE_*` or derives `{baseUrl}/v1/traces` must call `@softprobe/tracing` helpers — never reimplement that logic in a plugin or harness.
+Any code that resolves Ingestion Key or OTLP configuration must call `@softprobe/tracing` helpers — never derive the trace endpoint from the score API `baseUrl` or reimplement environment parsing in a plugin or harness.
 
 ## Dependency categories
 

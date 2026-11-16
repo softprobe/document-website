@@ -38,8 +38,8 @@ export OTEL_RESOURCE_ATTRIBUTES="deployment.environment.name=staging"
 | Variable | Required | Meaning |
 |----------|----------|---------|
 | `INGESTION_KEY` | Yes | Ingestion Key (`spk_...`) from Explorer **Agents**, sent in the standard OTLP `Authorization` header |
-| `SOFTPROBE_BASE_URL` | No | API base for score writes. With an exact OTLP traces endpoint it does not select the trace destination; without one, it remains a legacy trace fallback. |
-| `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` | No | Full traces URL, used as written. If omitted along with `SOFTPROBE_BASE_URL`, Softprobe uses its production endpoint. A generic `OTEL_EXPORTER_OTLP_ENDPOINT` base instead gets `/v1/traces` appended. |
+| `SOFTPROBE_BASE_URL` | No | Optional API base for explicit score writes. It does not select the trace destination. |
+| `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` | No | Full traces URL, used as written. If omitted, Softprobe uses its production endpoint. A generic `OTEL_EXPORTER_OTLP_ENDPOINT` base instead gets `/v1/traces` appended. |
 | `OTEL_EXPORTER_OTLP_TRACES_HEADERS` | Yes | Standard OTLP headers; trace-specific headers override `OTEL_EXPORTER_OTLP_HEADERS`. |
 | `OTEL_EXPORTER_OTLP_TRACES_PROTOCOL` | No | Use `http/protobuf`; trace-specific protocol overrides the generic OTLP protocol. |
 | `OTEL_SERVICE_NAME` | No | OpenTelemetry `service.name` for this agent service so multi-tier traces stay distinct in **Graph** and **Span Detail** |

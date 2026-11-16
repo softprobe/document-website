@@ -57,10 +57,9 @@ export OTEL_RESOURCE_ATTRIBUTES="deployment.environment.name=staging"
 
 For Softprobe SDKs, also set `SOFTPROBE_BASE_URL="https://explorer-staging.softprobe.ai/api/thelake"` when you use score APIs. This selects the API base for score writes; the OTLP endpoint selects where traces go. A generic `OTEL_EXPORTER_OTLP_ENDPOINT` is a base URL and the SDK appends `/v1/traces`; `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` is the full URL and is used as written. Signal-specific headers and protocol override the corresponding generic OTLP variables.
 
-Without an OTLP endpoint or custom `baseUrl`, Softprobe SDKs export traces to
-the production URL `https://explorer.softprobe.ai/api/thelake/v1/traces`. When
-an exact OTLP traces endpoint is set, it controls trace export independently of
-the score API base URL.
+Without an OTLP endpoint, Softprobe SDKs export traces to the production URL
+`https://explorer.softprobe.ai/api/thelake/v1/traces`, regardless of the score
+API base URL.
 
 Set `gen_ai.conversation.id` or `session.id` on your agent or request spans so turns group into Sessions, and give each browser app, AI agent, and backend service its own `serviceName` or `OTEL_SERVICE_NAME` so **Graph** and **Span Detail** identify every service clearly.
 

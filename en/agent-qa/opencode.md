@@ -56,8 +56,8 @@ Create `opencode-softprobe.json` in the OpenCode config directory (this is a **S
 | Field | Required | Meaning |
 |-------|----------|---------|
 | `ingestionKey` | Yes | Ingestion Key (`spk_…`) from Explorer **Agents → + Connect agent** |
-| `baseUrl` | No | Optional score API base. With an exact `otlp.tracesEndpoint`, it does not select the trace destination; without one, it remains a legacy trace fallback. |
-| `otlp.tracesEndpoint` | No | Full OTLP traces URL, used as written. If omitted along with `baseUrl`, Softprobe uses its production endpoint. `otlp.endpoint` can instead hold a generic OTLP base URL, which gets `/v1/traces` appended. |
+| `baseUrl` | No | Optional score API base. It does not select the trace destination. |
+| `otlp.tracesEndpoint` | No | Full OTLP traces URL, used as written. If omitted, Softprobe uses its production endpoint. `otlp.endpoint` can instead hold a generic OTLP base URL, which gets `/v1/traces` appended. |
 | `otlp.protocol` | No | The Softprobe exporter supports `http/protobuf`. |
 | `otlp.headers` | No | Additional OTLP request headers; these are not sent to the score API. |
 | `resourceAttributes` | No | OpenTelemetry resource attributes, such as `deployment.environment.name: staging` |
