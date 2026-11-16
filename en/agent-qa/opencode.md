@@ -42,31 +42,38 @@ Create `opencode-softprobe.json` in the OpenCode config directory (this is a **S
 
 ```json
 {
-  "publicKey": "<agent-api-key>",
-  "baseUrl": "https://explorer.softprobe.ai/api/thelake",
-  "otlpEndpoint": "https://explorer.softprobe.ai/api/thelake/v1/traces",
-  "environment": "Production"
+  "ingestionKey": "<Ingestion Key>",
+  "otlp": {
+    "tracesEndpoint": "https://explorer-staging.softprobe.ai/api/thelake/v1/traces",
+    "protocol": "http/protobuf"
+  },
+  "resourceAttributes": {
+    "deployment.environment.name": "staging"
+  }
 }
 ```
 
 | Field | Required | Meaning |
 |-------|----------|---------|
-| `publicKey` | Yes | Ingestion Key (`spk_…`) from Explorer **Agents → + Connect agent** |
-| `baseUrl` | Yes | `https://explorer.softprobe.ai/api/thelake` |
-| `otlpEndpoint` | No | Defaults to `{baseUrl}/v1/traces` |
-| `environment` | No | Label matching the Agent environment in Explorer (e.g. `Production`) |
+| `ingestionKey` | Yes | Ingestion Key (`spk_…`) from Explorer **Agents → + Connect agent** |
+| `baseUrl` | No | Optional score API base. It does not select the trace destination. |
+| `otlp.tracesEndpoint` | No | Full OTLP traces URL, used as written. If omitted, Softprobe uses its production endpoint. `otlp.endpoint` can instead hold a generic OTLP base URL, which gets `/v1/traces` appended. |
+| `otlp.protocol` | No | The Softprobe exporter supports `http/protobuf`. |
+| `otlp.headers` | No | Additional OTLP request headers; these are not sent to the score API. |
+| `resourceAttributes` | No | OpenTelemetry resource attributes, such as `deployment.environment.name: staging` |
 | `userId` | No | Optional end-user id on spans |
 
-Or set environment variables (env wins when both key and base URL are set):
+Server SDK environment variables can configure the same OTLP settings. The Ingestion Key is sent through standard OTLP headers:
 
 ```bash
-export SOFTPROBE_PUBLIC_KEY="spk_…"
-export SOFTPROBE_BASE_URL="https://explorer.softprobe.ai/api/thelake"
-export SOFTPROBE_OTLP_ENDPOINT="https://explorer.softprobe.ai/api/thelake/v1/traces"
-export SOFTPROBE_ENVIRONMENT="Production"
+export INGESTION_KEY="spk_…"
+export OTEL_EXPORTER_OTLP_TRACES_ENDPOINT="https://explorer-staging.softprobe.ai/api/thelake/v1/traces"
+export OTEL_EXPORTER_OTLP_TRACES_HEADERS="Authorization=Bearer ${INGESTION_KEY}"
+export OTEL_EXPORTER_OTLP_TRACES_PROTOCOL="http/protobuf"
+export OTEL_RESOURCE_ATTRIBUTES="deployment.environment.name=staging"
 ```
 
-The Connect Agent install prompt embeds your Ingestion Key and these URLs. Do not commit credentials to source control.
+Explicit fields in `opencode-softprobe.json` override environment values; environment values fill fields omitted from the file. Do not commit credentials to source control. The exact OTLP endpoint selects the trace destination. Set `SOFTPROBE_BASE_URL` only when score writes should go to a non-production API.
 
 ## 3. Verify
 
@@ -74,7 +81,7 @@ The Connect Agent install prompt embeds your Ingestion Key and these URLs. Do no
 2. Ensure a Session was traced: the install prompt has OpenCode run `opencode run "What is 1+2?"`, or run one real chat turn yourself (with tools if you use them).
 3. In Explorer, open **Agents → + Connect agent** and **Check connection**, or browse **Sessions** for the new Session (range filter defaults to the last 7 days).
 
-Sessions are matched to the Explorer Agent via the Ingestion Key (`publicKey`); you do not set an agent name in credentials.
+Sessions are matched to the Explorer Agent via the Ingestion Key; you do not set an agent name in credentials.
 
 ## What is traced
 
@@ -91,9 +98,9 @@ Sessions are matched to the Explorer Agent via the Ingestion Key (`publicKey`); 
 | Symptom | Check |
 |---------|--------|
 | No Sessions appear | Plugin listed in `opencode.json` / `opencode.jsonc`, `experimental.openTelemetry` true, you restarted OpenCode, then `opencode run "What is 1+2?"` or one real chat turn |
-| Auth / ingest errors | `publicKey` and `baseUrl` match the values from Connect Agent; key was not rotated without updating the file |
+| Auth / ingest errors | `ingestionKey` is current and the OTLP trace endpoint targets the intended environment |
 | Wrong OpenCode config file | Edit the file you already use (`opencode.json` or `opencode.jsonc` under project or `~/.config/opencode`); see [OpenCode config](https://opencode.ai/docs/config/) |
-| Wrong Softprobe credentials path | Confirm `~/.config/opencode/opencode-softprobe.json` (or `OPENCODE_CONFIG_DIR`); env overrides file when both key and base URL are set |
+| Wrong Softprobe credentials path | Confirm `~/.config/opencode/opencode-softprobe.json` (or `OPENCODE_CONFIG_DIR`); matching environment values override file values |
 | Partial traces | Ensure the process stays alive long enough to flush; serverless/short-lived hosts may need an explicit flush |
 
 Package source: [`@softprobe/opencode-plugin`](https://www.npmjs.com/package/@softprobe/opencode-plugin).

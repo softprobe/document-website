@@ -27,20 +27,23 @@ pnpm add @softprobe/langchain @softprobe/tracing @langchain/core
 ### 2. 凭证
 
 ```bash
-export SOFTPROBE_PUBLIC_KEY="spk_REPLACE_WITH_AGENT_KEY"
-export SOFTPROBE_BASE_URL="https://explorer.softprobe.ai/api/thelake"
-export SOFTPROBE_OTLP_ENDPOINT="https://explorer.softprobe.ai/api/thelake/v1/traces"
-export SOFTPROBE_SERVICE_NAME="langchain-agent"
-export SOFTPROBE_ENVIRONMENT="Production"
+export INGESTION_KEY="spk_REPLACE_WITH_INGESTION_KEY"
+export OTEL_EXPORTER_OTLP_TRACES_ENDPOINT="https://explorer-staging.softprobe.ai/api/thelake/v1/traces"
+export OTEL_EXPORTER_OTLP_TRACES_HEADERS="Authorization=Bearer ${INGESTION_KEY}"
+export OTEL_EXPORTER_OTLP_TRACES_PROTOCOL="http/protobuf"
+export OTEL_SERVICE_NAME="langchain-agent"
+export OTEL_RESOURCE_ATTRIBUTES="deployment.environment.name=staging"
 ```
 
 | 变量 | 必填 | 含义 |
 |------|------|------|
-| `SOFTPROBE_PUBLIC_KEY` | 是 | Explorer **Agents** 页面签发的 Ingestion Key（`spk_...`），仅限写入遥测数据 |
-| `SOFTPROBE_BASE_URL` | 是 | `https://explorer.softprobe.ai/api/thelake` |
-| `SOFTPROBE_OTLP_ENDPOINT` | 否 | 默认为 `{SOFTPROBE_BASE_URL}/v1/traces` |
-| `SOFTPROBE_SERVICE_NAME` | 否 | 当前 Agent 服务的 OpenTelemetry `service.name`，用于在 **Graph** 与 **Span Detail** 中区分多层服务 |
-| `SOFTPROBE_ENVIRONMENT` | 否 | 与 Explorer 中 Agent 环境一致的标签 |
+| `INGESTION_KEY` | 是 | Explorer **Agents** 页面签发的 Ingestion Key（`spk_...`），作为标准 OTLP `Authorization` bearer 值 |
+| `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` | 否 | 完整 traces URL，按原样使用；省略时 SDK 使用 production endpoint。通用 `OTEL_EXPORTER_OTLP_ENDPOINT` 会追加 `/v1/traces` |
+| `OTEL_EXPORTER_OTLP_TRACES_HEADERS` | 是 | 标准 OTLP headers；`Authorization` 使用 Ingestion Key |
+| `OTEL_EXPORTER_OTLP_TRACES_PROTOCOL` | 否 | 使用 `http/protobuf`；trace-specific protocol 优先于通用 OTLP protocol |
+| `OTEL_SERVICE_NAME` | 否 | 当前 Agent 服务的 OpenTelemetry `service.name`，用于在 **Graph** 与 **Span Detail** 中区分多层服务 |
+| `OTEL_RESOURCE_ATTRIBUTES` | 否 | OpenTelemetry resource attributes，例如 `deployment.environment.name=staging` |
+| `SOFTPROBE_BASE_URL` | 否 | 仅为显式 score API 请求选择 API base；不控制 trace 导出 |
 | `SOFTPROBE_LANGCHAIN` | 否 | 设为 `0` 或 `false` 可关闭自动埋点 |
 | `SOFTPROBE_SESSION_ID` | 否 | 仅当本次运行没有 thread、session 或 chat ID 时的回退值 |
 | `SOFTPROBE_USER_ID` | 否 | 仅当本次运行没有 user ID 时的回退值 |
@@ -108,7 +111,7 @@ Blackbox 原生接收 OpenTelemetry GenAI（`gen_ai.*`）、Arize OpenInference�
 1. 运行一轮会调用工具的 Agent 对话。
 2. 在 Explorer 的 **Agents** 页面点击 **Check connection**，或打开 **Sessions** 查看记录。
 
-Session 通过 `SOFTPROBE_PUBLIC_KEY` 关联到对应 Agent，并按应用的 thread、session 或 chat ID 归组 Steps。
+Session 通过 Ingestion Key 关联到对应 Agent，并按应用的 thread、session 或 chat ID 归组 Steps。
 
 ## 追踪内容
 
@@ -126,7 +129,7 @@ Generation span 会自动采集 `ChatOpenAI`（含流式输出）、`ChatAnthrop
 | 现象 | 检查项 |
 |------|--------|
 | 没有 Session | 确认凭证位于同一进程，在 Agent 运行前已导入 Softprobe 或调用 `instrument()`，且 `SOFTPROBE_LANGCHAIN` 不为 `0` |
-| 鉴权错误 | 确认 `SOFTPROBE_PUBLIC_KEY` 与 `SOFTPROBE_BASE_URL` 与 **+ Connect agent** 中一致 |
+| 鉴权错误 | 确认标准 OTLP `Authorization` header 中的 Ingestion Key 与 **+ Connect agent** 中一致 |
 | 只有 generation | 运行一轮至少调用一次工具的对话 |
 | Session 被拆分 | 跨轮次复用同一个应用 thread 或 chat ID |
 

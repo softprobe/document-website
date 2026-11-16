@@ -48,11 +48,39 @@ If your service already emits OpenTelemetry GenAI (`gen_ai.*`), Arize OpenInfere
 
 ```sh
 export OTEL_SERVICE_NAME="my-agent"
-export OTEL_EXPORTER_OTLP_TRACES_ENDPOINT="https://explorer.softprobe.ai/api/thelake/v1/traces"
-export OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer spk_REPLACE_WITH_AGENT_KEY"
+export INGESTION_KEY="spk_REPLACE_WITH_INGESTION_KEY"
+export OTEL_EXPORTER_OTLP_TRACES_ENDPOINT="https://explorer-staging.softprobe.ai/api/thelake/v1/traces"
+export OTEL_EXPORTER_OTLP_TRACES_HEADERS="Authorization=Bearer ${INGESTION_KEY}"
+export OTEL_EXPORTER_OTLP_TRACES_PROTOCOL="http/protobuf"
+export OTEL_RESOURCE_ATTRIBUTES="deployment.environment.name=staging"
 ```
 
+For Softprobe SDKs, also set `SOFTPROBE_BASE_URL="https://explorer-staging.softprobe.ai/api/thelake"` when you use score APIs. This selects the API base for score writes; the OTLP endpoint selects where traces go. A generic `OTEL_EXPORTER_OTLP_ENDPOINT` is a base URL and the SDK appends `/v1/traces`; `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` is the full URL and is used as written. Signal-specific headers and protocol override the corresponding generic OTLP variables.
+
+Without an OTLP endpoint, Softprobe SDKs export traces to the production URL
+`https://explorer.softprobe.ai/api/thelake/v1/traces`, regardless of the score
+API base URL.
+
 Set `gen_ai.conversation.id` or `session.id` on your agent or request spans so turns group into Sessions, and give each browser app, AI agent, and backend service its own `serviceName` or `OTEL_SERVICE_NAME` so **Graph** and **Span Detail** identify every service clearly.
+
+#### Official OBI Config v2
+
+OBI Config v2 does not automatically copy OTLP environment variables into exporter fields. Reference the full traces URL in `obi.yaml`; the `otlp_http` exporter and `encoding: protobuf` select HTTP/protobuf. A signal-specific traces endpoint is used as written. If you use the generic `OTEL_EXPORTER_OTLP_ENDPOINT`, append `/v1/traces` in the YAML. Keep the Ingestion Key in the OBI process environment and interpolate it into the YAML:
+
+```yaml
+tracer_provider:
+  processors:
+    - batch:
+        exporter:
+          otlp_http:
+            endpoint: ${OTEL_EXPORTER_OTLP_TRACES_ENDPOINT}
+            encoding: protobuf
+            headers:
+              - name: Authorization
+                value: "Bearer ${INGESTION_KEY}"
+```
+
+Set `OTEL_RESOURCE_ATTRIBUTES=deployment.environment.name=staging` on each instrumented application/container so OBI can attach it to that workload's spans. Config v2's top-level `resource.attributes` supports only `service.name`, `service.namespace`, `host.name`, and `host.id`; it cannot set `deployment.environment.name` globally.
 
 See [Capture a web app session with HTTP bodies](/en/agent-qa/application-session-capture), [OpenCode install](/en/agent-qa/opencode), and [LangChain install](/en/agent-qa/langchain) for complete examples.
 
