@@ -146,7 +146,7 @@ opencode mcp add blackbox-staging --global --url https://explorer-staging.softpr
 - Blackbox：列出过去 24 小时内 agent `my-agent` 有错误的 Session。
 - Blackbox：打开 trace `…`，总结工具结果与模型最终回答是否一致。
 
-Agent 可使用 `search_sessions`、`get_session` 与 `get_session_spans` 排查遥测数据，也可使用 `list_agents` 与 `create_agent` 管理 Agent 应用；仅在明确请求时通过 `get_agent_api_key` 获取 Agent 凭证。回答中请引用 `session_id` / `trace_id` / `span_id`，并附上 Explorer 链接：
+Agent 可使用 `search_sessions`、`get_session` 与 `get_session_spans` 排查遥测数据，也可使用 `list_agents` 与 `create_agent` 管理 Agent 应用；仅在明确请求时通过 `get_ingestion_key` 获取 Agent 的 Ingestion Key。回答中请引用 `session_id` / `trace_id` / `span_id`，并附上 Explorer 链接：
 
 `https://explorer.softprobe.ai?session=<session_id>`
 
@@ -164,7 +164,7 @@ npx skills add softprobe/softprobe-skills -g -y \
 
 - 托管 MCP 使用你的 Softprobe 用户登录（OAuth）。令牌留在你的 MCP 客户端。
 - Session、trace 与日志工具均为只读。
-- Agent 管理工具基于你当前选择的工作区成员身份运行；`create_agent` 创建 Agent 应用，`get_agent_api_key` 仅在请求时返回对应密钥。
+- Agent 管理工具基于你当前选择的工作区成员身份运行；`create_agent` 创建 Agent 应用，`get_ingestion_key` 仅在请求时返回对应 Ingestion Key。
 - Ingestion Key 仅限遥测写入（ingest-only），无法调用 MCP 或读取 Session。
 
 ## 排障

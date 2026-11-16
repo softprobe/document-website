@@ -146,7 +146,7 @@ Examples:
 - Blackbox: list Sessions from the last 24 hours with errors for agent `my-agent`.
 - Blackbox: open trace `…` and summarize tool results vs the model’s final answer.
 
-The agent can use `search_sessions`, `get_session`, and `get_session_spans` to investigate telemetry. It can use `list_agents` and `create_agent` to manage Agent apps. `get_agent_api_key` reveals an Agent credential only when requested. Cite `session_id` / `trace_id` / `span_id` and link Explorer:
+The agent can use `search_sessions`, `get_session`, and `get_session_spans` to investigate telemetry. It can use `list_agents` and `create_agent` to manage Agent apps. `get_ingestion_key` retrieves an Agent's Ingestion Key only when requested. Cite `session_id` / `trace_id` / `span_id` and link Explorer:
 
 `https://explorer.softprobe.ai?session=<session_id>`
 
@@ -164,7 +164,7 @@ Source: [github.com/softprobe/softprobe-skills](https://github.com/softprobe/sof
 
 - Hosted MCP uses your Softprobe user login (OAuth). Tokens stay with your MCP client.
 - Session, trace, and log tools are read-only.
-- Agent tools use your selected workspace membership. `create_agent` adds an Agent app; `get_agent_api_key` returns that Agent's key only when requested.
+- Agent tools use your selected workspace membership. `create_agent` adds an Agent app; `get_ingestion_key` returns that Agent's Ingestion Key only when requested.
 - Ingestion Keys can only send telemetry. They cannot use MCP or read Sessions.
 
 ## Troubleshoot
