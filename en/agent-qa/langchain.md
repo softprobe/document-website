@@ -27,20 +27,24 @@ pnpm add @softprobe/langchain @softprobe/tracing @langchain/core
 ### 2. Credentials
 
 ```bash
-export SOFTPROBE_PUBLIC_KEY="spk_REPLACE_WITH_AGENT_KEY"
-export SOFTPROBE_BASE_URL="https://explorer.softprobe.ai/api/thelake"
-export SOFTPROBE_OTLP_ENDPOINT="https://explorer.softprobe.ai/api/thelake/v1/traces"
-export SOFTPROBE_SERVICE_NAME="langchain-agent"
-export SOFTPROBE_ENVIRONMENT="Production"
+export INGESTION_KEY="spk_REPLACE_WITH_INGESTION_KEY"
+export SOFTPROBE_BASE_URL="https://explorer-staging.softprobe.ai/api/thelake"
+export OTEL_EXPORTER_OTLP_TRACES_ENDPOINT="https://explorer-staging.softprobe.ai/api/thelake/v1/traces"
+export OTEL_EXPORTER_OTLP_TRACES_HEADERS="Authorization=Bearer ${INGESTION_KEY}"
+export OTEL_EXPORTER_OTLP_TRACES_PROTOCOL="http/protobuf"
+export OTEL_SERVICE_NAME="langchain-agent"
+export OTEL_RESOURCE_ATTRIBUTES="deployment.environment.name=staging"
 ```
 
 | Variable | Required | Meaning |
 |----------|----------|---------|
-| `SOFTPROBE_PUBLIC_KEY` | Yes | Ingestion Key (`spk_...`) from Explorer **Agents** |
-| `SOFTPROBE_BASE_URL` | Yes | `https://explorer.softprobe.ai/api/thelake` |
-| `SOFTPROBE_OTLP_ENDPOINT` | No | Defaults to `{SOFTPROBE_BASE_URL}/v1/traces` |
-| `SOFTPROBE_SERVICE_NAME` | No | OpenTelemetry `service.name` for this agent service so multi-tier traces stay distinct in **Graph** and **Span Detail** |
-| `SOFTPROBE_ENVIRONMENT` | No | Label matching the Agent environment in Explorer |
+| `INGESTION_KEY` | Yes | Ingestion Key (`spk_...`) from Explorer **Agents**, sent in the standard OTLP `Authorization` header |
+| `SOFTPROBE_BASE_URL` | Yes for Softprobe SDK score writes | Softprobe API base; use `https://explorer-staging.softprobe.ai/api/thelake` for staging |
+| `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` | No | Full traces URL, used as written. A generic `OTEL_EXPORTER_OTLP_ENDPOINT` base instead gets `/v1/traces` appended. |
+| `OTEL_EXPORTER_OTLP_TRACES_HEADERS` | Yes | Standard OTLP headers; trace-specific headers override `OTEL_EXPORTER_OTLP_HEADERS`. |
+| `OTEL_EXPORTER_OTLP_TRACES_PROTOCOL` | No | Use `http/protobuf`; trace-specific protocol overrides the generic OTLP protocol. |
+| `OTEL_SERVICE_NAME` | No | OpenTelemetry `service.name` for this agent service so multi-tier traces stay distinct in **Graph** and **Span Detail** |
+| `OTEL_RESOURCE_ATTRIBUTES` | No | Additional resource attributes, such as `deployment.environment.name=staging` |
 | `SOFTPROBE_LANGCHAIN` | No | Set to `0` or `false` to disable auto-instrumentation |
 | `SOFTPROBE_SESSION_ID` | No | Fallback only when the run has no thread, session, or chat ID |
 | `SOFTPROBE_USER_ID` | No | Fallback only when the run has no user ID |
@@ -52,13 +56,13 @@ With credentials set, Softprobe instruments LangChain when the package loads. Im
 **Python**
 
 ```python
-import softprobe.langchain  # auto-instruments when SOFTPROBE_* credentials are set
+import softprobe.langchain  # auto-instruments when OTLP authorization and the Softprobe base URL are set
 ```
 
 **TypeScript**
 
 ```ts
-import "@softprobe/langchain"; // auto-instruments when SOFTPROBE_* credentials are set
+import "@softprobe/langchain"; // auto-instruments when OTLP authorization and the Softprobe base URL are set
 ```
 
 You can also call `instrument()` explicitly:
@@ -101,14 +105,14 @@ handler.flush()
 
 ## Existing OpenTelemetry LangChain instrumentations
 
-Blackbox natively ingests OpenTelemetry GenAI (`gen_ai.*`), Arize OpenInference (`openinference-instrumentation-langchain` and `@arizeai/openinference-instrumentation-langchain`), and Traceloop OpenLLMetry (`opentelemetry-instrumentation-langchain`) spans. If your service already uses one of these OpenTelemetry instrumentations, export OTLP HTTP traces directly to `https://explorer.softprobe.ai/api/thelake/v1/traces` with `Authorization=Bearer spk_...` and a distinct `OTEL_SERVICE_NAME` instead of adding a second callback handler. Include `gen_ai.conversation.id` or `session.id` on spans so turns group into Sessions.
+Blackbox natively ingests OpenTelemetry GenAI (`gen_ai.*`), Arize OpenInference (`openinference-instrumentation-langchain` and `@arizeai/openinference-instrumentation-langchain`), and Traceloop OpenLLMetry (`opentelemetry-instrumentation-langchain`) spans. If your service already uses one of these OpenTelemetry instrumentations, export OTLP HTTP traces with the standard `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT`, `OTEL_EXPORTER_OTLP_TRACES_HEADERS`, and `OTEL_EXPORTER_OTLP_TRACES_PROTOCOL` settings instead of adding a second callback handler. Include `gen_ai.conversation.id` or `session.id` on spans so turns group into Sessions.
 
 ## Verify
 
 1. Run one agent turn that calls a tool.
 2. In Explorer, click **Check connection** under **Agents** or open **Sessions**.
 
-Sessions match the Agent through `SOFTPROBE_PUBLIC_KEY` and group Steps by your thread, session, or chat ID.
+Sessions match the Agent through the Ingestion Key in the standard OTLP `Authorization` header and group Steps by your thread, session, or chat ID.
 
 ## What is traced
 
@@ -126,7 +130,7 @@ Generation spans capture `input_tokens`, `output_tokens`, and `total_tokens` aut
 | Symptom | Check |
 |---------|--------|
 | No Sessions | Confirm credentials exist in the same process, import Softprobe or call `instrument()` before the agent runs, and verify `SOFTPROBE_LANGCHAIN` is not `0` |
-| Auth errors | Confirm `SOFTPROBE_PUBLIC_KEY` and `SOFTPROBE_BASE_URL` match **+ Connect agent** |
+| Auth errors | Confirm the OTLP `Authorization` header contains the Ingestion Key and `SOFTPROBE_BASE_URL` targets the same Explorer environment |
 | Only generations | Run a turn that invokes at least one tool |
 | Split Sessions | Reuse the same thread or chat ID across turns |
 
