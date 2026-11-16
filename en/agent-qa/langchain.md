@@ -28,7 +28,6 @@ pnpm add @softprobe/langchain @softprobe/tracing @langchain/core
 
 ```bash
 export INGESTION_KEY="spk_REPLACE_WITH_INGESTION_KEY"
-export SOFTPROBE_BASE_URL="https://explorer-staging.softprobe.ai/api/thelake"
 export OTEL_EXPORTER_OTLP_TRACES_ENDPOINT="https://explorer-staging.softprobe.ai/api/thelake/v1/traces"
 export OTEL_EXPORTER_OTLP_TRACES_HEADERS="Authorization=Bearer ${INGESTION_KEY}"
 export OTEL_EXPORTER_OTLP_TRACES_PROTOCOL="http/protobuf"
@@ -39,8 +38,8 @@ export OTEL_RESOURCE_ATTRIBUTES="deployment.environment.name=staging"
 | Variable | Required | Meaning |
 |----------|----------|---------|
 | `INGESTION_KEY` | Yes | Ingestion Key (`spk_...`) from Explorer **Agents**, sent in the standard OTLP `Authorization` header |
-| `SOFTPROBE_BASE_URL` | Yes for Softprobe SDK score writes | Softprobe API base; use `https://explorer-staging.softprobe.ai/api/thelake` for staging |
-| `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` | No | Full traces URL, used as written. A generic `OTEL_EXPORTER_OTLP_ENDPOINT` base instead gets `/v1/traces` appended. |
+| `SOFTPROBE_BASE_URL` | No | API base for score writes. With an exact OTLP traces endpoint it does not select the trace destination; without one, it remains a legacy trace fallback. |
+| `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` | No | Full traces URL, used as written. If omitted along with `SOFTPROBE_BASE_URL`, Softprobe uses its production endpoint. A generic `OTEL_EXPORTER_OTLP_ENDPOINT` base instead gets `/v1/traces` appended. |
 | `OTEL_EXPORTER_OTLP_TRACES_HEADERS` | Yes | Standard OTLP headers; trace-specific headers override `OTEL_EXPORTER_OTLP_HEADERS`. |
 | `OTEL_EXPORTER_OTLP_TRACES_PROTOCOL` | No | Use `http/protobuf`; trace-specific protocol overrides the generic OTLP protocol. |
 | `OTEL_SERVICE_NAME` | No | OpenTelemetry `service.name` for this agent service so multi-tier traces stay distinct in **Graph** and **Span Detail** |
@@ -56,13 +55,13 @@ With credentials set, Softprobe instruments LangChain when the package loads. Im
 **Python**
 
 ```python
-import softprobe.langchain  # auto-instruments when OTLP authorization and the Softprobe base URL are set
+import softprobe.langchain  # auto-instruments when OTLP authorization is set
 ```
 
 **TypeScript**
 
 ```ts
-import "@softprobe/langchain"; // auto-instruments when OTLP authorization and the Softprobe base URL are set
+import "@softprobe/langchain"; // auto-instruments when OTLP authorization is set
 ```
 
 You can also call `instrument()` explicitly:
@@ -130,7 +129,7 @@ Generation spans capture `input_tokens`, `output_tokens`, and `total_tokens` aut
 | Symptom | Check |
 |---------|--------|
 | No Sessions | Confirm credentials exist in the same process, import Softprobe or call `instrument()` before the agent runs, and verify `SOFTPROBE_LANGCHAIN` is not `0` |
-| Auth errors | Confirm the OTLP `Authorization` header contains the Ingestion Key and `SOFTPROBE_BASE_URL` targets the same Explorer environment |
+| Auth errors | Confirm the OTLP `Authorization` header contains the Ingestion Key and the traces endpoint targets the intended Explorer environment |
 | Only generations | Run a turn that invokes at least one tool |
 | Split Sessions | Reuse the same thread or chat ID across turns |
 

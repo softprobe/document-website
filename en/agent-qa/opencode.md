@@ -43,7 +43,6 @@ Create `opencode-softprobe.json` in the OpenCode config directory (this is a **S
 ```json
 {
   "ingestionKey": "<Ingestion Key>",
-  "baseUrl": "https://explorer-staging.softprobe.ai/api/thelake",
   "otlp": {
     "tracesEndpoint": "https://explorer-staging.softprobe.ai/api/thelake/v1/traces",
     "protocol": "http/protobuf"
@@ -57,8 +56,8 @@ Create `opencode-softprobe.json` in the OpenCode config directory (this is a **S
 | Field | Required | Meaning |
 |-------|----------|---------|
 | `ingestionKey` | Yes | Ingestion Key (`spk_…`) from Explorer **Agents → + Connect agent** |
-| `baseUrl` | Yes | Softprobe API base; use `https://explorer-staging.softprobe.ai/api/thelake` for staging |
-| `otlp.tracesEndpoint` | No | Full OTLP traces URL, used as written. `otlp.endpoint` can instead hold a generic OTLP base URL, which gets `/v1/traces` appended. |
+| `baseUrl` | No | Optional score API base. With an exact `otlp.tracesEndpoint`, it does not select the trace destination; without one, it remains a legacy trace fallback. |
+| `otlp.tracesEndpoint` | No | Full OTLP traces URL, used as written. If omitted along with `baseUrl`, Softprobe uses its production endpoint. `otlp.endpoint` can instead hold a generic OTLP base URL, which gets `/v1/traces` appended. |
 | `otlp.protocol` | No | The Softprobe exporter supports `http/protobuf`. |
 | `otlp.headers` | No | Additional OTLP request headers; these are not sent to the score API. |
 | `resourceAttributes` | No | OpenTelemetry resource attributes, such as `deployment.environment.name: staging` |
@@ -68,14 +67,13 @@ Server SDK environment variables can configure the same OTLP settings. The Inges
 
 ```bash
 export INGESTION_KEY="spk_…"
-export SOFTPROBE_BASE_URL="https://explorer-staging.softprobe.ai/api/thelake"
 export OTEL_EXPORTER_OTLP_TRACES_ENDPOINT="https://explorer-staging.softprobe.ai/api/thelake/v1/traces"
 export OTEL_EXPORTER_OTLP_TRACES_HEADERS="Authorization=Bearer ${INGESTION_KEY}"
 export OTEL_EXPORTER_OTLP_TRACES_PROTOCOL="http/protobuf"
 export OTEL_RESOURCE_ATTRIBUTES="deployment.environment.name=staging"
 ```
 
-Explicit fields in `opencode-softprobe.json` override environment values; environment values fill fields omitted from the file. Do not commit credentials to source control. `SOFTPROBE_BASE_URL` also selects the environment for score writes, while the OTLP endpoint controls trace export.
+Explicit fields in `opencode-softprobe.json` override environment values; environment values fill fields omitted from the file. Do not commit credentials to source control. The exact OTLP endpoint selects the trace destination. Set `SOFTPROBE_BASE_URL` only when score writes should go to a non-production API.
 
 ## 3. Verify
 
@@ -100,7 +98,7 @@ Sessions are matched to the Explorer Agent via the Ingestion Key; you do not set
 | Symptom | Check |
 |---------|--------|
 | No Sessions appear | Plugin listed in `opencode.json` / `opencode.jsonc`, `experimental.openTelemetry` true, you restarted OpenCode, then `opencode run "What is 1+2?"` or one real chat turn |
-| Auth / ingest errors | `ingestionKey` and `baseUrl` match the values from Connect Agent; the key was not rotated without updating the file |
+| Auth / ingest errors | `ingestionKey` is current and the OTLP trace endpoint targets the intended environment |
 | Wrong OpenCode config file | Edit the file you already use (`opencode.json` or `opencode.jsonc` under project or `~/.config/opencode`); see [OpenCode config](https://opencode.ai/docs/config/) |
 | Wrong Softprobe credentials path | Confirm `~/.config/opencode/opencode-softprobe.json` (or `OPENCODE_CONFIG_DIR`); matching environment values override file values |
 | Partial traces | Ensure the process stays alive long enough to flush; serverless/short-lived hosts may need an explicit flush |
