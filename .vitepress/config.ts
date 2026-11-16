@@ -304,7 +304,7 @@ const agentQaSidebarEn = [
     items: [
       { text: 'What is Blackbox', link: '/en/agent-qa/' },
       { text: 'Quick start', link: '/en/agent-qa/getting-started' },
-      { text: 'Full-stack web app demo', link: '/en/agent-qa/application-session-capture' },
+      { text: 'End-to-end session tracing', link: '/en/agent-qa/end-to-end-session-tracing' },
       { text: 'Concepts', link: '/en/agent-qa/concepts' },
     ],
   },
