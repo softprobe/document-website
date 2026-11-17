@@ -2,54 +2,53 @@
 title: Investigate with a coding agent
 ---
 
-# Use Blackbox MCP with a coding agent
+# Use Blackbox with a coding agent
 
-Connect Claude Code, Codex, Cursor, OpenCode, or Antigravity (`agy`) to Softprobe Explorer. Sign in through the browser with your existing Explorer account. Blackbox MCP can query Sessions, inspect Session details, list and create Agent apps, and reveal an Agent's Ingestion Key when you request it.
+Install the Blackbox plugin (`blackbox@softprobe`) from the Softprobe plugin marketplace ([`softprobe/softprobe-plugin`](https://github.com/softprobe/softprobe-plugin)) to connect your AI coding agent to Softprobe Explorer. Sign in through the browser with your existing Explorer account. Blackbox gives your agent 15 MCP tools and investigation skills to query Sessions, inspect spans and traces, read correlated logs, manage Agent apps, and retrieve Ingestion Keys when requested.
 
-This is separate from **capture** (the `@softprobe/web-record` browser SDK, OBI, or AI framework SDKs). Capture records Sessions; Blackbox MCP lets your coding agent **manage Agents and investigate Sessions**.
+This is separate from **capture** (the `@softprobe/web-record` browser SDK, OBI, or AI framework SDKs). Capture records Sessions. The Blackbox plugin lets your coding agent **manage Agents and investigate Sessions**.
 
-## 1. Add Blackbox MCP
+## 1. Install the Blackbox plugin (Recommended)
 
-Select your coding agent to add the Softprobe MCP server (`https://explorer.softprobe.ai/mcp`) as `blackbox`:
+`softprobe/softprobe-plugin` is Softprobe's multi-product plugin marketplace (Apache-2.0). Installing `blackbox@softprobe` configures both the Blackbox skills and the hosted MCP server (`https://explorer.softprobe.ai/mcp`).
 
 ::: code-group
 
-```bash [Claude Code]
-claude mcp remove blackbox 2>/dev/null; claude mcp add --transport http blackbox https://explorer.softprobe.ai/mcp
-```
-
-```bash [Codex]
-codex mcp add blackbox --url https://explorer.softprobe.ai/mcp
-```
-
-```json [Cursor]
-{
-  "mcpServers": {
-    "blackbox": {
-      "url": "https://explorer.softprobe.ai/mcp"
-    }
-  }
-}
+```text [Claude Code]
+/plugin marketplace add softprobe/softprobe-plugin
+/plugin install blackbox@softprobe
 ```
 
 ```bash [OpenCode]
-opencode mcp add blackbox --global --url https://explorer.softprobe.ai/mcp
+opencode plugin add @softprobe/opencode-blackbox
 ```
 
-```json [Antigravity]
-{
-  "mcpServers": {
-    "blackbox": {
-      "url": "https://explorer.softprobe.ai/mcp"
-    }
-  }
-}
+```bash [Gemini CLI]
+gemini extensions install https://github.com/softprobe/softprobe-plugin
+```
+
+```bash [Cursor]
+npx skills add softprobe/softprobe-plugin -g -y -a cursor
+```
+
+```bash [Codex]
+npx skills add softprobe/softprobe-plugin -g -y -a codex
+```
+
+```bash [Antigravity]
+npx skills add softprobe/softprobe-plugin -g -y -a antigravity
 ```
 
 :::
 
-- **Cursor**: Save the JSON snippet in `.cursor/mcp.json` or `~/.cursor/mcp.json`, or select [Add Blackbox to Cursor](cursor://anysphere.cursor-deeplink/mcp/install?name=Blackbox&config=eyJ1cmwiOiJodHRwczovL2V4cGxvcmVyLnNvZnRwcm9iZS5haS9tY3AifQ%3D%3D).
-- **Antigravity (`agy`)**: Save the JSON snippet in `~/.gemini/config/mcp_config.json` (global) or `.agents/mcp_config.json` (workspace).
+- **Claude Code**: Run `/plugin marketplace add softprobe/softprobe-plugin` and `/plugin install blackbox@softprobe` inside Claude Code.
+- **Cursor**: Add `softprobe/softprobe-plugin` in **Settings → Plugins** and install `blackbox@softprobe`, or install the skills with `npx skills add softprobe/softprobe-plugin -g -y -a cursor`. If your Cursor version does not auto-mount the plugin's MCP server, also add the [manual MCP fallback](#manual-fallback-direct-hosted-mcp).
+- **OpenAI Codex CLI**: Enable `blackbox@softprobe` from `softprobe/softprobe-plugin` in your Codex plugin configuration, or run `npx skills add softprobe/softprobe-plugin -g -y -a codex` and add the [manual MCP fallback](#manual-fallback-direct-hosted-mcp).
+- **VS Code / GitHub Copilot**: Add `softprobe/softprobe-plugin` as an agent plugin marketplace in VS Code and install `blackbox@softprobe`, or add `https://explorer.softprobe.ai/mcp` to `.vscode/mcp.json` via the [manual MCP fallback](#manual-fallback-direct-hosted-mcp).
+- **Gemini CLI**: Run `gemini extensions install https://github.com/softprobe/softprobe-plugin` in your terminal.
+- **Antigravity (`agy`)**: Install `blackbox@softprobe` from `softprobe/softprobe-plugin` or run `npx skills add softprobe/softprobe-plugin -g -y -a antigravity`, then ensure `blackbox` is configured in `~/.gemini/config/mcp_config.json` or `.agents/mcp_config.json`.
+- **OpenCode**: Run `opencode plugin add @softprobe/opencode-blackbox` in your terminal.
+- **Windsurf**: Install `blackbox@softprobe` from `softprobe/softprobe-plugin`, or add `https://explorer.softprobe.ai/mcp` to `~/.codeium/windsurf/mcp_config.json` via the [manual MCP fallback](#manual-fallback-direct-hosted-mcp).
 
 ## 2. Sign in and verify access
 
@@ -79,7 +78,7 @@ opencode mcp auth blackbox
 
 :::
 
-- **Claude Code**: Run `/mcp` in Claude Code and authorize Blackbox with your Explorer account in the browser.
+- **Claude Code**: Run `/mcp` in Claude Code and authorize `blackbox` with your Explorer account in the browser.
 - **Codex**: Run `codex mcp login blackbox` and complete Explorer sign-in in the browser.
 - **Cursor**: Run `agent mcp enable blackbox && agent mcp login blackbox` from the terminal (or open **Customize → MCPs** in Cursor and choose **Sign in**). You can manage and inspect the server from the terminal with `agent mcp`:
 
@@ -93,8 +92,111 @@ opencode mcp auth blackbox
 
 - **OpenCode**: Run `opencode mcp auth blackbox` and complete Explorer sign-in in the browser.
 - **Antigravity (`agy`)**: Run `/mcp` in `agy`, select `blackbox`, and choose **Authenticate** to sign in through the browser (or open **MCP Servers** in the Antigravity app or IDE).
+- **VS Code / GitHub Copilot, Gemini CLI, and Windsurf**: Trigger any Blackbox MCP tool or open your client's MCP panel to complete the browser OAuth sign-in flow.
 
-Then ask your coding agent to call `list_workspaces` to confirm access. If you have multiple workspaces, ask it to call `select_workspace` with the target `workspace_id` to switch.
+Then ask your coding agent to call `whoami` or `list_workspaces` to confirm access. If you have multiple workspaces, ask it to call `select_workspace` with the target `workspace_id` to switch.
+
+## 3. Available Blackbox MCP tools
+
+Blackbox exposes 15 MCP tools across account context, telemetry investigation, and Agent management:
+
+| Category | Tools | Purpose |
+|----------|-------|---------|
+| **Account & workspace** | `whoami`, `list_workspaces`, `select_workspace` | Check signed-in user, list accessible workspaces, and switch the active workspace |
+| **Sessions** | `search_sessions`, `get_session`, `get_session_spans` | Search Sessions by agent, status, or time range, and inspect Session metadata and spans |
+| **Spans & traces** | `search_spans`, `get_span`, `search_traces`, `get_trace` | Filter GenAI, tool, and HTTP spans, and inspect full distributed traces |
+| **Logs** | `logs_by_session`, `logs_by_trace` | Read structured logs correlated to a Session or trace |
+| **Agents & keys** | `list_agents`, `create_agent`, `get_ingestion_key` | List Agent apps, create a new Agent app, and reveal an Agent's Ingestion Key when requested |
+
+## 4. Ask your agent
+
+Examples:
+
+- Use Blackbox: why did session `sess_…` fail? Check tool errors, logs, and the last generation.
+- Blackbox: list Sessions from the last 24 hours with errors for agent `my-agent`.
+- Blackbox: open trace `…` and summarize tool results versus the model's final answer.
+- Blackbox: create an Agent app named `checkout-bot` and show its Ingestion Key.
+
+The agent cites `session_id`, `trace_id`, or `span_id` and links directly to Explorer:
+
+`https://explorer.softprobe.ai?session=<session_id>`
+
+## Manual fallback: Direct hosted MCP
+
+If your client or environment does not support native plugin installation, add the hosted MCP server (`https://explorer.softprobe.ai/mcp`) directly as `blackbox`:
+
+::: code-group
+
+```bash [Claude Code]
+claude mcp remove blackbox 2>/dev/null; claude mcp add --transport http blackbox https://explorer.softprobe.ai/mcp
+```
+
+```bash [Codex]
+codex mcp add blackbox --url https://explorer.softprobe.ai/mcp
+```
+
+```json [Cursor]
+{
+  "mcpServers": {
+    "blackbox": {
+      "url": "https://explorer.softprobe.ai/mcp"
+    }
+  }
+}
+```
+
+```json [VS Code / Copilot]
+{
+  "servers": {
+    "blackbox": {
+      "type": "http",
+      "url": "https://explorer.softprobe.ai/mcp"
+    }
+  }
+}
+```
+
+```json [Gemini CLI]
+{
+  "mcpServers": {
+    "blackbox": {
+      "httpUrl": "https://explorer.softprobe.ai/mcp"
+    }
+  }
+}
+```
+
+```bash [OpenCode]
+opencode mcp add blackbox --global --url https://explorer.softprobe.ai/mcp
+```
+
+```json [Antigravity]
+{
+  "mcpServers": {
+    "blackbox": {
+      "url": "https://explorer.softprobe.ai/mcp"
+    }
+  }
+}
+```
+
+```json [Windsurf]
+{
+  "mcpServers": {
+    "blackbox": {
+      "serverUrl": "https://explorer.softprobe.ai/mcp"
+    }
+  }
+}
+```
+
+:::
+
+- **Cursor**: Save the JSON snippet in `.cursor/mcp.json` or `~/.cursor/mcp.json`, or select [Add Blackbox to Cursor](cursor://anysphere.cursor-deeplink/mcp/install?name=Blackbox&config=eyJ1cmwiOiJodHRwczovL2V4cGxvcmVyLnNvZnRwcm9iZS5haS9tY3AifQ%3D%3D).
+- **VS Code / GitHub Copilot**: Save the JSON snippet in `.vscode/mcp.json` (workspace) or your VS Code user `mcp.json`.
+- **Gemini CLI**: Save the JSON snippet in `~/.gemini/settings.json` or `.gemini/settings.json`.
+- **Antigravity (`agy`)**: Save the JSON snippet in `~/.gemini/config/mcp_config.json` (global) or `.agents/mcp_config.json` (workspace).
+- **Windsurf**: Save the JSON snippet in `~/.codeium/windsurf/mcp_config.json`.
 
 ### Staging / development (`blackbox-staging`)
 
@@ -120,6 +222,27 @@ codex mcp add blackbox-staging --url https://explorer-staging.softprobe.ai/mcp
 }
 ```
 
+```json [VS Code / Copilot]
+{
+  "servers": {
+    "blackbox-staging": {
+      "type": "http",
+      "url": "https://explorer-staging.softprobe.ai/mcp"
+    }
+  }
+}
+```
+
+```bash [Gemini CLI]
+{
+  "mcpServers": {
+    "blackbox-staging": {
+      "httpUrl": "https://explorer-staging.softprobe.ai/mcp"
+    }
+  }
+}
+```
+
 ```bash [OpenCode]
 opencode mcp add blackbox-staging --global --url https://explorer-staging.softprobe.ai/mcp
 ```
@@ -134,50 +257,38 @@ opencode mcp add blackbox-staging --global --url https://explorer-staging.softpr
 }
 ```
 
+```json [Windsurf]
+{
+  "mcpServers": {
+    "blackbox-staging": {
+      "serverUrl": "https://explorer-staging.softprobe.ai/mcp"
+    }
+  }
+}
+```
+
 :::
 
 Sign in to `blackbox-staging` with the same client command using `blackbox-staging` as the server name (for example, `codex mcp login blackbox-staging`, `opencode mcp auth blackbox-staging`, or `/mcp` in Claude Code or Antigravity).
 
-## 3. Ask your agent
-
-Examples:
-
-- Use Blackbox: why did session `sess_…` fail? Check tool errors and the last generation.
-- Blackbox: list Sessions from the last 24 hours with errors for agent `my-agent`.
-- Blackbox: open trace `…` and summarize tool results vs the model’s final answer.
-
-The agent can use `search_sessions`, `get_session`, and `get_session_spans` to investigate telemetry. It can use `list_agents` and `create_agent` to manage Agent apps. `get_ingestion_key` retrieves an Agent's Ingestion Key only when requested. Cite `session_id` / `trace_id` / `span_id` and link Explorer:
-
-`https://explorer.softprobe.ai?session=<session_id>`
-
-## Optional skill playbook
-
-```bash
-npx skills add softprobe/softprobe-skills -g -y \
-  -a cursor -a claude-code -a codex -a opencode \
-  -s softprobe-agent-qa
-```
-
-Source: [github.com/softprobe/softprobe-skills](https://github.com/softprobe/softprobe-skills) (Apache-2.0).
-
 ## Privacy
 
 - Hosted MCP uses your Softprobe user login (OAuth). Tokens stay with your MCP client.
-- Session, trace, and log tools are read-only.
-- Agent tools use your selected workspace membership. `create_agent` adds an Agent app; `get_ingestion_key` returns that Agent's Ingestion Key only when requested.
+- Session, span, trace, and log tools are read-only.
+- Agent tools use your selected workspace membership. `create_agent` adds an Agent app, and `get_ingestion_key` returns that Agent's Ingestion Key only when requested.
 - Ingestion Keys can only send telemetry. They cannot use MCP or read Sessions.
 
 ## Troubleshoot
 
 | Symptom | Fix |
 |---------|-----|
-| Browser auth loop | Finish Allow on the Softprobe consent page; ensure you’re signed into Explorer |
-| Workspace picker / 409 | Use the workspace picker at the bottom of Explorer's sidebar, or ask the agent to `list_workspaces` / `select_workspace` |
-| MCP tools missing | Re-add `https://explorer.softprobe.ai/mcp` in your client, then complete browser sign-in |
-| Confused with OpenCode capture | Capture uses `@softprobe/opencode-plugin` from Connect agent; MCP manages Agent records and investigates Sessions but does not capture telemetry |
+| Browser auth loop | Finish Allow on the Softprobe consent page and confirm you are signed into Explorer |
+| Workspace picker / 409 | Use the workspace picker at the bottom of Explorer's sidebar, or ask the agent to call `list_workspaces` and `select_workspace` |
+| MCP tools missing | Reinstall `blackbox@softprobe` from `softprobe/softprobe-plugin` or add `https://explorer.softprobe.ai/mcp` manually, then complete browser sign-in |
+| Confused with OpenCode capture | Capture uses `@softprobe/opencode-plugin` from Connect agent. Blackbox (`@softprobe/opencode-blackbox` and MCP) manages Agent records and investigates Sessions without capturing telemetry |
 
 ## Next
 
-- [Quick start](/en/agent-qa/getting-started) — connect an agent and verify capture
-- [Concepts](/en/agent-qa/concepts) — Session and observation shape
+- [Quick start](/en/agent-qa/getting-started): connect an agent and verify capture
+- [Concepts](/en/agent-qa/concepts): Session and observation shape
 - [Explorer](https://explorer.softprobe.ai)
