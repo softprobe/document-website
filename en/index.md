@@ -4,37 +4,29 @@ title: Softprobe
 titleTemplate: false
 hero:
   name: Softprobe
-  text: Performance reviews for AI agents
-  tagline: Capture Sessions · Review Steps · Improve what matters
+  text: QA and observability for services and AI agents
+  tagline: Arex (Testing) · Blackbox · Lisa
   actions:
     - theme: brand
-      text: Connect your agent
+      text: Blackbox
       link: /en/agent-qa/getting-started
     - theme: alt
-      text: Investigate with a coding agent
-      link: /en/agent-qa/coding-agent-skills
+      text: Lisa
+      link: /en/lisa/
     - theme: alt
-      text: Testing
+      text: Arex (Testing)
       link: /en/testing/getting-started
 features:
-  - title: I capture web and agent sessions in production
-    details: Connect web apps and AI agents with one pasteable prompt, capture correlated Sessions and Steps, review Findings, and optionally route alerts to Slack.
+  - title: Arex (Testing)
+    details: Attach the Java agent to your service, record real traffic, and replay it as regression tests with dependencies auto-mocked and CI/CD gates.
+    link: /en/testing/
+    linkText: Explore Arex
+  - title: Blackbox
+    details: Capture correlated browser, backend (OBI eBPF), and LLM sessions with HTTP bodies, and debug them in Explorer or via coding-agent MCP plugins.
     link: /en/agent-qa/
-    linkText: Blackbox
-  - title: I evaluate AI agents
-    details: Author suites, run deterministic and outcome-based evals in CI, compare runs, and gate releases — Promptfoo-compatible imports with kernel-owned manifests and thelake storage.
-    link: /en/evaluation/
-    linkText: Agent Evaluation
-  - title: I'm a developer
-    details: Attach the Java agent to your service, record real traffic, and replay it as regression tests with dependencies auto-mocked.
-    link: /en/testing/getting-started
-    linkText: Onboard your app
-  - title: I run the platform / CI
-    details: Deploy the Softprobe server with Helm. After each release to a test environment, have the pipeline replay automatically and let the result decide whether it continues.
-    link: /en/testing/webhook-and-ci
-    linkText: Replay after deployment
-  - title: I need observability
-    details: Istio Wasm agent and SESSIFY session context feed a business-flow dashboard — deploy on GKE with the platform guides.
-    link: /en/platform/getting-started/quick-start
-    linkText: Business observability
+    linkText: Explore Blackbox
+  - title: Lisa
+    details: Standalone AI QA engineer that receives agent sessions over OTLP, evaluates owner-approved policies, and tracks triage activities and Slack alerts.
+    link: /en/lisa/
+    linkText: Explore Lisa
 ---

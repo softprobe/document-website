@@ -27,18 +27,16 @@ export function navForLocale(locale: DocLocale): DefaultTheme.NavItem[] {
   if (locale === 'zh') {
     return [
       { text: '首页', link: `${p}/` },
-      { text: '流量回放测试', link: `${p}/testing/`, activeMatch: '/zh/testing/' },
+      { text: 'Arex（测试）', link: `${p}/testing/`, activeMatch: '/zh/testing/' },
       { text: 'Blackbox', link: `${p}/agent-qa/`, activeMatch: '/zh/agent-qa/' },
-      { text: 'Agent Evaluation', link: `${p}/evaluation/`, activeMatch: '/zh/evaluation/' },
-      { text: '业务观测', link: `${p}/platform/getting-started/quick-start`, activeMatch: '/zh/platform/' },
+      { text: 'Lisa', link: `${p}/lisa/`, activeMatch: '/zh/lisa/' },
     ]
   }
   return [
     { text: 'Home', link: `${p}/` },
-    { text: 'Replay Testing', link: `${p}/testing/`, activeMatch: '/en/testing/' },
+    { text: 'Arex (Testing)', link: `${p}/testing/`, activeMatch: '/en/testing/' },
     { text: 'Blackbox', link: `${p}/agent-qa/`, activeMatch: '/en/agent-qa/' },
-    { text: 'Agent Evaluation', link: `${p}/evaluation/`, activeMatch: '/en/evaluation/' },
-    { text: 'Business Observability', link: `${p}/platform/getting-started/quick-start`, activeMatch: '/en/platform/' },
+    { text: 'Lisa', link: `${p}/lisa/`, activeMatch: '/en/lisa/' },
   ]
 }
 
@@ -47,18 +45,16 @@ export function footerForLocale(locale: DocLocale): DefaultTheme.Footer {
   const p = locale === 'zh' ? '/zh' : '/en'
   if (locale === 'zh') {
     return {
-      message: '捕获 Session · 审查 Steps · 改进关键所在',
+      message: 'Arex（测试）· Blackbox · Lisa',
       copyright: `Copyright © ${year} Softprobe`,
       links: [
         {
-          title: '文档',
+          title: '产品文档',
           items: [
-            { text: '流量回放测试', link: `${p}/testing/` },
-            { text: '部署平台', link: `${p}/testing/installation/deployment` },
-            { text: '回放报告', link: `${p}/testing/replay-report` },
-            { text: '命令参考', link: `${p}/testing/commands/` },
+            { text: 'Arex（测试）', link: `${p}/testing/` },
             { text: 'Blackbox', link: `${p}/agent-qa/` },
-            { text: 'Agent Evaluation', link: `${p}/evaluation/` },
+            { text: 'Lisa', link: `${p}/lisa/` },
+            { text: '命令参考', link: `${p}/testing/commands/` },
           ],
         },
         {
@@ -76,20 +72,18 @@ export function footerForLocale(locale: DocLocale): DefaultTheme.Footer {
     }
   }
   return {
-    message: 'Capture Sessions · Review Steps · Improve what matters',
+    message: 'Arex (Testing) · Blackbox · Lisa',
     copyright: `Copyright © ${year} Softprobe`,
     links: [
-        {
-          title: 'Docs',
-          items: [
-            { text: 'Replay Testing', link: `${p}/testing/` },
-            { text: 'Deploy the platform', link: `${p}/testing/installation/deployment` },
-            { text: 'Replay report', link: `${p}/testing/replay-report` },
-            { text: 'Command reference', link: `${p}/testing/commands/` },
-            { text: 'Blackbox', link: `${p}/agent-qa/` },
-            { text: 'Agent Evaluation', link: `${p}/evaluation/` },
-          ],
-        },
+      {
+        title: 'Products',
+        items: [
+          { text: 'Arex (Testing)', link: `${p}/testing/` },
+          { text: 'Blackbox', link: `${p}/agent-qa/` },
+          { text: 'Lisa', link: `${p}/lisa/` },
+          { text: 'Command reference', link: `${p}/testing/commands/` },
+        ],
+      },
       {
         title: 'Community',
         items: [{ text: 'Twitter', link: 'https://x.com/softprobeai' }],
