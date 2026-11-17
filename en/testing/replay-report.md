@@ -137,6 +137,48 @@ Suspected noise fields are ticked and ignored here, with the same controls as in
 
 ![Cause not established and Other results](/img/docs/testing/en/report-other-tiers.png)
 
+## Causes investigated before {#history-reuse}
+
+For each cause analysis, the AI first looks at causes already investigated in earlier replays of the same application, including those left undetermined. When the current differences match an earlier cause, the AI carries over that conclusion. It only checks whether these cases still belong to that cause; it does not investigate the cause or read the code again. This avoids spending time and model usage on the same differences again.
+
+Earlier conclusions are carried over whether or not anyone clicked **Confirm pass**. **Confirm pass** applies only to that replay. In the next replay, cases that still differ from the recording appear in the report and need manual confirmation as usual. The difference is that their causes are carried over rather than investigated again.
+
+### How to spot a carried-over conclusion {#history-reuse-card}
+
+- **New or carried over**: the title is tagged **New AI analysis** or **Carried over by AI**. A carried-over card names the earlier replay and explains that this run only checked whether the differences are still the same, without investigating the cause again. Click the date to open that replay's report. When the conclusion comes from the round before **Analyze again** in the same replay, the card refers to **this replay's previous analysis** and has no date link. A carried-over unresolved card also states that the earlier analysis left the cause undetermined.
+- **Recurrence**: a cause seen before has a **Recurring** tag next to the title. The details give the date it was first seen and the number of occurrences, including this one.
+- **Code evidence**: the location is labelled **Location at that time**, and the code block **Code excerpted at that time**. A note gives the analysis and code version the excerpt came from, and states that it was not extracted again this time.
+
+### What is not carried over {#history-reuse-limits}
+
+The AI does not directly carry over:
+
+- a conclusion marked **Wrong cause**, or any later conclusion carried over from that same cause;
+- a conclusion left by a Softprobe server version earlier than 4.3.45—these conclusions are only used as reference;
+- a conclusion that did not pass AI review at the time.
+
+After an upgrade from a version earlier than 4.3.45, the first analysis still investigates every failed case; conclusions can be carried over from the second analysis onwards. If the server was already on 4.3.45 or later before the upgrade, conclusions can be carried over from the first analysis after the upgrade.
+
+### Marking a cause as wrong {#history-reuse-wrong}
+
+The AI only checks whether these cases look like the earlier cause. It cannot tell whether that cause was wrong in the first place. If the cause is wrong, mark it **Wrong cause**. This is the only way to stop it being carried over.
+
+Click **Wrong cause** on the card and give a reason. The card immediately moves to **Cause not yet determined**. Every card in the group for that cause gets a **Conclusion in this group marked wrong** tag, including the card where the cause was first established. They also move to **Cause not yet determined**, and show when the cause was marked and the **Mark reason**. Later analyses no longer carry over this cause; its cases are investigated again.
+
+Marking alone does not start another investigation. Without further action, this happens during the next replay analysis. To see a new conclusion immediately, click **Analyze again**. Re-investigation calls the model just like a regular analysis. If the mark was a mistake, click **Undo** to return the card to its previous tier.
+
+A carried-over unresolved card has **Re-investigate cause** instead of **Wrong cause**, because there is no established cause to mark wrong. Click it and explain why another investigation is needed. The card remains under **Cause not yet determined**. The next analysis investigates the cause again instead of carrying it over. A card tagged **Conclusion in this group marked wrong** needs no such action: the next analysis already investigates it again.
+
+### Reanalysis and counts {#history-reuse-reanalysis}
+
+During **Analyze again**, cases already confirmed as passed in this replay are not sent to the AI. The report still lists them with their conclusions from before reanalysis, tagged **Confirmed manually before reanalysis**.
+
+The **This analysis:** line in the overview counts cases separately: **AI newly examined N cases**, **AI carried over conclusions for N** (including how many are still undetermined), **N unfinished**, and **N confirmed before reanalysis**. Each case is counted only once, and zero-count items are omitted.
+
+Carrying over a conclusion does not change the comparison counts: consistent, inconsistent, or replay failed. It does not make a case pass.
+
+**Wrong cause** and **Conclusion in this group marked wrong** only change how the report is grouped. Group notification cards already sent and conclusions already received by a pipeline do not change, so the numbers on the two sides may not match.
+
 ## By difference {#by-diff}
 
 **By cause** is the main way to work through problems. Click **By difference** at the top right of the problems area for another angle: where the AI filed each kind of difference. The title of this area on the page changes to **Differences**. Differences on the same field, or with the same error, count as one kind, and the kinds are grouped by type: **Differences in detail** (field differences in the endpoint response), **Downstream call differences** (calls to the database, Redis or downstream services that differ from the recording; when every one of them is a call that was not made during replay, the group is named **Downstream calls not made**), **Replay failed** and **Suspected noise**. Empty groups are not shown. When there is no AI analysis result (nothing was analyzed, or the Softprobe server is an older version), this is the only listing the report has.
