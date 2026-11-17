@@ -64,16 +64,19 @@ test('VitePress HTML normalization cannot reload the same Cloudflare document', 
   assert.equal(shouldReloadProductNavigation(path + '?mode=ci', origin + path), true)
 })
 
-test('both product trees, raw Markdown, screenshots and aggregate exports are blocked', async () => {
+test('Arex testing tree, raw Markdown, screenshots and aggregate exports are blocked while Blackbox and Lisa are public', async () => {
   const env = environment()
-  const paths = ['/en/testing', '/en/testing.html', '/en/testing.md', '/en/testing/installation/server.html', '/zh/testing/commands/ops.md', '/en/platform/', '/zh/platform.md', '/en/agent-qa/', '/zh/agent-qa.md', '/en/evaluation/', '/zh/evaluation/getting-started.md', '/img/docs/replay/trace-diff-open.png', '/llms.txt', '/llms-full.txt', '/assets/unknown-future-page.js', ...policy.privateAssets]
+  const protectedPaths = ['/en/testing', '/en/testing.html', '/en/testing.md', '/en/testing/installation/server.html', '/zh/testing/commands/ops.md', '/img/docs/replay/trace-diff-open.png', '/llms.txt', '/llms-full.txt', '/assets/unknown-future-page.js', ...policy.privateAssets]
   assert.ok(policy.privateAssets.length > 100)
-  for (const path of paths) {
+  for (const path of protectedPaths) {
     assert.equal(requiresAuth(path), true, path)
     const response = await worker.fetch(get(path), env)
     assert.equal(response.status, 401, path)
     assert.equal(response.headers.get('Cache-Control'), 'private, no-store')
     assert.doesNotMatch(await response.text(), /DOCUMENT CONTENT/)
+  }
+  for (const publicPath of ['/en/agent-qa/', '/zh/agent-qa.md', '/en/lisa/', '/zh/lisa/getting-started.md', '/en/platform/', '/zh/platform.md']) {
+    assert.equal(requiresAuth(publicPath), false, publicPath)
   }
   assert.equal(env.calls.length, 0)
 })
@@ -98,7 +101,7 @@ test('correct password grants access using a secure seven-day signed cookie', as
   const setCookie = response.headers.get('Set-Cookie')
   for (const flag of ['HttpOnly', 'Secure', 'SameSite=Lax', 'Path=/', 'Max-Age=604800']) assert.ok(setCookie.includes(flag))
   const cookie = setCookie.split(';')[0]
-  for (const path of ['/en/testing/', '/zh/platform/', '/llms-full.txt', policy.privateAssets[0], '/img/docs/trace-isolated.png']) {
+  for (const path of ['/en/testing/', '/zh/testing/', '/llms-full.txt', policy.privateAssets[0], '/img/docs/trace-isolated.png']) {
     const document = await worker.fetch(get(path, { Cookie: cookie }), env)
     assert.equal(document.status, 200)
     assert.equal(await document.text(), 'DOCUMENT CONTENT')

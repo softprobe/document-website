@@ -331,109 +331,14 @@ const agentQaSidebarEn = [
   },
 ]
 
-const evaluationSidebarEn = [
+const lisaSidebarEn = [
   {
-    text: 'Get started',
+    text: 'Lisa',
     items: [
-      { text: 'What is Agent Evaluation', link: '/en/evaluation/' },
-      { text: 'Mental model', link: '/en/evaluation/mental-model' },
-      { text: 'Quick start', link: '/en/evaluation/getting-started' },
-      { text: 'How it works', link: '/en/evaluation/how-it-works' },
-    ],
-  },
-  {
-    text: 'Concepts',
-    collapsed: false,
-    items: [
-      { text: 'Concepts overview', link: '/en/evaluation/concepts/' },
-      { text: 'Native model and framework runners', link: '/en/evaluation/concepts/native-model-and-adapters' },
-      { text: 'Terminology', link: '/en/evaluation/concepts/terminology' },
-      { text: 'Data model', link: '/en/evaluation/concepts/data-model' },
-      { text: 'Ecosystem mapping', link: '/en/evaluation/concepts/ecosystem-mapping' },
-      { text: 'Evaluation loop', link: '/en/evaluation/concepts/evaluation-loop' },
-      { text: 'Scores and gates', link: '/en/evaluation/concepts/scores-and-gates' },
-      { text: 'Evidence and trajectories', link: '/en/evaluation/concepts/evidence-and-trajectories' },
-      { text: 'Trials and aggregates', link: '/en/evaluation/concepts/trials-and-aggregates' },
-      { text: 'Correlation and traces', link: '/en/evaluation/concepts/correlation-and-traces' },
-      { text: 'Online vs offline evaluation', link: '/en/evaluation/concepts/online-vs-offline' },
-      { text: 'Online evaluation', link: '/en/evaluation/concepts/online-evaluation' },
-      { text: 'Annotation', link: '/en/evaluation/concepts/annotation' },
-      { text: 'Human evaluation', link: '/en/evaluation/concepts/human-evaluation' },
-      { text: 'Reproducibility', link: '/en/evaluation/concepts/reproducibility' },
-      { text: 'Artifact visibility', link: '/en/evaluation/concepts/artifact-visibility' },
-      { text: 'Environment bundles and tapes', link: '/en/evaluation/concepts/environment-bundles' },
-    ],
-  },
-  {
-    text: 'Architecture',
-    collapsed: false,
-    items: [
-      { text: 'Architecture overview', link: '/en/evaluation/architecture/' },
-      { text: 'Kernel and hosts', link: '/en/evaluation/architecture/kernel-and-hosts' },
-      { text: 'Execution DAG', link: '/en/evaluation/architecture/execution-dag' },
-      { text: 'Extension model', link: '/en/evaluation/architecture/plugin-model' },
-      { text: 'Storage and thelake', link: '/en/evaluation/architecture/storage-and-thelake' },
-      { text: 'Trust boundaries', link: '/en/evaluation/architecture/trust-boundaries' },
-    ],
-  },
-  {
-    text: 'Guides',
-    collapsed: false,
-    items: [
-      { text: 'Prepare a framework run', link: '/en/evaluation/guides/author-a-suite' },
-      { text: 'Run locally and in CI', link: '/en/evaluation/guides/run-locally-and-ci' },
-      { text: 'Compare and promote', link: '/en/evaluation/guides/compare-and-promote' },
-      { text: 'Promptfoo integration', link: '/en/evaluation/guides/promptfoo-integration' },
-      { text: 'Langfuse and Braintrust adoption', link: '/en/evaluation/guides/langfuse-and-braintrust-adoption' },
-      { text: 'Production-to-eval loop', link: '/en/evaluation/guides/production-to-eval-loop' },
-      { text: 'Promptfoo on production OTEL traces', link: '/en/evaluation/guides/promptfoo-online-otel' },
-      { text: 'Prompt-only vs environment eval', link: '/en/evaluation/guides/eval-modes' },
-      { text: 'Record and replay agent environments', link: '/en/evaluation/guides/record-replay-agent-environment' },
-      { text: 'Score an episode with Promptfoo', link: '/en/evaluation/guides/score-episode-with-promptfoo' },
-      { text: 'Gym episodes and training rollouts', link: '/en/evaluation/guides/gym-and-training-rollouts' },
-    ],
-  },
-  {
-    text: 'Ecosystem methods',
-    collapsed: false,
-    items: [
-      { text: 'Method families', link: '/en/evaluation/evaluators/' },
-      { text: 'Deterministic', link: '/en/evaluation/evaluators/deterministic' },
-      { text: 'Similarity and statistical', link: '/en/evaluation/evaluators/similarity-and-statistical' },
-      { text: 'Reference-based quality', link: '/en/evaluation/evaluators/reference-based-quality' },
-      { text: 'LLM judge', link: '/en/evaluation/evaluators/llm-judge' },
-      { text: 'Comparative judge', link: '/en/evaluation/evaluators/comparative-judge' },
-      { text: 'Trajectory and tools', link: '/en/evaluation/evaluators/trajectory-and-tools' },
-      { text: 'Environment outcome', link: '/en/evaluation/evaluators/environment-outcome' },
-      { text: 'Multi-turn and multi-agent', link: '/en/evaluation/evaluators/multi-turn-and-multi-agent' },
-      { text: 'Human annotation', link: '/en/evaluation/evaluators/human-annotation' },
-      { text: 'Production and online', link: '/en/evaluation/evaluators/production-online' },
-      { text: 'Robustness and security', link: '/en/evaluation/evaluators/robustness-and-security' },
-      { text: 'Stochastic and repeated', link: '/en/evaluation/evaluators/stochastic-and-repeated' },
-      { text: 'Meta-evaluation', link: '/en/evaluation/evaluators/meta-evaluation' },
-    ],
-  },
-  {
-    text: 'Reference',
-    collapsed: true,
-    items: [
-      { text: 'CLI', link: '/en/evaluation/reference/cli' },
-      { text: 'REST API', link: '/en/evaluation/reference/api' },
-      { text: 'Result status', link: '/en/evaluation/reference/result-status' },
-      { text: 'Events', link: '/en/evaluation/reference/events' },
-      { text: 'Score targets', link: '/en/evaluation/reference/score-targets' },
-      { text: 'Capability descriptors', link: '/en/evaluation/reference/capability-descriptors' },
-      { text: 'Framework runners', link: '/en/evaluation/reference/framework-adapters' },
-      { text: 'Promptfoo mapping (legacy)', link: '/en/evaluation/reference/promptfoo-mapping' },
-      { text: 'Node packages (agent environments)', link: '/en/evaluation/reference/node-packages' },
-    ],
-  },
-  {
-    text: 'For AI agents',
-    collapsed: false,
-    items: [
-      { text: 'Overview', link: '/en/evaluation/agents/overview' },
-      { text: 'Output contract', link: '/en/evaluation/agents/output-contract' },
+      { text: 'Overview', link: '/en/lisa/' },
+      { text: 'Getting started', link: '/en/lisa/getting-started' },
+      { text: 'Policies and activities', link: '/en/lisa/policies-and-activities' },
+      { text: 'Runtime configuration', link: '/en/lisa/configuration' },
     ],
   },
 ]
@@ -457,109 +362,14 @@ const agentQaSidebarZh = [
   },
 ]
 
-const evaluationSidebarZh = [
+const lisaSidebarZh = [
   {
-    text: '开始使用',
+    text: 'Lisa',
     items: [
-      { text: '什么是 Agent Evaluation', link: '/zh/evaluation/' },
-      { text: '心智模型', link: '/zh/evaluation/mental-model' },
-      { text: '快速开始', link: '/zh/evaluation/getting-started' },
-      { text: '工作原理', link: '/zh/evaluation/how-it-works' },
-    ],
-  },
-  {
-    text: '概念',
-    collapsed: false,
-    items: [
-      { text: '概念概览', link: '/zh/evaluation/concepts/' },
-      { text: '原生模型与框架运行器', link: '/zh/evaluation/concepts/native-model-and-adapters' },
-      { text: '术语', link: '/zh/evaluation/concepts/terminology' },
-      { text: '数据模型', link: '/zh/evaluation/concepts/data-model' },
-      { text: '生态映射', link: '/zh/evaluation/concepts/ecosystem-mapping' },
-      { text: '评估循环', link: '/zh/evaluation/concepts/evaluation-loop' },
-      { text: '分数与门禁', link: '/zh/evaluation/concepts/scores-and-gates' },
-      { text: '证据与轨迹', link: '/zh/evaluation/concepts/evidence-and-trajectories' },
-      { text: '试验与聚合', link: '/zh/evaluation/concepts/trials-and-aggregates' },
-      { text: '关联与 Trace', link: '/zh/evaluation/concepts/correlation-and-traces' },
-      { text: '在线与离线评估', link: '/zh/evaluation/concepts/online-vs-offline' },
-      { text: '在线评估', link: '/zh/evaluation/concepts/online-evaluation' },
-      { text: '标注', link: '/zh/evaluation/concepts/annotation' },
-      { text: '人工评估', link: '/zh/evaluation/concepts/human-evaluation' },
-      { text: '可复现性', link: '/zh/evaluation/concepts/reproducibility' },
-      { text: '产物可见性', link: '/zh/evaluation/concepts/artifact-visibility' },
-      { text: '环境包与磁带', link: '/zh/evaluation/concepts/environment-bundles' },
-    ],
-  },
-  {
-    text: '架构',
-    collapsed: false,
-    items: [
-      { text: '架构概览', link: '/zh/evaluation/architecture/' },
-      { text: '内核与宿主', link: '/zh/evaluation/architecture/kernel-and-hosts' },
-      { text: '执行 DAG', link: '/zh/evaluation/architecture/execution-dag' },
-      { text: '扩展模型', link: '/zh/evaluation/architecture/plugin-model' },
-      { text: '存储与 thelake', link: '/zh/evaluation/architecture/storage-and-thelake' },
-      { text: '信任边界', link: '/zh/evaluation/architecture/trust-boundaries' },
-    ],
-  },
-  {
-    text: '指南',
-    collapsed: false,
-    items: [
-      { text: '准备框架运行', link: '/zh/evaluation/guides/author-a-suite' },
-      { text: '本地与 CI 运行', link: '/zh/evaluation/guides/run-locally-and-ci' },
-      { text: '对比与晋级', link: '/zh/evaluation/guides/compare-and-promote' },
-      { text: 'Promptfoo 集成', link: '/zh/evaluation/guides/promptfoo-integration' },
-      { text: 'Langfuse 与 Braintrust 采纳', link: '/zh/evaluation/guides/langfuse-and-braintrust-adoption' },
-      { text: '生产到评估闭环', link: '/zh/evaluation/guides/production-to-eval-loop' },
-      { text: '在生产 OTEL Trace 上跑 Promptfoo', link: '/zh/evaluation/guides/promptfoo-online-otel' },
-      { text: '仅提示词 vs 环境评估', link: '/zh/evaluation/guides/eval-modes' },
-      { text: '录制与回放 Agent 环境', link: '/zh/evaluation/guides/record-replay-agent-environment' },
-      { text: '用 Promptfoo 为 Episode 打分', link: '/zh/evaluation/guides/score-episode-with-promptfoo' },
-      { text: 'Gym Episode 与训练 rollout', link: '/zh/evaluation/guides/gym-and-training-rollouts' },
-    ],
-  },
-  {
-    text: '生态方法',
-    collapsed: false,
-    items: [
-      { text: '方法族', link: '/zh/evaluation/evaluators/' },
-      { text: '确定性', link: '/zh/evaluation/evaluators/deterministic' },
-      { text: '相似度与统计', link: '/zh/evaluation/evaluators/similarity-and-statistical' },
-      { text: '基于参考的质量', link: '/zh/evaluation/evaluators/reference-based-quality' },
-      { text: 'LLM Judge', link: '/zh/evaluation/evaluators/llm-judge' },
-      { text: '对比 Judge', link: '/zh/evaluation/evaluators/comparative-judge' },
-      { text: '轨迹与工具', link: '/zh/evaluation/evaluators/trajectory-and-tools' },
-      { text: '环境结果', link: '/zh/evaluation/evaluators/environment-outcome' },
-      { text: '多轮与多 Agent', link: '/zh/evaluation/evaluators/multi-turn-and-multi-agent' },
-      { text: '人工标注', link: '/zh/evaluation/evaluators/human-annotation' },
-      { text: '生产与在线', link: '/zh/evaluation/evaluators/production-online' },
-      { text: '鲁棒性与安全', link: '/zh/evaluation/evaluators/robustness-and-security' },
-      { text: '随机与重复', link: '/zh/evaluation/evaluators/stochastic-and-repeated' },
-      { text: '元评估', link: '/zh/evaluation/evaluators/meta-evaluation' },
-    ],
-  },
-  {
-    text: '参考',
-    collapsed: false,
-    items: [
-      { text: 'CLI', link: '/zh/evaluation/reference/cli' },
-      { text: 'REST API', link: '/zh/evaluation/reference/api' },
-      { text: '结果状态', link: '/zh/evaluation/reference/result-status' },
-      { text: '事件', link: '/zh/evaluation/reference/events' },
-      { text: '分数目标', link: '/zh/evaluation/reference/score-targets' },
-      { text: '能力描述符', link: '/zh/evaluation/reference/capability-descriptors' },
-      { text: '框架运行器', link: '/zh/evaluation/reference/framework-adapters' },
-      { text: 'Promptfoo 映射（旧）', link: '/zh/evaluation/reference/promptfoo-mapping' },
-      { text: 'Node 包（Agent 环境）', link: '/zh/evaluation/reference/node-packages' },
-    ],
-  },
-  {
-    text: '面向 AI Agent',
-    collapsed: false,
-    items: [
-      { text: '概览', link: '/zh/evaluation/agents/overview' },
-      { text: '输出约定', link: '/zh/evaluation/agents/output-contract' },
+      { text: '概览', link: '/zh/lisa/' },
+      { text: '快速开始', link: '/zh/lisa/getting-started' },
+      { text: '策略与活动', link: '/zh/lisa/policies-and-activities' },
+      { text: '运行时配置', link: '/zh/lisa/configuration' },
     ],
   },
 ]
@@ -575,10 +385,10 @@ function sidebarForLocale(locale: DocLocale) {
   }
   if (locale === 'en') {
     sidebars['/en/agent-qa/'] = agentQaSidebarEn
-    sidebars['/en/evaluation/'] = evaluationSidebarEn
+    sidebars['/en/lisa/'] = lisaSidebarEn
   } else {
     sidebars['/zh/agent-qa/'] = agentQaSidebarZh
-    sidebars['/zh/evaluation/'] = evaluationSidebarZh
+    sidebars['/zh/lisa/'] = lisaSidebarZh
   }
   return sidebars
 }
@@ -586,7 +396,7 @@ function sidebarForLocale(locale: DocLocale) {
 export default withMermaid(
   defineConfig({
   title: 'Softprobe',
-  description: 'Softprobe platform, Java record-replay testing, Blackbox, agent evaluation, and sp CLI documentation',
+  description: 'Softprobe documentation for Arex, Blackbox, and Lisa',
   base: '/',
   cleanUrls: true,
   appearance: true,
@@ -607,7 +417,7 @@ export default withMermaid(
       llmstxt({
         ignoreFiles: ['**/implementer/**'],
         description:
-          'Softprobe — business observability (Istio/SESSIFY), Java record-replay testing, Blackbox session capture for web apps and coding agents, and agent evaluation driven by the sp CLI and AI agents.',
+          'Softprobe — Arex (Java record-replay testing and sp CLI), Blackbox (end-to-end session tracing and MCP), and Lisa (AI QA policy evaluation agent).',
       }),
     ],
   },
