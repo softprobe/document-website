@@ -4,37 +4,29 @@ title: Softprobe
 titleTemplate: false
 hero:
   name: Softprobe
-  text: 面向 AI Agent 的绩效审查
-  tagline: 捕获 Session · 审查 Steps · 改进关键所在
+  text: 面向服务与 AI Agent 的测试与可观测平台
+  tagline: Arex · Blackbox · Lisa
   actions:
     - theme: brand
-      text: 连接你的 Agent
+      text: Blackbox
       link: /zh/agent-qa/getting-started
     - theme: alt
-      text: 用编码 Agent 排查
-      link: /zh/agent-qa/coding-agent-skills
+      text: Lisa
+      link: /zh/lisa/
     - theme: alt
-      text: 测试
+      text: Arex
       link: /zh/testing/getting-started
 features:
-  - title: 我在生产中捕获 Web 与 Agent 会话
-    details: 用一条可粘贴提示连接 Web 应用或 AI Agent，捕获关联的 Session 与 Steps，审查 Findings，并可选择把告警路由到 Slack。
+  - title: Arex
+    details: 为 Java 服务挂载 Agent，录制真实生产流量并自动 Mock 依赖，以回归测试和 CI/CD 门禁方式回放与对比差异。
+    link: /zh/testing/
+    linkText: 了解 Arex
+  - title: Blackbox
+    details: 关联捕获浏览器、后端（OBI eBPF）与 LLM 会话及 HTTP 报文，在 Explorer 中排查或通过编码 Agent MCP 插件诊断。
     link: /zh/agent-qa/
-    linkText: Blackbox
-  - title: 我做 AI Agent 评估
-    details: 编写套件，在 CI 中跑确定性与基于结果的评估，对比运行并设置发布门禁 — 兼容 Promptfoo 导入，清单由内核拥有，存储走 thelake。
-    link: /zh/evaluation/
-    linkText: Agent Evaluation
-  - title: 我是开发者
-    details: 给服务挂上 Java Agent，录制真实流量，把它作为回归测试回放，依赖自动 Mock。
-    link: /zh/testing/getting-started
-    linkText: 接入你的应用
-  - title: 我负责平台 / CI
-    details: 用 Helm 部署 Softprobe 服务端。新版本发布到测试环境后，由流水线自动回放，并根据结论决定是否继续。
-    link: /zh/testing/webhook-and-ci
-    linkText: 发版后自动回放
-  - title: 我需要可观测性
-    details: Istio Wasm 代理与 SESSIFY 会话上下文汇入业务流仪表盘 —— 按平台指南部署到 GKE。
-    link: /zh/platform/getting-started/quick-start
-    linkText: 业务观测
+    linkText: 了解 Blackbox
+  - title: Lisa
+    details: 独立运行的 AI QA 工程师，通过 OTLP 接收 Agent 会话、评估已批准策略，并跟踪分诊活动与 Slack 告警。
+    link: /zh/lisa/
+    linkText: 了解 Lisa
 ---

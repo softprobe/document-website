@@ -40,7 +40,7 @@ function pageExists(link) {
 // implementer/** is design-doc-only (srcExcluded) and intentionally not mirrored.
 function relSet(locale) {
   return new Set(
-    ['testing', 'platform']
+    ['testing', 'platform', 'lisa']
       .flatMap((area) => walkMd(path.join(root, locale, area)))
       .map((f) => path.relative(path.join(root, locale), f))
   )

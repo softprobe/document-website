@@ -48,7 +48,7 @@ Blackbox 在 `https://explorer.softprobe.ai/api/thelake/v1/traces` 原生接收�
 
 ## 相关指南
 
-- [Agent Evaluation](/zh/evaluation/)。基于采集证据运行离线与 CI 评估套件及发布门禁。
+- [Lisa](/zh/lisa/)。按已批准策略评估 Agent 会话并跟踪分诊活动。
 - [OpenCode 安装](/zh/agent-qa/opencode)。配置 OpenCode 插件会话采集。
 - [LangChain 安装](/zh/agent-qa/langchain)。配置 LangChain 与 LangGraph 回调或 OpenTelemetry 采集。
 - [用编码 Agent 排查](/zh/agent-qa/coding-agent-skills)。在 Cursor、Claude Code、Codex、OpenCode 或 Antigravity 中诊断 Session。

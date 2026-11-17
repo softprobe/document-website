@@ -151,8 +151,8 @@ Open [`http://127.0.0.1:4310/agent`](http://127.0.0.1:4310/agent), select your c
    ```text
    Find a one-way economy flight from LHR to CDG for next Tuesday.
    ```
-2. Select an offer (or reply `Prepare offer 1 for Alex Demo`), then click **Confirm demo booking** when the review card appears.
-3. Click **Pay & issue ticket** with the prefilled demo card.
+2. Select an offer (or reply `Prepare offer 1 for Alex Demo`), then click **Confirm booking** when the review card appears.
+3. Click **Pay ... and issue ticket** with the prefilled demo card.
 
 In [Softprobe Explorer](https://explorer.softprobe.ai), open **Sessions**, filter for `travel-ota-demo`, and open the newest Session. Switch to **Graph** and click nodes to inspect **Span Detail** across all three tiers:
 

@@ -48,7 +48,7 @@ In Explorer, an **Agent** is the named capture target you connect. It holds the 
 
 ## Related guides
 
-- [Agent Evaluation](/en/evaluation/). Run offline and CI evaluation suites and release gates over captured evidence.
+- [Lisa](/en/lisa/). Evaluate agent sessions against owner-approved policies and track triage activities.
 - [End-to-end session tracing with payloads](/en/agent-qa/end-to-end-session-tracing). Connect browser, AI server, and backend tiers with distinct `service.name` values.
 - [OpenCode install](/en/agent-qa/opencode). Configure OpenCode plugin capture.
 - [LangChain install](/en/agent-qa/langchain). Configure LangChain and LangGraph callback or OpenTelemetry capture.

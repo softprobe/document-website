@@ -1,10 +1,10 @@
 // Shared by the Worker, build checks and browser navigation.
 export function isProductPath(path: string): boolean {
-  return /^\/(en|zh)\/(testing|platform|agent-qa|evaluation)(?:\/|\.|$)/.test(path)
+  return /^\/(en|zh)\/testing(?:\/|\.|$)/.test(path)
 }
 
 export function isProductModule(id: string): boolean {
-  return /\/(en|zh)\/(testing|platform|agent-qa|evaluation)\/.*\.md(?:\?|$)/.test(id.replaceAll('\\', '/'))
+  return /\/(en|zh)\/testing\/.*\.md(?:\?|$)/.test(id.replaceAll('\\', '/'))
 }
 
 export function shouldReloadProductNavigation(to: string, current: string): boolean {

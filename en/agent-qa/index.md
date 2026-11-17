@@ -32,6 +32,5 @@ After your app sends telemetry, connect [Blackbox MCP](/en/agent-qa/coding-agent
 
 | Product | Use when |
 |---------|----------|
-| **[Agent Evaluation](/en/evaluation/)** | You run offline or CI evaluation suites, evaluators, and release gates. |
-| **[Testing](/en/testing/)** | You run Java record and replay regression tests with the JVM agent. |
-| **[Platform](/en/platform/)** | You need Istio and SESSIFY business-flow observability. |
+| **[Lisa](/en/lisa/)** | You want an AI QA agent to evaluate sessions against owner-approved policies. |
+| **[Arex](/en/testing/)** | You run Java record and replay regression tests with the JVM agent. |
