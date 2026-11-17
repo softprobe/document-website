@@ -396,7 +396,7 @@ function sidebarForLocale(locale: DocLocale) {
 export default withMermaid(
   defineConfig({
   title: 'Softprobe',
-  description: 'Softprobe documentation for Arex (Testing), Blackbox, and Lisa',
+  description: 'Softprobe documentation for Arex, Blackbox, and Lisa',
   base: '/',
   cleanUrls: true,
   appearance: true,

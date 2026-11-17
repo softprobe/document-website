@@ -5,7 +5,7 @@ titleTemplate: false
 hero:
   name: Softprobe
   text: 面向服务与 AI Agent 的测试与可观测平台
-  tagline: Arex（测试） · Blackbox · Lisa
+  tagline: Arex · Blackbox · Lisa
   actions:
     - theme: brand
       text: Blackbox
@@ -14,10 +14,10 @@ hero:
       text: Lisa
       link: /zh/lisa/
     - theme: alt
-      text: Arex（测试）
+      text: Arex
       link: /zh/testing/getting-started
 features:
-  - title: Arex（测试）
+  - title: Arex
     details: 为 Java 服务挂载 Agent，录制真实生产流量并自动 Mock 依赖，以回归测试和 CI/CD 门禁方式回放与对比差异。
     link: /zh/testing/
     linkText: 了解 Arex

@@ -27,14 +27,14 @@ export function navForLocale(locale: DocLocale): DefaultTheme.NavItem[] {
   if (locale === 'zh') {
     return [
       { text: '首页', link: `${p}/` },
-      { text: 'Arex（测试）', link: `${p}/testing/`, activeMatch: '/zh/testing/' },
+      { text: 'Arex', link: `${p}/testing/`, activeMatch: '/zh/testing/' },
       { text: 'Blackbox', link: `${p}/agent-qa/`, activeMatch: '/zh/agent-qa/' },
       { text: 'Lisa', link: `${p}/lisa/`, activeMatch: '/zh/lisa/' },
     ]
   }
   return [
     { text: 'Home', link: `${p}/` },
-    { text: 'Arex (Testing)', link: `${p}/testing/`, activeMatch: '/en/testing/' },
+    { text: 'Arex', link: `${p}/testing/`, activeMatch: '/en/testing/' },
     { text: 'Blackbox', link: `${p}/agent-qa/`, activeMatch: '/en/agent-qa/' },
     { text: 'Lisa', link: `${p}/lisa/`, activeMatch: '/en/lisa/' },
   ]
@@ -45,13 +45,13 @@ export function footerForLocale(locale: DocLocale): DefaultTheme.Footer {
   const p = locale === 'zh' ? '/zh' : '/en'
   if (locale === 'zh') {
     return {
-      message: 'Arex（测试）· Blackbox · Lisa',
+      message: 'Arex· Blackbox · Lisa',
       copyright: `Copyright © ${year} Softprobe`,
       links: [
         {
           title: '产品文档',
           items: [
-            { text: 'Arex（测试）', link: `${p}/testing/` },
+            { text: 'Arex', link: `${p}/testing/` },
             { text: 'Blackbox', link: `${p}/agent-qa/` },
             { text: 'Lisa', link: `${p}/lisa/` },
             { text: '命令参考', link: `${p}/testing/commands/` },
@@ -72,13 +72,13 @@ export function footerForLocale(locale: DocLocale): DefaultTheme.Footer {
     }
   }
   return {
-    message: 'Arex (Testing) · Blackbox · Lisa',
+    message: 'Arex · Blackbox · Lisa',
     copyright: `Copyright © ${year} Softprobe`,
     links: [
       {
         title: 'Products',
         items: [
-          { text: 'Arex (Testing)', link: `${p}/testing/` },
+          { text: 'Arex', link: `${p}/testing/` },
           { text: 'Blackbox', link: `${p}/agent-qa/` },
           { text: 'Lisa', link: `${p}/lisa/` },
           { text: 'Command reference', link: `${p}/testing/commands/` },

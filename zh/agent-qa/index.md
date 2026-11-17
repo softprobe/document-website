@@ -21,7 +21,7 @@ Blackbox 将 Web 应用（`@softprobe/web-record` 与官方 OpenTelemetry OBI）
 | 产品 | 适用场景 |
 |------|----------|
 | **[Lisa](/zh/lisa/)** | 需要 AI QA Agent 按已批准策略评估会话并跟踪告警 |
-| **[Arex（测试）](/zh/testing/)** | Java 录制 / 回放回归（JVM Agent） |
+| **[Arex](/zh/testing/)** | Java 录制 / 回放回归（JVM Agent） |
 
 Blackbox 是 Web 应用与 AI Agent 的**在线会话捕获与审查**路径。Evaluation 消费证据；测试与平台覆盖各自流程。
 

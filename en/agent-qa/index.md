@@ -33,4 +33,4 @@ After your app sends telemetry, connect [Blackbox MCP](/en/agent-qa/coding-agent
 | Product | Use when |
 |---------|----------|
 | **[Lisa](/en/lisa/)** | You want an AI QA agent to evaluate sessions against owner-approved policies. |
-| **[Arex (Testing)](/en/testing/)** | You run Java record and replay regression tests with the JVM agent. |
+| **[Arex](/en/testing/)** | You run Java record and replay regression tests with the JVM agent. |

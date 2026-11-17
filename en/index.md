@@ -5,7 +5,7 @@ titleTemplate: false
 hero:
   name: Softprobe
   text: QA and observability for services and AI agents
-  tagline: Arex (Testing) · Blackbox · Lisa
+  tagline: Arex · Blackbox · Lisa
   actions:
     - theme: brand
       text: Blackbox
@@ -14,10 +14,10 @@ hero:
       text: Lisa
       link: /en/lisa/
     - theme: alt
-      text: Arex (Testing)
+      text: Arex
       link: /en/testing/getting-started
 features:
-  - title: Arex (Testing)
+  - title: Arex
     details: Attach the Java agent to your service, record real traffic, and replay it as regression tests with dependencies auto-mocked and CI/CD gates.
     link: /en/testing/
     linkText: Explore Arex
