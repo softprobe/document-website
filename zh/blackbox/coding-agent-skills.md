@@ -10,7 +10,7 @@ title: 用编码 Agent 排查
 
 ## 1. 安装 Blackbox 插件（推荐）
 
-`softprobe/softprobe-plugin` 是 Softprobe 的多产品插件市场（Apache-2.0 协议）。安装 `softprobe-blackbox@softprobe` 会同时配置 Blackbox 技能与托管 MCP 服务（`https://explorer.softprobe.ai/mcp`）。
+`softprobe/softprobe-plugin` 是 Softprobe 的多产品插件市场（MIT 协议）。安装 `softprobe-blackbox@softprobe` 会同时配置 Blackbox 技能与托管 MCP 服务（`https://explorer.softprobe.ai/mcp`）。
 
 ::: code-group
 
