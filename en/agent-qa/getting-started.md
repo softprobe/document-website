@@ -4,7 +4,9 @@ title: Quick start
 
 # Quick start
 
-Create a Blackbox Agent in Softprobe Explorer, connect Blackbox MCP in your coding agent, apply the setup prompt or point an existing OpenTelemetry exporter at Blackbox, and verify your first captured Session.
+Create a Blackbox Agent in [Softprobe Explorer](https://explorer.softprobe.ai) (Managed Cloud), connect Blackbox MCP in your coding agent, apply the setup prompt or point an existing OpenTelemetry exporter at Blackbox, and verify your first captured Session.
+
+To run Blackbox on your own machine with `docker compose up -d` and `AUTH_MODE=local` instead of Managed Cloud, follow [Self-host Blackbox](/en/agent-qa/self-hosting).
 
 ## Flow
 

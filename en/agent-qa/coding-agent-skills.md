@@ -271,6 +271,10 @@ opencode mcp add blackbox-staging --global --url https://explorer-staging.softpr
 
 Sign in to `blackbox-staging` with the same client command using `blackbox-staging` as the server name (for example, `codex mcp login blackbox-staging`, `opencode mcp auth blackbox-staging`, or `/mcp` in Claude Code or Antigravity).
 
+### Self-hosted local MCP (`blackbox-local`)
+
+If you run Blackbox locally with `docker compose up -d` (`AUTH_MODE=local`), connect your coding agent to `http://127.0.0.1:8787/mcp` without OAuth login. See [Self-host Blackbox](/en/agent-qa/self-hosting#_3-connect-local-mcp) for copy-pasteable client snippets.
+
 ## Privacy
 
 - Hosted MCP uses your Softprobe user login (OAuth). Tokens stay with your MCP client.
