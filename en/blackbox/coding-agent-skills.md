@@ -10,7 +10,7 @@ This is separate from **capture** (the `@softprobe/web-record` browser SDK, OBI,
 
 ## 1. Install the Blackbox plugin (Recommended)
 
-`softprobe/softprobe-plugin` is Softprobe's multi-product plugin marketplace (Apache-2.0). Installing `softprobe-blackbox@softprobe` configures both the Blackbox skills and the hosted MCP server (`https://explorer.softprobe.ai/mcp`).
+`softprobe/softprobe-plugin` is Softprobe's multi-product plugin marketplace (MIT). Installing `softprobe-blackbox@softprobe` configures both the Blackbox skills and the hosted MCP server (`https://explorer.softprobe.ai/mcp`).
 
 ::: code-group
 
