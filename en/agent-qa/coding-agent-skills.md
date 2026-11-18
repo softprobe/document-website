@@ -20,7 +20,7 @@ This is separate from **capture** (the `@softprobe/web-record` browser SDK, OBI,
 ```
 
 ```bash [OpenCode]
-opencode plugin add @softprobe/opencode-blackbox
+opencode plugin @softprobe/opencode-blackbox -g
 ```
 
 ```bash [Gemini CLI]
@@ -47,7 +47,7 @@ npx skills add softprobe/softprobe-plugin -g -y -a antigravity
 - **VS Code / GitHub Copilot**: Add `softprobe/softprobe-plugin` as an agent plugin marketplace in VS Code and install `blackbox@softprobe`, or add `https://explorer.softprobe.ai/mcp` to `.vscode/mcp.json` via the [manual MCP fallback](#manual-fallback-direct-hosted-mcp).
 - **Gemini CLI**: Run `gemini extensions install https://github.com/softprobe/softprobe-plugin` in your terminal.
 - **Antigravity (`agy`)**: Install `blackbox@softprobe` from `softprobe/softprobe-plugin` or run `npx skills add softprobe/softprobe-plugin -g -y -a antigravity`, then ensure `blackbox` is configured in `~/.gemini/config/mcp_config.json` or `.agents/mcp_config.json`.
-- **OpenCode**: Run `opencode plugin add @softprobe/opencode-blackbox` in your terminal.
+- **OpenCode**: Run `opencode plugin @softprobe/opencode-blackbox -g` in your terminal.
 - **Windsurf**: Install `blackbox@softprobe` from `softprobe/softprobe-plugin`, or add `https://explorer.softprobe.ai/mcp` to `~/.codeium/windsurf/mcp_config.json` via the [manual MCP fallback](#manual-fallback-direct-hosted-mcp).
 
 ## 2. Sign in and verify access
