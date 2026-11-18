@@ -20,7 +20,7 @@ title: 用编码 Agent 排查
 ```
 
 ```bash [OpenCode]
-opencode plugin add @softprobe/opencode-blackbox
+opencode plugin @softprobe/opencode-blackbox -g
 ```
 
 ```bash [Gemini CLI]
@@ -47,7 +47,7 @@ npx skills add softprobe/softprobe-plugin -g -y -a antigravity
 - **VS Code / GitHub Copilot**：在 VS Code 中将 `softprobe/softprobe-plugin` 添加为 Agent 插件市场并安装 `blackbox@softprobe`，或通过下方的[手动回退：直连托管 MCP](#手动回退直连托管-mcp) 将 `https://explorer.softprobe.ai/mcp` 写入 `.vscode/mcp.json`。
 - **Gemini CLI**：在终端运行 `gemini extensions install https://github.com/softprobe/softprobe-plugin`。
 - **Antigravity（`agy`）**：从 `softprobe/softprobe-plugin` 安装 `blackbox@softprobe`，或运行 `npx skills add softprobe/softprobe-plugin -g -y -a antigravity`，并确认 `~/.gemini/config/mcp_config.json` 或 `.agents/mcp_config.json` 中已配置 `blackbox`。
-- **OpenCode**：在终端运行 `opencode plugin add @softprobe/opencode-blackbox`。
+- **OpenCode**：在终端运行 `opencode plugin @softprobe/opencode-blackbox -g`。
 - **Windsurf**：从 `softprobe/softprobe-plugin` 安装 `blackbox@softprobe`，或通过下方的[手动回退：直连托管 MCP](#手动回退直连托管-mcp) 将 `https://explorer.softprobe.ai/mcp` 写入 `~/.codeium/windsurf/mcp_config.json`。
 
 ## 2. 登录并验证访问权限
