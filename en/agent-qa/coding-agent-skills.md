@@ -4,19 +4,19 @@ title: Investigate with a coding agent
 
 # Use Blackbox with a coding agent
 
-Install the Blackbox plugin (`blackbox@softprobe`) from the Softprobe plugin marketplace ([`softprobe/softprobe-plugin`](https://github.com/softprobe/softprobe-plugin)) to connect your AI coding agent to Softprobe Explorer. Sign in through the browser with your existing Explorer account. Blackbox gives your agent 15 MCP tools and investigation skills to query Sessions, inspect spans and traces, read correlated logs, manage Agent apps, and retrieve Ingestion Keys when requested.
+Install the Blackbox plugin (`softprobe-blackbox@softprobe`) from the Softprobe plugin marketplace ([`softprobe/softprobe-plugin`](https://github.com/softprobe/softprobe-plugin)) to connect your AI coding agent to Softprobe Explorer. Sign in through the browser with your existing Explorer account. Blackbox gives your agent 15 MCP tools and investigation skills to query Sessions, inspect spans and traces, read correlated logs, manage Agent apps, and retrieve Ingestion Keys when requested.
 
 This is separate from **capture** (the `@softprobe/web-record` browser SDK, OBI, or AI framework SDKs). Capture records Sessions. The Blackbox plugin lets your coding agent **manage Agents and investigate Sessions**.
 
 ## 1. Install the Blackbox plugin (Recommended)
 
-`softprobe/softprobe-plugin` is Softprobe's multi-product plugin marketplace (Apache-2.0). Installing `blackbox@softprobe` configures both the Blackbox skills and the hosted MCP server (`https://explorer.softprobe.ai/mcp`).
+`softprobe/softprobe-plugin` is Softprobe's multi-product plugin marketplace (Apache-2.0). Installing `softprobe-blackbox@softprobe` configures both the Blackbox skills and the hosted MCP server (`https://explorer.softprobe.ai/mcp`).
 
 ::: code-group
 
 ```text [Claude Code]
 /plugin marketplace add softprobe/softprobe-plugin
-/plugin install blackbox@softprobe
+/plugin install softprobe-blackbox@softprobe
 ```
 
 ```bash [OpenCode]
@@ -41,14 +41,14 @@ npx skills add softprobe/softprobe-plugin -g -y -a antigravity
 
 :::
 
-- **Claude Code**: Run `/plugin marketplace add softprobe/softprobe-plugin` and `/plugin install blackbox@softprobe` inside Claude Code.
-- **Cursor**: Add `softprobe/softprobe-plugin` in **Settings → Plugins** and install `blackbox@softprobe`, or install the skills with `npx skills add softprobe/softprobe-plugin -g -y -a cursor`. If your Cursor version does not auto-mount the plugin's MCP server, also add the [manual MCP fallback](#manual-fallback-direct-hosted-mcp).
-- **OpenAI Codex CLI**: Enable `blackbox@softprobe` from `softprobe/softprobe-plugin` in your Codex plugin configuration, or run `npx skills add softprobe/softprobe-plugin -g -y -a codex` and add the [manual MCP fallback](#manual-fallback-direct-hosted-mcp).
-- **VS Code / GitHub Copilot**: Add `softprobe/softprobe-plugin` as an agent plugin marketplace in VS Code and install `blackbox@softprobe`, or add `https://explorer.softprobe.ai/mcp` to `.vscode/mcp.json` via the [manual MCP fallback](#manual-fallback-direct-hosted-mcp).
+- **Claude Code**: Run `/plugin marketplace add softprobe/softprobe-plugin` and `/plugin install softprobe-blackbox@softprobe` inside Claude Code.
+- **Cursor**: Add `softprobe/softprobe-plugin` in **Settings → Plugins** and install `softprobe-blackbox@softprobe`, or install the skills with `npx skills add softprobe/softprobe-plugin -g -y -a cursor`. If your Cursor version does not auto-mount the plugin's MCP server, also add the [manual MCP fallback](#manual-fallback-direct-hosted-mcp).
+- **OpenAI Codex CLI**: Enable `softprobe-blackbox@softprobe` from `softprobe/softprobe-plugin` in your Codex plugin configuration, or run `npx skills add softprobe/softprobe-plugin -g -y -a codex` and add the [manual MCP fallback](#manual-fallback-direct-hosted-mcp).
+- **VS Code / GitHub Copilot**: Add `softprobe/softprobe-plugin` as an agent plugin marketplace in VS Code and install `softprobe-blackbox@softprobe`, or add `https://explorer.softprobe.ai/mcp` to `.vscode/mcp.json` via the [manual MCP fallback](#manual-fallback-direct-hosted-mcp).
 - **Gemini CLI**: Run `gemini extensions install https://github.com/softprobe/softprobe-plugin` in your terminal.
-- **Antigravity (`agy`)**: Install `blackbox@softprobe` from `softprobe/softprobe-plugin` or run `npx skills add softprobe/softprobe-plugin -g -y -a antigravity`, then ensure `blackbox` is configured in `~/.gemini/config/mcp_config.json` or `.agents/mcp_config.json`.
+- **Antigravity (`agy`)**: Install `softprobe-blackbox@softprobe` from `softprobe/softprobe-plugin` or run `npx skills add softprobe/softprobe-plugin -g -y -a antigravity`, then ensure `blackbox` is configured in `~/.gemini/config/mcp_config.json` or `.agents/mcp_config.json`.
 - **OpenCode**: Run `opencode plugin @softprobe/opencode-blackbox -g` in your terminal.
-- **Windsurf**: Install `blackbox@softprobe` from `softprobe/softprobe-plugin`, or add `https://explorer.softprobe.ai/mcp` to `~/.codeium/windsurf/mcp_config.json` via the [manual MCP fallback](#manual-fallback-direct-hosted-mcp).
+- **Windsurf**: Install `softprobe-blackbox@softprobe` from `softprobe/softprobe-plugin`, or add `https://explorer.softprobe.ai/mcp` to `~/.codeium/windsurf/mcp_config.json` via the [manual MCP fallback](#manual-fallback-direct-hosted-mcp).
 
 ## 2. Sign in and verify access
 
@@ -288,7 +288,7 @@ If you run Blackbox locally with `docker compose up -d` (`AUTH_MODE=local`), con
 |---------|-----|
 | Browser auth loop | Finish Allow on the Softprobe consent page and confirm you are signed into Explorer |
 | Workspace picker / 409 | Use the workspace picker at the bottom of Explorer's sidebar, or ask the agent to call `list_workspaces` and `select_workspace` |
-| MCP tools missing | Reinstall `blackbox@softprobe` from `softprobe/softprobe-plugin` or add `https://explorer.softprobe.ai/mcp` manually, then complete browser sign-in |
+| MCP tools missing | Reinstall `softprobe-blackbox@softprobe` from `softprobe/softprobe-plugin` or add `https://explorer.softprobe.ai/mcp` manually, then complete browser sign-in |
 | Confused with OpenCode capture | Capture uses `@softprobe/opencode-plugin` from Connect agent. Blackbox (`@softprobe/opencode-blackbox` and MCP) manages Agent records and investigates Sessions without capturing telemetry |
 
 ## Next
