@@ -27,15 +27,15 @@ export function navForLocale(locale: DocLocale): DefaultTheme.NavItem[] {
   if (locale === 'zh') {
     return [
       { text: '首页', link: `${p}/` },
-      { text: 'Arex', link: `${p}/testing/`, activeMatch: '/zh/testing/' },
-      { text: 'Blackbox', link: `${p}/agent-qa/`, activeMatch: '/zh/agent-qa/' },
+      { text: 'Arex', link: `${p}/arex/`, activeMatch: '/zh/arex/' },
+      { text: 'Blackbox', link: `${p}/blackbox/`, activeMatch: '/zh/blackbox/' },
       { text: 'Lisa', link: `${p}/lisa/`, activeMatch: '/zh/lisa/' },
     ]
   }
   return [
     { text: 'Home', link: `${p}/` },
-    { text: 'Arex', link: `${p}/testing/`, activeMatch: '/en/testing/' },
-    { text: 'Blackbox', link: `${p}/agent-qa/`, activeMatch: '/en/agent-qa/' },
+    { text: 'Arex', link: `${p}/arex/`, activeMatch: '/en/arex/' },
+    { text: 'Blackbox', link: `${p}/blackbox/`, activeMatch: '/en/blackbox/' },
     { text: 'Lisa', link: `${p}/lisa/`, activeMatch: '/en/lisa/' },
   ]
 }
@@ -51,10 +51,10 @@ export function footerForLocale(locale: DocLocale): DefaultTheme.Footer {
         {
           title: '产品文档',
           items: [
-            { text: 'Arex', link: `${p}/testing/` },
-            { text: 'Blackbox', link: `${p}/agent-qa/` },
+            { text: 'Arex', link: `${p}/arex/` },
+            { text: 'Blackbox', link: `${p}/blackbox/` },
             { text: 'Lisa', link: `${p}/lisa/` },
-            { text: '命令参考', link: `${p}/testing/commands/` },
+            { text: '命令参考', link: `${p}/arex/commands/` },
           ],
         },
         {
@@ -78,10 +78,10 @@ export function footerForLocale(locale: DocLocale): DefaultTheme.Footer {
       {
         title: 'Products',
         items: [
-          { text: 'Arex', link: `${p}/testing/` },
-          { text: 'Blackbox', link: `${p}/agent-qa/` },
+          { text: 'Arex', link: `${p}/arex/` },
+          { text: 'Blackbox', link: `${p}/blackbox/` },
           { text: 'Lisa', link: `${p}/lisa/` },
-          { text: 'Command reference', link: `${p}/testing/commands/` },
+          { text: 'Command reference', link: `${p}/arex/commands/` },
         ],
       },
       {

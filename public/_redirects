@@ -19,126 +19,138 @@
 /  /en/  302
 
 # --- Legacy auto-testing (AREX era) ---
-/auto-testing      /en/testing/                 301
-/en/auto-testing   /en/testing/                 301
-/zh/auto-testing   /zh/testing/                 301
+/auto-testing      /en/arex/                 301
+/en/auto-testing   /en/arex/                 301
+/zh/auto-testing   /zh/arex/                 301
 
 # --- cli/guide/* → destinations are NOT a simple prefix rename, list exactly ---
-/en/cli/guide/for-agents /en/testing/agents/overview 301
-/zh/cli/guide/for-agents /zh/testing/agents/overview 301
-/cli/guide/for-agents    /en/testing/agents/overview 301
-/guide/for-agents        /en/testing/agents/overview 301
-/en/cli/guide/authentication /en/testing/agents/authentication 301
-/en/cli/guide/concepts /en/testing/agents/concepts 301
-/en/cli/guide/configuration /en/testing/installation/configuration 301
-/en/cli/guide/installation /en/testing/installation/ 301
-/en/cli/guide/introduction /en/testing/agents/overview 301
-/en/cli/guide/log-correlation-ids /en/testing/agents/concepts#ids 301
-/en/cli/guide/output-contract /en/testing/agents/output-contract 301
-/en/cli/guide/overview /en/testing/agents/overview 301
-/en/cli/guide/quickstart /en/testing/getting-started 301
-/en/cli/guide/spcode /en/testing/installation/#web-ui 301
-/en/cli/guide/versioning /en/testing/agents/output-contract#versioning 301
-/zh/cli/guide/authentication /zh/testing/agents/authentication 301
-/zh/cli/guide/concepts /zh/testing/agents/concepts 301
-/zh/cli/guide/configuration /zh/testing/installation/configuration 301
-/zh/cli/guide/installation /zh/testing/installation/ 301
-/zh/cli/guide/introduction /zh/testing/agents/overview 301
-/zh/cli/guide/output-contract /zh/testing/agents/output-contract 301
-/zh/cli/guide/overview /zh/testing/agents/overview 301
-/zh/cli/guide/quickstart /zh/testing/getting-started 301
-/zh/cli/guide/spcode /zh/testing/installation/#web-ui 301
-/zh/cli/guide/versioning /zh/testing/agents/output-contract#versioning 301
+/en/cli/guide/for-agents /en/arex/agents/overview 301
+/zh/cli/guide/for-agents /zh/arex/agents/overview 301
+/cli/guide/for-agents    /en/arex/agents/overview 301
+/guide/for-agents        /en/arex/agents/overview 301
+/en/cli/guide/authentication /en/arex/agents/authentication 301
+/en/cli/guide/concepts /en/arex/agents/concepts 301
+/en/cli/guide/configuration /en/arex/installation/configuration 301
+/en/cli/guide/installation /en/arex/installation/ 301
+/en/cli/guide/introduction /en/arex/agents/overview 301
+/en/cli/guide/log-correlation-ids /en/arex/agents/concepts#ids 301
+/en/cli/guide/output-contract /en/arex/agents/output-contract 301
+/en/cli/guide/overview /en/arex/agents/overview 301
+/en/cli/guide/quickstart /en/arex/getting-started 301
+/en/cli/guide/spcode /en/arex/installation/#web-ui 301
+/en/cli/guide/versioning /en/arex/agents/output-contract#versioning 301
+/zh/cli/guide/authentication /zh/arex/agents/authentication 301
+/zh/cli/guide/concepts /zh/arex/agents/concepts 301
+/zh/cli/guide/configuration /zh/arex/installation/configuration 301
+/zh/cli/guide/installation /zh/arex/installation/ 301
+/zh/cli/guide/introduction /zh/arex/agents/overview 301
+/zh/cli/guide/output-contract /zh/arex/agents/output-contract 301
+/zh/cli/guide/overview /zh/arex/agents/overview 301
+/zh/cli/guide/quickstart /zh/arex/getting-started 301
+/zh/cli/guide/spcode /zh/arex/installation/#web-ui 301
+/zh/cli/guide/versioning /zh/arex/agents/output-contract#versioning 301
 
 # --- cli/* → testing/* — pure prefix renames, collapsed to wildcards ---
 # commands / examples / reference all map cli/<x>/:splat → testing/<x>/:splat
-/en/cli/            /en/testing/                  301
-/zh/cli/            /zh/testing/                  301
+/en/cli/            /en/arex/                  301
+/zh/cli/            /zh/arex/                  301
 
 # --- Legacy short paths (Docusaurus / early docs, no locale prefix) → English tree ---
-/guide/installation   /en/testing/installation/               301
-/guide/quickstart     /en/testing/getting-started             301
-/guide/configuration  /en/testing/installation/configuration  301
-/guide/spcode         /en/testing/installation/#web-ui         301
-/guide/overview       /en/testing/agents/overview             301
+/guide/installation   /en/arex/installation/               301
+/guide/quickstart     /en/arex/getting-started             301
+/guide/configuration  /en/arex/installation/configuration  301
+/guide/spcode         /en/arex/installation/#web-ui         301
+/guide/overview       /en/arex/agents/overview             301
 
 # --- Legacy Docusaurus platform paths ---
 /sessify            /en/platform/sessify                301
 /web-sdk            /en/platform/sessify                301
 
 # --- Merged Policies dir index → single overview page ---
-/en/testing/policies/ /en/testing/policies 301
-/zh/testing/policies/ /zh/testing/policies 301
+/en/arex/policies/ /en/arex/policies 301
+/zh/arex/policies/ /zh/arex/policies 301
 
 # --- 2026-09 docs restructure: merged pages → the page that now holds their content ---
 # Exact rules only. No wildcard above matches these paths, so their position is free.
-/en/testing/agents/introduction /en/testing/agents/overview 301
-/en/testing/agents/versioning /en/testing/agents/output-contract#versioning 301
-/en/testing/reference/exit-codes /en/testing/agents/output-contract#exit-codes 301
-/en/testing/reference/json-types /en/testing/agents/output-contract#json-types 301
-/en/testing/reference/log-correlation-ids /en/testing/agents/concepts#ids 301
-/en/testing/reference/ /en/testing/agents/overview#reference 301
-/en/testing/reference/index /en/testing/agents/overview#reference 301
-/en/testing/examples/ /en/testing/agents/overview#examples 301
-/en/testing/examples/index /en/testing/agents/overview#examples 301
-/en/testing/examples/agent-attr-trace-lookup /en/testing/examples/agent-diagnose-replay#business-id 301
-/en/testing/examples/ci-policy-gate /en/testing/examples/gitops-policies#ci-validation 301
-/en/testing/download-java-agent /en/testing/java-agent#download 301
-/en/testing/installation/code /en/testing/installation/#web-ui 301
-/en/testing/installation/doctor /en/testing/installation/#doctor 301
-/en/testing/installation/upgrade /en/testing/installation/#upgrade 301
-/en/testing/commands/recorder /en/testing/commands/logs#legacy 301
-/en/testing/commands/config-legacy /en/testing/commands/config 301
-/zh/testing/agents/introduction /zh/testing/agents/overview 301
-/zh/testing/agents/versioning /zh/testing/agents/output-contract#versioning 301
-/zh/testing/reference/exit-codes /zh/testing/agents/output-contract#exit-codes 301
-/zh/testing/reference/json-types /zh/testing/agents/output-contract#json-types 301
-/zh/testing/reference/log-correlation-ids /zh/testing/agents/concepts#ids 301
-/zh/testing/reference/ /zh/testing/agents/overview#reference 301
-/zh/testing/reference/index /zh/testing/agents/overview#reference 301
-/zh/testing/examples/ /zh/testing/agents/overview#examples 301
-/zh/testing/examples/index /zh/testing/agents/overview#examples 301
-/zh/testing/examples/agent-attr-trace-lookup /zh/testing/examples/agent-diagnose-replay#business-id 301
-/zh/testing/examples/ci-policy-gate /zh/testing/examples/gitops-policies#ci-validation 301
-/zh/testing/download-java-agent /zh/testing/java-agent#download 301
-/zh/testing/installation/code /zh/testing/installation/#web-ui 301
-/zh/testing/installation/doctor /zh/testing/installation/#doctor 301
-/zh/testing/installation/upgrade /zh/testing/installation/#upgrade 301
-/zh/testing/commands/recorder /zh/testing/commands/logs#legacy 301
-/zh/testing/commands/config-legacy /zh/testing/commands/config 301
-/en/testing/cicd-best-practice /en/testing/best-practices/release-regression 301
-/zh/testing/cicd-best-practice /zh/testing/best-practices/release-regression 301
-/en/best-practices/release-regression /en/testing/best-practices/release-regression 301
-/zh/best-practices/release-regression /zh/testing/best-practices/release-regression 301
-/en/best-practices/ /en/testing/best-practices/release-regression 301
-/zh/best-practices/ /zh/testing/best-practices/release-regression 301
-/en/best-practices /en/testing/best-practices/release-regression 301
-/zh/best-practices /zh/testing/best-practices/release-regression 301
+/en/arex/agents/introduction /en/arex/agents/overview 301
+/en/arex/agents/versioning /en/arex/agents/output-contract#versioning 301
+/en/arex/reference/exit-codes /en/arex/agents/output-contract#exit-codes 301
+/en/arex/reference/json-types /en/arex/agents/output-contract#json-types 301
+/en/arex/reference/log-correlation-ids /en/arex/agents/concepts#ids 301
+/en/arex/reference/ /en/arex/agents/overview#reference 301
+/en/arex/reference/index /en/arex/agents/overview#reference 301
+/en/arex/examples/ /en/arex/agents/overview#examples 301
+/en/arex/examples/index /en/arex/agents/overview#examples 301
+/en/arex/examples/agent-attr-trace-lookup /en/arex/examples/agent-diagnose-replay#business-id 301
+/en/arex/examples/ci-policy-gate /en/arex/examples/gitops-policies#ci-validation 301
+/en/arex/download-java-agent /en/arex/java-agent#download 301
+/en/arex/installation/code /en/arex/installation/#web-ui 301
+/en/arex/installation/doctor /en/arex/installation/#doctor 301
+/en/arex/installation/upgrade /en/arex/installation/#upgrade 301
+/en/arex/commands/recorder /en/arex/commands/logs#legacy 301
+/en/arex/commands/config-legacy /en/arex/commands/config 301
+/zh/arex/agents/introduction /zh/arex/agents/overview 301
+/zh/arex/agents/versioning /zh/arex/agents/output-contract#versioning 301
+/zh/arex/reference/exit-codes /zh/arex/agents/output-contract#exit-codes 301
+/zh/arex/reference/json-types /zh/arex/agents/output-contract#json-types 301
+/zh/arex/reference/log-correlation-ids /zh/arex/agents/concepts#ids 301
+/zh/arex/reference/ /zh/arex/agents/overview#reference 301
+/zh/arex/reference/index /zh/arex/agents/overview#reference 301
+/zh/arex/examples/ /zh/arex/agents/overview#examples 301
+/zh/arex/examples/index /zh/arex/agents/overview#examples 301
+/zh/arex/examples/agent-attr-trace-lookup /zh/arex/examples/agent-diagnose-replay#business-id 301
+/zh/arex/examples/ci-policy-gate /zh/arex/examples/gitops-policies#ci-validation 301
+/zh/arex/download-java-agent /zh/arex/java-agent#download 301
+/zh/arex/installation/code /zh/arex/installation/#web-ui 301
+/zh/arex/installation/doctor /zh/arex/installation/#doctor 301
+/zh/arex/installation/upgrade /zh/arex/installation/#upgrade 301
+/zh/arex/commands/recorder /zh/arex/commands/logs#legacy 301
+/zh/arex/commands/config-legacy /zh/arex/commands/config 301
+/en/arex/cicd-best-practice /en/arex/best-practices/release-regression 301
+/zh/arex/cicd-best-practice /zh/arex/best-practices/release-regression 301
+/en/best-practices/release-regression /en/arex/best-practices/release-regression 301
+/zh/best-practices/release-regression /zh/arex/best-practices/release-regression 301
+/en/best-practices/ /en/arex/best-practices/release-regression 301
+/zh/best-practices/ /zh/arex/best-practices/release-regression 301
+/en/best-practices /en/arex/best-practices/release-regression 301
+/zh/best-practices /zh/arex/best-practices/release-regression 301
 
+
+# --- Renamed product roots (testing -> arex, agent-qa -> blackbox) ---
+/en/testing   /en/arex/      301
+/en/testing/  /en/arex/      301
+/zh/testing   /zh/arex/      301
+/zh/testing/  /zh/arex/      301
+/en/agent-qa  /en/blackbox/  301
+/en/agent-qa/ /en/blackbox/  301
+/zh/agent-qa  /zh/blackbox/  301
+/zh/agent-qa/ /zh/blackbox/  301
+/en/arex/policies/ /en/arex/policies 301
+/zh/arex/policies/ /zh/arex/policies 301
 # ============================= PART 2: wildcard rules =============================
 
 # --- Legacy auto-testing (AREX era) ---
-/auto-testing/*    /en/testing/getting-started  301
-/en/auto-testing/* /en/testing/getting-started  301
-/zh/auto-testing/* /zh/testing/                 301
+/auto-testing/*    /en/arex/getting-started  301
+/en/auto-testing/* /en/arex/getting-started  301
+/zh/auto-testing/* /zh/arex/                 301
 
 # --- cli/* → testing/* — pure prefix renames, collapsed to wildcards ---
 # commands / examples / reference all map cli/<x>/:splat → testing/<x>/:splat
-/en/cli/commands/*  /en/testing/commands/:splat   301
-/zh/cli/commands/*  /zh/testing/commands/:splat   301
-/en/cli/examples/*  /en/testing/examples/:splat   301
-/zh/cli/examples/*  /zh/testing/examples/:splat   301
-/en/cli/reference/* /en/testing/reference/:splat  301
-/zh/cli/reference/* /zh/testing/reference/:splat  301
-/en/cli/policies/*  /en/testing/policies          301
-/zh/cli/policies/*  /zh/testing/policies          301
+/en/cli/commands/*  /en/arex/commands/:splat   301
+/zh/cli/commands/*  /zh/arex/commands/:splat   301
+/en/cli/examples/*  /en/arex/examples/:splat   301
+/zh/cli/examples/*  /zh/arex/examples/:splat   301
+/en/cli/reference/* /en/arex/reference/:splat  301
+/zh/cli/reference/* /zh/arex/reference/:splat  301
+/en/cli/policies/*  /en/arex/policies          301
+/zh/cli/policies/*  /zh/arex/policies          301
 
 # --- Legacy short paths (Docusaurus / early docs, no locale prefix) → English tree ---
-/guide/*              /en/testing/                            301
-/commands/*           /en/testing/commands/:splat             301
-/examples/*           /en/testing/examples/:splat             301
-/reference/*          /en/testing/reference/:splat            301
-/policies/*           /en/testing/policies                    301
+/guide/*              /en/arex/                            301
+/commands/*           /en/arex/commands/:splat             301
+/examples/*           /en/arex/examples/:splat             301
+/reference/*          /en/arex/reference/:splat            301
+/policies/*           /en/arex/policies                    301
 
 # --- Legacy Docusaurus platform paths ---
 /getting-started/*  /en/platform/getting-started/:splat 301
@@ -150,10 +162,17 @@
 /support/*          /en/platform/support/:splat         301
 
 # --- Short-path convenience (no locale prefix) → English tree ---
-/cli/*      /en/testing/commands/:splat  301
+/cli/*      /en/arex/commands/:splat  301
 /platform/* /en/platform/:splat          301
-/testing/*  /en/testing/:splat           301
+/testing/*  /en/arex/:splat           301
 
 # --- Renamed Blackbox pages ---
-/en/agent-qa/application-session-capture      /en/agent-qa/end-to-end-session-tracing 301
-/en/agent-qa/application-session-capture.html /en/agent-qa/end-to-end-session-tracing 301
+/en/blackbox/application-session-capture      /en/blackbox/end-to-end-session-tracing 301
+/en/blackbox/application-session-capture.html /en/blackbox/end-to-end-session-tracing 301
+
+# --- Renamed product prefixes (testing -> arex, agent-qa -> blackbox) ---
+/en/testing/*   /en/arex/:splat      301
+/zh/testing/*   /zh/arex/:splat      301
+/en/agent-qa/*  /en/blackbox/:splat  301
+/zh/agent-qa/*  /zh/blackbox/:splat  301
+/agent-qa/*     /en/blackbox/:splat  301

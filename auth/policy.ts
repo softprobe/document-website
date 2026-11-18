@@ -1,10 +1,10 @@
 // Shared by the Worker, build checks and browser navigation.
 export function isProductPath(path: string): boolean {
-  return /^\/(en|zh)\/testing(?:\/|\.|$)/.test(path)
+  return /^\/(en|zh)\/arex(?:\/|\.|$)/.test(path)
 }
 
 export function isProductModule(id: string): boolean {
-  return /\/(en|zh)\/testing\/.*\.md(?:\?|$)/.test(id.replaceAll('\\', '/'))
+  return /\/(en|zh)\/arex\/.*\.md(?:\?|$)/.test(id.replaceAll('\\', '/'))
 }
 
 export function shouldReloadProductNavigation(to: string, current: string): boolean {
@@ -19,8 +19,8 @@ export function shouldReloadProductNavigation(to: string, current: string): bool
 }
 
 export function safeNext(value: string | null): string {
-  if (!value || !value.startsWith('/') || value.startsWith('//') || /[\\\u0000-\u0020]/.test(value)) return '/en/testing/'
+  if (!value || !value.startsWith('/') || value.startsWith('//') || /[\\\u0000-\u0020]/.test(value)) return '/en/arex/'
   const url = new URL(value, 'https://docs.invalid')
-  if (url.origin !== 'https://docs.invalid' || url.pathname.startsWith('/__docs/')) return '/en/testing/'
+  if (url.origin !== 'https://docs.invalid' || url.pathname.startsWith('/__docs/')) return '/en/arex/'
   return url.pathname + url.search + url.hash
 }

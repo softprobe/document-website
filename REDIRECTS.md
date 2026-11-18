@@ -11,13 +11,15 @@ Cloudflare allows 2000 static rules but only 100 dynamic ones, and it counts **e
 | Old paths | New paths |
 |-----------|-----------|
 | `/` | `/en/` (302; the zh site is one click away in the nav) |
-| `/auto-testing*`, `/{en,zh}/auto-testing*` (AREX era) | `/{en,zh}/testing/` |
-| `/{en,zh}/cli/guide/*` | Listed one by one: each guide page moved to a different Testing page |
-| `/{en,zh}/cli/{commands,examples,reference}/*` | `/{en,zh}/testing/{commands,examples,reference}/*` |
-| `/{en,zh}/cli/policies/*` | `/{en,zh}/testing/policies` |
-| `/guide/*`, `/commands/*`, `/examples/*`, `/reference/*`, `/policies/*` (old CLI docs site) | The English Testing tree |
+| `/auto-testing*`, `/{en,zh}/auto-testing*` (AREX era) | `/{en,zh}/arex/` |
+| `/{en,zh}/testing/*` | `/{en,zh}/arex/*` |
+| `/{en,zh}/agent-qa/*` | `/{en,zh}/blackbox/*` |
+| `/{en,zh}/cli/guide/*` | Listed one by one: each guide page moved to a different Arex page |
+| `/{en,zh}/cli/{commands,examples,reference}/*` | `/{en,zh}/arex/{commands,examples,reference}/*` |
+| `/{en,zh}/cli/policies/*` | `/{en,zh}/arex/policies` |
+| `/guide/*`, `/commands/*`, `/examples/*`, `/reference/*`, `/policies/*` (old CLI docs site) | The English Arex tree |
 | `/getting-started/*`, `/deployment/*`, `/configuration/*`, `/production/*`, `/advanced-guides/*`, `/billing/*`, `/support/*` (Docusaurus) | `/en/platform/…` |
-| `/cli/*`, `/platform/*`, `/testing/*` | The English tree |
+| `/cli/*`, `/platform/*`, `/testing/*`, `/agent-qa/*` | The English tree |
 | Pages merged in the 2026-09 restructure (for example `testing/download-java-agent`, `testing/installation/doctor`, `testing/agents/versioning`, `testing/reference/exit-codes`) | The section of the page that now holds their content |
 | `/{en,zh}/testing/cicd-best-practice`, `/{en,zh}/best-practices/release-regression`, `/{en,zh}/best-practices/` (2026-09-30; the page settled in the Replay Testing sidebar's Best practices group) | `/{en,zh}/testing/best-practices/release-regression` |
 

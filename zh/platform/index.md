@@ -19,7 +19,7 @@ Softprobe 将每一次用户旅程捕获为会话图谱——让交互可分析�
 
 ## 录制与回放（Java）
 
-Java 流量的捕获、回放与差异比对，请参见 [Softprobe 测试](/zh/testing/getting-started)。使用 [CLI 快速入门](/zh/testing/getting-started) 进行自动化。
+Java 流量的捕获、回放与差异比对，请参见 [Softprobe 测试](/zh/arex/getting-started)。使用 [CLI 快速入门](/zh/arex/getting-started) 进行自动化。
 
 ## 工作原理
 
