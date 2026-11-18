@@ -10,9 +10,10 @@ Blackbox connects browser frontends ([`@softprobe/web-record`](/en/agent-qa/refe
 
 ## Start here
 
-1. **[Quick start](/en/agent-qa/getting-started).** Create an Agent in Explorer, get your Ingestion Key, and connect your app.
-2. **[End-to-end session tracing with payloads](/en/agent-qa/end-to-end-session-tracing).** Run the three-tier Travel OTA demo (browser, Vercel AI, and Java backend with OBI) in one Docker Compose command.
-3. **[Concepts](/en/agent-qa/concepts).** Learn how Sessions, Steps, `gen_ai.conversation.id`, and Findings fit together.
+1. **[Quick start](/en/agent-qa/getting-started).** Use Managed Cloud (`https://explorer.softprobe.ai`) with zero setup, create an Agent, and connect your app.
+2. **[Self-host Blackbox](/en/agent-qa/self-hosting).** Run Explorer locally with `docker compose up -d` (`AUTH_MODE=local`) and connect local MCP at `http://127.0.0.1:8787/mcp`.
+3. **[End-to-end session tracing with payloads](/en/agent-qa/end-to-end-session-tracing).** Run the three-tier Travel OTA demo (browser, Vercel AI, and Java backend with OBI) in one Docker Compose command.
+4. **[Concepts](/en/agent-qa/concepts).** Learn how Sessions, Steps, `gen_ai.conversation.id`, and Findings fit together.
 
 ## Instrument your app
 
