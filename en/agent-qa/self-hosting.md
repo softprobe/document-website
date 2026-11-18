@@ -18,8 +18,8 @@ If you want a managed setup with team workspaces, OAuth sign-in, and zero infras
 Clone the repository and start Explorer with Docker Compose:
 
 ```bash
-git clone https://github.com/softprobe/sp-llm.git
-cd sp-llm
+git clone https://github.com/softprobe/explorer.git
+cd explorer
 docker compose up -d
 ```
 
