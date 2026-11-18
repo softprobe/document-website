@@ -4,19 +4,19 @@ title: 用编码 Agent 排查
 
 # 在编码 Agent 中使用 Blackbox
 
-通过 Softprobe 插件市场（[`softprobe/softprobe-plugin`](https://github.com/softprobe/softprobe-plugin)）安装 Blackbox 插件（`blackbox@softprobe`），即可将你的 AI 编码 Agent 连接到 Softprobe Explorer，并在浏览器中使用现有 Explorer 账号完成登录。Blackbox 为编码 Agent 提供 15 个 MCP 工具与排查技能，可用于查询 Session、检查 Span 与 Trace、查看关联日志、管理 Agent 应用，以及在明确请求时获取 Ingestion Key。
+通过 Softprobe 插件市场（[`softprobe/softprobe-plugin`](https://github.com/softprobe/softprobe-plugin)）安装 Blackbox 插件（`softprobe-blackbox@softprobe`），即可将你的 AI 编码 Agent 连接到 Softprobe Explorer，并在浏览器中使用现有 Explorer 账号完成登录。Blackbox 为编码 Agent 提供 15 个 MCP 工具与排查技能，可用于查询 Session、检查 Span 与 Trace、查看关联日志、管理 Agent 应用，以及在明确请求时获取 Ingestion Key。
 
 这与**捕获**（`@softprobe/web-record` 浏览器 SDK、OBI 或 AI 框架 SDK）不同。捕获负责记录 Session；Blackbox 插件与 MCP 工具让编码 Agent **管理 Agent 并排查 Session**。
 
 ## 1. 安装 Blackbox 插件（推荐）
 
-`softprobe/softprobe-plugin` 是 Softprobe 的多产品插件市场（Apache-2.0 协议）。安装 `blackbox@softprobe` 会同时配置 Blackbox 技能与托管 MCP 服务（`https://explorer.softprobe.ai/mcp`）。
+`softprobe/softprobe-plugin` 是 Softprobe 的多产品插件市场（Apache-2.0 协议）。安装 `softprobe-blackbox@softprobe` 会同时配置 Blackbox 技能与托管 MCP 服务（`https://explorer.softprobe.ai/mcp`）。
 
 ::: code-group
 
 ```text [Claude Code]
 /plugin marketplace add softprobe/softprobe-plugin
-/plugin install blackbox@softprobe
+/plugin install softprobe-blackbox@softprobe
 ```
 
 ```bash [OpenCode]
@@ -41,14 +41,14 @@ npx skills add softprobe/softprobe-plugin -g -y -a antigravity
 
 :::
 
-- **Claude Code**：在 Claude Code 中依次运行 `/plugin marketplace add softprobe/softprobe-plugin` 与 `/plugin install blackbox@softprobe`。
-- **Cursor**：在 **Settings → Plugins** 中添加 `softprobe/softprobe-plugin` 并安装 `blackbox@softprobe`，或运行 `npx skills add softprobe/softprobe-plugin -g -y -a cursor` 安装技能。若当前 Cursor 版本未自动挂载插件自带的 MCP 服务，请同时参考下方的[手动回退：直连托管 MCP](#手动回退直连托管-mcp)。
-- **OpenAI Codex CLI**：在 Codex 插件配置中从 `softprobe/softprobe-plugin` 启用 `blackbox@softprobe`，或运行 `npx skills add softprobe/softprobe-plugin -g -y -a codex` 并配置下方的[手动回退：直连托管 MCP](#手动回退直连托管-mcp)。
-- **VS Code / GitHub Copilot**：在 VS Code 中将 `softprobe/softprobe-plugin` 添加为 Agent 插件市场并安装 `blackbox@softprobe`，或通过下方的[手动回退：直连托管 MCP](#手动回退直连托管-mcp) 将 `https://explorer.softprobe.ai/mcp` 写入 `.vscode/mcp.json`。
+- **Claude Code**：在 Claude Code 中依次运行 `/plugin marketplace add softprobe/softprobe-plugin` 与 `/plugin install softprobe-blackbox@softprobe`。
+- **Cursor**：在 **Settings → Plugins** 中添加 `softprobe/softprobe-plugin` 并安装 `softprobe-blackbox@softprobe`，或运行 `npx skills add softprobe/softprobe-plugin -g -y -a cursor` 安装技能。若当前 Cursor 版本未自动挂载插件自带的 MCP 服务，请同时参考下方的[手动回退：直连托管 MCP](#手动回退直连托管-mcp)。
+- **OpenAI Codex CLI**：在 Codex 插件配置中从 `softprobe/softprobe-plugin` 启用 `softprobe-blackbox@softprobe`，或运行 `npx skills add softprobe/softprobe-plugin -g -y -a codex` 并配置下方的[手动回退：直连托管 MCP](#手动回退直连托管-mcp)。
+- **VS Code / GitHub Copilot**：在 VS Code 中将 `softprobe/softprobe-plugin` 添加为 Agent 插件市场并安装 `softprobe-blackbox@softprobe`，或通过下方的[手动回退：直连托管 MCP](#手动回退直连托管-mcp) 将 `https://explorer.softprobe.ai/mcp` 写入 `.vscode/mcp.json`。
 - **Gemini CLI**：在终端运行 `gemini extensions install https://github.com/softprobe/softprobe-plugin`。
-- **Antigravity（`agy`）**：从 `softprobe/softprobe-plugin` 安装 `blackbox@softprobe`，或运行 `npx skills add softprobe/softprobe-plugin -g -y -a antigravity`，并确认 `~/.gemini/config/mcp_config.json` 或 `.agents/mcp_config.json` 中已配置 `blackbox`。
+- **Antigravity（`agy`）**：从 `softprobe/softprobe-plugin` 安装 `softprobe-blackbox@softprobe`，或运行 `npx skills add softprobe/softprobe-plugin -g -y -a antigravity`，并确认 `~/.gemini/config/mcp_config.json` 或 `.agents/mcp_config.json` 中已配置 `blackbox`。
 - **OpenCode**：在终端运行 `opencode plugin @softprobe/opencode-blackbox -g`。
-- **Windsurf**：从 `softprobe/softprobe-plugin` 安装 `blackbox@softprobe`，或通过下方的[手动回退：直连托管 MCP](#手动回退直连托管-mcp) 将 `https://explorer.softprobe.ai/mcp` 写入 `~/.codeium/windsurf/mcp_config.json`。
+- **Windsurf**：从 `softprobe/softprobe-plugin` 安装 `softprobe-blackbox@softprobe`，或通过下方的[手动回退：直连托管 MCP](#手动回退直连托管-mcp) 将 `https://explorer.softprobe.ai/mcp` 写入 `~/.codeium/windsurf/mcp_config.json`。
 
 ## 2. 登录并验证访问权限
 
@@ -284,7 +284,7 @@ opencode mcp add blackbox-staging --global --url https://explorer-staging.softpr
 |------|------|
 | 浏览器鉴权循环 | 在 Softprobe 同意页完成 Allow，并确认已登录 Explorer |
 | 工作区选择器 / 409 | 在 Explorer 侧边栏底部选择工作区，或让 Agent 调用 `list_workspaces` 与 `select_workspace` |
-| 缺少 MCP 工具 | 从 `softprobe/softprobe-plugin` 重新安装 `blackbox@softprobe`，或手动添加 `https://explorer.softprobe.ai/mcp` 并完成浏览器登录授权 |
+| 缺少 MCP 工具 | 从 `softprobe/softprobe-plugin` 重新安装 `softprobe-blackbox@softprobe`，或手动添加 `https://explorer.softprobe.ai/mcp` 并完成浏览器登录授权 |
 | 与 OpenCode 捕获混淆 | 捕获使用连接 Agent 流程中的 `@softprobe/opencode-plugin`。Blackbox（`@softprobe/opencode-blackbox` 与 MCP）负责管理 Agent 记录与排查 Session，不负责采集遥测 |
 
 ## 下一步
