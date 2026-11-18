@@ -40,7 +40,7 @@ function pageExists(link) {
 // implementer/** is design-doc-only (srcExcluded) and intentionally not mirrored.
 function relSet(locale) {
   return new Set(
-    ['testing', 'platform', 'lisa']
+    ['arex', 'platform', 'lisa']
       .flatMap((area) => walkMd(path.join(root, locale, area)))
       .map((f) => path.relative(path.join(root, locale), f))
   )
@@ -100,8 +100,13 @@ if (enShape && zhShape) {
 if (config.includes('rewrites:')) {
   fail('config.ts must not reintroduce the dead `rewrites` block (redirects live in public/_redirects)')
 }
-if (fs.existsSync(path.join(root, 'en/testing/policies/index.md'))) {
-  fail('en/testing/policies/index.md was merged into policies.md — do not recreate it')
+if (fs.existsSync(path.join(root, 'en/arex/policies/index.md'))) {
+  fail('en/arex/policies/index.md was merged into policies.md — do not recreate it')
+}
+for (const legacyDir of ['en/testing', 'zh/testing', 'en/agent-qa', 'zh/agent-qa']) {
+  if (fs.existsSync(path.join(root, legacyDir))) {
+    fail(`Legacy directory ${legacyDir}/ must stay removed (redirects live in public/_redirects)`)
+  }
 }
 const tombstones = [...walkMd(path.join(root, 'en/cli')), ...walkMd(path.join(root, 'zh/cli'))]
   .filter((f) => !f.includes(`${path.sep}implementer${path.sep}`))

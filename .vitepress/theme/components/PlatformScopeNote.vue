@@ -15,10 +15,10 @@ const locale = computed(() => {
 <template>
   <div v-if="locale === 'zh'" class="custom-block info sp-scope-note">
     <p class="custom-block-title">仅适用于 Softprobe Cloud</p>
-    <p>业务观测基于 Istio/Envoy 采集网格流量，只在 Softprobe Cloud 上提供。私有化部署的录制回放见 <a href="/zh/testing/">流量回放测试</a>。</p>
+    <p>业务观测基于 Istio/Envoy 采集网格流量，只在 Softprobe Cloud 上提供。私有化部署的录制回放见 <a href="/zh/arex/">Arex</a>。</p>
   </div>
   <div v-else-if="locale === 'en'" class="custom-block info sp-scope-note">
     <p class="custom-block-title">Softprobe Cloud only</p>
-    <p>Business observability captures mesh traffic with Istio/Envoy and is only offered on Softprobe Cloud. For self-hosted record and replay, see <a href="/en/testing/">Replay Testing</a>.</p>
+    <p>Business observability captures mesh traffic with Istio/Envoy and is only offered on Softprobe Cloud. For self-hosted record and replay, see <a href="/en/arex/">Arex</a>.</p>
   </div>
 </template>

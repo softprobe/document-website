@@ -30,7 +30,7 @@ function post(fields, headers = {}) {
     body: new URLSearchParams(fields),
   })
 }
-async function login(env, next = '/zh/testing/getting-started') {
+async function login(env, next = '/zh/arex/getting-started') {
   const response = await worker.fetch(post({ password, next }), env)
   assert.equal(response.status, 303)
   assert.equal(response.headers.get('Location'), next)
@@ -45,28 +45,28 @@ test('public pages and every public build asset remain accessible', async () => 
 })
 
 test('product navigation reaches the Worker without reloading initial hydration or anchors', () => {
-  assert.equal(shouldReloadProductNavigation('/en/testing/', origin + '/en/'), true)
-  assert.equal(shouldReloadProductNavigation('/en/testing/recording', origin + '/en/testing/'), true)
-  assert.equal(shouldReloadProductNavigation('/en/testing/', origin + '/en/testing/'), false)
-  assert.equal(shouldReloadProductNavigation('/en/testing/#setup', origin + '/en/testing/'), false)
+  assert.equal(shouldReloadProductNavigation('/en/arex/', origin + '/en/'), true)
+  assert.equal(shouldReloadProductNavigation('/en/arex/recording', origin + '/en/arex/'), true)
+  assert.equal(shouldReloadProductNavigation('/en/arex/', origin + '/en/arex/'), false)
+  assert.equal(shouldReloadProductNavigation('/en/arex/#setup', origin + '/en/arex/'), false)
   assert.equal(shouldReloadProductNavigation('/en/', origin + '/zh/'), false)
 })
 
 test('VitePress HTML normalization cannot reload the same Cloudflare document', () => {
   // VitePress passes the .html variant to onBeforeRouteChange on initial load;
   // Cloudflare serves the document without .html and redirects that alias back.
-  const path = '/zh/testing/webhook-and-ci'
+  const path = '/zh/arex/webhook-and-ci'
   assert.equal(shouldReloadProductNavigation(path + '.html', origin + path), false)
   assert.equal(shouldReloadProductNavigation(path, origin + path + '.html'), false)
   assert.equal(shouldReloadProductNavigation(path + '.html#configuration', origin + path), false)
-  assert.equal(shouldReloadProductNavigation('/en/testing/index.html', origin + '/en/testing/'), false)
-  assert.equal(shouldReloadProductNavigation('/zh/testing/recording.html', origin + path), true)
+  assert.equal(shouldReloadProductNavigation('/en/arex/index.html', origin + '/en/arex/'), false)
+  assert.equal(shouldReloadProductNavigation('/zh/arex/recording.html', origin + path), true)
   assert.equal(shouldReloadProductNavigation(path + '?mode=ci', origin + path), true)
 })
 
 test('Arex testing tree, raw Markdown, screenshots and aggregate exports are blocked while Blackbox and Lisa are public', async () => {
   const env = environment()
-  const protectedPaths = ['/en/testing', '/en/testing.html', '/en/testing.md', '/en/testing/installation/server.html', '/zh/testing/commands/ops.md', '/img/docs/replay/trace-diff-open.png', '/llms.txt', '/llms-full.txt', '/assets/unknown-future-page.js', ...policy.privateAssets]
+  const protectedPaths = ['/en/arex', '/en/arex.html', '/en/arex.md', '/en/arex/installation/server.html', '/zh/arex/commands/ops.md', '/img/docs/replay/trace-diff-open.png', '/llms.txt', '/llms-full.txt', '/assets/unknown-future-page.js', ...policy.privateAssets]
   assert.ok(policy.privateAssets.length > 100)
   for (const path of protectedPaths) {
     assert.equal(requiresAuth(path), true, path)
@@ -75,33 +75,33 @@ test('Arex testing tree, raw Markdown, screenshots and aggregate exports are blo
     assert.equal(response.headers.get('Cache-Control'), 'private, no-store')
     assert.doesNotMatch(await response.text(), /DOCUMENT CONTENT/)
   }
-  for (const publicPath of ['/en/agent-qa/', '/zh/agent-qa.md', '/en/lisa/', '/zh/lisa/getting-started.md', '/en/platform/', '/zh/platform.md']) {
+  for (const publicPath of ['/en/blackbox/', '/zh/blackbox.md', '/en/lisa/', '/zh/lisa/getting-started.md', '/en/platform/', '/zh/platform.md']) {
     assert.equal(requiresAuth(publicPath), false, publicPath)
   }
   assert.equal(env.calls.length, 0)
 })
 
 test('browser visits redirect to login with the requested path and query', async () => {
-  const response = await worker.fetch(get('/zh/testing/recording?view=detail', { Accept: 'text/html' }), environment())
+  const response = await worker.fetch(get('/zh/arex/recording?view=detail', { Accept: 'text/html' }), environment())
   assert.equal(response.status, 303)
-  assert.equal(response.headers.get('Location'), '/__docs/login?next=%2Fzh%2Ftesting%2Frecording%3Fview%3Ddetail')
+  assert.equal(response.headers.get('Location'), '/__docs/login?next=%2Fzh%2Farex%2Frecording%3Fview%3Ddetail')
 })
 
 test('login page escapes return paths and restricts scripts and framing', async () => {
-  const response = await worker.fetch(get('/__docs/login?next=' + encodeURIComponent('/en/testing/?x="<script>')), environment())
+  const response = await worker.fetch(get('/__docs/login?next=' + encodeURIComponent('/en/arex/?x="<script>')), environment())
   const html = await response.text()
   assert.doesNotMatch(html, /<script>/)
-  assert.match(html, /value="\/en\/testing\/\?x=%22%3Cscript%3E"/)
+  assert.match(html, /value="\/en\/arex\/\?x=%22%3Cscript%3E"/)
   assert.match(response.headers.get('Content-Security-Policy'), /frame-ancestors 'none'/)
 })
 
 test('correct password grants access using a secure seven-day signed cookie', async () => {
   const env = environment()
-  const response = await worker.fetch(post({ password, next: '/en/testing/' }), env)
+  const response = await worker.fetch(post({ password, next: '/en/arex/' }), env)
   const setCookie = response.headers.get('Set-Cookie')
   for (const flag of ['HttpOnly', 'Secure', 'SameSite=Lax', 'Path=/', 'Max-Age=604800']) assert.ok(setCookie.includes(flag))
   const cookie = setCookie.split(';')[0]
-  for (const path of ['/en/testing/', '/zh/testing/', '/llms-full.txt', policy.privateAssets[0], '/img/docs/trace-isolated.png']) {
+  for (const path of ['/en/arex/', '/zh/arex/', '/llms-full.txt', policy.privateAssets[0], '/img/docs/trace-isolated.png']) {
     const document = await worker.fetch(get(path, { Cookie: cookie }), env)
     assert.equal(document.status, 200)
     assert.equal(await document.text(), 'DOCUMENT CONTENT')
@@ -112,7 +112,7 @@ test('correct password grants access using a secure seven-day signed cookie', as
 
 test('wrong password never grants access or issues a cookie', async () => {
   const env = environment()
-  const response = await worker.fetch(post({ password: 'wrong', next: '/zh/testing/' }), env)
+  const response = await worker.fetch(post({ password: 'wrong', next: '/zh/arex/' }), env)
   assert.equal(response.status, 401)
   assert.equal(response.headers.get('Set-Cookie'), null)
   assert.match(await response.text(), /密码不正确/)
@@ -123,20 +123,20 @@ test('forged, expired and malformed cookies fail; password rotation revokes old 
   const env = environment()
   const cookie = await login(env)
   for (const value of [cookie.replace(/.$/, 'X'), '__Host-sp_docs=9999999999.nonce.fake', '__Host-sp_docs=broken']) {
-    assert.equal((await worker.fetch(get('/en/testing/', { Cookie: value }), env)).status, 401)
+    assert.equal((await worker.fetch(get('/en/arex/', { Cookie: value }), env)).status, 401)
   }
   const expired = `${Math.floor(Date.now() / 1000) - 1}.nonce`
   const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign'])
   const signature = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode('softprobe-docs:session:v1:' + expired))
   const expiredCookie = '__Host-sp_docs=' + expired + '.' + Buffer.from(signature).toString('base64')
-  assert.equal((await worker.fetch(get('/en/testing/', { Cookie: expiredCookie }), env)).status, 401)
-  assert.equal((await worker.fetch(get('/en/testing/', { Cookie: cookie }), environment({ DOCS_PASSWORD: password + '-rotated' }))).status, 401)
+  assert.equal((await worker.fetch(get('/en/arex/', { Cookie: expiredCookie }), env)).status, 401)
+  assert.equal((await worker.fetch(get('/en/arex/', { Cookie: cookie }), environment({ DOCS_PASSWORD: password + '-rotated' }))).status, 401)
 })
 
 test('missing production secrets fail closed while homepage stays open', async () => {
   for (const secret of ['', undefined]) {
     const env = environment({ DOCS_PASSWORD: secret })
-    assert.equal((await worker.fetch(get('/en/testing/'), env)).status, 401)
+    assert.equal((await worker.fetch(get('/en/arex/'), env)).status, 401)
     assert.equal((await worker.fetch(post({ password }), env)).status, 503)
     assert.equal((await worker.fetch(get('/en/'), env)).status, 200)
   }
@@ -145,10 +145,10 @@ test('missing production secrets fail closed while homepage stays open', async (
 test('an administrator-selected six-character password can sign in', async () => {
   const customPassword = 'demo42'
   const env = environment({ DOCS_PASSWORD: customPassword })
-  const response = await worker.fetch(post({ password: customPassword, next: '/zh/testing/webhook-and-ci' }), env)
+  const response = await worker.fetch(post({ password: customPassword, next: '/zh/arex/webhook-and-ci' }), env)
   assert.equal(response.status, 303)
   const cookie = response.headers.get('Set-Cookie').split(';')[0]
-  assert.equal((await worker.fetch(get('/zh/testing/webhook-and-ci', { Cookie: cookie }), env)).status, 200)
+  assert.equal((await worker.fetch(get('/zh/arex/webhook-and-ci', { Cookie: cookie }), env)).status, 200)
   assert.equal((await worker.fetch(post({ password }), env)).status, 401)
 })
 
@@ -169,23 +169,23 @@ test('password guessing is rate limited and request bodies are bounded', async (
 
 test('return paths cannot escape the site or loop through auth endpoints', async () => {
   for (const next of ['https://evil.example', '//evil.example', '/\\evil.example', '/__docs/login', '/en/\nLocation:evil']) {
-    assert.equal(safeNext(next), '/en/testing/')
+    assert.equal(safeNext(next), '/en/arex/')
     const response = await worker.fetch(post({ password, next }), environment())
-    assert.equal(response.headers.get('Location'), '/en/testing/')
+    assert.equal(response.headers.get('Location'), '/en/arex/')
   }
 })
 
 test('encoded and repeated slash paths cannot bypass the same-path auth check', async () => {
   const env = environment()
-  for (const path of ['/%65n/testing/recording', '/en%2Ftesting%2Frecording']) {
+  for (const path of ['/%65n/arex/recording', '/en%2Farex%2Frecording']) {
     assert.equal((await worker.fetch(get(path), env)).status, 401)
   }
-  for (const path of ['/en//testing/recording']) {
+  for (const path of ['/en//arex/recording']) {
     const response = await worker.fetch(get(path), env)
     assert.equal(response.status, 308)
     assert.equal((await worker.fetch(get(response.headers.get('Location')), env)).status, 401)
   }
-  for (const path of ['/en%252ftesting/recording', '/%5c%5cevil.example', '/en/testing/%00', '/.vitepress/cache/access-assets.json']) {
+  for (const path of ['/en%252farex/recording', '/%5c%5cevil.example', '/en/arex/%00', '/.vitepress/cache/access-assets.json']) {
     assert.ok([400, 404].includes((await worker.fetch(get(path), env)).status), path)
   }
   assert.equal(env.calls.length, 0)

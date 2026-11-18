@@ -2,7 +2,7 @@
 # Quick Start Guide
 
 ::: tip Automate with sp CLI
-For Java record-and-replay testing (agent, policies, replay), see [Testing getting started](/en/testing/getting-started). To automate with `sp`, see [CLI quickstart](/en/testing/getting-started).
+For Java record-and-replay testing (agent, policies, replay), see [Testing getting started](/en/arex/getting-started). To automate with `sp`, see [CLI quickstart](/en/arex/getting-started).
 :::
 
 ::: info Important

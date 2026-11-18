@@ -4,7 +4,7 @@
 使用本地 Kind Kubernetes 集群，在几分钟内开始使用 SP-Istio Agent。
 
 ::: tip 用 sp CLI 做 Java 录制回放
-需要 Java 流量的录制、回放与差异测试（agent、策略、回放）？见 [测试快速开始](/zh/testing/getting-started)；用 `sp` 做自动化见 [CLI 快速入门](/zh/testing/getting-started)。
+需要 Java 流量的录制、回放与差异测试（agent、策略、回放）？见 [测试快速开始](/zh/arex/getting-started)；用 `sp` 做自动化见 [CLI 快速入门](/zh/arex/getting-started)。
 :::
 
 ::: info SESSIFY 已预装

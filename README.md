@@ -1,6 +1,6 @@
 # Softprobe documentation (VitePress v2)
 
-Unified public docs, in English and Chinese: **Replay Testing** (`/{en,zh}/testing/…` — record and replay, deployment and operations, pipelines, the `sp` command line and AI agent contracts), **Business observability** (`/{en,zh}/platform/…`, Softprobe Cloud only), **Blackbox** (`/{en,zh}/agent-qa/…`) and **Agent Evaluation** (`/{en,zh}/evaluation/…`).
+Unified public docs, in English and Chinese: **Arex** (`/{en,zh}/arex/…` — record and replay, deployment and operations, pipelines, the `sp` command line and AI agent contracts), **Blackbox** (`/{en,zh}/blackbox/…`), and **Lisa** (`/{en,zh}/lisa/…`).
 
 Legacy `/cli/*` and Docusaurus URLs are redirected by Cloudflare rules in [`public/_redirects`](./public/_redirects); see [REDIRECTS.md](./REDIRECTS.md).
 
@@ -104,11 +104,11 @@ See [REDIRECTS.md](./REDIRECTS.md) for legacy URL mapping.
 
 | Path | Contents |
 |------|----------|
-| `{en,zh}/testing/` | Replay Testing. Sidebar groups: getting started, everyday use, deploy and operate, pipelines and notifications, integrate and AI agents, command reference |
+| `{en,zh}/arex/` | Arex. Sidebar groups: getting started, everyday use, deploy and operate, pipelines and notifications, integrate and AI agents, command reference |
+| `{en,zh}/blackbox/` | Blackbox |
+| `{en,zh}/lisa/` | Lisa |
 | `{en,zh}/platform/` | Business observability (Istio/Envoy mesh capture), Softprobe Cloud only |
-| `{en,zh}/agent-qa/` | Blackbox |
-| `{en,zh}/evaluation/` | Agent Evaluation |
-| `{en,zh}/cli/implementer/`, `en/evaluation/implementer/` | Internal notes, excluded from the build |
+| `{en,zh}/cli/implementer/` | Internal notes, excluded from the build |
 
 Sidebars live in `.vitepress/config.ts`; nav and footer in `.vitepress/theme/shared.ts`. Screenshots are under `public/img/docs/testing/{en,zh}/` and come from the latest v2 console.
 
