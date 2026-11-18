@@ -67,8 +67,6 @@
 /web-sdk            /en/platform/sessify                301
 
 # --- Merged Policies dir index → single overview page ---
-/en/arex/policies/ /en/arex/policies 301
-/zh/arex/policies/ /zh/arex/policies 301
 
 # --- 2026-09 docs restructure: merged pages → the page that now holds their content ---
 # Exact rules only. No wildcard above matches these paths, so their position is free.
@@ -127,6 +125,12 @@
 /zh/agent-qa/ /zh/blackbox/  301
 /en/arex/policies/ /en/arex/policies 301
 /zh/arex/policies/ /zh/arex/policies 301
+# --- Renamed Blackbox pages ---
+/en/agent-qa/application-session-capture      /en/blackbox/end-to-end-session-tracing 301
+/en/agent-qa/application-session-capture.html /en/blackbox/end-to-end-session-tracing 301
+/en/blackbox/application-session-capture      /en/blackbox/end-to-end-session-tracing 301
+/en/blackbox/application-session-capture.html /en/blackbox/end-to-end-session-tracing 301
+
 # ============================= PART 2: wildcard rules =============================
 
 # --- Legacy auto-testing (AREX era) ---
@@ -166,9 +170,6 @@
 /platform/* /en/platform/:splat          301
 /testing/*  /en/arex/:splat           301
 
-# --- Renamed Blackbox pages ---
-/en/blackbox/application-session-capture      /en/blackbox/end-to-end-session-tracing 301
-/en/blackbox/application-session-capture.html /en/blackbox/end-to-end-session-tracing 301
 
 # --- Renamed product prefixes (testing -> arex, agent-qa -> blackbox) ---
 /en/testing/*   /en/arex/:splat      301
