@@ -174,14 +174,14 @@ sp test coverage --app <appId> [--provider <provider>] [--scope <scope>] [--gate
 | 参数 | 必填 | 说明 |
 |------|------|------|
 | `--app` | 是 | 应用 ID |
-| `--provider` | 否 | 问题追踪平台：`github`、`jira`、`linear` 或 `local` |
+| `--provider` | 否 | 问题追踪平台：`github`、`jira`、`linear`、`gitlab` 或 `local` |
 | `--scope` | 否 | 里程碑、Epic、标签或迭代过滤条件 |
 | `--gate` | 否 | 当 `summary.untested > 0` 或 `summary.failing > 0` 时以退出码 `1` 结束 |
 
 ### `sp test bug create`
 
 ```bash
-sp test bug create --app <appId> --case <caseId> --provider <provider> --project <owner/repo|PROJ> [--result <resultId>] [--title <title>] [--notes <notes>] --json
+sp test bug create --app <appId> --case <caseId> --provider <provider> [--project <owner/repo|PROJ|TEAM>] [--external-url <url>] [--result <resultId>] [--title <title>] [--notes <notes>] --json
 ```
 
 | 参数 | 必填 | 说明 |
@@ -189,10 +189,26 @@ sp test bug create --app <appId> --case <caseId> --provider <provider> --project
 | `--app` | 是 | 应用 ID |
 | `--case` | 是 | 测试用例 ID |
 | `--provider` | 是 | `github`、`jira`、`linear` 或 `gitlab` |
-| `--project` | 是 | 目标仓库（`owner/repo`）或项目键（`PROJ`） |
+| `--project` | 条件必填 | 目标仓库（`owner/repo`）、Jira 项目键（`PROJ`）或 Linear 团队键（`TEAM`）；未传 `--external-url` 时必填 |
+| `--external-url` | 否 | 直接关联已有缺陷单 URL（无需调用远端 API） |
 | `--result` | 否 | 失败运行结果 ID（`resultId`） |
 | `--title` | 否 | 自定义缺陷标题 |
 | `--notes` | 否 | 附加到缺陷正文的诊断说明 |
+
+### `sp test tracker configure`
+
+```bash
+sp test tracker configure --app <appId> --provider <provider> --token <token> [--base-url <url>] [--username <email>] [--project <defaultProject>] --json
+```
+
+| 参数 | 必填 | 说明 |
+|------|------|------|
+| `--app` | 是 | 应用 ID |
+| `--provider` | 是 | `github`、`jira`、`linear` 或 `gitlab` |
+| `--token` | 否 | API Token 或访问令牌（仅写入存储，不在响应中回显） |
+| `--base-url` | 否 | 私有化部署或自定义 API 地址 |
+| `--username` | 否 | Jira Cloud Basic 认证邮箱 |
+| `--project` | 否 | 默认仓库、项目键或团队键 |
 
 ## `sp mcp` {#sp-mcp}
 
@@ -232,11 +248,12 @@ sp mcp setup --client <cursor|claude|antigravity|codex> [--dir <path>] [--json]
 | `sp case fork` | POST | `/api/test-cases/fork` |
 | `sp case apply` | PUT | `/api/test-cases` |
 | `sp case delete <caseId>` | DELETE | `/api/test-cases/{caseId}` |
-| `sp case run` | POST | `/api/test-runs/execute` |
+| `sp case run` / `sp replay run --suite <suitePath>` | POST | `/api/test-runs/execute` |
 | `sp test import-results` | POST | `/api/test-runs/import` |
 | `sp test export-results` | GET | `/api/test-runs/{runId}/export` |
 | `sp test coverage` | GET | `/api/issue-trackers/coverage` |
 | `sp test bug create` | POST | `/api/issue-trackers/bugs` |
+| `sp test tracker configure` | PUT | `/api/issue-trackers/config` |
 
 ## 相关文档 {#related}
 

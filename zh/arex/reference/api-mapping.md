@@ -48,11 +48,12 @@ title: 命令与后端接口对照
 | POST | `/api/test-cases/fork` | `sp case fork` | platform |
 | PUT | `/api/test-cases` | `sp case apply` | platform |
 | DELETE | `/api/test-cases/{caseId}` | `sp case delete` | platform |
-| POST | `/api/test-runs/execute` | `sp case run` | platform |
+| POST | `/api/test-runs/execute` | `sp case run` / `sp replay run --suite <suitePath>` | platform |
 | POST | `/api/test-runs/import` | `sp test import-results` | platform |
 | GET | `/api/test-runs/{runId}/export` | `sp test export-results` | platform |
 | GET | `/api/issue-trackers/coverage` | `sp test coverage` | platform |
 | POST | `/api/issue-trackers/bugs` | `sp test bug create` | platform |
+| PUT | `/api/issue-trackers/config` | `sp test tracker configure` | platform |
 
 ## Policies
 

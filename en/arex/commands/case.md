@@ -174,14 +174,14 @@ sp test coverage --app <appId> [--provider <provider>] [--scope <scope>] [--gate
 | Flag | Required | Description |
 |------|----------|-------------|
 | `--app` | Yes | Application ID |
-| `--provider` | No | `github`, `jira`, `linear`, or `local` |
+| `--provider` | No | `github`, `jira`, `linear`, `gitlab`, or `local` |
 | `--scope` | No | Milestone, epic, label, or cycle filter |
 | `--gate` | No | Exit with code `1` when `summary.untested > 0` or `summary.failing > 0` |
 
 ### `sp test bug create`
 
 ```bash
-sp test bug create --app <appId> --case <caseId> --provider <provider> --project <owner/repo|PROJ> [--result <resultId>] [--title <title>] [--notes <notes>] --json
+sp test bug create --app <appId> --case <caseId> --provider <provider> [--project <owner/repo|PROJ|TEAM>] [--external-url <url>] [--result <resultId>] [--title <title>] [--notes <notes>] --json
 ```
 
 | Flag | Required | Description |
@@ -189,10 +189,26 @@ sp test bug create --app <appId> --case <caseId> --provider <provider> --project
 | `--app` | Yes | Application ID |
 | `--case` | Yes | Test case ID |
 | `--provider` | Yes | `github`, `jira`, `linear`, or `gitlab` |
-| `--project` | Yes | Repository (`owner/repo`) or project key (`PROJ`) |
+| `--project` | Conditional | Repository (`owner/repo`), Jira project key (`PROJ`), or Linear team key (`TEAM`). Required unless `--external-url` is passed |
+| `--external-url` | No | Existing issue URL to link directly without calling a remote tracker API |
 | `--result` | No | Failed verdict `resultId` |
 | `--title` | No | Defect title override |
 | `--notes` | No | Diagnostic notes appended to the defect body |
+
+### `sp test tracker configure`
+
+```bash
+sp test tracker configure --app <appId> --provider <provider> --token <token> [--base-url <url>] [--username <email>] [--project <defaultProject>] --json
+```
+
+| Flag | Required | Description |
+|------|----------|-------------|
+| `--app` | Yes | Application ID |
+| `--provider` | Yes | `github`, `jira`, `linear`, or `gitlab` |
+| `--token` | No | Personal access token or API key (stored write-only) |
+| `--base-url` | No | Self-hosted or custom API base URL |
+| `--username` | No | Account email for Jira Cloud Basic auth |
+| `--project` | No | Default repository, project key, or team key |
 
 ## `sp mcp` {#sp-mcp}
 
@@ -232,11 +248,12 @@ sp mcp setup --client <cursor|claude|antigravity|codex> [--dir <path>] [--json]
 | `sp case fork` | POST | `/api/test-cases/fork` |
 | `sp case apply` | PUT | `/api/test-cases` |
 | `sp case delete <caseId>` | DELETE | `/api/test-cases/{caseId}` |
-| `sp case run` | POST | `/api/test-runs/execute` |
+| `sp case run` / `sp replay run --suite <suitePath>` | POST | `/api/test-runs/execute` |
 | `sp test import-results` | POST | `/api/test-runs/import` |
 | `sp test export-results` | GET | `/api/test-runs/{runId}/export` |
 | `sp test coverage` | GET | `/api/issue-trackers/coverage` |
 | `sp test bug create` | POST | `/api/issue-trackers/bugs` |
+| `sp test tracker configure` | PUT | `/api/issue-trackers/config` |
 
 ## Related {#related}
 
