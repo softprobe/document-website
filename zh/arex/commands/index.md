@@ -25,6 +25,7 @@ title: 命令参考
 | [demo](./demo) | `start`、`traffic`、`replay`、`status`、`stop` —— [Travel OTA 演示](https://github.com/softprobe/demo-ota) 全套环境 |
 | [agent](./agent) | `download`、`command` —— 安装 jar、生成 JVM 启动参数 |
 | [record](./record) | `case list` —— 回放前查看已录制的入口用例 |
+| [case](./case) | `sp case`、`sp test`、`sp mcp` —— 统一 `arex.test-case/v1` 编排、CEL 断言、覆盖率门禁、缺陷提单与 stdio MCP |
 | [diagnose](./diagnose) | `replay`、`trace` —— 一键排查 |
 
 ## 平台 {#platform}

@@ -28,6 +28,22 @@ Authoritative **REST ↔ CLI** reference for sp-backend (default port **8090**).
 | POST | `/api/extraction-rules/preview` | `sp extraction-rule preview` | investigation |
 | GET | `/api/agent/extraction-rules` | — (agent) | — |
 
+## Unified test cases, runs, coverage, and bugs
+
+| Method | Path | CLI | Category |
+|--------|------|-----|-------|
+| GET | `/api/test-cases` | `sp case list` | platform |
+| GET | `/api/test-cases/{caseId}` | `sp case get` | platform |
+| POST | `/api/test-cases/export-baseline` | `sp case export` | platform |
+| POST | `/api/test-cases/fork` | `sp case fork` | platform |
+| PUT | `/api/test-cases` | `sp case apply` | platform |
+| DELETE | `/api/test-cases/{caseId}` | `sp case delete` | platform |
+| POST | `/api/test-runs/execute` | `sp case run` | platform |
+| POST | `/api/test-runs/import` | `sp test import-results` | platform |
+| GET | `/api/test-runs/{runId}/export` | `sp test export-results` | platform |
+| GET | `/api/issue-trackers/coverage` | `sp test coverage` | platform |
+| POST | `/api/issue-trackers/bugs` | `sp test bug create` | platform |
+
 ## Policies
 
 | Method | Path | CLI | Category |
