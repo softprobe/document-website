@@ -250,6 +250,51 @@ Compare the two JSON envelopes:
 
 Commit both `tests/*.e2e.ts` and `.e2e/cache/` to Git so CI jobs run with zero LLM calls and catch both UI regressions and broken downstream HTTP calls.
 
+## Compile a recorded Blackbox session into an E2E test {#compile-from-session}
+
+When your browser app records live semantic UI actions in Blackbox, `sp test from-session` compiles a recorded session directly into either a standalone `@playwright/test` suite or a pre-cached `@softprobe/e2e` suite with `trace.outboundHttp(...)` backend checks.
+
+1. Enable semantic UI action capture in [`@softprobe/web-record`](/en/blackbox/reference/softprobe-js#softprobe-web-record) with `captureSemanticActions: true` and `inputCapture: "secrets-only"`:
+
+	```ts
+	import { RecordSdk } from "@softprobe/web-record";
+
+	RecordSdk.init({
+		ingestionKey: "spk_REPLACE_WITH_INGESTION_KEY",
+		serviceName: "my-web",
+		captureSemanticActions: true,
+		inputCapture: "secrets-only",
+		secretSlots: {
+			'input[name="apiKey"]': "API_KEY",
+		},
+	});
+	```
+
+	Under `inputCapture: "secrets-only"`, non-secret fields keep their typed values for test compilation, while password, payment-card, one-time-code, token, secret, and `secretSlots`-matched inputs emit `{ kind: "secret", slot }` references instead of plaintext values or destructive asterisks. On HTML `<script>` tags, pass `data-capture-semantic-actions="true"` and `data-input-capture="secrets-only"`.
+
+2. Compile the recorded session for your target runtime:
+
+	- **Standalone `@playwright/test` (`--runner playwright`).** Generate a pure Playwright regression spec when you do not need natural-language steps:
+
+		```bash
+		sp test from-session <sessionId> --runner playwright --out ./e2e-playwright --json
+		```
+
+		The compiler writes `tests/recorded-session.spec.ts` and `playwright.config.ts`. The generated spec imports `{ expect, test } from "@softprobe/e2e/playwright"`, reads secret slots from `process.env.SP_SECRET_<SLOT>`, synchronizes network turns with `page.waitForResponse`, parameterizes server-derived dynamic labels as regular expressions, and checks downstream calls with `trace.outboundHttp(...)`. Run the generated suite with Playwright:
+
+		```bash
+		cd ./e2e-playwright
+		SP_SECRET_PASSWORD=... npx playwright test
+		```
+
+	- **Hybrid `@softprobe/e2e` with pre-seeded zero-LLM cache (`--runner e2e`).** Generate a `.e2e.ts` spec when you want zero-LLM replay on the recorded steps plus `agent.act(...)` extensibility for new steps:
+
+		```bash
+		sp test from-session <sessionId> --runner e2e --out ./e2e --json
+		```
+
+		The compiler writes `tests/recorded-session.e2e.ts`, `e2e.config.ts` configured with `softprobeCachedAgent()`, and pre-seeded `.e2e/cache/<sha256>.json` `trace-1` `ActionTrace` files. Run 1 of `sp test run --dir ./e2e --json` replays the recorded prefix straight from `.e2e/cache/` with `"modelCalls": 0`. To extend the flow with uncaptured behavior, pass a model to `softprobeCachedAgent({ model })` in `e2e.config.ts`, append new `await agent.act(...)` steps paired with visible `expect(screen...)` checks at the end of the test, and run `sp test run --dir ./e2e --json` twice so Run 2 replays the full spec with `"modelCalls": 0`.
+
 ## Author tests from plain English in `sp code` {#author-in-sp-code}
 
 When `node_modules/e2e` is installed in your project and a compatible `node` binary is available, `sp code` and `sp code web` automatically register the local `e2e` MCP server under Node.js with `E2E_TELEMETRY_DISABLED=1`.
@@ -271,6 +316,8 @@ When `node_modules/e2e` is installed in your project and a compatible `node` bin
 	```
 
 3. `sp code` walks the live UI once with `e2e` MCP (`open_session`, `navigate`, `tap`, `type`, `observe`), inspects the captured backend trace (`get_trace` on Blackbox MCP or `sp trace outbound <traceId> --app <appId> --json` on Arex) to read the real redacted request schema, writes `tests/workspace-invite.e2e.ts`, and runs `sp test run --json` twice until Run 2 passes with `"modelCalls": 0`.
+
+You can also give `sp code` a recorded Blackbox `sessionId`. `sp code` reads `recordings.sessionActions` to inspect the captured `softprobe.ui.action` steps, correlated backend traces, and required `SP_SECRET_<SLOT>` variables, then runs `sp test from-session` to generate and verify the `@playwright/test` or `@softprobe/e2e` suite.
 
 ## Troubleshoot trace failures {#troubleshoot}
 

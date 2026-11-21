@@ -4,16 +4,17 @@ title: sp test
 
 # sp test
 
-Command reference for running `@softprobe/e2e` browser and distributed-trace suites. For task steps and `.e2e/cache/` setup, see [Write full-stack AI E2E tests](/en/arex/fullstack-e2e-testing).
+Command reference for compiling recorded Blackbox sessions and running `@playwright/test` and `@softprobe/e2e` browser and distributed-trace suites. For task steps and `.e2e/cache/` setup, see [Write full-stack AI E2E tests](/en/arex/fullstack-e2e-testing).
 
 ## Synopsis
 
-Scaffold, run, and interactively explore `@softprobe/e2e` projects on a verified Node.js subprocess.
+Scaffold, compile from recorded sessions, run, and interactively explore full-stack E2E test projects on a verified Node.js subprocess.
 
 ```bash
 sp test init [--dir <dir>] [--force] [--json]
 sp test run [args...] [--dir <dir>] [--json]
 sp test explore [args...] [--dir <dir>]
+sp test from-session [session-id] [--runner playwright|e2e] [--out <dir>] [--dir <dir>] [--target-url <url>] [--endpoint <url>] [--workspace-id <id>] [--project-id <id>] [--app-identity <id>] [--session-file <path>] [--force] [--json]
 ```
 
 ## Subcommands
@@ -23,6 +24,7 @@ sp test explore [args...] [--dir <dir>]
 | `init` | Create `e2e.config.ts` and `tests/example.e2e.ts` if missing |
 | `run [args...]` | Execute `@softprobe/e2e` specs via `./node_modules/e2e` |
 | `explore [args...]` | Start an interactive `e2e explore` session |
+| `from-session [session-id]` | Compile a recorded Blackbox session into a `@playwright/test` or `@softprobe/e2e` test suite |
 
 ## Flags
 
@@ -41,9 +43,28 @@ sp test explore [args...] [--dir <dir>]
 
 `sp test run` and `sp test explore` strip `sp` global flags (`--json`, `--quiet`, `--confirm`, `--profile`, `--api-url`, `--token`, `--config`, `--out-dir`, `--page`, `--limit`) plus `--dir`, and forward all remaining arguments to the underlying `e2e` CLI. Pass `--` to forward literal arguments unchanged.
 
+### `from-session`
+
+| Flag | Description |
+|------|-------------|
+| `--runner <string>` | Target test runner, `"playwright"` or `"e2e"` (defaults to `"playwright"`) |
+| `--out <string>` | Output directory for generated test files (defaults to `--dir` or the current working directory) |
+| `--dir <string>` | Project directory containing `node_modules/@softprobe/e2e` (defaults to the current working directory) |
+| `--target-url <string>` | Base URL of the application under test |
+| `--endpoint <string>` | Blackbox, Explorer, or TheLake API endpoint (defaults to configured `api_url`) |
+| `--workspace-id <string>` | Workspace ID header (`X-Workspace-Id`) when querying Explorer or TheLake (defaults to `SOFTPROBE_WORKSPACE_ID` or `SP_WORKSPACE_ID`) |
+| `--project-id <string>` | `e2e` `projectId` when `--runner e2e` is selected |
+| `--app-identity <string>` | `e2e` `app.identity` when `--runner e2e` is selected |
+| `--session-file <string>` | Compile offline from a local session spans JSON file instead of querying the API |
+| `--force` | Overwrite existing generated files |
+
+Provide either `[session-id]` or `--session-file <path>`.
+
 ## Runtime and environment
 
-`e2e` requires Node.js `^22.22.3 || >=24.8.0`. Running `e2e/runner` under Bun fails with `NODE_UNSUPPORTED`. Before spawning `./node_modules/e2e`, `sp test` resolves a compatible Node.js binary from `SP_E2E_NODE_BIN` or `node` on `PATH`.
+`e2e` and `@softprobe/e2e` require Node.js `^22.22.3 || >=24.8.0`. Running `e2e/runner` under Bun fails with `NODE_UNSUPPORTED`. Before spawning `./node_modules/e2e`, `sp test` resolves a compatible Node.js binary from `SP_E2E_NODE_BIN` or `node` on `PATH`.
+
+`sp test from-session` resolves Node.js `^22.22.3 || >=24.8.0` from `SP_E2E_NODE_BIN` or `PATH`, spawns `./node_modules/@softprobe/e2e/dist/bin/compile-session.js`, and passes Bearer credentials through the `SOFTPROBE_API_KEY` and `SP_TOKEN` environment variables rather than CLI arguments. When a workspace ID is set or resolved from `SOFTPROBE_WORKSPACE_ID` or `SP_WORKSPACE_ID`, `sp test from-session` also sets `SOFTPROBE_WORKSPACE_ID` on the child process.
 
 Check the Node.js runtime before running tests:
 
@@ -53,7 +74,7 @@ sp doctor --e2e --json
 
 `sp doctor --e2e` adds the `e2e-node` check to the standard health output (the check also runs automatically whenever `SP_E2E_NODE_BIN` is set).
 
-When spawning `e2e`, `sp test` sets these environment variables on the child process:
+When spawning `e2e` or the session compiler, `sp test` sets these environment variables on the child process:
 
 | Variable | Value |
 |----------|-------|
@@ -61,6 +82,8 @@ When spawning `e2e`, `sp test` sets these environment variables on the child pro
 | `SPCODE_MODE` | `"true"` |
 | `SP_API_URL` | Resolved backend URL from `--api-url`, `SP_API_URL`, or `~/.config/softprobe/config.jsonc` |
 | `SP_TOKEN` | Resolved access token when configured |
+| `SOFTPROBE_API_KEY` | Resolved access token on `sp test from-session` when configured |
+| `SOFTPROBE_WORKSPACE_ID` | Resolved workspace ID on `sp test from-session` when configured |
 | `SP_TENANT_ID` | Resolved tenant ID when configured |
 | `SP_TENANT_API_KEY` | Resolved tenant API key when configured |
 
@@ -69,6 +92,8 @@ When spawning `e2e`, `sp test` sets these environment variables on the child pro
 ```bash
 sp doctor --e2e --json
 sp test init --dir ./e2e --json
+sp test from-session ses_01j8x9m2v4 --runner playwright --out ./e2e-playwright --json
+sp test from-session ses_01j8x9m2v4 --runner e2e --out ./e2e --json
 sp test run tests/workspace-invite.e2e.ts --dir ./e2e --json
 sp test explore --dir ./e2e
 ```
@@ -164,6 +189,29 @@ When `--json` is set, `sp test run` appends `--reporter json` to the child `e2e 
 | `failures` | `array` | Failed tests or run-level errors (`testId`, `file`, `title`, `code`, `message`) |
 
 When a test fails, `sp test run --json` writes `"ok": false` with `error.code: "E2E_FAILED"`, includes the same `data` summary object, and exits with the child runner's non-zero exit code.
+
+### `sp test from-session <session-id> --runner playwright --json`
+
+```json
+{
+  "ok": true,
+  "command": "test from-session",
+  "data": {
+    "ok": true,
+    "runner": "playwright",
+    "sessionId": "ses_01j8x9m2v4",
+    "actionCount": 4,
+    "outboundAssertionCount": 1,
+    "filesWritten": [
+      "/workspace/app/e2e/tests/recorded-session.spec.ts",
+      "/workspace/app/e2e/playwright.config.ts"
+    ],
+    "cacheFilesWritten": []
+  }
+}
+```
+
+When `--runner e2e` is selected, `cacheFilesWritten` lists the pre-seeded `.e2e/cache/<sha256>.json` `trace-1` files written alongside the `.e2e.ts` spec and `e2e.config.ts`.
 
 ## Related
 
