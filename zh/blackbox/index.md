@@ -32,3 +32,4 @@ Blackbox 是 Web 应用与 AI Agent 的**在线会话捕获与审查**路径。E
 3. [LangChain 安装](/zh/blackbox/langchain) — Callback Handler（Python / TypeScript）
 4. [用编码 Agent 排查](/zh/blackbox/coding-agent-skills) — 在 Cursor、Claude Code、Codex、OpenCode 中诊断 Session
 5. [概念](/zh/blackbox/concepts) — Session 与 observation 形态
+6. [编写全栈 AI 端到端测试](/zh/arex/fullstack-e2e-testing) — 用 `@softprobe/e2e` 同时验证页面交互与后端出站 HTTP 链路

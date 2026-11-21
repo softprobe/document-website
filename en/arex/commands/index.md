@@ -12,7 +12,7 @@ Every public `sp` command. Use `--json` on API-backed commands; see [Output cont
 |---------|----------|
 | `version` | Print the CLI version. `sp -v` and `sp --version` do the same; `sp version --json` gives an envelope |
 | [setup](./setup) | Point `sp` at a backend; optionally install the shared web workbench (Linux) |
-| `doctor` | Check the backend, the workbench engine and the shared web workbench — see [Install — check the installation](/en/arex/installation/#doctor) |
+| `doctor` | Check the backend, the workbench engine, the shared web workbench, and `--e2e` Node.js runtime. See [Install: check the installation](/en/arex/installation/#doctor) |
 | `upgrade` | Upgrade the CLI, the Java agent and the workbench engine — see [Install — upgrade](/en/arex/installation/#upgrade) |
 | `code` | Start the workbench in the terminal, or `sp code web` in the browser — see [Install — web workbench](/en/arex/installation/#web-ui) |
 
@@ -24,8 +24,9 @@ Job-oriented commands that follow record-and-replay order:
 |---------|----------|
 | [demo](./demo) | `start`, `traffic`, `replay`, `status`, `stop` — [Travel OTA demo](https://github.com/softprobe/demo-ota) stack |
 | [agent](./agent) | `download`, `command` — install jar and JVM flags |
-| [record](./record) | `case list` — recorded entry cases before replay |
-| [diagnose](./diagnose) | `replay`, `trace` — bundled investigation workflows |
+| [record](./record) | `case list`: recorded entry cases before replay |
+| [test](./test) | `init`, `run`, `explore`: full-stack AI E2E tests with `@softprobe/e2e` |
+| [diagnose](./diagnose) | `replay`, `trace`: bundled investigation workflows |
 
 ## Platform
 
@@ -49,7 +50,7 @@ Recorded data, traces, and replay failures.
 | Command | Synopsis |
 |---------|----------|
 | [record](./record) | Query recordings and completeness |
-| [trace](./trace) | Find traces by business attributes |
+| [trace](./trace) | Find traces by business attributes, get trace summaries, and inspect outbound HTTP calls |
 | [logs](./logs) | Correlated logs by `trace_id` — see [Concepts and IDs](/en/arex/agents/concepts#ids) |
 | [replay case](./replay-case) | List cases, metadata, mock tree |
 | [replay diff](./replay-diff) | Diff artifacts, compare results |

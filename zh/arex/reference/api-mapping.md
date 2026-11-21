@@ -73,6 +73,7 @@ title: 命令与后端接口对照
 |--------|------|-----|-------|
 | POST | `/api/traces/find-by-attr` | `sp trace find` | investigation |
 | GET | `/api/traces/{traceId}/summary` | `sp trace get` | investigation |
+| GET | `/api/traces/{traceId}/outbound-http` | `sp trace outbound` | investigation |
 | POST | `/api/traces/attr-rule-statistics` | `sp trace stats` | investigation |
 
 ## Storage record (read)

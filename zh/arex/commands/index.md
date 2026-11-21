@@ -12,7 +12,7 @@ title: 命令参考
 |---------|----------|
 | `version` | 显示命令行版本。`sp -v`、`sp --version` 效果相同；`sp version --json` 输出带信封的 JSON |
 | [setup](./setup) | 设置后端地址；在 Linux 上可顺带安装共享网页工作台 |
-| `doctor` | 检查后端、工作台引擎和共享网页工作台，见 [安装 — 检查安装](/zh/arex/installation/#doctor) |
+| `doctor` | 检查后端、工作台引擎、共享网页工作台以及 `--e2e` Node.js 运行时，见 [安装 — 检查安装](/zh/arex/installation/#doctor) |
 | `upgrade` | 升级命令行、Java Agent 和工作台引擎，见 [安装 — 升级](/zh/arex/installation/#upgrade) |
 | `code` | 在终端里打开工作台，或用 `sp code web` 在浏览器里打开，见 [安装 — 网页工作台](/zh/arex/installation/#web-ui) |
 
@@ -25,6 +25,7 @@ title: 命令参考
 | [demo](./demo) | `start`、`traffic`、`replay`、`status`、`stop` —— [Travel OTA 演示](https://github.com/softprobe/demo-ota) 全套环境 |
 | [agent](./agent) | `download`、`command` —— 安装 jar、生成 JVM 启动参数 |
 | [record](./record) | `case list` —— 回放前查看已录制的入口用例 |
+| [test](./test) | `init`、`run`、`explore` —— 基于 `@softprobe/e2e` 的全栈 AI 端到端测试 |
 | [diagnose](./diagnose) | `replay`、`trace` —— 一键排查 |
 
 ## 平台 {#platform}
@@ -49,7 +50,7 @@ title: 命令参考
 | 命令 | 说明 |
 |---------|----------|
 | [record](./record) | 查询录制数据和完整性 |
-| [trace](./trace) | 按业务字段查找 trace |
+| [trace](./trace) | 按业务字段查找 trace、查看摘要以及查询出站 HTTP 调用 |
 | [logs](./logs) | 按 `trace_id` 查关联日志 —— 见 [概念与编号](/zh/arex/agents/concepts#ids) |
 | [replay case](./replay-case) | 列出用例、元数据、Mock 树 |
 | [replay diff](./replay-diff) | 差异产物、对比结果 |

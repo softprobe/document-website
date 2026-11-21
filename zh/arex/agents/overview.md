@@ -13,6 +13,7 @@ title: 选择接入方式
 | 发版后触发回放，并按结果决定流水线是否继续 | [发版后自动回放](/zh/arex/webhook-and-ci) 中的 HTTP 接口和 [回放触发 Open API](/zh/arex/reference/replay-openapi) |
 | 查录制、回放结果、差异和日志，或诊断失败的回放 | `sp` 命令行（本部分和 [命令参考](/zh/arex/commands/)） |
 | 把录制、Mock、对比策略作为文件放进 Git 管理 | `sp policy` 和 [策略 YAML 参考](/zh/arex/policy-yaml-guide) |
+| 在 CI 中运行全栈浏览器与后端出站 HTTP 链路测试 | `sp test` 和 [编写全栈 AI 端到端测试](/zh/arex/fullstack-e2e-testing) |
 | 人工查看报告和差异 | 网页控制台，见 [回放报告](/zh/arex/replay-report) |
 
 ## 让 AI 代理读这些文档 {#feed-these-docs-to-your-agent}
@@ -134,6 +135,7 @@ spcode / OpenCode 插件里的 `sp_api` 工具按接口名调用（`diff_detail`
 
 ## 示例 {#examples}
 
+- [编写全栈 AI 端到端测试](/zh/arex/fullstack-e2e-testing)：缓存浏览器步骤实现零 LLM 回放，并校验后端发出的真实出站 HTTP 请求
 - [排查回放失败](/zh/arex/examples/agent-diagnose-replay)：从失败的回放计划，或从订单号这类业务编号出发，找到差异和相关日志
 - [用 Git 管理策略](/zh/arex/examples/gitops-policies)：导出、评审、在 CI 中校验、发布
 - [发版后自动回放](/zh/arex/webhook-and-ci)：一份完整的流水线脚本

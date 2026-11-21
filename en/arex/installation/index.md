@@ -112,10 +112,11 @@ MCP tools, agent instructions and skills: [Client configuration](/en/arex/instal
 
 ```bash
 sp doctor
+sp doctor --e2e
 sp doctor --json
 ```
 
-`sp doctor` checks that the backend is reachable and the workbench engine is installed, and suggests a fix for each failure. If the shared web workbench is installed, it also checks that the service is running and can reach the backend.
+`sp doctor` checks that the backend is reachable and the workbench engine is installed, and suggests a fix for each failure. If the shared web workbench is installed, it also checks that the service is running and can reach the backend. Pass `--e2e` (or set `SP_E2E_NODE_BIN`) to add the `e2e-node` check, which verifies Node.js `^22.22.3 || >=24.8.0` for [`sp test`](/en/arex/commands/test).
 
 If any check fails, the command exits `1`, but the results are still written to stdout with `"ok": true`. To see which check failed, look at `data.status` and each check's `status`:
 
