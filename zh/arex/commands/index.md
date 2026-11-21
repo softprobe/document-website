@@ -25,7 +25,7 @@ title: 命令参考
 | [demo](./demo) | `start`、`traffic`、`replay`、`status`、`stop` —— [Travel OTA 演示](https://github.com/softprobe/demo-ota) 全套环境 |
 | [agent](./agent) | `download`、`command` —— 安装 jar、生成 JVM 启动参数 |
 | [record](./record) | `case list` —— 回放前查看已录制的入口用例 |
-| [test](./test) | `init`、`run`、`explore` —— 基于 `@softprobe/e2e` 的全栈 AI 端到端测试 |
+| [test](./test) | `init`、`run`、`explore`、`from-session`，编译录制会话并运行 `@playwright/test` 与 `@softprobe/e2e` 全栈端到端测试 |
 | [diagnose](./diagnose) | `replay`、`trace` —— 一键排查 |
 
 ## 平台 {#platform}

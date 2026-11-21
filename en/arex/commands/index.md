@@ -25,7 +25,7 @@ Job-oriented commands that follow record-and-replay order:
 | [demo](./demo) | `start`, `traffic`, `replay`, `status`, `stop` — [Travel OTA demo](https://github.com/softprobe/demo-ota) stack |
 | [agent](./agent) | `download`, `command` — install jar and JVM flags |
 | [record](./record) | `case list`: recorded entry cases before replay |
-| [test](./test) | `init`, `run`, `explore`: full-stack AI E2E tests with `@softprobe/e2e` |
+| [test](./test) | `init`, `run`, `explore`, and `from-session` for full-stack E2E tests with `@playwright/test` and `@softprobe/e2e` |
 | [diagnose](./diagnose) | `replay`, `trace`: bundled investigation workflows |
 
 ## Platform

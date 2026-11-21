@@ -250,6 +250,51 @@ sp test run tests/workspace-invite.e2e.ts --json
 
 将 `tests/*.e2e.ts` 和 `.e2e/cache/` 一并提交到 Git，使 CI 任务在零 LLM 调用的前提下同时拦截前端交互回归与后端下游调用异常。
 
+## 将录制的 Blackbox 会话编译为端到端测试 {#compile-from-session}
+
+当前端应用在 Blackbox 中开启了实时语义化 UI 动作采集后，`sp test from-session` 可以把一段录制好的真实浏览器会话直接编译为独立的 `@playwright/test` 测试套件，或带预置缓存的 `@softprobe/e2e` 测试套件，并自动生成 `trace.outboundHttp(...)` 后端出站调用断言。
+
+1. 在 [`@softprobe/web-record`](/en/blackbox/reference/softprobe-js#softprobe-web-record) 中开启 `captureSemanticActions: true` 与 `inputCapture: "secrets-only"`：
+
+	```ts
+	import { RecordSdk } from "@softprobe/web-record";
+
+	RecordSdk.init({
+		ingestionKey: "spk_REPLACE_WITH_INGESTION_KEY",
+		serviceName: "my-web",
+		captureSemanticActions: true,
+		inputCapture: "secrets-only",
+		secretSlots: {
+			'input[name="apiKey"]': "API_KEY",
+		},
+	});
+	```
+
+	启用 `inputCapture: "secrets-only"` 后，普通输入框会保留真实输入值供编译器生成用例，而密码框、银行卡号、一次性验证码、名称含 `token` 或 `secret` 的输入框，以及命中 `secretSlots` CSS 选择器的输入框只导出 `{ kind: "secret", slot }` 槽位引用，既不会把明文密钥上传到遥测后端，也不会因全量打星号而导致无法生成可执行脚本。通过 HTML `<script>` 标签接入时，可配置 `data-capture-semantic-actions="true"` 与 `data-input-capture="secrets-only"`。
+
+2. 按目标运行器编译录制会话：
+
+	- **独立的 `@playwright/test` 套件（`--runner playwright`）。** 适合不需要自然语言扩展、追求纯确定性回归的流水线：
+
+		```bash
+		sp test from-session <sessionId> --runner playwright --out ./e2e-playwright --json
+		```
+
+		编译器会输出 `tests/recorded-session.spec.ts` 与 `playwright.config.ts`。生成的测试文件从 `@softprobe/e2e/playwright` 导入 `{ expect, test }`，从 `process.env.SP_SECRET_<SLOT>` 读取敏感槽位，通过 `page.waitForResponse` 同步前后端网络轮次，将后端响应派生的动态文案参数化为正则表达式，并通过 `trace.outboundHttp(...)` 校验下游调用。使用 Playwright 直接运行生成的用例：
+
+		```bash
+		cd ./e2e-playwright
+		SP_SECRET_PASSWORD=... npx playwright test
+		```
+
+	- **带预置零 LLM 缓存的 `@softprobe/e2e` 混合套件（`--runner e2e`）。** 适合先零成本回放已录制的前缀步骤，再在末尾追加新步骤：
+
+		```bash
+		sp test from-session <sessionId> --runner e2e --out ./e2e --json
+		```
+
+		编译器会输出 `tests/recorded-session.e2e.ts`、默认挂载 `softprobeCachedAgent()` 的 `e2e.config.ts`，以及预置的 `.e2e/cache/<sha256>.json` `trace-1` `ActionTrace` 缓存文件。首次执行 `sp test run --dir ./e2e --json` 时，录制前缀会直接命中预置缓存，以 `"modelCalls": 0` 完成回放。如果要在录制流程之后继续验证未录制的新交互，只需在 `e2e.config.ts` 中向 `softprobeCachedAgent({ model })` 传入模型实例，在用例末尾追加新的 `await agent.act(...)` 与可见的 `expect(screen...)` 断言，再连续执行两次 `sp test run --dir ./e2e --json`，第二次运行即可对整条用例实现 `"modelCalls": 0` 缓存回放。
+
 ## 在 `sp code` 中用自然语言生成测试 {#author-in-sp-code}
 
 当工程目录安装了 `node_modules/e2e` 且本机有兼容的 `node` 时，`sp code` 与 `sp code web` 会自动在 Node.js 下挂载本地 `e2e` MCP 服务并注入 `E2E_TELEMETRY_DISABLED=1`。
@@ -270,6 +315,8 @@ sp test run tests/workspace-invite.e2e.ts --json
 	```
 
 3. `sp code` 会通过 `e2e` MCP（`open_session`、`navigate`、`tap`、`type`、`observe`）走通一次真实页面，查询捕获到的后端链路（Blackbox 下调用 Blackbox MCP 的 `get_trace`，Arex 下调用 `sp trace outbound <traceId> --app <appId> --json`）确认脱敏后的真实消息体结构，生成 `tests/workspace-invite.e2e.ts`，并连续两次运行 `sp test run --json`，确认第二次运行以 `"modelCalls": 0` 通过。
+
+你也可以直接把一段已录制的 Blackbox `sessionId` 交给 `sp code`。`sp code` 会读取 `recordings.sessionActions` 检查录制到的 `softprobe.ui.action` 语义步骤、关联后端链路与所需的 `SP_SECRET_<SLOT>` 环境变量，再调用 `sp test from-session` 生成并验证 `@playwright/test` 或 `@softprobe/e2e` 测试套件。
 
 ## 排查链路失败 {#troubleshoot}
 
