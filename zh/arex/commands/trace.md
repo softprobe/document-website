@@ -8,7 +8,7 @@ title: sp trace：链路查询
 
 ## 概要 {#synopsis}
 
-按属性反查 trace，以及轻量的 trace 摘要。
+按属性反查 trace、查看 trace 摘要，以及查询录制的出站 HTTP 请求。
 
 ## 子命令 {#subcommands}
 
@@ -16,6 +16,7 @@ title: sp trace：链路查询
 |------------|-------------|
 | `find` | 按提取规则 / 属性反查 trace |
 | `get <traceId>` | 摘要元数据和提取出的属性 |
+| `outbound <traceId>` | 已录制的入口 `SERVER` span 与下游出站 `CLIENT` HTTP 请求 |
 | `stats` | 属性规则统计（可选） |
 
 ## 参数（`find`） {#flags-find}
@@ -34,11 +35,18 @@ title: sp trace：链路查询
 2. 只有 `--attr-name` —— 命中该规则的全部 trace  
 3. 都不带 —— 最近命中任意提取规则的 trace
 
+## 参数（`outbound`） {#flags-outbound}
+
+| 参数 | 说明 |
+|------|-------------|
+| `--app` | 应用 ID（可选；按单个应用过滤查询） |
+
 ## 示例 {#examples}
 
 ```bash
 sp trace find --app my-app --attr-name orderId --attr-value ORD-1234 --json
 sp trace get 4bf92f3577b34da6a3ce929d0e0e4736 --json
+sp trace outbound 4bf92f3577b34da6a3ce929d0e0e4736 --app my-app --json
 sp trace stats --app my-app --json
 ```
 
@@ -81,6 +89,79 @@ sp trace stats --app my-app --json
 }
 ```
 
+### JSON 输出（`outbound`） {#json-output-outbound}
+
+后端入口 `SERVER` span 已落库时（`state: "ingested"`）：
+
+```json
+{
+  "ok": true,
+  "command": "trace outbound",
+  "data": {
+    "traceId": "4bf92f3577b34da6a3ce929d0e0e4736",
+    "state": "ingested",
+    "serverEntry": {
+      "spanId": "00f067aa0ba902b7",
+      "method": "POST",
+      "routeOrPath": "/api/flights/search",
+      "status": 200
+    },
+    "outboundHttp": [
+      {
+        "traceId": "4bf92f3577b34da6a3ce929d0e0e4736",
+        "spanId": "b7ad6b7169203331",
+        "parentSpanId": "00f067aa0ba902b7",
+        "method": "POST",
+        "url": "https://spair.softprobe.ai/ndc/v21.3/airshopping",
+        "status": 200,
+        "durationMs": 84,
+        "request": {
+          "headers": {
+            "authorization": "[REDACTED]",
+            "content-type": "application/json"
+          },
+          "body": "{\"origin\":\"SFO\",\"destination\":\"JFK\"}",
+          "json": {
+            "origin": "SFO",
+            "destination": "JFK"
+          }
+        },
+        "response": {
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": "{\"offers\":[{\"offerId\":\"OFF-1\"}]}",
+          "json": {
+            "offers": [
+              {
+                "offerId": "OFF-1"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+}
+```
+
+`<traceId>` 尚未收到入口 `SERVER` span 时（`state: "awaiting_server_span"`）：
+
+```json
+{
+  "ok": true,
+  "command": "trace outbound",
+  "data": {
+    "traceId": "4bf92f3577b34da6a3ce929d0e0e4736",
+    "state": "awaiting_server_span",
+    "serverEntry": null,
+    "outboundHttp": []
+  }
+}
+```
+
+返回 `outboundHttp` 前，`sp-backend` 会将敏感 HTTP 请求头（`authorization`、`cookie`、`set-cookie`、`apikey`、`x-api-key`、`proxy-authorization`）替换为 `"[REDACTED]"`，并执行应用已配置的脱敏策略。
+
 ### JSON 输出（`stats`） {#json-output-stats}
 
 ```json
@@ -105,6 +186,7 @@ sp trace stats --app my-app --json
 |------------|--------|------|
 | `find` | POST | `/api/traces/find-by-attr` |
 | `get` | GET | `/api/traces/{traceId}/summary` |
+| `outbound` | GET | `/api/traces/{traceId}/outbound-http`（可选 `?appId=<appId>`） |
 | `stats` | POST | `/api/traces/attr-rule-statistics` |
 
 ## 替代 `sp_api` {#replaces-sp_api}
@@ -117,3 +199,5 @@ sp trace stats --app my-app --json
 ## 相关文档 {#related}
 
 - [从业务编号开始排查](/zh/arex/examples/agent-diagnose-replay#business-id)
+- [编写全栈 AI 端到端测试](/zh/arex/fullstack-e2e-testing)
+- [sp test：全栈端到端测试](/zh/arex/commands/test)

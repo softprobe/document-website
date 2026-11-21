@@ -13,6 +13,7 @@ This section is for people who write scripts, CI jobs, plugins or AI-agent skill
 | Trigger a replay after a deployment and gate the pipeline on the result | The HTTP endpoints in [Replay after deployment](/en/arex/webhook-and-ci) and the [Replay trigger Open API](/en/arex/reference/replay-openapi) |
 | Query recordings, replay results, diffs and logs, or diagnose a failed replay | The `sp` command line (this section and the [command reference](/en/arex/commands/)) |
 | Manage recording, mock and compare policies as files in Git | `sp policy` and the [Policy YAML reference](/en/arex/policy-yaml-guide) |
+| Run full-stack browser and outgoing HTTP trace tests in CI | `sp test` and [Write full-stack AI E2E tests](/en/arex/fullstack-e2e-testing) |
 | Look at reports and diffs by hand | The web console — see [Replay report](/en/arex/replay-report) |
 
 ## Feed these docs to your agent {#feed-these-docs-to-your-agent}
@@ -134,6 +135,7 @@ The `sp_api` tool in the spcode / OpenCode plugin used named endpoints (`diff_de
 
 ## Examples {#examples}
 
+- [Write full-stack AI E2E tests](/en/arex/fullstack-e2e-testing): test browser UI flows with cached zero-LLM replay and verify outgoing backend HTTP requests
 - [Diagnose a failed replay](/en/arex/examples/agent-diagnose-replay) — from a failed plan, or from a business ID such as an order number, to diffs and correlated logs
 - [Manage policies in Git](/en/arex/examples/gitops-policies) — export, review, validate in CI and apply
 - [Replay after deployment](/en/arex/webhook-and-ci) — a complete pipeline script

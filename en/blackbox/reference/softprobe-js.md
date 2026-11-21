@@ -13,6 +13,7 @@ API reference for the `@softprobe/*` npm packages (version `0.1.18`, Node.js 20 
 | `@softprobe/vercel-ai-sdk` | Vercel AI SDK telemetry integration and HTTP context propagation | [`softprobe-js/packages/vercel-ai-sdk`](https://github.com/softprobe/softprobe-js/tree/main/packages/vercel-ai-sdk) |
 | `@softprobe/langchain` | LangChain and LangGraph auto-instrumentation and `CallbackHandler` | [`softprobe-js/packages/langchain`](https://github.com/softprobe/softprobe-js/tree/main/packages/langchain) |
 | `@softprobe/opencode-plugin` | OpenCode coding-agent plugin | [`softprobe-js/packages/opencode-plugin`](https://github.com/softprobe/softprobe-js/tree/main/packages/opencode-plugin) |
+| `@softprobe/e2e` | Full-stack browser and W3C distributed-trace test fixtures (`Node.js ^22.22.3 \|\| >=24.8.0`) | [`softprobe-js/packages/e2e`](https://github.com/softprobe/softprobe-js/tree/main/packages/e2e) |
 
 ## `@softprobe/tracing`
 
@@ -277,6 +278,53 @@ Importing `@softprobe/langchain` calls `autoInstrumentFromEnv()` automatically w
 ## `@softprobe/opencode-plugin`
 
 OpenCode plugin that sends coding-agent turns, model generations, tool calls, and sub-agent tasks to Softprobe. See the [OpenCode install guide](/en/blackbox/opencode) for `opencode.json` and `opencode-softprobe.json` configuration.
+
+---
+
+## `@softprobe/e2e`
+
+Full-stack E2E testing SDK built on `e2e` and `@e2e-dev/web` (`0.24.0`, requires Node.js `^22.22.3 || >=24.8.0`). Correlates browser requests via W3C `traceparent` headers and verifies outgoing backend `CLIENT` HTTP calls in Blackbox (`thelake` or local Explorer) and Arex (`sp-backend`). For step-by-step usage, see [Write full-stack AI E2E tests](/en/arex/fullstack-e2e-testing).
+
+```bash
+npm install -D @softprobe/e2e e2e@0.24.0 @e2e-dev/web@0.24.0
+```
+
+### Engine and reporter exports
+
+- `softprobeWeb(options?: SoftprobeWebOptions)`: Wraps `@e2e-dev/web` with Playwright `browser.route` W3C `traceparent` correlation (preserving existing `@softprobe/web-record` headers or minting a fallback header) and binds the `trace` test fixture.
+- `softprobeReporter()`: Writes verified trace summaries to `.e2e/softprobe-traces.json` (`schemaVersion: "softprobe-traces-1"`), consumed by [`sp test run --json`](/en/arex/commands/test).
+- Test lifecycle and `e2e` re-exports: `test`, `describe`, `beforeEach`, `afterEach`, `beforeAll`, `afterAll`, `expect`, `credentials`, `secrets`, `unique`, `AgentError`, `isAgentError`.
+
+#### `SoftprobeWebOptions`
+
+Extends `@e2e-dev/web` `WebOptions`:
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `sink` | `SoftprobeSinkConfig` | Resolved from options and env | Explicit `{ kind: "blackbox", endpoint, token?, workspaceId?, explorerUrl? }` or `{ kind: "arex", endpoint, appId, token?, tenantId?, explorerUrl? }` |
+| `store` | `"auto" \| "blackbox" \| "arex"` | `"auto"` | Selects `arex` when `appId` is set without `workspaceId`, otherwise `blackbox` |
+| `endpoint` | `string` | `https://explorer.softprobe.ai/api/thelake` (Blackbox) or `SP_API_URL` (Arex) | Trace query base URL |
+| `token` | `string` | `SOFTPROBE_TOKEN`, `SP_TOKEN`, or `INGESTION_KEY` | Bearer or access token for trace queries |
+| `workspaceId` | `string` | `SOFTPROBE_WORKSPACE_ID` or `SP_WORKSPACE_ID` | Sent as `X-Workspace-Id` on Blackbox trace lookups |
+| `appId` | `string` | `SOFTPROBE_APP_ID` or `SP_APP_ID` | Required for Arex `GET /api/traces/{traceId}/outbound-http?appId=...` |
+| `tenantId` | `string` | `SP_TENANT_ID` | Sent as `X-Tenant-Id` on Arex trace lookups |
+| `explorerUrl` | `string` | `SOFTPROBE_EXPLORER_URL` or derived from `/api/thelake` | Base URL for `explorerTraceUrl` links |
+| `apiOrigins` | `readonly (string \| RegExp)[]` | `[app.url]` | Origins matched by `browser.route` for `traceparent` correlation |
+| `pollTimeoutMs` | `number` | `15000` | Maximum milliseconds to poll for the backend `SERVER` span and matching `CLIENT` call (`traceTimeoutMs` alias supported) |
+| `pollIntervalMs` | `number` | `250` | Delay in milliseconds between trace sink polls |
+| `settleMs` | `number` | `150` | Post-`SERVER` observation window in milliseconds for `trace.expectNoOutboundHttp` |
+
+### `trace` fixture (`TraceScope`)
+
+- `trace.outboundHttp(query: OutboundHttpQuery): Promise<OutboundHttpCall>`: Waits for the backend `SERVER` entry span of the latest browser request matching `query.triggeredBy` (`{ method?, path, origin? }`), then polls until an outgoing `CLIENT` HTTP span matches `url` (`string | RegExp`), optional `method`, optional `status` (`number | readonly [number, number]`), and optional `serviceName` (`string | RegExp`).
+- `trace.expectNoOutboundHttp(query?: ExpectNoOutboundHttpQuery): Promise<void>`: Confirms that every matching browser request reached its backend `SERVER` span and produced zero matching outgoing `CLIENT` HTTP calls after `settleMs`.
+- `trace.window(fn: () => Promise<void>): Promise<TraceScope>`: Runs `fn` and returns a child `TraceScope` restricted to browser requests captured while `fn` ran.
+
+### Error classes and guards
+
+- `TraceInstrumentationError` (`code: "TRACE_INSTRUMENTATION_MISSING"`) and `isTraceInstrumentationError(value)`: Thrown when the backend `SERVER` span never arrives before `pollTimeoutMs`.
+- `TraceAssertionError` (`code: "TRACE_ASSERTION_FAILED"`) and `isTraceAssertionError(value)`: Thrown when the backend `SERVER` span arrived and the outbound HTTP assertion failed (`observedCalls` lists captured calls on that trace).
+- `isTraceId(value)` and `isSpanId(value)`: Type guards for 32-hex `TraceId` and 16-hex `SpanId` strings.
 
 ---
 

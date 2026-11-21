@@ -24,6 +24,7 @@ Blackbox connects browser frontends ([`@softprobe/web-record`](/en/blackbox/refe
 | **LangChain or LangGraph** | [LangChain and LangGraph](/en/blackbox/langchain) | [`@softprobe/langchain`](/en/blackbox/reference/softprobe-js#softprobe-langchain), [`softprobe.langchain`](/en/blackbox/reference/softprobe-py#langchain-and-langgraph-softprobe-langchain) |
 | **OpenCode** | [OpenCode](/en/blackbox/opencode) | [`@softprobe/opencode-plugin`](/en/blackbox/reference/softprobe-js#softprobe-opencode-plugin) |
 | **Custom JS, Python, or OpenAI apps** | [Quick start](/en/blackbox/getting-started#direct-otlp-export-for-existing-opentelemetry-apps) | [`@softprobe/tracing`](/en/blackbox/reference/softprobe-js#softprobe-tracing), [`softprobe-py`](/en/blackbox/reference/softprobe-py) |
+| **Full-stack browser + backend trace E2E tests** | [Write full-stack AI E2E tests](/en/arex/fullstack-e2e-testing) | [`@softprobe/e2e`](/en/blackbox/reference/softprobe-js#softprobe-e2e) |
 
 ## Investigate Sessions
 
