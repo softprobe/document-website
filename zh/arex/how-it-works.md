@@ -39,7 +39,7 @@ Agent 在服务里记录两类调用：
 
 一条入口请求连同它触发的全部依赖调用，就是一个**用例**。默认按采样录制：每个实例、每个接口每分钟约 1 条。数据由 Agent 的后台线程上报，业务请求不等待网络。
 
-用例只能靠录制产生，不能手工编写。怎么查看录制，见 [查看录制](/zh/arex/recording)；怎么调整录制范围，见 [录制配置](/zh/arex/policies#recording)。
+线上或测试流量会自动生成录制用例（`origin: "CAPTURED"`）。遇到改需求或新增接口时，也可以基于录制基线派生用例（`origin: "AI_FORKED"`），或者直接按统一的 `arex.test-case/v1` 结构编写合成用例（`origin: "AI_SYNTHETIC"`）。查看录制见 [查看录制](/zh/arex/recording)，调整录制范围见 [录制配置](/zh/arex/policies#recording)，统一用例编排与断言见 [测试用例管理](/zh/arex/test-case-management)。
 
 ## 回放 {#replay-phase}
 

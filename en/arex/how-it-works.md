@@ -37,9 +37,9 @@ The agent records two kinds of calls in the service:
 | **Entry** | HTTP endpoints (Servlet), Dubbo services, message consumers | The request received and the response returned |
 | **Dependency** | Databases, Redis, HTTP clients, Dubbo calls, local caches, system time | Each call's parameters and result |
 
-One entry request with all the dependency calls it triggered is a **case**. Recording is sampled — by default about one per minute, per instance, per endpoint. The agent uploads in a background thread, so business requests don't wait for the network.
+One entry request with all the dependency calls it triggered is a **case**. Recording is sampled, by default about one per minute per instance and endpoint. The agent uploads in a background thread, so business requests do not wait for the network.
 
-Cases only come from recording; they can't be written by hand. Browsing recordings: [Recordings](/en/arex/recording). Changing what's recorded: [Recording settings](/en/arex/policies#recording).
+Recorded traffic produces `CAPTURED` cases automatically. You can also fork a recorded baseline (`origin: "AI_FORKED"`) or author synthetic cases (`origin: "AI_SYNTHETIC"`) for new endpoints using the unified `arex.test-case/v1` format with `sp case` and `sp mcp`. For recordings, see [Recordings](/en/arex/recording) and [Recording settings](/en/arex/policies#recording). For unified authoring, CEL assertions, and coverage, see [Test case management](/en/arex/test-case-management).
 
 ## Replay {#replay-phase}
 
