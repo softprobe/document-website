@@ -140,7 +140,7 @@ npx e2e run
 
 The generated `e2e.config.ts` wires `softprobeCachedAgent()`, `softprobeWeb()`, and `softprobeReporter()`. Even on the first run, `softprobeCachedAgent()` replays the pre-seeded `.e2e/cache/<sha256>.json` `trace-1` entries with zero LLM calls while the browser sends live HTTP requests with fresh `traceparent` headers. Commit `.e2e/cache/` alongside `tests/*.e2e.ts` so CI runs stay deterministic and require no model API key.
 
-To append new natural-language steps after a compiled flow, pass a model instance to `softprobeCachedAgent({ model })` in `e2e.config.ts`. Add `await agent.act(...)` followed by a visible `expect(screen...)` check. Run `E2E_TELEMETRY_DISABLED=1 npx e2e run` twice so the second run replays the full test from `.e2e/cache/` with zero model calls.
+To append new natural-language steps after a compiled flow, set `cache.mode` to `"read-write"` and pass a model instance to `softprobeCachedAgent({ model })` in `e2e.config.ts`. Add `await agent.act(...)` followed by a visible `expect(screen...)` check. Run `E2E_TELEMETRY_DISABLED=1 npx e2e run` twice so the second run replays the full test from `.e2e/cache/` with zero model calls.
 
 ## Assert backend outbound HTTP calls and clean up state {#outbound-assertions}
 
