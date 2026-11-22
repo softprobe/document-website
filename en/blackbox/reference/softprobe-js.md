@@ -4,7 +4,7 @@ title: JavaScript and TypeScript SDK (softprobe-js)
 
 # JavaScript and TypeScript SDK (`softprobe-js`)
 
-API reference for the `@softprobe/*` npm packages at version `0.2.0`. Packages run on Node.js 20 or newer, and `@softprobe/e2e` requires Node.js 22.13 or newer.
+API reference for the `@softprobe/*` npm packages at version `0.2.1`. Packages run on Node.js 20 or newer, and `@softprobe/e2e` requires Node.js 22.13 or newer.
 
 | Package | Purpose | Source |
 |---------|---------|--------|
