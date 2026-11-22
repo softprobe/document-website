@@ -140,7 +140,7 @@ npx e2e run
 
 生成的 `e2e.config.ts` 默认注册 `softprobeCachedAgent()`、`softprobeWeb()` 与 `softprobeReporter()`。首次运行时，`softprobeCachedAgent()` 就会直接回放预置的 `.e2e/cache/<sha256>.json` `trace-1` 缓存步骤，全程产生零次大模型调用，同时浏览器仍发送带全新 `traceparent` 请求头的真实 HTTP 请求。请将 `.e2e/cache/` 与 `tests/*.e2e.ts` 一并提交到 Git，使 CI 无需配置模型密钥即可稳定运行。
 
-如果需要在已编译流程末尾追加新的自然语言步骤，先在 `e2e.config.ts` 中向 `softprobeCachedAgent({ model })` 传入模型实例。在用例末尾添加 `await agent.act(...)` 并紧跟可见的 `expect(screen...)` 断言。随后连续运行两次 `E2E_TELEMETRY_DISABLED=1 npx e2e run`，使第二次运行从 `.e2e/cache/` 零模型调用完整回放。
+如果需要在已编译流程末尾追加新的自然语言步骤，先在 `e2e.config.ts` 中将 `cache.mode` 改为 `"read-write"` 并向 `softprobeCachedAgent({ model })` 传入模型实例。在用例末尾添加 `await agent.act(...)` 并紧跟可见的 `expect(screen...)` 断言。随后连续运行两次 `E2E_TELEMETRY_DISABLED=1 npx e2e run`，使第二次运行从 `.e2e/cache/` 零模型调用完整回放。
 
 ## 断言后端出站 HTTP 调用并清理测试数据 {#outbound-assertions}
 
