@@ -27,7 +27,7 @@ Blackbox connects browser frontends ([`@softprobe/web-record`](/en/blackbox/refe
 
 ## Investigate Sessions
 
-After your app sends telemetry, connect [Blackbox MCP](/en/blackbox/coding-agent-skills) in Claude Code, Codex, Cursor, OpenCode, or Antigravity to query Sessions, spans, and traces over OAuth.
+After your app sends telemetry, connect [Blackbox MCP](/en/blackbox/coding-agent-skills) in Claude Code, Codex, Cursor, OpenCode, or Antigravity to query Sessions, spans, and traces over OAuth. You can also [automate E2E tests from recorded sessions](/en/blackbox/e2e-testing) in `@playwright/test` or `e2e` and verify backend outbound HTTP calls in CI.
 
 ## Other Softprobe products
 
