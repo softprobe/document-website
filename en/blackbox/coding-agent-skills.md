@@ -4,7 +4,7 @@ title: Investigate with a coding agent
 
 # Use Blackbox with a coding agent
 
-Install the Blackbox plugin (`softprobe-blackbox@softprobe`) from the Softprobe plugin marketplace ([`softprobe/softprobe-plugin`](https://github.com/softprobe/softprobe-plugin)) to connect your AI coding agent to Softprobe Explorer. Sign in through the browser with your existing Explorer account. Blackbox gives your agent 17 MCP tools and investigation skills to query Sessions, inspect spans and traces, read correlated logs, manage Agent apps, and retrieve Ingestion Keys when requested.
+Install the Blackbox plugin (`softprobe-blackbox@softprobe`) from the Softprobe plugin marketplace ([`softprobe/softprobe-plugin`](https://github.com/softprobe/softprobe-plugin)) to connect your AI coding agent to Softprobe Explorer. Sign in through the browser with your existing Explorer account. Blackbox gives your agent 19 MCP tools and investigation skills to query Sessions, inspect spans and traces, read correlated logs, compile E2E tests from recorded Sessions, manage Agent apps, and retrieve Ingestion Keys when requested.
 
 This is separate from **capture** (the `@softprobe/web-record` browser SDK, OBI, or AI framework SDKs). Capture records Sessions. The Blackbox plugin lets your coding agent **manage Agents and investigate Sessions**.
 
@@ -98,15 +98,15 @@ Then ask your coding agent to call `whoami` or `list_workspaces` to confirm acce
 
 ## 3. Available Blackbox MCP tools
 
-Blackbox exposes 17 MCP tools across account context, telemetry investigation, and Agent management:
+Blackbox exposes 19 MCP tools across account context, telemetry investigation, test generation, and Agent management:
 
 | Category | Tools | Purpose |
 |----------|-------|---------|
 | **Account & workspace** | `whoami`, `list_workspaces`, `select_workspace` | Check signed-in user, list accessible workspaces, and switch the active workspace |
-| **Sessions** | `search_sessions`, `get_session`, `get_session_spans` | Search Sessions by agent, status, or time range, and inspect Session metadata and spans |
+| **Sessions & E2E tests** | `search_sessions`, `get_session`, `get_session_spans`, `compile_session_test` | Search Sessions by agent, status, or time range, inspect Session metadata and spans, and compile recorded UI Sessions into Playwright or `e2e` tests |
 | **Spans & traces** | `search_spans`, `get_span`, `search_traces`, `get_trace`, `list_trace_tags`, `list_trace_tag_values` | Filter GenAI, tool, and HTTP spans, inspect full distributed traces, and discover trace tag keys and values |
 | **Logs** | `logs_by_session`, `logs_by_trace` | Read structured logs correlated to a Session or trace |
-| **Agents & keys** | `list_agents`, `create_agent`, `get_ingestion_key` | List Agent apps, create a new Agent app, and reveal an Agent's Ingestion Key when requested |
+| **Agents & keys** | `list_agents`, `create_agent`, `get_ingestion_key`, `bootstrap_project` | List Agent apps, create a new Agent app, reveal an Agent's Ingestion Key when requested, and generate project instrumentation prompts |
 
 ## 4. Ask your agent
 
