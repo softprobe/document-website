@@ -321,6 +321,7 @@ const agentQaSidebarEn = [
     text: 'Investigate Sessions',
     items: [
       { text: 'Blackbox MCP (coding agents)', link: '/en/blackbox/coding-agent-skills' },
+      { text: 'Automate E2E tests from sessions', link: '/en/blackbox/e2e-testing' },
     ],
   },
   {
@@ -352,6 +353,7 @@ const agentQaSidebarZh = [
       { text: '快速开始', link: '/zh/blackbox/getting-started' },
       { text: '概念', link: '/zh/blackbox/concepts' },
       { text: '用编码 Agent 排查', link: '/zh/blackbox/coding-agent-skills' },
+      { text: '从录制的会话生成端到端测试', link: '/zh/blackbox/e2e-testing' },
     ],
   },
   {
