@@ -62,7 +62,11 @@ Several policies can match one app; they are merged by `metadata.priority`. Buil
 
 ## Replay plan {#replay-plan}
 
-One replay run, identified by a `planId`. Created with `sp replay run` (or the console, a schedule, or the [Open API](/en/arex/reference/replay-openapi)) and followed with `sp replay status`. A plan replays cases that were already recorded, so an app that has never received traffic with the agent attached has nothing to replay. Cases come only from recording; you can't write them by hand.
+One batch replay run, identified by a `planId`. Create a plan with `sp replay run` (or the console, a schedule, or the [Open API](/en/arex/reference/replay-openapi)) and track it with `sp replay status`. A replay plan runs recorded traffic (`origin: "CAPTURED"`) or pinned cases.
+
+## Unified test cases (`arex.test-case/v1`) {#unified-test-cases}
+
+Captured recordings (`origin: "CAPTURED"`), baseline-forked cases (`origin: "AI_FORKED"`), and synthetic feature cases (`origin: "AI_SYNTHETIC"`) share the `arex.test-case/v1` catalog alongside external automated (`EXTERNAL_AUTOMATED`) and manual (`MANUAL`) cases. Use `sp case` and `sp mcp` to fork recorded baselines, synthesize cases for new routes that have no prior traffic, attach case-level `injectionRules` and Google CEL `assertionRules`, and run targeted verifications (`sp case run`). Raw agent-ingest endpoints such as `POST /api/storage/record/save` remain reserved for the Java agent. See [Test case management](/en/arex/test-case-management) and [sp case, sp test, and sp mcp](/en/arex/commands/case).
 
 ## IDs {#ids}
 
@@ -75,6 +79,9 @@ One replay run, identified by a `planId`. Created with `sp replay run` (or the c
 | `planId` | A replay plan | Case lists, reports, diagnosis |
 | `planItemId` | One interface inside a plan | Case lists |
 | `diffId` | One comparison result | `sp replay diff get`; `sp diagnose replay` finds and downloads the diffs for you |
+| `caseId` | One unified test case (`arex.test-case/v1`) | `sp case get`, `sp case run --case`, `sp test bug create --case` |
+| `runId` | One test execution or imported external report run | `sp case run`, `sp test import-results`, `sp test export-results --run` |
+| `resultId` | One case verdict inside a test run | `sp test bug create --result` |
 
 ### Where the IDs appear {#where-ids-appear}
 

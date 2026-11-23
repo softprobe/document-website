@@ -13,11 +13,11 @@ The public `sp` binary must **not** ship a `sp c` (or similar) command that read
 
 | API | Reason |
 |-----|--------|
-| `POST /api/storage/record/save` | Java agent only |
-| `POST /api/storage/record/batchSaveMockers` | Agent only |
+| `POST /api/storage/record/save` | Java agent (`sp-agent-java`) only |
+| `POST /api/storage/record/batchSaveMockers` | Java agent only |
 | `POST /api/storage/record/batchSaveReplayResult` | Worker callbacks |
 
-Coding agents must not simulate agent traffic through the CLI.
+Coding agents must never simulate raw agent-ingest traffic through `/api/storage/record/save`. Authoring, baseline forking (`origin: "AI_FORKED"`), and synthetic case creation (`origin: "AI_SYNTHETIC"`) go through the unified `arex.test-case/v1` catalog APIs (`/api/test-cases*`) exposed by `sp case` and `sp mcp`.
 
 ## OTLP ingestion
 
@@ -42,7 +42,7 @@ Integration-test and demo-app REST controllers are not product APIs.
 
 ## Full UI parity
 
-Every `FileSystemController` button and report chart is not required in v2. The CLI does not expose console filesystem or manual case authoring; test cases come from recording only.
+Every `FileSystemController` button and report chart is not mirrored 1:1 in the CLI. Legacy console folder trees stay internal to the web UI, while unified test cases (`origin: "CAPTURED"`, `"AI_FORKED"`, `"AI_SYNTHETIC"`, and `"MANUAL"`) share the `arex.test-case/v1` model managed via `sp case`, `sp test`, and `sp mcp`.
 
 ## OpenAPI-only features
 

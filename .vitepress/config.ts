@@ -27,6 +27,7 @@ const testingSidebarEn = [
     items: [
       { text: 'Recordings', link: '/en/arex/recording' },
       { text: 'Pinned cases', link: '/en/arex/pinned-cases' },
+      { text: 'Test case management', link: '/en/arex/test-case-management' },
       { text: 'Run and schedule replays', link: '/en/arex/replay-and-diff' },
       { text: 'Replay report', link: '/en/arex/replay-report' },
       { text: 'Review differences', link: '/en/arex/review-diffs-in-the-web-ui' },
@@ -88,6 +89,7 @@ const testingSidebarEn = [
       { text: 'sp app', link: '/en/arex/commands/app' },
       { text: 'sp agent', link: '/en/arex/commands/agent' },
       { text: 'sp record', link: '/en/arex/commands/record' },
+      { text: 'sp case, sp test, sp mcp', link: '/en/arex/commands/case' },
       { text: 'sp replay', link: '/en/arex/commands/replay' },
       { text: 'sp replay case', link: '/en/arex/commands/replay-case' },
       { text: 'sp replay diff', link: '/en/arex/commands/replay-diff' },
@@ -130,6 +132,7 @@ const testingSidebarZh = [
     items: [
       { text: '查看录制', link: '/zh/arex/recording' },
       { text: '固化用例', link: '/zh/arex/pinned-cases' },
+      { text: '测试用例管理', link: '/zh/arex/test-case-management' },
       { text: '发起回放与定时回放', link: '/zh/arex/replay-and-diff' },
       { text: '回放报告', link: '/zh/arex/replay-report' },
       { text: '审查差异', link: '/zh/arex/review-diffs-in-the-web-ui' },
@@ -191,6 +194,7 @@ const testingSidebarZh = [
       { text: 'sp app', link: '/zh/arex/commands/app' },
       { text: 'sp agent', link: '/zh/arex/commands/agent' },
       { text: 'sp record', link: '/zh/arex/commands/record' },
+      { text: 'sp case、sp test、sp mcp', link: '/zh/arex/commands/case' },
       { text: 'sp replay', link: '/zh/arex/commands/replay' },
       { text: 'sp replay case', link: '/zh/arex/commands/replay-case' },
       { text: 'sp replay diff', link: '/zh/arex/commands/replay-diff' },

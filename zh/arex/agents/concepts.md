@@ -62,7 +62,11 @@ title: 概念与编号
 
 ## 回放计划 {#replay-plan}
 
-一次回放就是一个回放计划，用 `planId` 标识。可以用 `sp replay run` 创建，也可以在控制台、定时任务或 [Open API](/zh/arex/reference/replay-openapi) 中发起；用 `sp replay status` 查看进度。回放计划回放的是已经录下的用例，所以挂上 Agent 后从没收到过流量的应用，没有东西可回放。用例只能通过录制产生，不能手工编写。
+一次批量回放就是一个回放计划，用 `planId` 标识。可以用 `sp replay run` 创建，也可以在控制台、定时任务或 [Open API](/zh/arex/reference/replay-openapi) 中发起，并用 `sp replay status` 查看进度。回放计划用于重跑已录制的流量用例（`origin: "CAPTURED"`）或固化用例。
+
+## 统一测试用例（`arex.test-case/v1`） {#unified-test-cases}
+
+录制用例（`origin: "CAPTURED"`）、基于基线派生的用例（`origin: "AI_FORKED"`）和面向新功能的合成用例（`origin: "AI_SYNTHETIC"`）共享同一个 `arex.test-case/v1` 用例目录，并与外部自动化测试（`EXTERNAL_AUTOMATED`）和手工测试（`MANUAL`）统一管理。通过 `sp case` 和 `sp mcp` 可以从已有录制派生新用例、为尚无流量的新接口编写合成用例、配置用例级 `injectionRules` 与 Google CEL `assertionRules`，并直接执行验证（`sp case run`）。底层采集写入接口（如 `POST /api/storage/record/save`）仍仅限 Java Agent 调用。详见 [测试用例管理](/zh/arex/test-case-management) 与 [sp case、sp test 与 sp mcp](/zh/arex/commands/case)。
 
 ## 编号 {#ids}
 
@@ -75,6 +79,9 @@ title: 概念与编号
 | `planId` | 一个回放计划 | 用例列表、报告、诊断 |
 | `planItemId` | 回放计划中的一个接口 | 用例列表 |
 | `diffId` | 一条对比结果 | `sp replay diff get`；`sp diagnose replay` 会自动找到并下载差异 |
+| `caseId` | 一条统一测试用例（`arex.test-case/v1`） | `sp case get`、`sp case run --case`、`sp test bug create --case` |
+| `runId` | 一次测试执行或外部报告导入记录 | `sp case run`、`sp test import-results`、`sp test export-results --run` |
+| `resultId` | 某次测试运行中的单条用例判定结果 | `sp test bug create --result` |
 
 ### 编号出现在哪里 {#where-ids-appear}
 
