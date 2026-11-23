@@ -75,7 +75,7 @@ test('Arex testing tree, raw Markdown, screenshots and aggregate exports are blo
     assert.equal(response.headers.get('Cache-Control'), 'private, no-store')
     assert.doesNotMatch(await response.text(), /DOCUMENT CONTENT/)
   }
-  for (const publicPath of ['/en/blackbox/', '/zh/blackbox.md', '/en/lisa/', '/zh/lisa/getting-started.md', '/en/platform/', '/zh/platform.md']) {
+  for (const publicPath of ['/en/blackbox/', '/zh/blackbox.md', '/en/ui-testing/', '/en/ui-testing/tutorial.md', '/zh/ui-testing/', '/zh/ui-testing/tutorial.md', '/en/lisa/', '/zh/lisa/getting-started.md', '/en/platform/', '/zh/platform.md']) {
     assert.equal(requiresAuth(publicPath), false, publicPath)
   }
   assert.equal(env.calls.length, 0)

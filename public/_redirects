@@ -177,3 +177,6 @@
 /en/agent-qa/*  /en/blackbox/:splat  301
 /zh/agent-qa/*  /zh/blackbox/:splat  301
 /agent-qa/*     /en/blackbox/:splat  301
+/en/blackbox/e2e-testing  /en/ui-testing/from-sessions  301
+/zh/blackbox/e2e-testing  /zh/ui-testing/from-sessions  301
+/ui-testing/*             /en/ui-testing/:splat         301

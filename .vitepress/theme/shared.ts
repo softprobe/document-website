@@ -29,6 +29,7 @@ export function navForLocale(locale: DocLocale): DefaultTheme.NavItem[] {
       { text: '首页', link: `${p}/` },
       { text: 'Arex', link: `${p}/arex/`, activeMatch: '/zh/arex/' },
       { text: 'Blackbox', link: `${p}/blackbox/`, activeMatch: '/zh/blackbox/' },
+      { text: 'UI 测试', link: `${p}/ui-testing/`, activeMatch: '/zh/ui-testing/' },
       { text: 'Lisa', link: `${p}/lisa/`, activeMatch: '/zh/lisa/' },
     ]
   }
@@ -36,6 +37,7 @@ export function navForLocale(locale: DocLocale): DefaultTheme.NavItem[] {
     { text: 'Home', link: `${p}/` },
     { text: 'Arex', link: `${p}/arex/`, activeMatch: '/en/arex/' },
     { text: 'Blackbox', link: `${p}/blackbox/`, activeMatch: '/en/blackbox/' },
+    { text: 'UI Testing', link: `${p}/ui-testing/`, activeMatch: '/en/ui-testing/' },
     { text: 'Lisa', link: `${p}/lisa/`, activeMatch: '/en/lisa/' },
   ]
 }
@@ -45,7 +47,7 @@ export function footerForLocale(locale: DocLocale): DefaultTheme.Footer {
   const p = locale === 'zh' ? '/zh' : '/en'
   if (locale === 'zh') {
     return {
-      message: 'Arex· Blackbox · Lisa',
+      message: 'Arex · Blackbox · UI 测试 · Lisa',
       copyright: `Copyright © ${year} Softprobe`,
       links: [
         {
@@ -53,6 +55,7 @@ export function footerForLocale(locale: DocLocale): DefaultTheme.Footer {
           items: [
             { text: 'Arex', link: `${p}/arex/` },
             { text: 'Blackbox', link: `${p}/blackbox/` },
+            { text: 'UI 测试', link: `${p}/ui-testing/` },
             { text: 'Lisa', link: `${p}/lisa/` },
             { text: '命令参考', link: `${p}/arex/commands/` },
           ],
@@ -72,7 +75,7 @@ export function footerForLocale(locale: DocLocale): DefaultTheme.Footer {
     }
   }
   return {
-    message: 'Arex · Blackbox · Lisa',
+    message: 'Arex · Blackbox · UI Testing · Lisa',
     copyright: `Copyright © ${year} Softprobe`,
     links: [
       {
@@ -80,6 +83,7 @@ export function footerForLocale(locale: DocLocale): DefaultTheme.Footer {
         items: [
           { text: 'Arex', link: `${p}/arex/` },
           { text: 'Blackbox', link: `${p}/blackbox/` },
+          { text: 'UI Testing', link: `${p}/ui-testing/` },
           { text: 'Lisa', link: `${p}/lisa/` },
           { text: 'Command reference', link: `${p}/arex/commands/` },
         ],

@@ -1,10 +1,10 @@
 ---
-title: Automate E2E tests from recorded sessions
+title: How to generate UI tests from recorded sessions
 ---
 
-# Automate E2E tests from recorded sessions
+# How to generate UI tests from recorded sessions
 
-Record a user journey once in [Softprobe Explorer](https://explorer.softprobe.ai), compile the captured session into a `@playwright/test` or `e2e` test suite, and verify both UI behavior and outgoing backend HTTP requests in CI.
+Record a user flow once in [Softprobe Explorer](https://explorer.softprobe.ai), compile the captured session into a `@playwright/test` or `e2e` test suite, and verify both UI behavior and outgoing backend HTTP requests in CI.
 
 `@softprobe/web-record` records semantic browser actions as `softprobe.ui.action` OpenTelemetry spans alongside W3C `traceparent` headers. `@softprobe/e2e` turns those spans into repeatable browser steps and checks the downstream `CLIENT` HTTP calls that your backend sent in Blackbox.
 
@@ -53,10 +53,8 @@ Walk through the user flow once in your browser, then open **Sessions** in Softp
 When a session contains `softprobe.ui.action` spans, Explorer displays a **Generate E2E test** button in the session detail header.
 
 1. Click **Generate E2E test** to open the export drawer.
-2. Select `@playwright/test` to generate a `.spec.ts` suite, or select `e2e` to generate a `.e2e.ts` suite with pre-seeded cache entries.
-3. Inspect the generated browser steps, `SP_SECRET_<SLOT>` bindings, and `trace.outboundHttp` assertions, then click **Copy** or **Download** to add the files to your repository.
-
-The drawer also provides a pre-filled `softprobe-compile-session` terminal command with your `SOFTPROBE_WORKSPACE_ID` and session ID.
+2. Select **Playwright (@playwright/test)** to preview a `.spec.ts` test, or select **AI cached (@softprobe/e2e)** to preview a `.e2e.ts` test.
+3. Inspect the generated browser steps, `SP_SECRET_<SLOT>` bindings, and `trace.outboundHttp` assertions. Click **Copy test** or **Download** to save the test file, or click **Copy command** to copy a pre-filled `softprobe-compile-session` command that writes the full suite including `playwright.config.ts`, `e2e.config.ts`, and `.e2e/cache/*.json`.
 
 ### Compile from a coding agent with Blackbox MCP {#compile-from-mcp}
 
@@ -140,7 +138,7 @@ npx e2e run
 
 The generated `e2e.config.ts` wires `softprobeCachedAgent()`, `softprobeWeb()`, and `softprobeReporter()`. Even on the first run, `softprobeCachedAgent()` replays the pre-seeded `.e2e/cache/<sha256>.json` `trace-1` entries with zero LLM calls while the browser sends live HTTP requests with fresh `traceparent` headers. Commit `.e2e/cache/` alongside `tests/*.e2e.ts` so CI runs stay deterministic and require no model API key.
 
-To append new natural-language steps after a compiled flow, set `cache.mode` to `"read-write"` and pass a model instance to `softprobeCachedAgent({ model })` in `e2e.config.ts`. Add `await agent.act(...)` followed by a visible `expect(screen...)` check. Run `E2E_TELEMETRY_DISABLED=1 npx e2e run` twice so the second run replays the full test from `.e2e/cache/` with zero model calls.
+To append new natural-language steps after a compiled flow, see [How to write natural-language UI tests with `e2e`](/en/ui-testing/natural-language#extend-compiled-tests).
 
 ## Assert backend outbound HTTP calls and clean up state {#outbound-assertions}
 
@@ -286,11 +284,11 @@ expect(resentCall.status).toBe(200);
 
 `BlackboxSink` waits for the backend `SERVER` entry span before checking outgoing `CLIENT` spans so instrumentation issues stay separate from assertion failures:
 
-- **`TraceInstrumentationError` with code `TRACE_INSTRUMENTATION_MISSING`.** The browser sent `traceparent`, and Blackbox did not receive a matching backend `SERVER` span within `pollTimeoutMs`, which defaults to `15000` milliseconds. Confirm that your backend exports OTLP traces or runs with OpenTelemetry OBI, check `SOFTPROBE_WORKSPACE_ID` and `SOFTPROBE_TOKEN`, and confirm that cross-origin APIs allow `traceparent` in `Access-Control-Allow-Headers`.
-- **`TraceAssertionError` with code `TRACE_ASSERTION_FAILED`.** The backend `SERVER` span arrived in Blackbox, and either no outgoing `CLIENT` HTTP span matched `trace.outboundHttp` or an unexpected call matched `trace.expectNoOutboundHttp`. Open the `explorerTraceUrl` printed in the error message or inspect the trace with `get_trace` in [Blackbox MCP](/en/blackbox/coding-agent-skills).
+- **`TraceInstrumentationError` with code `TRACE_INSTRUMENTATION_MISSING`.** The browser sent `traceparent`, and Blackbox did not receive a matching backend `SERVER` span within `pollTimeoutMs` (default `30000` milliseconds). Confirm that your backend exports OTLP traces or runs with OpenTelemetry OBI. Check `SOFTPROBE_WORKSPACE_ID` and `SOFTPROBE_TOKEN`, and allow `traceparent` in `Access-Control-Allow-Headers` on cross-origin APIs.
+- **`TraceAssertionError` with code `TRACE_ASSERTION_FAILED`.** The backend `SERVER` span arrived in Blackbox, and either no outgoing `CLIENT` HTTP span matched `trace.outboundHttp` or an unexpected call matched `trace.expectNoOutboundHttp`. Open the `explorerTraceUrl` printed in the error message, or inspect the trace with `get_trace` in [Blackbox MCP](/en/blackbox/coding-agent-skills).
 
 ## Related {#related}
 
+- [Tutorial: Build your first generated UI and backend test](/en/ui-testing/tutorial)
+- [How to write natural-language UI tests with `e2e`](/en/ui-testing/natural-language)
 - [JavaScript and TypeScript SDK reference](/en/blackbox/reference/softprobe-js#softprobe-e2e)
-- [End-to-end session tracing with payloads](/en/blackbox/end-to-end-session-tracing)
-- [Use Blackbox with a coding agent](/en/blackbox/coding-agent-skills)
