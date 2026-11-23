@@ -15,7 +15,7 @@ Standard UI tests stop at the browser DOM and pass whenever a success banner ren
 
 ## Start here
 
-- **[Tutorial: Build your first generated UI and backend test](/en/ui-testing/tutorial).** Stand up a Node.js team-invitation web app, capture a browser session with password redaction, compile both Playwright and zero-LLM `e2e` suites, and watch `trace.outboundHttp` catch a silent backend email bug.
+- **[Tutorial: Build your first generated UI and backend test](/en/ui-testing/tutorial).** Start the pre-instrumented `docker.io/softprobe/demo-ota:classic-blackbox` flight-booking container, record one browser booking session, compile both Playwright and zero-LLM `e2e` suites, and watch `trace.outboundHttp` catch a dropped confirmation email.
 - **[Generate tests from recorded sessions](/en/ui-testing/from-sessions).** Enable semantic action capture, export tests from Explorer, Blackbox MCP, or the CLI, bind `SP_SECRET_<SLOT>` environment variables, and run in CI.
 - **[Write natural-language UI tests](/en/ui-testing/natural-language).** Author prompt-driven `e2e` tests from scratch without recording a browser session first.
 - **[SDK and CLI reference](/en/blackbox/reference/softprobe-js#softprobe-e2e).** Lookup tables for `@softprobe/e2e`, `@softprobe/e2e/playwright`, `@softprobe/web-record`, and `softprobe-compile-session`.
