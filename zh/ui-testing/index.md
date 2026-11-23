@@ -15,7 +15,7 @@ title: Softprobe UI 测试
 
 ## 从这里开始
 
-- **[教程：构建第一个自动生成 UI 与后端联调测试](/zh/ui-testing/tutorial)。** 搭建一个单文件 Node.js 团队邀请示例应用，录制自动脱敏密码的浏览器会话，生成并运行 Playwright 与零 LLM `e2e` 测试，并亲眼验证 `trace.outboundHttp` 拦截后端漏发邮件的隐蔽缺陷。
+- **[教程：构建第一个自动生成 UI 与后端联调测试](/zh/ui-testing/tutorial)。** 一键启动预埋点的 `docker.io/softprobe/demo-ota:classic-blackbox` 机票预订容器，录制一次浏览器订票会话，生成并运行 Playwright 与零 LLM `e2e` 测试，并验证 `trace.outboundHttp` 拦截后端漏发确认邮件的隐蔽缺陷。
 - **[从录制的会话生成测试](/zh/ui-testing/from-sessions)。** 开启语义动作采集，通过 Explorer、MCP 或 CLI 导出测试，注入 `SP_SECRET_<SLOT>` 敏感变量并在 CI 中运行。
 - **[用自然语言编写 UI 测试](/zh/ui-testing/natural-language)。** 无需预先录制浏览器会话，从零编写自然语言驱动的 `e2e` 测试与后端出站断言。
 - **[SDK 与 CLI 参考](/en/blackbox/reference/softprobe-js#softprobe-e2e)。** 查阅 `@softprobe/e2e`、`@softprobe/e2e/playwright`、`@softprobe/web-record` 与 `softprobe-compile-session` 的完整参数表。

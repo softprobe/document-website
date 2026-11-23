@@ -4,15 +4,15 @@ title: End-to-end session tracing with payloads
 
 # End-to-end session tracing with payloads
 
-Trace a complete user journey across a browser frontend, a Vercel AI Node.js server, and a Java backend into one correlated Session with HTTP request and response payloads in [Softprobe Explorer](https://explorer.softprobe.ai).
+Trace a complete user journey across a browser frontend, an AI agent server, a Java backend, and PostgreSQL into one correlated Session with HTTP request and response payloads in [Softprobe Explorer](https://explorer.softprobe.ai).
 
-The [Travel OTA demo (`softprobe/demo-ota`)](https://github.com/softprobe/demo-ota) keeps its application source uninstrumented on `main`. Its [`compose.blackbox.yml`](https://github.com/softprobe/demo-ota/blob/main/compose.blackbox.yml) overlay attaches Softprobe browser recording, Vercel AI telemetry, and OpenTelemetry eBPF Instrumentation (OBI) at startup so you can run the full-stack demo on macOS or Linux in one command.
+The [Travel OTA demo (`softprobe/demo-ota`)](https://github.com/softprobe/demo-ota) keeps its application source uninstrumented on `main`. Pre-instrumented single-container images (`docker.io/softprobe/demo-ota:<flavor>-blackbox`) layer Softprobe browser recording, Node.js or Python agent telemetry, and OpenTelemetry eBPF Instrumentation (OBI) onto the plain app images so you can start the full stack in one `docker run` command without manual SDK setup.
 
 ## Architecture and instrumentation seams
 
-A traveler chats in the browser web app (`travel-web`), which calls the Vercel AI Node.js server (`travel-agent`), which calls the Java backend (`travel-ota`) and an external airline NDC API:
+Inside the container, Nginx listens on port `8080`, serves the chat web app (`travel-web`) at `/agent`, and proxies `/agent/api/*` to the AI agent server (`travel-agent` on `127.0.0.1:4311`), which calls the Spring Boot service (`travel-ota` on `127.0.0.1:8081`), PostgreSQL (`127.0.0.1:5432`), payment and notification sandboxes (`127.0.0.1:8082` and `127.0.0.1:8083`), and the external airline NDC API:
 
-<div class="sp-arch-diagram" role="img" aria-label="Travel OTA demo architecture with three components: Web App in Browser JS, Vercel AI Server in Node.js, and Java Backend in Spring Boot, with Softprobe instrumentation points.">
+<div class="sp-arch-diagram" role="img" aria-label="Travel OTA single-container demo architecture with three traced tiers: Web App in Browser JS, AI Agent Server in Node.js or Python, and Java Backend in Spring Boot with PostgreSQL.">
   <div class="sp-arch-flow">
     <div class="sp-arch-card">
       <div class="sp-arch-card-head">
@@ -24,7 +24,7 @@ A traveler chats in the browser web app (`travel-web`), which calls the Vercel A
             <circle cx="9.5" cy="6.5" r="0.8" fill="currentColor" stroke="none" />
           </svg>
         </span>
-        <span class="sp-arch-port">:4310/agent</span>
+        <span class="sp-arch-port">:8080/agent</span>
       </div>
       <div class="sp-arch-title">1. Web App</div>
       <div class="sp-arch-runtime">Browser JS</div>
@@ -56,18 +56,18 @@ A traveler chats in the browser web app (`travel-web`), which calls the Vercel A
             <path d="M12 12L4 7.5" />
           </svg>
         </span>
-        <span class="sp-arch-port">:4310</span>
+        <span class="sp-arch-port">:4311</span>
       </div>
-      <div class="sp-arch-title">2. Vercel AI Server</div>
-      <div class="sp-arch-runtime">Node.js Backend</div>
-      <div class="sp-arch-desc">Runs the AI agent and tool calls</div>
+      <div class="sp-arch-title">2. AI Agent Server</div>
+      <div class="sp-arch-runtime">Node.js or Python</div>
+      <div class="sp-arch-desc">Runs Vercel AI, LangGraph, or Google ADK tool calls</div>
       <div class="sp-arch-badges" aria-label="Instrumentation">
         <span class="sp-inst-badge sp-inst-sdk">
           <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <circle cx="8" cy="8" r="3" fill="currentColor" />
             <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2.5 2" />
           </svg>
-          @softprobe/vercel-ai-sdk
+          softprobe-js / softprobe-py
         </span>
       </div>
     </div>
@@ -88,11 +88,11 @@ A traveler chats in the browser web app (`travel-web`), which calls the Vercel A
             <circle cx="7" cy="17" r="1" fill="currentColor" stroke="none" />
           </svg>
         </span>
-        <span class="sp-arch-port">:8080</span>
+        <span class="sp-arch-port">:8081</span>
       </div>
       <div class="sp-arch-title">3. Java Backend</div>
-      <div class="sp-arch-runtime">Spring Boot Service</div>
-      <div class="sp-arch-desc">Handles flight search and booking</div>
+      <div class="sp-arch-runtime">Spring Boot + PostgreSQL</div>
+      <div class="sp-arch-desc">Handles flight search, policy holds, SQL, and payment</div>
       <div class="sp-arch-badges" aria-label="Instrumentation">
         <span class="sp-inst-badge sp-inst-ebpf">
           <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -106,94 +106,109 @@ A traveler chats in the browser web app (`travel-web`), which calls the Vercel A
   <div class="sp-arch-legend">
     <span class="sp-arch-legend-item">
       <span class="sp-inst-dot sp-inst-dot-sdk"></span>
-      <strong>SDK Instrumentation</strong>: JS packages for DOM replay, browser HTTP, and AI agent turns
+      <strong>SDK Instrumentation</strong>: JS and Python packages for DOM replay, semantic UI actions, browser HTTP, and AI agent turns
     </span>
     <span class="sp-arch-legend-item">
       <span class="sp-inst-dot sp-inst-dot-ebpf"></span>
-      <strong>OBI (eBPF)</strong>: Zero-code Linux kernel capture for Java inbound and outbound HTTP traffic
+      <strong>OBI (eBPF)</strong>: Zero-code Linux kernel capture for Java HTTP bodies and PostgreSQL queries, with automatic OpenTelemetry Java agent fallback when eBPF is unavailable
     </span>
   </div>
 </div>
 
-All three tiers export telemetry using the same Ingestion Key (`spk_...`) and join into a single Session through `gen_ai.conversation.id`, `session.id`, and the W3C `traceparent` header. Each tier uses a distinct OpenTelemetry `service.name` (`travel-web`, `travel-agent`, `travel-ota`) so Explorer's **Graph** and **Span Detail** separate every service and outbound peer target.
+All three tiers export telemetry using the same Ingestion Key (`spk_...`) and join into a single Session through `gen_ai.conversation.id`, `session.id`, and the W3C `traceparent` header. Each tier uses a distinct OpenTelemetry `service.name` (`travel-web`, `travel-agent`, `travel-ota`) so Explorer's **Graph** and **Span Detail** separate every service, database query, and outbound HTTP peer.
 
-## Run the demo with Docker Compose
+## Choose a published container flavor
 
-You need Docker with Compose, a [Softprobe Explorer](https://explorer.softprobe.ai) workspace, and a Google Gemini API key. Use only synthetic travel details in this demo.
+`docker.io/softprobe/demo-ota` publishes both pre-instrumented `-blackbox` images and plain uninstrumented images:
+
+| Pre-instrumented tag | Plain app tag | Included stack on `:8080` |
+|----------------------|---------------|---------------------------|
+| `vercel-ai-blackbox` (also `blackbox`) | `vercel-ai` (also `latest`) | Classic web app at `/`, chat web app at `/agent`, Node.js Vercel AI agent, Spring Boot Java 21 backend, PostgreSQL, and payment and notification sandboxes |
+| `langgraph-py-blackbox` | `langgraph-py` | Same web apps and Java backend, powered by a Python LangGraph agent |
+| `google-adk-py-blackbox` | `google-adk-py` | Same web apps and Java backend, powered by a Python Google ADK agent |
+| `classic-blackbox` | `classic` | Traditional multi-page flight booking web app at `/` plus the Java backend, PostgreSQL, and sandboxes, used in the [UI Testing tutorial](/en/ui-testing/tutorial) |
+| Not applicable | `java` | Headless Java backend, PostgreSQL, and sandboxes without static frontend assets |
+
+## Run the demo in one Docker command
+
+You need Docker, a [Softprobe Explorer](https://explorer.softprobe.ai) workspace, and a Google Gemini API key. Use only synthetic travel details in this demo.
 
 ### 1. Create an Agent in Explorer
 
 In [Explorer](https://explorer.softprobe.ai), open **Agents** and click **+ Connect agent**. Name the Agent `travel-ota-demo`, choose **Vercel AI**, set the environment to **demo**, and copy its Ingestion Key (`spk_...`).
 
-### 2. Clone `demo-ota` and start the Blackbox overlay
+### 2. Start the pre-instrumented container
 
 ```sh
-git clone --depth 1 https://github.com/softprobe/demo-ota.git
-cd demo-ota
 export INGESTION_KEY="spk_REPLACE_WITH_INGESTION_KEY"
 export GOOGLE_GENERATIVE_AI_API_KEY="YOUR_GEMINI_API_KEY"
-docker compose -f compose.blackbox.yml up --build
+
+docker run --rm --privileged -p 8080:8080 \
+	-e INGESTION_KEY="$INGESTION_KEY" \
+	-e GOOGLE_GENERATIVE_AI_API_KEY="$GOOGLE_GENERATIVE_AI_API_KEY" \
+	docker.io/softprobe/demo-ota:vercel-ai-blackbox
 ```
 
-For staging Explorer, also export:
+To try Python LangGraph or Google ADK instead of Vercel AI, replace `vercel-ai-blackbox` with `langgraph-py-blackbox` or `google-adk-py-blackbox`.
 
-```sh
-export OTEL_EXPORTER_OTLP_TRACES_ENDPOINT="https://explorer-staging.softprobe.ai/api/thelake/v1/traces"
-export OTEL_RESOURCE_ATTRIBUTES="deployment.environment.name=staging"
-export SOFTPROBE_ENVIRONMENT="staging"
-```
+If you run [self-hosted Explorer](/en/blackbox/self-hosting) on Linux (`http://127.0.0.1:8787`), replace `-p 8080:8080` with `--network host -e OTEL_EXPORTER_OTLP_TRACES_ENDPOINT="http://127.0.0.1:8787/api/thelake/v1/traces"` so both your host browser and the container export to `http://127.0.0.1:8787`. On Linux hosts `--privileged` enables zero-code OBI eBPF capture for Java HTTP payloads and PostgreSQL queries. On macOS or unprivileged runtimes where kernel `tracefs` is unavailable, the entrypoint falls back automatically to the bundled OpenTelemetry Java agent.
 
 ### 3. Run a journey and inspect the Session Graph
 
-Open [`http://127.0.0.1:4310/agent`](http://127.0.0.1:4310/agent), select your configured Gemini model, and complete a synthetic search, booking, and ticket-issuance flow:
+Open [`http://127.0.0.1:8080/agent`](http://127.0.0.1:8080/agent), confirm your selected Gemini model, and complete a synthetic search, booking, and ticket-issuance flow:
 
 1. Search for a flight:
    ```text
    Find a one-way economy flight from LHR to CDG for next Tuesday.
    ```
-2. Select an offer (or reply `Prepare offer 1 for Alex Demo`), then click **Confirm booking** when the review card appears.
-3. Click **Pay ... and issue ticket** with the prefilled demo card.
+2. Click **Choose** on an offer in **Flight & fare choices**, reply `Alex Demo` when prompted for the traveler name, and click **Confirm booking** when the review card appears.
+3. Click **Pay ... and issue ticket** in the trip panel.
 
 In [Softprobe Explorer](https://explorer.softprobe.ai), open **Sessions**, filter for `travel-ota-demo`, and open the newest Session. Switch to **Graph** and click nodes to inspect **Span Detail** across all three tiers:
 
-- **Web app (`travel-web`).** RRWeb DOM replay and browser `POST` client spans with `url.template` route patterns and redacted JSON payloads.
-- **Vercel AI server (`travel-agent`).** `invoke_agent` root spans, `chat` generation spans, and `execute_tool` spans (`travel_search`, `travel_prepare`, `travel_book`, `travel_order`) linked by `gen_ai.conversation.id`.
-- **Java backend (`travel-ota`).** Inbound `POST /api/flights/search`, `/api/flights/book`, `/api/flights/orders/query`, and `/api/flights/payandissue` server spans with `[REDACTED]` card details, plus outbound `POST /ndc/v21.3/*` client spans to the external NDC airline host.
+- **Web app (`travel-web`).** RRWeb DOM replay, semantic `softprobe.ui.action` spans, and browser `POST` client spans with `url.template` route patterns and redacted JSON payloads.
+- **AI agent server (`travel-agent`).** `invoke_agent` root spans, `chat` generation spans, and `execute_tool` spans (`travel_search`, `travel_prepare`, `travel_book`, `travel_order`) linked by `gen_ai.conversation.id`.
+- **Java backend (`travel-ota`).** Inbound `/api/bookings/sessions/*` server spans, `SELECT`, `INSERT`, and `UPDATE` PostgreSQL spans against `ota_booking_sessions` and `ota_orders`, plus outbound `POST` client spans to `/ndc/v21.3/*`, `/v1/payments/authorize` (with `[REDACTED]` `cardNumber` and `cvv`), and `/v1/notifications/confirmation`.
 
-Press `Ctrl+C` or run `docker compose -f compose.blackbox.yml down` when finished.
+Press `Ctrl+C` in your terminal when finished.
 
 ## How each tier is instrumented
 
-The `blackbox/` directory in `demo-ota` wires all three tiers without modifying the uninstrumented application source:
+The [`docker/blackbox/`](https://github.com/softprobe/demo-ota/tree/main/docker/blackbox) directory in `softprobe/demo-ota` wires all three tiers onto the plain flavor images without modifying any file under `apps/`, `agents/`, or `services/`:
 
 ### Browser (`@softprobe/web-record`)
 
-[`blackbox/entrypoint.sh`](https://github.com/softprobe/demo-ota/blob/main/blackbox/entrypoint.sh) loads `@softprobe/web-record/dist/browser.js` via `<script data-softprobe-options='...' defer>` in `index.html` and allows the OTLP origin in `Content-Security-Policy`:
+[`docker/blackbox/10-blackbox.sh`](https://github.com/softprobe/demo-ota/blob/main/docker/blackbox/10-blackbox.sh) generates `/__softprobe/ota-init.js` and `/__softprobe/chat-init.js` at container startup and injects `<script src="/__softprobe/web-record.js"></script><script src="/__softprobe/chat-init.js"></script>` into HTML responses through Nginx `sub_filter`:
 
-- Sets `serviceName: "travel-web"` and exports OTLP traces and rrweb DOM recordings (`maskAllInputs: true`).
-- Configures [`httpBodyCapture.routes`](/en/blackbox/reference/softprobe-js#httpbodycaptureoptions-and-httpbodycaptureroute) with wildcard `*` segments to trace business `POST` calls while skipping 1-second `GET /agent/api/sessions/:id` polling.
+- Sets `serviceName: "travel-web"` (and `travel-ota-web` on `/`), enables `captureSemanticActions: true` and `inputCapture: "secrets-only"`, and exports OTLP traces and rrweb DOM recordings.
+- Configures [`httpBodyCapture.routes`](/en/blackbox/reference/softprobe-js#httpbodycaptureoptions-and-httpbodycaptureroute) with wildcard `*` segments to trace business `POST` calls while skipping background `GET` polling.
 - Captures JSON bodies up to 64 KiB and replaces `cardNumber`, `cvv`, `cvc`, `password`, and `secret` with `[REDACTED]`.
-- Adopts `ses_*` session IDs automatically from `/agent/api/sessions` responses, `/sessions/:id` URLs, and `sessionStorage`.
+- Adopts `ses_*` session IDs automatically from `/agent/api/sessions` responses and `sessionStorage`.
 
 See [`@softprobe/web-record`](/en/blackbox/reference/softprobe-js#softprobe-web-record) and [`WebRecordInitOptions`](/en/blackbox/reference/softprobe-js#webrecordinitoptions) for every option.
 
-### Vercel AI server (`@softprobe/vercel-ai-sdk`)
+### AI agent server (`@softprobe/vercel-ai-sdk` and `softprobe-py`)
 
-[`blackbox/init-vercel-ai.mjs`](https://github.com/softprobe/demo-ota/blob/main/blackbox/init-vercel-ai.mjs) runs via `NODE_OPTIONS="--import /opt/blackbox/init-vercel-ai.mjs"` before `src/start.mjs` starts:
+In `vercel-ai-blackbox`, [`docker/blackbox/init-vercel-ai.mjs`](https://github.com/softprobe/demo-ota/blob/main/docker/blackbox/init-vercel-ai.mjs) runs via `NODE_OPTIONS="--import /opt/softprobe/node/init-vercel-ai.mjs"` before `agents/vercel-ai/server.mjs` starts:
 
 ```js
+import { context } from "@opentelemetry/api";
+import { AsyncLocalStorageContextManager } from "@opentelemetry/context-async-hooks";
 import { initVercelAiTelemetry } from "@softprobe/vercel-ai-sdk";
 
+context.setGlobalContextManager(new AsyncLocalStorageContextManager().enable());
+
 initVercelAiTelemetry({
-  serviceName: process.env.SOFTPROBE_AI_SERVICE_NAME || "travel-agent",
+	serviceName: process.env.SOFTPROBE_AI_SERVICE_NAME || "travel-agent",
+	useSimpleProcessor: true,
 });
 ```
 
-[`initVercelAiTelemetry`](/en/blackbox/reference/softprobe-js#initvercelaitelemetry-options) extracts W3C `traceparent` and `ses_*` session IDs from incoming browser requests, records `agent`, `generation`, and `tool` spans, and forwards `traceparent` on outgoing `fetch`, `http`, and `https` calls to the Java backend.
+In `langgraph-py-blackbox` and `google-adk-py-blackbox`, [`docker/blackbox/sitecustomize.py`](https://github.com/softprobe/demo-ota/blob/main/docker/blackbox/sitecustomize.py) loads via `PYTHONPATH=/opt/softprobe/python`, attaches `SoftprobeClient.from_env(service_name="travel-agent", use_simple_processor=True)` and `softprobe.langchain.CallbackHandler`, and propagates W3C `traceparent` and `baggage` (`session.id` and `sp.session.id`) headers to `travel-ota`.
 
 ### Java backend (OpenTelemetry OBI)
 
-[`blackbox/Dockerfile.obi`](https://github.com/softprobe/demo-ota/blob/main/blackbox/Dockerfile.obi) installs official OpenTelemetry OBI `v1.0.0` in a sidecar container sharing the app's PID and network namespace. [`blackbox/obi.yaml`](https://github.com/softprobe/demo-ota/blob/main/blackbox/obi.yaml) selects the Java `travel-ota` process (`OTEL_SERVICE_NAME=travel-ota`), propagates W3C `headers`, redacts `$.paymentDetails.cardNumber` and `$.paymentDetails.cvv` on `/api/flights/payandissue`, and extracts JSON bodies for `/api/flights/*` and `/ndc/v21.3/*`.
+[`docker/Dockerfile.classic-blackbox`](https://github.com/softprobe/demo-ota/blob/main/docker/Dockerfile.classic-blackbox) and the AI `-blackbox` Dockerfiles install official OpenTelemetry OBI `v1.0.0` inside the container. [`docker/blackbox/20-obi-post-start.sh`](https://github.com/softprobe/demo-ota/blob/main/docker/blackbox/20-obi-post-start.sh) renders [`docker/blackbox/obi.yaml.template`](https://github.com/softprobe/demo-ota/blob/main/docker/blackbox/obi.yaml.template), selects the `app.jar` Java process (`OTEL_SERVICE_NAME=travel-ota`), propagates W3C `headers`, enables PostgreSQL query capture, redacts `cardNumber` and `cvv` on payment routes, and extracts JSON bodies for `/api/flights/*`, `/api/bookings/*`, `/v1/payments/*`, `/v1/notifications/*`, and `/ndc/v21.3/*`.
 
 See the [OBI distributed traces guide](https://opentelemetry.io/docs/zero-code/obi/distributed-traces/) and [Config v2 reference](https://opentelemetry.io/docs/zero-code/obi/configure/config-v2/) for Linux kernel and container deployment details.
 
@@ -201,13 +216,13 @@ See the [OBI distributed traces guide](https://opentelemetry.io/docs/zero-code/o
 
 To apply this pattern to your own stack, assign a distinct OpenTelemetry `service.name` to each tier:
 
-1. **Web app.** For bundled apps (Vite, Next.js, Webpack), install [`@softprobe/web-record`](/en/blackbox/reference/softprobe-js#softprobe-web-record) and call [`RecordSdk.init`](/en/blackbox/reference/softprobe-js#recordsdk-init-options) (`{ ingestionKey, serviceName: 'my-web' }`). For plain HTML pages without a bundler, add `<script src="https://unpkg.com/@softprobe/web-record/dist/browser.js" data-softprobe-options='{"ingestionKey":"spk_...","serviceName":"my-web"}' defer></script>` to `<head>` and allow your OTLP endpoint origin in `connect-src`. Use [`httpBodyCapture`](/en/blackbox/reference/softprobe-js#httpbodycaptureoptions-and-httpbodycaptureroute) to scope routes or add `redactJsonPaths`.
-2. **AI agent server.** Install [`@softprobe/vercel-ai-sdk`](/en/blackbox/reference/softprobe-js#softprobe-vercel-ai-sdk) and [`@softprobe/tracing`](/en/blackbox/reference/softprobe-js#softprobe-tracing), then call [`initVercelAiTelemetry`](/en/blackbox/reference/softprobe-js#initvercelaitelemetry-options) at server startup. For Python, OpenAI, LangChain, OpenCode, or standard OpenTelemetry GenAI (`gen_ai.*`), see the [Python SDK (`softprobe-py`)](/en/blackbox/reference/softprobe-py) and [JavaScript / TypeScript SDK (`softprobe-js`)](/en/blackbox/reference/softprobe-js) references.
+1. **Web app.** For bundled apps (Vite, Next.js, Webpack), install [`@softprobe/web-record`](/en/blackbox/reference/softprobe-js#softprobe-web-record) and call [`RecordSdk.init`](/en/blackbox/reference/softprobe-js#recordsdk-init-options) with `ingestionKey` and `serviceName`. For plain HTML pages without a bundler, load `web-record.js` before your app script, call `window.RecordSdk.init(...)`, and allow your OTLP endpoint origin in `connect-src`. Use [`httpBodyCapture`](/en/blackbox/reference/softprobe-js#httpbodycaptureoptions-and-httpbodycaptureroute) to scope routes or add `redactJsonPaths`.
+2. **AI agent server.** Install [`@softprobe/vercel-ai-sdk`](/en/blackbox/reference/softprobe-js#softprobe-vercel-ai-sdk) and [`@softprobe/tracing`](/en/blackbox/reference/softprobe-js#softprobe-tracing), then call [`initVercelAiTelemetry`](/en/blackbox/reference/softprobe-js#initvercelaitelemetry-options) at server startup. For Python, OpenAI, LangChain, LangGraph, Google ADK, OpenCode, or standard OpenTelemetry GenAI (`gen_ai.*`), see the [Python SDK (`softprobe-py`)](/en/blackbox/reference/softprobe-py) and [JavaScript and TypeScript SDK (`softprobe-js`)](/en/blackbox/reference/softprobe-js) references.
 3. **Backend services.** Set `OTEL_SERVICE_NAME` on each backend process or Kubernetes workload and run OBI with your process selector (`cmd_args_glob` or `open_ports`) and `url_path_patterns` allowlist.
 
 ## API references
 
-- [JavaScript / TypeScript SDK (`softprobe-js`)](/en/blackbox/reference/softprobe-js) for [`@softprobe/web-record`](/en/blackbox/reference/softprobe-js#softprobe-web-record), [`@softprobe/vercel-ai-sdk`](/en/blackbox/reference/softprobe-js#softprobe-vercel-ai-sdk), and [`@softprobe/tracing`](/en/blackbox/reference/softprobe-js#softprobe-tracing)
+- [JavaScript and TypeScript SDK (`softprobe-js`)](/en/blackbox/reference/softprobe-js) for [`@softprobe/web-record`](/en/blackbox/reference/softprobe-js#softprobe-web-record), [`@softprobe/vercel-ai-sdk`](/en/blackbox/reference/softprobe-js#softprobe-vercel-ai-sdk), and [`@softprobe/tracing`](/en/blackbox/reference/softprobe-js#softprobe-tracing)
 - [Python SDK (`softprobe-py`)](/en/blackbox/reference/softprobe-py) for `SoftprobeClient`, `observe_openai`, `softprobe.langchain`, and `softprobe.propagation`
 - [Vercel AI SDK guide](/en/blackbox/vercel-ai-sdk)
 - [OBI Config v2 reference](https://opentelemetry.io/docs/zero-code/obi/configure/config-v2/)

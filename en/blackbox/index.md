@@ -12,7 +12,7 @@ Blackbox connects browser frontends ([`@softprobe/web-record`](/en/blackbox/refe
 
 1. **[Quick start](/en/blackbox/getting-started).** Use Managed Cloud (`https://explorer.softprobe.ai`) with zero setup, create an Agent, and connect your app.
 2. **[Self-host Blackbox](/en/blackbox/self-hosting).** Run Explorer locally with `docker compose up -d` (`AUTH_MODE=local`) and connect local MCP at `http://127.0.0.1:8787/mcp`.
-3. **[End-to-end session tracing with payloads](/en/blackbox/end-to-end-session-tracing).** Run the three-tier Travel OTA demo (browser, Vercel AI, and Java backend with OBI) in one Docker Compose command.
+3. **[End-to-end session tracing with payloads](/en/blackbox/end-to-end-session-tracing).** Run the pre-instrumented single-container Travel OTA demo (`vercel-ai-blackbox`, `langgraph-py-blackbox`, or `google-adk-py-blackbox`) in one `docker run` command.
 4. **[Concepts](/en/blackbox/concepts).** Learn how Sessions, Steps, `gen_ai.conversation.id`, and Findings fit together.
 
 ## Instrument your app
