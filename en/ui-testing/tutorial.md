@@ -50,11 +50,11 @@ You should see:
 
 Open `http://127.0.0.1:8080` in Chrome and book a flight:
 
-1. Select **London Heathrow (LHR)** in **From** and **Paris Charles de Gaulle (CDG)** in **To**.
+1. Select **London Heathrow (LHR)** in **Departure Airport** and **Paris Charles de Gaulle (CDG)** in **Arrival Airport**.
 2. Pick a future **Departure** date and click **Search**.
 3. On `list.html`, click **Select** on the first flight.
 4. On `detail.html`, click **Book** on the first fare option.
-5. On `booking.html`, fill in **Last Name** (`Demo`), **First Name** (`Alex`), **Document Type** (`Passport`), **Document Number** (`DEMO000001`), **Phone Number** (`+12025550100`), and **Email** (`alex@example.com`), then click **Confirm Booking**.
+5. On `booking.html`, fill in **Last Name** (`Demo`), **First Name** (`Alex`), **Document Type** (`Passport`), **Document Number** (`DEMO000001`), **Phone Number** (`+12025550100`), and **Email Address** (`alex@example.com`), then click **Confirm Booking**.
 6. Wait until `payment.html` loads, then open your browser DevTools console and run `await window.__softprobeSession.flush(); window.__softprobeSession.sessionId` to flush browser spans and copy your `SESSION_ID`.
 
 Open **Sessions** in [Softprobe Explorer](https://explorer.softprobe.ai) and click your recorded session. After a few seconds for trace ingestion, open the **Trace** tab to see `UI` (`softprobe.ui.action`) spans across all five pages alongside `travel-ota` server spans, PostgreSQL queries on `ota_orders`, airline NDC calls (`/ndc/v21.3/airshopping`, `/ndc/v21.3/offerprice`, `/ndc/v21.3/ordercreate`), and `POST /v1/notifications/confirmation`.
@@ -235,7 +235,7 @@ E2E_TELEMETRY_DISABLED=1 \
 Inspect `.e2e/report.json` with Node.js to verify that the test passed with `0` model tokens and `0` model calls:
 
 ```bash
-node -e 'const r = JSON.parse(fs.readFileSync(".e2e/report.json", "utf8")); console.log(r.run.summary.passed, r.run.usage.modelTokens, r.run.usage.maxModelCallsInStep);'
+node --input-type=module -e 'import { readFileSync } from "node:fs"; const r = JSON.parse(readFileSync(".e2e/report.json", "utf8")); console.log(r.run.summary.passed, r.run.usage.modelTokens, r.run.usage.maxModelCallsInStep);'
 ```
 
 You should see:
