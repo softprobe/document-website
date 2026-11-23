@@ -77,7 +77,7 @@ with `npx wrangler types worker/env.d.ts --include-runtime false`.
 
 This repository is configured for automated deployments directly connected to Cloudflare (following the same pattern as `sp-airline-ndc`). 
 
-Any push to the **`v2`** branch automatically triggers a build and deploy on Cloudflare:
+Any push to the **`main`** branch automatically triggers a build and deploy on Cloudflare:
 - **Build Command**: `npm run docs:build`
 - **Output Directory**: `.vitepress/dist`
 - **Deploy Command (Workers)**: `npx wrangler deploy` (deploy the authentication Worker together with its assets)
@@ -94,7 +94,7 @@ npm run deploy
 
 Worker name: `document-website`. Output: `.vitepress/dist`.
 
-**Preview (v2):** https://softprobe-docs.github-visualizer.workers.dev/en/
+**Preview (main):** https://softprobe-docs.github-visualizer.workers.dev/en/
 
 Attach custom domain `docs.softprobe.ai` in Cloudflare dashboard (Workers → `softprobe-docs` → Domains) after approval.
 
@@ -114,5 +114,5 @@ Sidebars live in `.vitepress/config.ts`; nav and footer in `.vitepress/theme/sha
 
 ## Branch
 
-- **`v2`** — VitePress + Workers (this layout)
+- **`main`** — VitePress + Workers (this layout)
 - **`main`** — legacy Docusaurus + K8s until cutover
