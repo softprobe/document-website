@@ -6,7 +6,7 @@ title: Build your first generated UI and backend test
 
 In this tutorial, you start the pre-instrumented [Travel OTA demo](https://github.com/softprobe/demo-ota) container (`docker.io/softprobe/demo-ota:classic-blackbox`), record one flight-booking browser flow into [Softprobe Explorer](https://explorer.softprobe.ai), and compile that session into both a `@playwright/test` suite and a zero-LLM `e2e` suite. Then you restart the container with `OTA_FAULT_SKIP_EMAIL=true` so the booking page still confirms the order while the Java backend skips the confirmation email request, and watch the generated test catch the regression.
 
-Before you start, install Docker and Node.js 22.13 or newer, and create an Agent Ingestion Key (`spk_...`) plus an API token and Workspace ID in [Softprobe Explorer](https://explorer.softprobe.ai). If you run [self-hosted Explorer](/en/blackbox/self-hosting) on Linux (`http://127.0.0.1:8787`), replace `-p 8080:8080` with `--network host -e OTEL_EXPORTER_OTLP_TRACES_ENDPOINT="http://127.0.0.1:8787/api/thelake/v1/traces"` in `docker run` and export `SOFTPROBE_SINK_ENDPOINT="http://127.0.0.1:8787/api/thelake"` in Terminal 2.
+Before you start, install Docker and Node.js 22.13 or newer, and create an Agent Ingestion Key (`spk_...`), a `SOFTPROBE_API_KEY`, and a Workspace ID in [Softprobe Explorer](https://explorer.softprobe.ai). The Ingestion Key sends telemetry; `SOFTPROBE_API_KEY` authorizes session reads. If you run [self-hosted Explorer](/en/blackbox/self-hosting) on Linux (`http://127.0.0.1:8787`), replace `-p 8080:8080` with `--network host -e OTEL_EXPORTER_OTLP_TRACES_ENDPOINT="http://127.0.0.1:8787/api/thelake/v1/traces"` in `docker run` and export `SOFTPROBE_SINK_ENDPOINT="http://127.0.0.1:8787/api/thelake"` in Terminal 2.
 
 ## 1. Start the pre-instrumented demo app
 
@@ -65,7 +65,7 @@ In Terminal 2, export your Explorer query credentials and `SESSION_ID`, then com
 
 ```bash
 export SESSION_ID="PASTE_YOUR_SESSION_ID"
-export SOFTPROBE_TOKEN="YOUR_EXPLORER_API_TOKEN"
+export SOFTPROBE_API_KEY="YOUR_SOFTPROBE_API_KEY"
 export SOFTPROBE_WORKSPACE_ID="YOUR_WORKSPACE_ID"
 
 npx softprobe-compile-session \
