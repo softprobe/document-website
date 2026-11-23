@@ -168,7 +168,7 @@ In [Softprobe Explorer](https://explorer.softprobe.ai), open **Sessions**, filte
 
 - **Web app (`travel-web`).** RRWeb DOM replay, semantic `softprobe.ui.action` spans, and browser `POST` client spans with `url.template` route patterns and redacted JSON payloads.
 - **AI agent server (`travel-agent`).** `invoke_agent` root spans, `chat` generation spans, and `execute_tool` spans (`travel_search`, `travel_prepare`, `travel_book`, `travel_order`) linked by `gen_ai.conversation.id`.
-- **Java backend (`travel-ota`).** Inbound `/api/bookings/sessions/*` server spans, `SELECT`, `INSERT`, and `UPDATE` PostgreSQL spans against `ota_booking_sessions` and `ota_orders`, plus outbound `POST` client spans to `/ndc/v21.3/*`, `/v1/payments/authorize` (with `[REDACTED]` `cardNumber` and `cvv`), and `/v1/notifications/confirmation`.
+- **Java backend (`travel-ota`).** Inbound `/api/bookings/sessions/*` server spans, `SELECT`, `INSERT`, and `UPDATE` PostgreSQL spans against `ota_booking_sessions` and `ota_orders`, and outbound `POST` client spans to `/ndc/v21.3/*`. On `langgraph-py-blackbox` and `google-adk-py-blackbox`, FastAPI middleware also links the non-LLM `/pay` call into the same Session (`POST /v1/payments/authorize` with `[REDACTED]` `cardNumber` and `cvv`, plus `POST /v1/notifications/confirmation`).
 
 Press `Ctrl+C` in your terminal when finished.
 
