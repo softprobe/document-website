@@ -286,7 +286,7 @@ OpenCode plugin that sends coding-agent turns, model generations, tool calls, an
 
 ## `@softprobe/e2e`
 
-Full-stack E2E testing SDK for `@playwright/test` and `e2e` on Node.js 22.13 or newer. Correlates browser requests through W3C `traceparent` headers, asserts outgoing backend `CLIENT` HTTP calls through `BlackboxSink`, and compiles recorded Blackbox sessions into runnable test suites. For workflow steps, see [Automate E2E tests from recorded sessions](/en/blackbox/e2e-testing).
+Full-stack UI testing SDK for `@playwright/test` and `e2e` on Node.js 22.13 or newer. Correlates browser requests through W3C `traceparent` headers, asserts outgoing backend `CLIENT` HTTP calls through `BlackboxSink`, and compiles recorded Blackbox sessions into runnable test suites. For workflow steps, see [Softprobe UI Testing](/en/ui-testing/) and [How to generate UI tests from recorded sessions](/en/ui-testing/from-sessions).
 
 ```bash
 npm install -D @softprobe/e2e @playwright/test
@@ -313,7 +313,7 @@ Extends `@e2e-dev/web` `WebOptions`:
 | `workspaceId` | `string` | `SOFTPROBE_WORKSPACE_ID` | Sent as `X-Workspace-Id` on Blackbox trace lookups |
 | `explorerUrl` | `string` | `SOFTPROBE_EXPLORER_URL` or derived from `endpoint` | Base URL for `explorerTraceUrl` links |
 | `apiOrigins` | `readonly (string \| RegExp)[]` | `[app.url]` | Origins matched by `browser.route` for `traceparent` correlation |
-| `pollTimeoutMs` | `number` | `15000` | Maximum milliseconds to poll for the backend `SERVER` span and matching `CLIENT` call, also accepted as `traceTimeoutMs` |
+| `pollTimeoutMs` | `number` | `30000` | Maximum milliseconds to poll for the backend `SERVER` span and matching `CLIENT` call, also accepted as `traceTimeoutMs` |
 | `pollIntervalMs` | `number` | `250` | Delay in milliseconds between Blackbox trace polls |
 | `settleMs` | `number` | `150` | Post-`SERVER` observation window in milliseconds for `trace.expectNoOutboundHttp` |
 

@@ -40,7 +40,7 @@ function pageExists(link) {
 // implementer/** is design-doc-only (srcExcluded) and intentionally not mirrored.
 function relSet(locale) {
   return new Set(
-    ['arex', 'platform', 'lisa']
+    ['arex', 'platform', 'lisa', 'ui-testing']
       .flatMap((area) => walkMd(path.join(root, locale, area)))
       .map((f) => path.relative(path.join(root, locale), f))
   )
@@ -57,6 +57,9 @@ const config = fs.readFileSync(path.join(root, '.vitepress/config.ts'), 'utf8')
 
 if (!config.includes('testingSidebarEn') || !config.includes('testingSidebarZh')) {
   fail('Both testingSidebarEn and testingSidebarZh must exist in config.ts')
+}
+if (!config.includes('uiTestingSidebarEn') || !config.includes('uiTestingSidebarZh')) {
+  fail('Both uiTestingSidebarEn and uiTestingSidebarZh must exist in config.ts')
 }
 
 // Extract each sidebar array's shape: number of groups + items per group.
@@ -93,6 +96,21 @@ if (enShape && zhShape) {
   for (const link of [...enShape.links, ...zhShape.links]) {
     const bare = link.replace(/#.*$/, '')
     if (!pageExists(bare)) fail(`Sidebar links a non-existent page: ${link}`)
+  }
+}
+
+const uiEnShape = sidebarShape('uiTestingSidebarEn')
+const uiZhShape = sidebarShape('uiTestingSidebarZh')
+if (uiEnShape && uiZhShape) {
+  if (uiEnShape.groups !== uiZhShape.groups) {
+    fail(`UI Testing sidebar group count differs: en=${uiEnShape.groups} zh=${uiZhShape.groups}`)
+  }
+  if (uiEnShape.links.length !== uiZhShape.links.length) {
+    fail(`UI Testing sidebar item count differs: en=${uiEnShape.links.length} zh=${uiZhShape.links.length}`)
+  }
+  for (const link of [...uiEnShape.links, ...uiZhShape.links]) {
+    const bare = link.replace(/#.*$/, '')
+    if (!pageExists(bare)) fail(`UI Testing sidebar links a non-existent page: ${link}`)
   }
 }
 

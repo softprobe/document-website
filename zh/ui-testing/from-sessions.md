@@ -1,8 +1,8 @@
 ---
-title: 从录制的会话生成端到端测试
+title: 如何从录制的会话生成 UI 测试
 ---
 
-# 从录制的会话生成端到端测试
+# 如何从录制的会话生成 UI 测试
 
 在 [Softprobe Explorer](https://explorer.softprobe.ai) 中走通一次真实浏览器流程，将录制到的会话编译为 `@playwright/test` 或 `e2e` 测试套件，并在 CI 中同时验证前端交互与后端向外部服务发出的真实出站 HTTP 请求。
 
@@ -53,10 +53,8 @@ title: 从录制的会话生成端到端测试
 当会话包含 `softprobe.ui.action` span 时，Explorer 会在会话详情页顶部展示 **Generate E2E test** 按钮。
 
 1. 点击 **Generate E2E test** 打开导出抽屉。
-2. 选择 `@playwright/test` 生成 `.spec.ts` 用例，或选择 `e2e` 生成带预置缓存的 `.e2e.ts` 用例。
-3. 预览生成的浏览器操作、`SP_SECRET_<SLOT>` 环境变量绑定与 `trace.outboundHttp` 出站断言，点击 **Copy** 或 **Download** 保存到代码仓库。
-
-导出抽屉同时提供预填好 `SOFTPROBE_WORKSPACE_ID` 与会话 ID 的 `softprobe-compile-session` 终端命令。
+2. 选择 **Playwright (@playwright/test)** 预览 `.spec.ts` 用例，或选择 **AI cached (@softprobe/e2e)** 预览 `.e2e.ts` 用例。
+3. 检查生成的浏览器步骤、`SP_SECRET_<SLOT>` 环境变量绑定与 `trace.outboundHttp` 出站断言。点击 **Copy test** 或 **Download** 保存测试文件，或点击 **Copy command** 复制预填参数的 `softprobe-compile-session` 命令，一次性写出完整目录（含 `playwright.config.ts`、`e2e.config.ts` 与 `.e2e/cache/*.json`）。
 
 ### 在编码 Agent 中通过 Blackbox MCP 编译 {#compile-from-mcp}
 
@@ -140,7 +138,7 @@ npx e2e run
 
 生成的 `e2e.config.ts` 默认注册 `softprobeCachedAgent()`、`softprobeWeb()` 与 `softprobeReporter()`。首次运行时，`softprobeCachedAgent()` 就会直接回放预置的 `.e2e/cache/<sha256>.json` `trace-1` 缓存步骤，全程产生零次大模型调用，同时浏览器仍发送带全新 `traceparent` 请求头的真实 HTTP 请求。请将 `.e2e/cache/` 与 `tests/*.e2e.ts` 一并提交到 Git，使 CI 无需配置模型密钥即可稳定运行。
 
-如果需要在已编译流程末尾追加新的自然语言步骤，先在 `e2e.config.ts` 中将 `cache.mode` 改为 `"read-write"` 并向 `softprobeCachedAgent({ model })` 传入模型实例。在用例末尾添加 `await agent.act(...)` 并紧跟可见的 `expect(screen...)` 断言。随后连续运行两次 `E2E_TELEMETRY_DISABLED=1 npx e2e run`，使第二次运行从 `.e2e/cache/` 零模型调用完整回放。
+如果需要在已编译流程末尾追加新的自然语言步骤，请参阅[如何用 `e2e` 编写自然语言 UI 测试](/zh/ui-testing/natural-language#extend-compiled-tests)。
 
 ## 断言后端出站 HTTP 调用并清理测试数据 {#outbound-assertions}
 
@@ -286,11 +284,11 @@ expect(resentCall.status).toBe(200);
 
 `BlackboxSink` 会先等待后端入口 `SERVER` span 到达，再校验下游 `CLIENT` HTTP 调用，把埋点缺失与业务断言失败清晰分开：
 
-- **抛出 `TraceInstrumentationError` 且错误码为 `TRACE_INSTRUMENTATION_MISSING`。** 浏览器已发送 `traceparent` 请求头，但 Blackbox 在默认的 `15000` 毫秒 `pollTimeoutMs` 超时时间内未收到对应的后端 `SERVER` span。请检查后端是否已配置 OTLP 导出或挂载 OpenTelemetry OBI，核对 `SOFTPROBE_WORKSPACE_ID` 与 `SOFTPROBE_TOKEN`，并确认跨域接口已在 `Access-Control-Allow-Headers` 中放行 `traceparent`。
+- **抛出 `TraceInstrumentationError` 且错误码为 `TRACE_INSTRUMENTATION_MISSING`。** 浏览器已发送 `traceparent` 请求头，但 Blackbox 在默认的 `30000` 毫秒 `pollTimeoutMs` 超时时间内未收到对应的后端 `SERVER` span。请确认后端已配置 OTLP 导出或挂载 OpenTelemetry OBI，核对 `SOFTPROBE_WORKSPACE_ID` 与 `SOFTPROBE_TOKEN`，并在跨域接口的 `Access-Control-Allow-Headers` 中放行 `traceparent`。
 - **抛出 `TraceAssertionError` 且错误码为 `TRACE_ASSERTION_FAILED`。** 后端 `SERVER` span 已写入 Blackbox，说明链路透传正常，但没有下游 `CLIENT` HTTP 请求匹配 `trace.outboundHttp`，或出现了违反 `trace.expectNoOutboundHttp` 的下游调用。可直接打开报错信息中的 `explorerTraceUrl`，或在 [Blackbox MCP](/zh/blackbox/coding-agent-skills) 中调用 `get_trace` 检查记录到的真实请求。
 
 ## 相关文档 {#related}
 
+- [教程：构建第一个自动生成 UI 与后端联调测试](/zh/ui-testing/tutorial)
+- [如何用 `e2e` 编写自然语言 UI 测试](/zh/ui-testing/natural-language)
 - [JavaScript 与 TypeScript SDK 参考](/en/blackbox/reference/softprobe-js#softprobe-e2e)
-- [快速开始](/zh/blackbox/getting-started)
-- [在编码 Agent 中使用 Blackbox](/zh/blackbox/coding-agent-skills)

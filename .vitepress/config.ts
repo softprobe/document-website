@@ -321,7 +321,7 @@ const agentQaSidebarEn = [
     text: 'Investigate Sessions',
     items: [
       { text: 'Blackbox MCP (coding agents)', link: '/en/blackbox/coding-agent-skills' },
-      { text: 'Automate E2E tests from sessions', link: '/en/blackbox/e2e-testing' },
+      { text: 'Generate UI tests from sessions', link: '/en/ui-testing/from-sessions' },
     ],
   },
   {
@@ -329,6 +329,29 @@ const agentQaSidebarEn = [
     items: [
       { text: 'JavaScript / TypeScript (softprobe-js)', link: '/en/blackbox/reference/softprobe-js' },
       { text: 'Python (softprobe-py)', link: '/en/blackbox/reference/softprobe-py' },
+    ],
+  },
+]
+
+const uiTestingSidebarEn = [
+  {
+    text: 'Get started',
+    items: [
+      { text: 'Overview', link: '/en/ui-testing/' },
+      { text: 'Tutorial: Build your first test', link: '/en/ui-testing/tutorial' },
+    ],
+  },
+  {
+    text: 'Author and run tests',
+    items: [
+      { text: 'Generate from recorded sessions', link: '/en/ui-testing/from-sessions' },
+      { text: 'Write in plain English (e2e)', link: '/en/ui-testing/natural-language' },
+    ],
+  },
+  {
+    text: 'SDK & CLI reference',
+    items: [
+      { text: '@softprobe/e2e & web-record', link: '/en/blackbox/reference/softprobe-js' },
     ],
   },
 ]
@@ -353,7 +376,7 @@ const agentQaSidebarZh = [
       { text: '快速开始', link: '/zh/blackbox/getting-started' },
       { text: '概念', link: '/zh/blackbox/concepts' },
       { text: '用编码 Agent 排查', link: '/zh/blackbox/coding-agent-skills' },
-      { text: '从录制的会话生成端到端测试', link: '/zh/blackbox/e2e-testing' },
+      { text: '从录制的会话生成 UI 测试', link: '/zh/ui-testing/from-sessions' },
     ],
   },
   {
@@ -361,6 +384,29 @@ const agentQaSidebarZh = [
     items: [
       { text: 'OpenCode', link: '/zh/blackbox/opencode' },
       { text: 'LangChain', link: '/zh/blackbox/langchain' },
+    ],
+  },
+]
+
+const uiTestingSidebarZh = [
+  {
+    text: '开始使用',
+    items: [
+      { text: '概览', link: '/zh/ui-testing/' },
+      { text: '教程：构建第一个测试', link: '/zh/ui-testing/tutorial' },
+    ],
+  },
+  {
+    text: '编写与运行测试',
+    items: [
+      { text: '从录制的会话生成测试', link: '/zh/ui-testing/from-sessions' },
+      { text: '用自然语言编写测试（e2e）', link: '/zh/ui-testing/natural-language' },
+    ],
+  },
+  {
+    text: 'SDK 与 CLI 参考',
+    items: [
+      { text: '@softprobe/e2e 与 web-record', link: '/en/blackbox/reference/softprobe-js' },
     ],
   },
 ]
@@ -388,9 +434,11 @@ function sidebarForLocale(locale: DocLocale) {
   }
   if (locale === 'en') {
     sidebars['/en/blackbox/'] = agentQaSidebarEn
+    sidebars['/en/ui-testing/'] = uiTestingSidebarEn
     sidebars['/en/lisa/'] = lisaSidebarEn
   } else {
     sidebars['/zh/blackbox/'] = agentQaSidebarZh
+    sidebars['/zh/ui-testing/'] = uiTestingSidebarZh
     sidebars['/zh/lisa/'] = lisaSidebarZh
   }
   return sidebars
@@ -399,7 +447,7 @@ function sidebarForLocale(locale: DocLocale) {
 export default withMermaid(
   defineConfig({
   title: 'Softprobe',
-  description: 'Softprobe documentation for Arex, Blackbox, and Lisa',
+  description: 'Softprobe documentation for Arex, Blackbox, UI Testing, and Lisa',
   base: '/',
   cleanUrls: true,
   appearance: true,
@@ -420,7 +468,7 @@ export default withMermaid(
       llmstxt({
         ignoreFiles: ['**/implementer/**'],
         description:
-          'Softprobe — Arex (Java record-replay testing and sp CLI), Blackbox (end-to-end session tracing and MCP), and Lisa (AI QA policy evaluation agent).',
+          'Softprobe documentation for Arex (service record-replay testing and sp CLI), Blackbox (end-to-end session tracing and MCP), UI Testing (Playwright and zero-LLM e2e browser tests with backend trace verification), and Lisa (AI QA policy evaluation agent).',
       }),
     ],
   },
