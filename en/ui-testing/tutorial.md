@@ -59,7 +59,24 @@ Open `http://127.0.0.1:8080` in Chrome and book a flight:
 
 Open **Sessions** in [Softprobe Explorer](https://explorer.softprobe.ai) and click your recorded session. After a few seconds for trace ingestion, open the **Trace** tab to see `UI` (`softprobe.ui.action`) spans across all five pages alongside `travel-ota` server spans, PostgreSQL queries on `ota_orders`, airline NDC calls (`/ndc/v21.3/airshopping`, `/ndc/v21.3/offerprice`, `/ndc/v21.3/ordercreate`), and `POST /v1/notifications/confirmation`.
 
-## 3. Generate and run the `@playwright/test` suite
+## 3. Generate a Playwright + `@softprobe/e2e` test
+
+You can generate the test in two ways:
+- **With your AI coding agent via Blackbox MCP (recommended for real sessions):** Your coding agent calls `get_session_semantic_actions(session_id)` to read a compact action timeline (flow segments, rich CSS/ARIA locators, `[non-interactive]` noise tags, and caused `trace_id`s with downstream DB/HTTP summaries), then calls `get_trace(trace_id)` on key booking or payment traces to inspect payloads and write clean `trace.outboundHttp` assertions without reproducing stray clicks or retried errors.
+- **With the deterministic CLI compiler (`softprobe-compile-session`):** Compiles every recorded action and outbound HTTP call mechanically.
+
+### Option A: Ask your coding agent (OpenCode, Claude Code, Cursor, Antigravity)
+
+With the [Blackbox MCP server](/en/blackbox/coding-agent-skills) connected, ask your agent:
+
+```text
+Use Blackbox MCP to call get_session_semantic_actions for session <SESSION_ID>.
+Inspect the booking and payment traces with get_trace, prune any stray
+non-interactive clicks or retried failed requests, and write a Playwright test
+using @softprobe/e2e/playwright that asserts the confirmation email call.
+```
+
+### Option B: Compile with the CLI
 
 In Terminal 2, export your Explorer query credentials and `SESSION_ID`, then compile the recorded session into `./pw-suite`:
 
