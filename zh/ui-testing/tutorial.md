@@ -6,7 +6,11 @@ title: 构建第一个自动生成 UI 与后端联调测试
 
 在本教程中，你将直接启动预埋点的 [Travel OTA 示例应用](https://github.com/softprobe/demo-ota)单容器镜像（`docker.io/softprobe/demo-ota:classic-blackbox`），把一次真实机票预订浏览器操作录制到 [Softprobe Explorer](https://explorer.softprobe.ai)，并将这条会话分别编译为 `@playwright/test` 套件与零大模型调用的 `e2e` 套件。随后你将在订单确认页面照常跳转的情况下开启 `OTA_FAULT_SKIP_EMAIL=true` 让 Java 后端漏发确认邮件请求，验证自动生成的测试如何精准拦截这类隐蔽回归缺陷。
 
-开始前，请安装 Docker 以及 Node.js 22.13 或更高版本，并在 [Softprobe Explorer](https://explorer.softprobe.ai) 中创建一把 Agent Ingestion Key（`spk_...`）以及用于查询的 API Token 和 Workspace ID。如果你在 Linux 上使用[自托管 Blackbox](/en/blackbox/self-hosting)（`http://127.0.0.1:8787`），请在 `docker run` 中将 `-p 8080:8080` 替换为 `--network host -e OTEL_EXPORTER_OTLP_TRACES_ENDPOINT="http://127.0.0.1:8787/api/thelake/v1/traces"`，并在第二个终端额外配置 `export SOFTPROBE_SINK_ENDPOINT="http://127.0.0.1:8787/api/thelake"`。
+开始前，请安装 Docker、Node.js 22.13 或更高版本，以及 [Softprobe CLI](/zh/arex/installation/)。在 [app.softprobe.ai/orgs](https://app.softprobe.ai/orgs) 选择拥有 Explorer 工作区的组织，然后运行 `sp auth login` 登录。如果 CLI 配置里还没有该租户 ID，请将 `SP_TENANT_ID` 设为该组织的数字租户 ID。运行 `sp tenant softprobe-api-key ensure --json` 创建或获取 **Softprobe API Key**，并复制 `data.softprobeApiKey` 作为 `SOFTPROBE_API_KEY`。随后在 [Softprobe Explorer](https://explorer.softprobe.ai) 中创建 Agent，并复制它的 **Ingestion Key** 和 **Workspace ID**。Ingestion Key 只为该 Agent 上报遥测数据；Softprobe API Key 用于读取所选组织中的会话和 trace。
+
+本教程的后端 spans 由 OBI 采集，需要受支持的 Linux 环境：`amd64` 或 `arm64` 架构、Linux 内核 5.8 或更高版本（RHEL 系发行版需 4.18+ 并包含所需 eBPF 回移）、启用 BTF，并授予所需的 eBPF 权限。下方的 `--privileged` 会为容器授予所需权限，但 Docker 主机仍须提供受支持的 Linux 内核。请参阅 [OBI 兼容性要求](https://opentelemetry.io/docs/zero-code/obi/#compatibility)。
+
+如果你在 Linux 上使用[自托管 Explorer](/en/blackbox/self-hosting) (`http://127.0.0.1:8787`), 请在 `docker run` 中将 `-p 8080:8080` 替换为 `--network host -e OTEL_EXPORTER_OTLP_TRACES_ENDPOINT="http://127.0.0.1:8787/api/thelake/v1/traces"`，并在第二个终端额外配置 `export SOFTPROBE_SINK_ENDPOINT="http://127.0.0.1:8787/api/thelake"`。
 
 ## 1. 一键启动预埋点示例容器
 
@@ -50,7 +54,7 @@ curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:8080/index.html
 
 在 Chrome 浏览器中打开 `http://127.0.0.1:8080` 完成一次订票流程：
 
-1. 在 **From** 选择 **London Heathrow (LHR)**，在 **To** 选择 **Paris Charles de Gaulle (CDG)**。
+1. 在 **Departure Airport** 选择 **London Heathrow (LHR)**，在 **Arrival Airport** 选择 **Paris Charles de Gaulle (CDG)**。
 2. 选择未来的出发日期并点击 **Search**。
 3. 在 `list.html` 页面点击第一个航班的 **Select**。
 4. 在 `detail.html` 页面点击第一个舱位票价的 **Book**。
@@ -65,7 +69,7 @@ curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:8080/index.html
 
 ```bash
 export SESSION_ID="PASTE_YOUR_SESSION_ID"
-export SOFTPROBE_TOKEN="YOUR_EXPLORER_API_TOKEN"
+export SOFTPROBE_API_KEY="YOUR_SOFTPROBE_API_KEY"
 export SOFTPROBE_WORKSPACE_ID="YOUR_WORKSPACE_ID"
 
 npx softprobe-compile-session \
@@ -235,7 +239,7 @@ E2E_TELEMETRY_DISABLED=1 \
 用 Node.js 检查 `.e2e/report.json`，确认用例通过且模型 Token 与模型调用次数均为 `0`：
 
 ```bash
-node -e 'const r = JSON.parse(fs.readFileSync(".e2e/report.json", "utf8")); console.log(r.run.summary.passed, r.run.usage.modelTokens, r.run.usage.maxModelCallsInStep);'
+node --input-type=module -e 'import { readFileSync } from "node:fs"; const r = JSON.parse(readFileSync(".e2e/report.json", "utf8")); console.log(r.run.summary.passed, r.run.usage.modelTokens, r.run.usage.maxModelCallsInStep);'
 ```
 
 终端会输出：

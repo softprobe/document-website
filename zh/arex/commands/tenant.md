@@ -1,46 +1,46 @@
 ---
-title: sp tenant：租户密钥
+title: sp tenant：Softprobe API Key
 ---
 
-# sp tenant：租户密钥
+# sp tenant：Softprobe API Key
 
-**仅适用于 Softprobe Cloud。** 管理 Java Agent 向你的租户上报数据时使用的租户 API 密钥。自建部署用不到。
+**仅适用于 Softprobe Cloud。** 管理 Softprobe API Key，供 Softprobe API 和 Java Agent 使用。它与 Agent 的 Ingestion Key 是不同的凭据。自建部署用不到。
 
-## `tenant key ensure`
+## `tenant softprobe-api-key ensure`
 
-查找租户的 API 密钥，没有就新建一个，并保存到当前配置档案的 `sp.jsonc`：
+查找租户的 Softprobe API Key，没有就新建一个，并保存到当前配置档案的 `config.jsonc`：
 
 ```bash
-sp tenant key ensure --json
+sp tenant softprobe-api-key ensure --json
 ```
 
 | 参数 | 说明 |
 |------|------|
-| `--no-save` | 只输出密钥，不写入 `sp.jsonc` |
+| `--no-save` | 只输出密钥，不写入 `config.jsonc` |
 
-需要先执行 `sp auth login`，并提供租户 ID（`sp.jsonc` 中的 `tenant_id` 或环境变量 `SP_TENANT_ID`）。
+先在 [app.softprobe.ai/orgs](https://app.softprobe.ai/orgs) 选择组织，再运行 `sp auth login`。命令还需要该组织的数字租户 ID，可从当前配置档案读取，也可通过 `SP_TENANT_ID` 设置。
 
 ```json
 {
   "ok": true,
-  "command": "tenant key ensure",
+  "command": "tenant softprobe-api-key ensure",
   "data": {
-    "tenantId": "t-123",
-    "tenantApiKey": "…",
-    "maskedApiKey": "***abcd",
+    "tenantId": "35",
+    "softprobeApiKey": "…",
+    "maskedSoftprobeApiKey": "***abcd",
     "savedToConfig": true
   }
 }
 ```
 
-`sp agent command` 会把保存的密钥写进 Agent 启动参数 `-Dsp.api.token=…`；还没有密钥时会自动创建。
+`sp agent command` 会把保存的密钥写进 Agent 启动参数 `-Dsoftprobe.api.key=…`；还没有密钥时会自动创建。
 
-## `tenant key show`
+## `tenant softprobe-api-key show`
 
 显示已保存的密钥（脱敏显示）：
 
 ```bash
-sp tenant key show --json
+sp tenant softprobe-api-key show --json
 ```
 
 还没有保存密钥时，会以用法错误退出（退出码 `2`）。

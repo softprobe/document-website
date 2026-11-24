@@ -39,10 +39,10 @@ export SP_TOKEN="eyJ..."
 sp app list --json
 ```
 
-**Java agent** on Softprobe Cloud uses a **tenant API key** (long-lived, scoped to the org):
+**Java agent** on Softprobe Cloud uses a **Softprobe API Key** (long-lived, scoped to the org):
 
 ```bash
-export SP_TENANT_API_KEY="…"   # from sp tenant key ensure or dashboard Settings
+export SOFTPROBE_API_KEY="…"   # from sp tenant softprobe-api-key ensure or CLI
 export SP_TENANT_ID="35"
 sp agent command --app <appId> --json
 ```

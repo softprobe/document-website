@@ -42,10 +42,10 @@ The version is not matched to your backend automatically. If your backend needs 
 
 ## `agent command`
 
-On **Softprobe Cloud**, run `sp tenant key ensure` once (or let this command auto-create the key). The output includes `-Dsp.api.token=` for the Java agent.
+On **Softprobe Cloud**, run `sp tenant softprobe-api-key ensure` once (or let this command auto-create the key). The output includes `-Dsoftprobe.api.key=` for the Java agent.
 
 ```bash
-sp tenant key ensure --json   # SaaS: once per tenant
+sp tenant softprobe-api-key ensure --json   # SaaS: once per tenant
 curl -fsSL -o sp-agent.jar https://install.softprobe.ai/artifacts/agent/latest/sp-agent.jar
 sp agent command --app a1b2c3d4e5f67890 --json
 sp agent command --app a1b2c3d4e5f67890 --agent-jar ./sp-agent.jar --app-jar target/app.jar --json

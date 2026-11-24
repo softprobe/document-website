@@ -78,8 +78,8 @@ ${XDG_STATE_HOME:-~/.local/state}/softprobe/          # 日志和状态
     "tokenConfigured": true,
     "tokenMasked": "eyJhbGciOi...[masked]",
     "tenantConfigured": false,
-    "tenantApiKeyConfigured": false,
-    "tenantApiKeyMasked": "",
+    "softprobeApiKeyConfigured": false,
+    "softprobeApiKeyMasked": "",
     "agentJarConfigured": false
   }
 }
@@ -121,7 +121,7 @@ ${XDG_STATE_HOME:-~/.local/state}/softprobe/          # 日志和状态
 5. 设置了 `--config` 时，来自它的额外配置。
 6. 选中的配置档案。档案选择优先级为 `--profile`、`SP_PROFILE`、
    合并后的 `profile`，最后才是 `default`。
-7. 环境变量：`SP_API_URL`、`SP_TOKEN`、`SP_TENANT_ID`、`SP_TENANT_API_KEY`。
+7. 环境变量：`SP_API_URL`、`SP_TOKEN`、`SP_TENANT_ID`、`SOFTPROBE_API_KEY`。
 8. 全局参数：`--api-url`、`--token`。
 
 Java Agent jar 的路径由 `sp agent command` 单独查找：先看 `--agent-jar`，再看 `SP_AGENT_JAR`，最后用默认安装路径，见 [sp agent](./agent)。

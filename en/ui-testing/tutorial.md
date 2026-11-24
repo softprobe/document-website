@@ -6,7 +6,11 @@ title: Build your first generated UI and backend test
 
 In this tutorial, you start the pre-instrumented [Travel OTA demo](https://github.com/softprobe/demo-ota) container (`docker.io/softprobe/demo-ota:classic-blackbox`), record one flight-booking browser flow into [Softprobe Explorer](https://explorer.softprobe.ai), and compile that session into both a `@playwright/test` suite and a zero-LLM `e2e` suite. Then you restart the container with `OTA_FAULT_SKIP_EMAIL=true` so the booking page still confirms the order while the Java backend skips the confirmation email request, and watch the generated test catch the regression.
 
-Before you start, install Docker and Node.js 22.13 or newer, and create an Agent Ingestion Key (`spk_...`), a `SOFTPROBE_API_KEY`, and a Workspace ID in [Softprobe Explorer](https://explorer.softprobe.ai). The Ingestion Key sends telemetry; `SOFTPROBE_API_KEY` authorizes session reads. If you run [self-hosted Explorer](/en/blackbox/self-hosting) on Linux (`http://127.0.0.1:8787`), replace `-p 8080:8080` with `--network host -e OTEL_EXPORTER_OTLP_TRACES_ENDPOINT="http://127.0.0.1:8787/api/thelake/v1/traces"` in `docker run` and export `SOFTPROBE_SINK_ENDPOINT="http://127.0.0.1:8787/api/thelake"` in Terminal 2.
+Before you start, install Docker, Node.js 22.13 or newer, and the [Softprobe CLI](/en/arex/installation/). Select the organization that owns your Explorer workspace at [app.softprobe.ai/orgs](https://app.softprobe.ai/orgs), then sign in with `sp auth login`. If your CLI profile does not already contain that tenant ID, set `SP_TENANT_ID` to the organization’s numeric tenant ID. Create a **Softprobe API Key** with `sp tenant softprobe-api-key ensure --json` and copy `data.softprobeApiKey` for use as `SOFTPROBE_API_KEY`. In [Softprobe Explorer](https://explorer.softprobe.ai), create an Agent and copy its **Ingestion Key** and **Workspace ID**. The Ingestion Key sends telemetry for that Agent; the Softprobe API Key reads sessions and traces for the selected organization.
+
+The backend spans use OBI and require a supported Linux environment: `amd64` or `arm64`, Linux kernel 5.8 or newer (RHEL-family 4.18+ with the required eBPF backports), BTF enabled, and the required eBPF privileges. The `--privileged` flag below grants the container the needed privileges, but the Docker host must still expose a supported Linux kernel. See the [OBI compatibility requirements](https://opentelemetry.io/docs/zero-code/obi/#compatibility).
+
+If you run [self-hosted Explorer](/en/blackbox/self-hosting) on Linux (`http://127.0.0.1:8787`), replace `-p 8080:8080` with `--network host -e OTEL_EXPORTER_OTLP_TRACES_ENDPOINT="http://127.0.0.1:8787/api/thelake/v1/traces"` in `docker run` and run `export SOFTPROBE_SINK_ENDPOINT="http://127.0.0.1:8787/api/thelake"` in Terminal 2.
 
 ## 1. Start the pre-instrumented demo app
 
@@ -82,7 +86,7 @@ You should see JSON output showing `14` compiled UI actions and `4` outbound HTT
 {
 	"ok": true,
 	"runner": "playwright",
-	"sessionId": "830501cb-7792-47cf-8a3c-b58929cef6aa",
+	"sessionId": "<your-session-id>",
 	"actionCount": 14,
 	"outboundAssertionCount": 4,
 	"filesWritten": [
@@ -101,7 +105,7 @@ Open `pw-suite/tests/recorded-session.spec.ts` to inspect what the compiler gene
 import { expect, test } from "@softprobe/e2e/playwright";
 
 test.describe("Recorded session replay", () => {
-	test("replays session 830501cb-7792-47cf-8a3c-b58929cef6aa", async ({ page, trace }) => {
+	test("replays session <your-session-id>", async ({ page, trace }) => {
 		await page.goto("/");
 		await page.locator("#fromCity").selectOption("LHR");
 		await page.locator("#toCity").selectOption("CDG");
@@ -198,7 +202,7 @@ npx playwright test --config ./pw-suite/playwright.config.ts
 The test fails with `TraceAssertionError`, lists the two airline NDC calls that did execute, and prints a direct Explorer link to the trace that missed `/v1/notifications/confirmation`:
 
 ```text
-TraceAssertionError: No outbound HTTP call on trace 256b83b5d78cb26c312375e850d12791 matched (method=POST, url=/\/v1\/notifications\/confirmation$/, status=200) within 30000ms. Observed outbound calls: POST https://spair.softprobe.ai/ndc/v21.3/offerprice (status 200), POST /ndc/v21.3/ordercreate (status 200). Inspect trace at https://explorer.softprobe.ai/?trace=256b83b5d78cb26c312375e850d12791.
+TraceAssertionError: No outbound HTTP call on trace <trace-id> matched (method=POST, url=/\/v1\/notifications\/confirmation$/, status=200) within 30000ms. Observed outbound calls: POST https://spair.softprobe.ai/ndc/v21.3/offerprice (status 200), POST /ndc/v21.3/ordercreate (status 200). Inspect trace at https://explorer.softprobe.ai/?trace=<trace-id>.
 ```
 
 Stop the container in Terminal 1 and restart it without `OTA_FAULT_SKIP_EMAIL=true` before the final step:

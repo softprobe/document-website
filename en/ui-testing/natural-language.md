@@ -67,7 +67,7 @@ export default {
 					endpoint:
 						process.env.SOFTPROBE_SINK_ENDPOINT ??
 						"https://explorer.softprobe.ai/api/thelake",
-					token: process.env.SOFTPROBE_TOKEN,
+					softprobeApiKey: process.env.SOFTPROBE_API_KEY,
 					workspaceId: process.env.SOFTPROBE_WORKSPACE_ID,
 				},
 			}),
@@ -140,7 +140,7 @@ Passing `{ params: { password: secrets.get("PASSWORD") } }` injects `SP_SECRET_P
 	```bash
 	E2E_TELEMETRY_DISABLED=1 \
 	OPENAI_API_KEY="sk-..." \
-	SOFTPROBE_TOKEN="YOUR_BLACKBOX_TOKEN" \
+	SOFTPROBE_API_KEY="YOUR_SOFTPROBE_API_KEY" \
 	SOFTPROBE_WORKSPACE_ID="YOUR_WORKSPACE_ID" \
 	SP_SECRET_PASSWORD="YOUR_TEST_PASSWORD" \
 	npx e2e run
@@ -151,7 +151,7 @@ Passing `{ params: { password: secrets.get("PASSWORD") } }` injects `SP_SECRET_P
 	```bash
 	CI=true \
 	E2E_TELEMETRY_DISABLED=1 \
-	SOFTPROBE_TOKEN="YOUR_BLACKBOX_TOKEN" \
+	SOFTPROBE_API_KEY="YOUR_SOFTPROBE_API_KEY" \
 	SOFTPROBE_WORKSPACE_ID="YOUR_WORKSPACE_ID" \
 	SP_SECRET_PASSWORD="YOUR_TEST_PASSWORD" \
 	npx e2e run

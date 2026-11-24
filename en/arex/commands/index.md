@@ -39,7 +39,7 @@ Connect, authenticate, manage apps and policies, run replay plans.
 | [policy](./policy) | Recording, mock, compare YAML policies |
 | [replay](./replay) | Run, status, statistics, report, stop, rerun plans |
 | [health](./health) | Cluster health |
-| [tenant](./tenant) | Softprobe Cloud: tenant API key for agents |
+| [tenant](./tenant) | Softprobe Cloud: Softprobe API Key for agents |
 | [tunnel](./tunnel) | Softprobe Cloud: reverse tunnel so replays reach a service on your machine |
 
 ## Investigation

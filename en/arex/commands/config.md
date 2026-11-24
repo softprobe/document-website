@@ -74,8 +74,8 @@ ${XDG_STATE_HOME:-~/.local/state}/softprobe/          # logs and state
     "tokenConfigured": true,
     "tokenMasked": "eyJhbGciOi...[masked]",
     "tenantConfigured": false,
-    "tenantApiKeyConfigured": false,
-    "tenantApiKeyMasked": "",
+    "softprobeApiKeyConfigured": false,
+    "softprobeApiKeyMasked": "",
     "agentJarConfigured": false
   }
 }
@@ -117,7 +117,7 @@ Later sources override earlier sources:
 5. Extra config from `--config`, when set.
 6. Selected profile. Profile selection priority is `--profile`, `SP_PROFILE`,
    merged `profile`, then `default`.
-7. Environment variables: `SP_API_URL`, `SP_TOKEN`, `SP_TENANT_ID`, `SP_TENANT_API_KEY`.
+7. Environment variables: `SP_API_URL`, `SP_TOKEN`, `SP_TENANT_ID`, `SOFTPROBE_API_KEY`.
 8. Global flags: `--api-url`, `--token`.
 
 The Java agent jar path is resolved separately by `sp agent command`: `--agent-jar`, then `SP_AGENT_JAR`, then the default install path. See [sp agent](./agent).

@@ -307,9 +307,9 @@ Extends `@e2e-dev/web` `WebOptions`:
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `sink` | `SoftprobeSinkConfig` | Resolved from options and env | Explicit Blackbox sink `{ kind: "blackbox", endpoint, token?, workspaceId?, explorerUrl? }` |
+| `sink` | `SoftprobeSinkConfig` | Resolved from options and env | Explicit Blackbox sink `{ kind: "blackbox", endpoint, softprobeApiKey?, workspaceId?, explorerUrl? }` |
 | `endpoint` | `string` | `SOFTPROBE_SINK_ENDPOINT`, `SOFTPROBE_TRACE_ENDPOINT`, `SOFTPROBE_URL`, or `https://explorer.softprobe.ai/api/thelake` | Blackbox trace query base URL |
-| `token` | `string` | `SOFTPROBE_API_KEY`, `SOFTPROBE_TOKEN`, or `INGESTION_KEY` | Bearer token for Blackbox trace queries |
+| `softprobeApiKey` | `string` | `SOFTPROBE_API_KEY` | Softprobe API Key for Blackbox trace queries |
 | `workspaceId` | `string` | `SOFTPROBE_WORKSPACE_ID` | Sent as `X-Workspace-Id` on Blackbox trace lookups |
 | `explorerUrl` | `string` | `SOFTPROBE_EXPLORER_URL` or derived from `endpoint` | Base URL for `explorerTraceUrl` links |
 | `apiOrigins` | `readonly (string \| RegExp)[]` | `[app.url]` | Origins matched by `browser.route` for `traceparent` correlation |
@@ -333,7 +333,7 @@ Import from `@softprobe/e2e/playwright` to attach the `trace` fixture in `@playw
 - `test` and `expect` provide an extended `@playwright/test` test runner with `{ trace, softprobeTrace, softprobe }` fixtures and Playwright's `expect`.
 - `extendPlaywrightTest(base?, defaultOptions?)` extends a custom Playwright `TestType` with the `softprobe` option and `trace` fixture.
 - `createPlaywrightTraceScope(target, options?)` attaches `traceparent` route correlation directly to a Playwright `BrowserContext` or `Page` and returns `{ trace, dispose() }`.
-- `SoftprobePlaywrightOptions` and `SoftprobePlaywrightFixtures` type `use.softprobe` in `playwright.config.ts`, accepting `sink`, `endpoint`, `token`, `workspaceId`, `explorerUrl`, `apiOrigins`, `baseUrl`, `pollTimeoutMs`, `traceTimeoutMs`, `pollIntervalMs`, `settleMs`, and `env`.
+- `SoftprobePlaywrightOptions` and `SoftprobePlaywrightFixtures` type `use.softprobe` in `playwright.config.ts`, accepting `sink`, `endpoint`, `softprobeApiKey`, `workspaceId`, `explorerUrl`, `apiOrigins`, `baseUrl`, `pollTimeoutMs`, `traceTimeoutMs`, `pollIntervalMs`, `settleMs`, and `env`.
 
 ### `@softprobe/e2e/session-compiler` exports
 
@@ -361,7 +361,7 @@ npx --package=@softprobe/e2e softprobe-compile-session --session-id <id> --runne
 | `--out <dir>` | `"."` | Output directory for generated files |
 | `--target-url <url>` | Session origin or `"http://127.0.0.1:3000"` | Base URL of the application under test |
 | `--endpoint <url>` | `SOFTPROBE_SINK_ENDPOINT` or `https://explorer.softprobe.ai/api/thelake` | Blackbox Explorer or TheLake API endpoint |
-| `--token <token>` | `SOFTPROBE_API_KEY`, `SOFTPROBE_TOKEN`, or `INGESTION_KEY` | Bearer token for Blackbox session and trace queries |
+| `--softprobe-api-key <key>` | `SOFTPROBE_API_KEY` | Softprobe API Key for Blackbox session and trace queries |
 | `--workspace-id <id>` | `SOFTPROBE_WORKSPACE_ID` | Workspace ID header for Blackbox queries |
 | `--project-id <id>` | `"softprobe-compiled-e2e"` | `e2e` `projectId` when `--runner` is `e2e` |
 | `--app-identity <name>` | `"softprobe-recorded-app"` | `e2e` `app.identity` when `--runner` is `e2e` |
