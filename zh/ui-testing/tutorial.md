@@ -116,14 +116,11 @@ test("books a flight and sends its confirmation", async ({ page, trace }) => {
 	await expect(page).toHaveURL(/payment\.html/);
 
 	const triggeredBy = { method: "POST", path: "/api/flights/book" };
-	const offerPrice = await trace.outboundHttp({
+	await trace.outboundHttp({
 		triggeredBy,
 		method: "POST",
 		url: /\/ndc\/v21\.3\/offerprice$/,
 		status: 200,
-	});
-	expect(offerPrice.request.json).toMatchObject({
-		IATA_OfferPriceRQ: { Request: { PricedOffer: expect.any(Object) } },
 	});
 
 	await trace.outboundHttp({
@@ -132,17 +129,16 @@ test("books a flight and sends its confirmation", async ({ page, trace }) => {
 		url: /\/ndc\/v21\.3\/ordercreate$/,
 		status: 200,
 	});
-	const confirmation = await trace.outboundHttp({
+	await trace.outboundHttp({
 		triggeredBy,
 		method: "POST",
 		url: /\/v1\/notifications\/confirmation$/,
 		status: 200,
 	});
-	expect(confirmation.request.json).toMatchObject({
-		recipientEmail: "alex@example.com",
-	});
 });
 ```
+
+每个 `trace.outboundHttp` 调用都会验证匹配的后端请求是否以 HTTP `200` 完成。本示例检查调用是否发生及其状态；当前固定版本的 OBI 不会为 Java HTTP/2 航空公司调用提供请求体。
 
 请向演示 Workspace 管理员索取具有读取权限的 Softprobe API Key，在终端 2 设置后运行测试：
 
