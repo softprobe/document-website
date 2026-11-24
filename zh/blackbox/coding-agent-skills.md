@@ -103,7 +103,7 @@ Blackbox 提供 19 个 MCP 工具，涵盖账号与工作区、遥测排查、E2
 | 分类 | 工具 | 用途 |
 |------|------|------|
 | **账号与工作区** | `whoami`、`list_workspaces`、`select_workspace` | 查看当前登录用户、列出可用工作区、切换当前工作区 |
-| **Session 与 E2E 测试** | `search_sessions`、`get_session`、`get_session_spans`、`compile_session_test` | 按 Agent、状态或时间范围检索 Session，读取 Session 详情与 Span，并将录制的 UI Session 编译为 Playwright 或 `e2e` 测试 |
+| **Session 与测试** | `search_sessions`、`get_session`、`get_session_spans`、`search_spans`、`get_trace` | 检索 Session、查看 Span 和相关 trace，并将录制的 UI 动作作为编写 Playwright 测试的计划 |
 | **Span 与 Trace 排查** | `search_spans`、`get_span`、`search_traces`、`get_trace`、`list_trace_tags`、`list_trace_tag_values` | 筛选 GenAI、工具调用与 HTTP Span，查看完整分布式 Trace，并发现 Trace 标签键与标签值 |
 | **日志排查** | `logs_by_session`、`logs_by_trace` | 读取与指定 Session 或 Trace 关联的结构化日志 |
 | **Agent 与密钥管理** | `list_agents`、`create_agent`、`get_ingestion_key`、`bootstrap_project` | 列出 Agent 应用、创建新 Agent 应用、在明确请求时读取 Agent 的 Ingestion Key，并生成项目接入配置提示词 |

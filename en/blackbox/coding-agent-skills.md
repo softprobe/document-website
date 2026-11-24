@@ -103,7 +103,7 @@ Blackbox exposes 19 MCP tools across account context, telemetry investigation, t
 | Category | Tools | Purpose |
 |----------|-------|---------|
 | **Account & workspace** | `whoami`, `list_workspaces`, `select_workspace` | Check signed-in user, list accessible workspaces, and switch the active workspace |
-| **Sessions & E2E tests** | `search_sessions`, `get_session`, `get_session_spans`, `compile_session_test` | Search Sessions by agent, status, or time range, inspect Session metadata and spans, and compile recorded UI Sessions into Playwright or `e2e` tests |
+| **Sessions & tests** | `search_sessions`, `get_session`, `get_session_spans`, `search_spans`, `get_trace` | Search sessions, inspect their spans and related traces, then use the recorded UI actions as a plan for a Playwright test |
 | **Spans & traces** | `search_spans`, `get_span`, `search_traces`, `get_trace`, `list_trace_tags`, `list_trace_tag_values` | Filter GenAI, tool, and HTTP spans, inspect full distributed traces, and discover trace tag keys and values |
 | **Logs** | `logs_by_session`, `logs_by_trace` | Read structured logs correlated to a Session or trace |
 | **Agents & keys** | `list_agents`, `create_agent`, `get_ingestion_key`, `bootstrap_project` | List Agent apps, create a new Agent app, reveal an Agent's Ingestion Key when requested, and generate project instrumentation prompts |

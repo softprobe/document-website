@@ -67,7 +67,6 @@ export default {
 					endpoint:
 						process.env.SOFTPROBE_SINK_ENDPOINT ??
 						"https://explorer.softprobe.ai/api/thelake",
-					softprobeApiKey: process.env.SOFTPROBE_API_KEY,
 				},
 			}),
 			app: {
@@ -79,6 +78,8 @@ export default {
 	reporters: ["list", softprobeReporter()],
 } satisfies E2EConfig;
 ```
+
+Set `SOFTPROBE_API_KEY` in the environment when running tests that query Blackbox. It must have read access to the session workspace; do not put the key in source control.
 
 If you want UI-only natural-language tests without backend trace verification, omit `sink` in `softprobeWeb(...)` and omit `trace` from your test arguments.
 
@@ -156,17 +157,12 @@ Passing `{ params: { password: secrets.get("PASSWORD") } }` injects `SP_SECRET_P
 
 3. Check `.e2e/report.json` to confirm `"modelTokens": 0` and `"maxModelCallsInStep": 0`, then commit `tests/` and `.e2e/cache/` together.
 
-## Extend a session-compiled test with plain English {#extend-compiled-tests}
+## Use a recorded session as a test plan {#from-session}
 
-When you generate an `e2e` suite from a recorded session, `e2e.config.ts` defaults to `cache.mode: "read-only"` and `softprobeCachedAgent()` with no model. To append new steps after the compiled flow:
-
-1. In `e2e.config.ts`, set `cache.mode` to `"read-write"` when `!process.env.CI` and pass a `ModelInstance` such as `openai("gpt-5.4-mini")` to `softprobeCachedAgent({ model })`.
-2. Append your new `await agent.act(...)` call and a visible `await expect(screen.getByText(...)).toBeVisible()` assertion at the end of `tests/recorded-session.e2e.ts`.
-3. Run `E2E_TELEMETRY_DISABLED=1 npx e2e run` once locally. Existing pre-seeded steps replay from `.e2e/cache/` with zero model calls, while only your newly added `agent.act` step calls the model and writes its new cache file.
-4. Commit the new `.e2e/cache/*.json` file so CI runs every step with `CI=true` and zero model calls.
+If you already recorded the flow, inspect its `softprobe.ui.action` spans in Explorer and use their order and labels to write `agent.act(...)` steps. Keep visible `expect(...)` checks after each action, then record the cache locally and commit it with the test. For a Playwright test based on captured selectors, see [Use a recorded session as a test plan](/en/ui-testing/from-sessions).
 
 ## Related {#related}
 
-- [Tutorial: Build your first generated UI and backend test](/en/ui-testing/tutorial)
-- [How to generate UI tests from recorded sessions](/en/ui-testing/from-sessions)
+- [Tutorial: Build a UI test from a recorded session](/en/ui-testing/tutorial)
+- [Use a recorded session as a test plan](/en/ui-testing/from-sessions)
 - [JavaScript and TypeScript SDK reference](/en/blackbox/reference/softprobe-js#softprobe-e2e)

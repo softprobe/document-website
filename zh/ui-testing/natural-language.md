@@ -67,7 +67,6 @@ export default {
 					endpoint:
 						process.env.SOFTPROBE_SINK_ENDPOINT ??
 						"https://explorer.softprobe.ai/api/thelake",
-					softprobeApiKey: process.env.SOFTPROBE_API_KEY,
 				},
 			}),
 			app: {
@@ -79,6 +78,8 @@ export default {
 	reporters: ["list", softprobeReporter()],
 } satisfies E2EConfig;
 ```
+
+运行会查询 Blackbox 的测试时，请在环境变量中设置 `SOFTPROBE_API_KEY`。该 Key 必须有权读取对应 Workspace；不要将其写入源码管理。
 
 如果你只需要纯前端自然语言 UI 自动化而不需要校验后端链路，可以在 `softprobeWeb(...)` 中省略 `sink`，并在测试用例参数中省略 `trace`。
 
@@ -156,17 +157,12 @@ describe("Team invite flow", () => {
 
 3. 检查 `.e2e/report.json` 中的 `"modelTokens": 0` 与 `"maxModelCallsInStep": 0`，随后将 `tests/` 与 `.e2e/cache/` 一并提交到代码仓库。
 
-## 在会话生成的用例末尾追加自然语言步骤 {#extend-compiled-tests}
+## 将录制会话作为测试计划 {#from-session}
 
-从录制会话导出的 `e2e` 套件默认在 `e2e.config.ts` 中配置 `cache.mode: "read-only"` 且不绑定模型。如需在已编译流程后追加新步骤：
-
-1. 在 `e2e.config.ts` 中，当 `!process.env.CI` 时将 `cache.mode` 改为 `"read-write"`，并向 `softprobeCachedAgent({ model })` 传入模型实例（例如 `openai("gpt-5.4-mini")`）。
-2. 在 `tests/recorded-session.e2e.ts` 末尾追加新的 `await agent.act(...)` 调用以及可见的 `await expect(screen.getByText(...)).toBeVisible()` 断言。
-3. 在本地运行一次 `E2E_TELEMETRY_DISABLED=1 npx e2e run`。原有的预置步骤仍直接从 `.e2e/cache/` 零模型调用回放，只有新增的 `agent.act` 步骤会调用模型并写入新的缓存文件。
-4. 提交新增的 `.e2e/cache/*.json` 文件，使 CI 在 `CI=true` 下全程零模型调用运行全部步骤。
+如果已经录制过流程，请在 Explorer 查看 `softprobe.ui.action` span，并按动作顺序编写 `agent.act(...)` 步骤。在每个动作之后添加可见的 `expect(...)` 断言，然后在本地录制缓存并与测试一同提交。若要根据录制的选择器编写 Playwright 测试，请参阅[将录制会话作为测试计划](/zh/ui-testing/from-sessions)。
 
 ## 相关文档 {#related}
 
-- [教程：构建第一个自动生成 UI 与后端联调测试](/zh/ui-testing/tutorial)
-- [如何从录制的会话生成 UI 测试](/zh/ui-testing/from-sessions)
+- [教程：根据录制会话编写 UI 测试](/zh/ui-testing/tutorial)
+- [将录制会话作为测试计划](/zh/ui-testing/from-sessions)
 - [JavaScript 与 TypeScript SDK 参考](/en/blackbox/reference/softprobe-js#softprobe-e2e)
