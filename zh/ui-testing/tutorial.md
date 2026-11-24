@@ -70,6 +70,7 @@ import { defineConfig } from "@playwright/test";
 
 export default defineConfig({
 	testDir: "./tests",
+	timeout: 120_000,
 	use: { baseURL: "http://127.0.0.1:8080" },
 });
 ```
@@ -78,6 +79,8 @@ export default defineConfig({
 
 ```ts
 import { expect, test } from "@softprobe/e2e/playwright";
+
+test.use({ softprobe: { pollTimeoutMs: 60_000 } });
 
 function dateInDays(days: number): string {
 	const date = new Date();
@@ -149,6 +152,8 @@ npx playwright test
 ```
 
 测试应通过。Playwright fixture 会为浏览器请求创建 trace，并从 Blackbox 查询这些请求触发的后端调用。API Key 会解析 Workspace，因此无需单独设置 Workspace ID。
+
+fixture 最多等待 60 秒以查询后端 span，因为 OBI 可能在浏览器请求后稍晚才导出这些数据。Playwright 测试超时设为 120 秒，为查询留出时间。
 
 ## 4. 捕获隐蔽的后端回归
 

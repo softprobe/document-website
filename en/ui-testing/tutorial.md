@@ -70,6 +70,7 @@ import { defineConfig } from "@playwright/test";
 
 export default defineConfig({
 	testDir: "./tests",
+	timeout: 120_000,
 	use: { baseURL: "http://127.0.0.1:8080" },
 });
 ```
@@ -78,6 +79,8 @@ Create `tests/booking.spec.ts`. The browser steps follow the session you recorde
 
 ```ts
 import { expect, test } from "@softprobe/e2e/playwright";
+
+test.use({ softprobe: { pollTimeoutMs: 60_000 } });
 
 function dateInDays(days: number): string {
 	const date = new Date();
@@ -149,6 +152,8 @@ npx playwright test
 ```
 
 The test should pass. The Playwright fixture creates a trace for the browser requests and queries Blackbox for the backend calls they caused. The API Key resolves the workspace; you do not need to set a Workspace ID.
+
+The fixture polls for backend spans for up to 60 seconds because OBI may export them shortly after the browser request. The Playwright test timeout is 120 seconds to allow that query to finish.
 
 ## 4. Catch a silent backend regression
 
