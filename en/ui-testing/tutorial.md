@@ -75,7 +75,7 @@ npx softprobe-compile-session \
 	--json
 ```
 
-You should see JSON output showing `14` compiled UI actions and `4` outbound HTTP assertions:
+You should see JSON output showing `14` compiled UI actions and `1` outbound HTTP assertion:
 
 ```json
 {
@@ -83,7 +83,7 @@ You should see JSON output showing `14` compiled UI actions and `4` outbound HTT
 	"runner": "playwright",
 	"sessionId": "830501cb-7792-47cf-8a3c-b58929cef6aa",
 	"actionCount": 14,
-	"outboundAssertionCount": 4,
+	"outboundAssertionCount": 1,
 	"filesWritten": [
 		".../pw-suite/tests/recorded-session.spec.ts",
 		".../pw-suite/playwright.config.ts"
@@ -134,29 +134,15 @@ test.describe("Recorded session replay", () => {
 		const outbound_13_0_0 = await trace.outboundHttp({
 			triggeredBy: { method: "POST", path: "/api/flights/book" },
 			method: "POST",
-			url: new RegExp("/ndc/v21\\.3/offerprice$"),
-			status: 200,
-		});
-		expect(outbound_13_0_0.status).toBe(200);
-		const outbound_13_0_1 = await trace.outboundHttp({
-			triggeredBy: { method: "POST", path: "/api/flights/book" },
-			method: "POST",
-			url: new RegExp("/ndc/v21\\.3/ordercreate$"),
-			status: 200,
-		});
-		expect(outbound_13_0_1.status).toBe(200);
-		const outbound_13_0_2 = await trace.outboundHttp({
-			triggeredBy: { method: "POST", path: "/api/flights/book" },
-			method: "POST",
 			url: new RegExp("/v1/notifications/confirmation$"),
 			status: 200,
 		});
-		expect(outbound_13_0_2.status).toBe(200);
+		expect(outbound_13_0_0.status).toBe(200);
 	});
 });
 ```
 
-The test verifies each outbound call's HTTP status. This example does not assert request bodies: the pinned OBI capture does not expose payload buffers for the Java HTTP/2 airline calls.
+The test verifies the captured confirmation request's HTTP status. The current demo image does not expose the Java HTTP/2 airline calls as queryable outbound spans, so the generated test cannot assert them.
 
 Run the generated Playwright test:
 
@@ -183,7 +169,7 @@ docker run --rm --privileged --name demo-ota-tutorial \
 	docker.io/softprobe/demo-ota:classic-blackbox
 ```
 
-With `OTA_FAULT_SKIP_EMAIL=true`, `POST /api/flights/book` still calls `/ndc/v21.3/offerprice` and `/ndc/v21.3/ordercreate`, saves the order in PostgreSQL, returns `200 OK`, and navigates the browser to `/payment.html`. A DOM-only UI test stays green even though the customer never received a booking confirmation email.
+With `OTA_FAULT_SKIP_EMAIL=true`, `POST /api/flights/book` returns `200 OK` and the browser still reaches `/payment.html`, but the trace has no `POST /v1/notifications/confirmation` span. The generated test checks that captured confirmation request, so a DOM-only UI test stays green while the trace assertion catches the missing request.
 
 Re-run the generated Playwright test in Terminal 2:
 
@@ -191,10 +177,10 @@ Re-run the generated Playwright test in Terminal 2:
 npx playwright test --config ./pw-suite/playwright.config.ts
 ```
 
-The test fails with `TraceAssertionError`, lists the two airline NDC calls that did execute, and prints a direct Explorer link to the trace that missed `/v1/notifications/confirmation`:
+The test fails with `TraceAssertionError` because the confirmation request is absent, and prints a direct Explorer link to the trace:
 
 ```text
-TraceAssertionError: No outbound HTTP call on trace 256b83b5d78cb26c312375e850d12791 matched (method=POST, url=/\/v1\/notifications\/confirmation$/, status=200) within 30000ms. Observed outbound calls: POST https://spair.softprobe.ai/ndc/v21.3/offerprice (status 200), POST /ndc/v21.3/ordercreate (status 200). Inspect trace at https://explorer.softprobe.ai/?trace=256b83b5d78cb26c312375e850d12791.
+TraceAssertionError: No outbound HTTP call on trace 256b83b5d78cb26c312375e850d12791 matched (method=POST, url=/\/v1\/notifications\/confirmation$/, status=200) within 30000ms. Observed outbound calls: none. Inspect trace at https://explorer.softprobe.ai/?trace=256b83b5d78cb26c312375e850d12791.
 ```
 
 Stop the container in Terminal 1 and restart it without `OTA_FAULT_SKIP_EMAIL=true` before the final step:

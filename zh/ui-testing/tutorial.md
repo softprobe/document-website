@@ -83,7 +83,7 @@ npx softprobe-compile-session \
 	"runner": "playwright",
 	"sessionId": "830501cb-7792-47cf-8a3c-b58929cef6aa",
 	"actionCount": 14,
-	"outboundAssertionCount": 4,
+	"outboundAssertionCount": 1,
 	"filesWritten": [
 		".../pw-suite/tests/recorded-session.spec.ts",
 		".../pw-suite/playwright.config.ts"
@@ -134,29 +134,15 @@ test.describe("Recorded session replay", () => {
 		const outbound_13_0_0 = await trace.outboundHttp({
 			triggeredBy: { method: "POST", path: "/api/flights/book" },
 			method: "POST",
-			url: new RegExp("/ndc/v21\\.3/offerprice$"),
-			status: 200,
-		});
-		expect(outbound_13_0_0.status).toBe(200);
-		const outbound_13_0_1 = await trace.outboundHttp({
-			triggeredBy: { method: "POST", path: "/api/flights/book" },
-			method: "POST",
-			url: new RegExp("/ndc/v21\\.3/ordercreate$"),
-			status: 200,
-		});
-		expect(outbound_13_0_1.status).toBe(200);
-		const outbound_13_0_2 = await trace.outboundHttp({
-			triggeredBy: { method: "POST", path: "/api/flights/book" },
-			method: "POST",
 			url: new RegExp("/v1/notifications/confirmation$"),
 			status: 200,
 		});
-		expect(outbound_13_0_2.status).toBe(200);
+		expect(outbound_13_0_0.status).toBe(200);
 	});
 });
 ```
 
-测试会验证每个出站调用的 HTTP 状态。本示例不检查请求体：当前固定版本的 OBI 不会为 Java HTTP/2 航空公司调用提供请求体数据。
+测试会验证已采集的确认请求的 HTTP 状态。当前演示镜像不会将 Java HTTP/2 航空公司调用采集为可查询的出站 span，因此生成的测试不会断言这些调用。
 
 运行生成的 Playwright 用例：
 
@@ -183,7 +169,7 @@ docker run --rm --privileged --name demo-ota-tutorial \
 	docker.io/softprobe/demo-ota:classic-blackbox
 ```
 
-开启 `OTA_FAULT_SKIP_EMAIL=true` 后，`POST /api/flights/book` 仍会正常调用 `/ndc/v21.3/offerprice` 与 `/ndc/v21.3/ordercreate`、写入 PostgreSQL 订单表、返回 `200 OK` 并跳转到 `/payment.html`。只检查 DOM 的常规 UI 测试此时仍会误判通过，而乘客实际上没有收到订票确认邮件。
+开启 `OTA_FAULT_SKIP_EMAIL=true` 后，`POST /api/flights/book` 仍会返回 `200 OK`，浏览器也会进入 `/payment.html`，但 trace 中不会出现 `POST /v1/notifications/confirmation` span。生成的测试会检查已采集的确认请求，因此纯 DOM UI 测试仍会通过，而 trace 断言会发现请求缺失。
 
 在第二个终端重新运行生成的 Playwright 用例：
 
@@ -191,10 +177,10 @@ docker run --rm --privileged --name demo-ota-tutorial \
 npx playwright test --config ./pw-suite/playwright.config.ts
 ```
 
-测试会抛出 `TraceAssertionError` 失败，列出实际发生的两次航司 NDC 调用，并直接打印出漏发 `/v1/notifications/confirmation` 的那条 Explorer Trace 链接：
+测试会因为缺少确认请求而抛出 `TraceAssertionError`，并打印对应 trace 的 Explorer 链接：
 
 ```text
-TraceAssertionError: No outbound HTTP call on trace 256b83b5d78cb26c312375e850d12791 matched (method=POST, url=/\/v1\/notifications\/confirmation$/, status=200) within 30000ms. Observed outbound calls: POST https://spair.softprobe.ai/ndc/v21.3/offerprice (status 200), POST /ndc/v21.3/ordercreate (status 200). Inspect trace at https://explorer.softprobe.ai/?trace=256b83b5d78cb26c312375e850d12791.
+TraceAssertionError: No outbound HTTP call on trace 256b83b5d78cb26c312375e850d12791 matched (method=POST, url=/\/v1\/notifications\/confirmation$/, status=200) within 30000ms. Observed outbound calls: none. Inspect trace at https://explorer.softprobe.ai/?trace=256b83b5d78cb26c312375e850d12791.
 ```
 
 继续下一步前，请在第一个终端停掉容器并去掉 `OTA_FAULT_SKIP_EMAIL=true` 重新启动正常容器：
