@@ -6,7 +6,7 @@ title: Build your first generated UI and backend test
 
 In this tutorial, you start the pre-instrumented [Travel OTA demo](https://github.com/softprobe/demo-ota) container (`docker.io/softprobe/demo-ota:classic-blackbox`), record one flight-booking browser flow into [Softprobe Explorer](https://explorer.softprobe.ai), and compile that session into both a `@playwright/test` suite and a zero-LLM `e2e` suite. Then you restart the container with `OTA_FAULT_SKIP_EMAIL=true` so the booking page still confirms the order while the Java backend skips the confirmation email request, and watch the generated test catch the regression.
 
-Before you start, install Docker and Node.js 22.13 or newer. In [Softprobe Explorer](https://explorer.softprobe.ai), create an Agent and copy its **Ingestion Key** and **Workspace ID**. Ask your organization administrator for a **Softprobe API Key** with session and trace read access. Use it as `SOFTPROBE_API_KEY` when you compile the session. The Ingestion Key sends telemetry for its Agent; the Softprobe API Key reads sessions and traces.
+Before you start, install Docker and Node.js 22.13 or newer. In [Softprobe Explorer](https://explorer.softprobe.ai), create an Agent and copy its **Ingestion Key**. Ask your organization administrator for a **Softprobe API Key** with session and trace read access. Use it as `SOFTPROBE_API_KEY` when you compile the session. The Ingestion Key sends telemetry for its Agent; the Softprobe API Key reads sessions and traces and resolves the workspace for those queries.
 
 The backend spans use OBI and require a supported Linux environment: `amd64` or `arm64`, Linux kernel 5.8 or newer (RHEL-family 4.18+ with the required eBPF backports), BTF enabled, and the required eBPF privileges. The `--privileged` flag below grants the container the needed privileges, but the Docker host must still expose a supported Linux kernel. See the [OBI compatibility requirements](https://opentelemetry.io/docs/zero-code/obi/#compatibility).
 
@@ -70,8 +70,6 @@ In Terminal 2, export your Explorer query credentials and `SESSION_ID`, then com
 ```bash
 export SESSION_ID="PASTE_YOUR_SESSION_ID"
 export SOFTPROBE_API_KEY="YOUR_SOFTPROBE_API_KEY"
-export SOFTPROBE_WORKSPACE_ID="YOUR_WORKSPACE_ID"
-
 npx softprobe-compile-session \
 	--session-id "$SESSION_ID" \
 	--runner playwright \

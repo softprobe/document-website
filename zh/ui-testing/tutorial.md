@@ -6,7 +6,7 @@ title: 构建第一个自动生成 UI 与后端联调测试
 
 在本教程中，你将直接启动预埋点的 [Travel OTA 示例应用](https://github.com/softprobe/demo-ota)单容器镜像（`docker.io/softprobe/demo-ota:classic-blackbox`），把一次真实机票预订浏览器操作录制到 [Softprobe Explorer](https://explorer.softprobe.ai)，并将这条会话分别编译为 `@playwright/test` 套件与零大模型调用的 `e2e` 套件。随后你将在订单确认页面照常跳转的情况下开启 `OTA_FAULT_SKIP_EMAIL=true` 让 Java 后端漏发确认邮件请求，验证自动生成的测试如何精准拦截这类隐蔽回归缺陷。
 
-开始前，请安装 Docker 和 Node.js 22.13 或更高版本。在 [Softprobe Explorer](https://explorer.softprobe.ai) 中创建 Agent，并复制它的 **Ingestion Key** 和 **Workspace ID**。向组织管理员索取一个具有会话和 trace 读取权限的 **Softprobe API Key**，并在编译会话时将它设为 `SOFTPROBE_API_KEY`。Ingestion Key 只为对应 Agent 上报遥测数据；Softprobe API Key 用于读取会话和 trace。
+开始前，请安装 Docker 和 Node.js 22.13 或更高版本。在 [Softprobe Explorer](https://explorer.softprobe.ai) 中创建 Agent，并复制它的 **Ingestion Key**。向组织管理员索取一个具有会话和 trace 读取权限的 **Softprobe API Key**，并在编译会话时将它设为 `SOFTPROBE_API_KEY`。Ingestion Key 只为对应 Agent 上报遥测数据；Softprobe API Key 用于读取会话和 trace，并解析查询对应的 workspace。
 
 本教程的后端 spans 由 OBI 采集，需要受支持的 Linux 环境：`amd64` 或 `arm64` 架构、Linux 内核 5.8 或更高版本（RHEL 系发行版需 4.18+ 并包含所需 eBPF 回移）、启用 BTF，并授予所需的 eBPF 权限。下方的 `--privileged` 会为容器授予所需权限，但 Docker 主机仍须提供受支持的 Linux 内核。请参阅 [OBI 兼容性要求](https://opentelemetry.io/docs/zero-code/obi/#compatibility)。
 
@@ -70,8 +70,6 @@ curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:8080/index.html
 ```bash
 export SESSION_ID="PASTE_YOUR_SESSION_ID"
 export SOFTPROBE_API_KEY="YOUR_SOFTPROBE_API_KEY"
-export SOFTPROBE_WORKSPACE_ID="YOUR_WORKSPACE_ID"
-
 npx softprobe-compile-session \
 	--session-id "$SESSION_ID" \
 	--runner playwright \

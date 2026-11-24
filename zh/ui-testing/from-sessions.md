@@ -73,7 +73,6 @@ target_url 设为 "http://127.0.0.1:3000"，并将生成的文件写入 ./e2e �
 
 ```bash
 export SOFTPROBE_API_KEY="YOUR_SOFTPROBE_API_KEY"
-export SOFTPROBE_WORKSPACE_ID="YOUR_WORKSPACE_ID"
 
 npx --package=@softprobe/e2e softprobe-compile-session \
 	--session-id <sessionId> \
@@ -111,7 +110,6 @@ npx playwright install chromium
 
 ```bash
 SOFTPROBE_API_KEY="YOUR_SOFTPROBE_API_KEY" \
-SOFTPROBE_WORKSPACE_ID="YOUR_WORKSPACE_ID" \
 SP_SECRET_PASSWORD="YOUR_TEST_PASSWORD" \
 npx playwright test
 ```
@@ -131,7 +129,6 @@ npm install -D @softprobe/e2e e2e@0.24.0 @e2e-dev/web@0.16.1 zod
 ```bash
 E2E_TELEMETRY_DISABLED=1 \
 SOFTPROBE_API_KEY="YOUR_SOFTPROBE_API_KEY" \
-SOFTPROBE_WORKSPACE_ID="YOUR_WORKSPACE_ID" \
 SP_SECRET_PASSWORD="YOUR_TEST_PASSWORD" \
 npx e2e run
 ```
@@ -164,7 +161,6 @@ export default defineConfig<SoftprobePlaywrightFixtures>({
 					process.env.SOFTPROBE_SINK_ENDPOINT ??
 					"https://explorer.softprobe.ai/api/thelake",
 				softprobeApiKey: process.env.SOFTPROBE_API_KEY,
-				workspaceId: process.env.SOFTPROBE_WORKSPACE_ID,
 				explorerUrl:
 					process.env.SOFTPROBE_EXPLORER_URL ?? "https://explorer.softprobe.ai",
 			},
@@ -284,7 +280,7 @@ expect(resentCall.status).toBe(200);
 
 `BlackboxSink` 会先等待后端入口 `SERVER` span 到达，再校验下游 `CLIENT` HTTP 调用，把埋点缺失与业务断言失败清晰分开：
 
-- **抛出 `TraceInstrumentationError` 且错误码为 `TRACE_INSTRUMENTATION_MISSING`。** 浏览器已发送 `traceparent` 请求头，但 Blackbox 在默认的 `30000` 毫秒 `pollTimeoutMs` 超时时间内未收到对应的后端 `SERVER` span。请确认后端已配置 OTLP 导出或挂载 OpenTelemetry OBI，核对 `SOFTPROBE_WORKSPACE_ID` 与 `SOFTPROBE_API_KEY`，并在跨域接口的 `Access-Control-Allow-Headers` 中放行 `traceparent`。
+- **抛出 `TraceInstrumentationError` 且错误码为 `TRACE_INSTRUMENTATION_MISSING`。** 浏览器已发送 `traceparent` 请求头，但 Blackbox 在默认的 `30000` 毫秒 `pollTimeoutMs` 超时时间内未收到对应的后端 `SERVER` span。请确认后端已配置 OTLP 导出或挂载 OpenTelemetry OBI，核对 `SOFTPROBE_API_KEY`，并在跨域接口的 `Access-Control-Allow-Headers` 中放行 `traceparent`。
 - **抛出 `TraceAssertionError` 且错误码为 `TRACE_ASSERTION_FAILED`。** 后端 `SERVER` span 已写入 Blackbox，说明链路透传正常，但没有下游 `CLIENT` HTTP 请求匹配 `trace.outboundHttp`，或出现了违反 `trace.expectNoOutboundHttp` 的下游调用。可直接打开报错信息中的 `explorerTraceUrl`，或在 [Blackbox MCP](/zh/blackbox/coding-agent-skills) 中调用 `get_trace` 检查记录到的真实请求。
 
 ## 相关文档 {#related}
