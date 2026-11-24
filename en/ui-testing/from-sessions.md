@@ -44,57 +44,20 @@ Record a user flow once in [Softprobe Explorer](https://explorer.softprobe.ai), 
 
 3. Export OpenTelemetry HTTP spans or attach official OpenTelemetry OBI on your backend with the same Ingestion Key. See [End-to-end session tracing with payloads](/en/blackbox/end-to-end-session-tracing) for backend setup. If your browser calls a cross-origin API, allow `traceparent` in `Access-Control-Allow-Headers`.
 
-## Compile a recorded session into a test {#compile-session}
+## Generate a test with Blackbox MCP {#compile-session}
 
-Walk through the user flow once in your browser, then open **Sessions** in Softprobe Explorer and select the recorded session. You can compile that session into a test suite from Explorer, from your coding agent, or from the terminal.
+Walk through the user flow once in your browser, then open **Sessions** in Softprobe Explorer to copy the `session_id` (or ask your coding agent to find it with `search_sessions`).
 
-### Export in one click from Explorer {#export-from-explorer}
-
-When a session contains `softprobe.ui.action` spans, Explorer displays a **Generate E2E test** button in the session detail header.
-
-1. Click **Generate E2E test** to open the export drawer.
-2. Select **Playwright (@playwright/test)** to preview a `.spec.ts` test, or select **AI cached (@softprobe/e2e)** to preview a `.e2e.ts` test.
-3. Inspect the generated browser steps, `SP_SECRET_<SLOT>` bindings, and `trace.outboundHttp` assertions. Click **Copy test** or **Download** to save the test file, or click **Copy command** to copy a pre-filled `softprobe-compile-session` command that writes the full suite including `playwright.config.ts`, `e2e.config.ts`, and `.e2e/cache/*.json`.
-
-### Compile from a coding agent with Blackbox MCP {#compile-from-mcp}
-
-If you use Claude Code, Cursor, Codex, or Antigravity connected to [Blackbox MCP](/en/blackbox/coding-agent-skills), ask your agent to compile the session with `compile_session_test`:
+With [Blackbox MCP](/en/blackbox/coding-agent-skills) connected in OpenCode, Claude Code, Cursor, Codex, or Antigravity, ask your coding agent to inspect the semantic action history and generate a Playwright test:
 
 ```text
-Use Blackbox compile_session_test on session ses_01J... with runner "playwright"
-and target_url "http://127.0.0.1:3000", then write the generated files into ./e2e.
+Use Blackbox get_session_semantic_actions on session ses_01J....
+Inspect the booking and payment traces with get_trace, prune any stray
+non-interactive clicks or retried failed requests, and write a clean
+@playwright/test + @softprobe/e2e test in ./e2e against http://127.0.0.1:3000.
 ```
 
-`compile_session_test` accepts `session_id`, `runner` set to `"playwright"` or `"e2e"`, and an optional `target_url`. It returns the compiled test and configuration files, the required `SP_SECRET_<SLOT>` environment variable names, and the pre-seeded `.e2e/cache/` `trace-1` entries when `runner` is `"e2e"`.
-
-### Compile from the terminal {#compile-from-cli}
-
-On Node.js 22.13 or newer, run `softprobe-compile-session` with `npx`:
-
-```bash
-export SOFTPROBE_TOKEN="YOUR_BLACKBOX_TOKEN"
-export SOFTPROBE_WORKSPACE_ID="YOUR_WORKSPACE_ID"
-
-npx --package=@softprobe/e2e softprobe-compile-session \
-	--session-id <sessionId> \
-	--runner playwright \
-	--target-url http://127.0.0.1:3000 \
-	--out ./e2e-playwright \
-	--json
-```
-
-To generate an `e2e` suite with pre-seeded `.e2e/cache/<sha256>.json` files instead, set `--runner e2e`:
-
-```bash
-npx --package=@softprobe/e2e softprobe-compile-session \
-	--session-id <sessionId> \
-	--runner e2e \
-	--target-url http://127.0.0.1:3000 \
-	--out ./e2e \
-	--json
-```
-
-By default, `softprobe-compile-session` refuses to overwrite existing test and configuration files. Pass `--force` when regenerating a suite to overwrite `tests/*` and `playwright.config.ts` or `e2e.config.ts`. Content-addressed `.e2e/cache/<sha256>.json` files always refresh idempotently.
+`get_session_semantic_actions` returns a compact timeline segmented into user flows with rich CSS/ARIA locators, `[non-interactive]` noise tags, and caused `trace_id`s with HTTP status and 1-line downstream summaries. Your coding agent then calls `get_trace(trace_id)` on selected traces to inspect full request and response bodies and write deterministic `trace.outboundHttp` assertions.
 
 ## Run generated test suites {#run-suites}
 

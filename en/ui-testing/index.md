@@ -10,15 +10,15 @@ Standard UI tests stop at the browser DOM and pass whenever a success banner ren
 
 ## Two ways to create UI tests
 
-1. **[Generate from a recorded session](/en/ui-testing/from-sessions).** Walk through your web app once with [`@softprobe/web-record`](/en/blackbox/reference/softprobe-js#softprobe-web-record). Export a `@playwright/test` `.spec.ts` suite or a pre-seeded `e2e` suite in one click from Explorer, through Blackbox MCP (`compile_session_test`), or from the terminal (`softprobe-compile-session`).
+1. **[Generate from a recorded session](/en/ui-testing/from-sessions).** Walk through your web app once with [`@softprobe/web-record`](/en/blackbox/reference/softprobe-js#softprobe-web-record). Ask your coding agent to read the session with Blackbox MCP (`get_session_semantic_actions` and `get_trace`) and generate a clean `@playwright/test` + `@softprobe/e2e` suite.
 2. **[Write in plain English without recording first](/en/ui-testing/natural-language).** Author `await agent.act(...)` steps with `e2e` and [`@softprobe/e2e`](/en/blackbox/reference/softprobe-js#softprobe-e2e). Record `.e2e/cache/` once locally, commit the cache files to Git, and replay every CI run with zero model calls and zero model API keys.
 
 ## Start here
 
-- **[Tutorial: Build your first generated UI and backend test](/en/ui-testing/tutorial).** Start the pre-instrumented `docker.io/softprobe/demo-ota:classic-blackbox` flight-booking container, record one browser booking session, compile both Playwright and zero-LLM `e2e` suites, and watch `trace.outboundHttp` catch a dropped confirmation email.
-- **[Generate tests from recorded sessions](/en/ui-testing/from-sessions).** Enable semantic action capture, export tests from Explorer, Blackbox MCP, or the CLI, bind `SP_SECRET_<SLOT>` environment variables, and run in CI.
+- **[Tutorial: Build your first generated UI and backend test](/en/ui-testing/tutorial).** Start the pre-instrumented `docker.io/softprobe/demo-ota:classic-blackbox` flight-booking container, record one browser booking session, generate a Playwright + `@softprobe/e2e` test with your coding agent via Blackbox MCP, and watch `trace.outboundHttp` catch a dropped confirmation email.
+- **[Generate tests from recorded sessions](/en/ui-testing/from-sessions).** Enable semantic action capture, inspect `get_session_semantic_actions` and `get_trace` via Blackbox MCP, bind `SP_SECRET_<SLOT>` environment variables, and run in CI.
 - **[Write natural-language UI tests](/en/ui-testing/natural-language).** Author prompt-driven `e2e` tests from scratch without recording a browser session first.
-- **[SDK and CLI reference](/en/blackbox/reference/softprobe-js#softprobe-e2e).** Lookup tables for `@softprobe/e2e`, `@softprobe/e2e/playwright`, `@softprobe/web-record`, and `softprobe-compile-session`.
+- **[SDK reference](/en/blackbox/reference/softprobe-js#softprobe-e2e).** Lookup tables for `@softprobe/e2e`, `@softprobe/e2e/playwright`, and `@softprobe/web-record`.
 
 ## How Softprobe products fit together
 

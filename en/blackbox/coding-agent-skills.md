@@ -4,7 +4,7 @@ title: Investigate with a coding agent
 
 # Use Blackbox with a coding agent
 
-Install the Blackbox plugin (`softprobe-blackbox@softprobe`) from the Softprobe plugin marketplace ([`softprobe/softprobe-plugin`](https://github.com/softprobe/softprobe-plugin)) to connect your AI coding agent to Softprobe Explorer. Sign in through the browser with your existing Explorer account. Blackbox gives your agent 19 MCP tools and investigation skills to query Sessions, inspect spans and traces, read correlated logs, compile E2E tests from recorded Sessions, manage Agent apps, and retrieve Ingestion Keys when requested.
+Install the Blackbox plugin (`softprobe-blackbox@softprobe`) from the Softprobe plugin marketplace ([`softprobe/softprobe-plugin`](https://github.com/softprobe/softprobe-plugin)) to connect your AI coding agent to Softprobe Explorer. Sign in through the browser with your existing Explorer account. Blackbox gives your agent 19 MCP tools and investigation skills to query Sessions, inspect spans and traces, read correlated logs, inspect compact semantic action timelines, manage Agent apps, and retrieve Ingestion Keys when requested.
 
 This is separate from **capture** (the `@softprobe/web-record` browser SDK, OBI, or AI framework SDKs). Capture records Sessions. The Blackbox plugin lets your coding agent **manage Agents and investigate Sessions**.
 
@@ -103,7 +103,7 @@ Blackbox exposes 19 MCP tools across account context, telemetry investigation, t
 | Category | Tools | Purpose |
 |----------|-------|---------|
 | **Account & workspace** | `whoami`, `list_workspaces`, `select_workspace` | Check signed-in user, list accessible workspaces, and switch the active workspace |
-| **Sessions & E2E tests** | `search_sessions`, `get_session`, `get_session_spans`, `compile_session_test` | Search Sessions by agent, status, or time range, inspect Session metadata and spans, and compile recorded UI Sessions into Playwright or `e2e` tests |
+| **Sessions & E2E tests** | `search_sessions`, `get_session`, `get_session_spans`, `get_session_semantic_actions` | Search Sessions by agent, status, or time range, inspect Session metadata and spans, and read a compact semantic action timeline with locators and caused `trace_id`s for AI-driven E2E test generation |
 | **Spans & traces** | `search_spans`, `get_span`, `search_traces`, `get_trace`, `list_trace_tags`, `list_trace_tag_values` | Filter GenAI, tool, and HTTP spans, inspect full distributed traces, and discover trace tag keys and values |
 | **Logs** | `logs_by_session`, `logs_by_trace` | Read structured logs correlated to a Session or trace |
 | **Agents & keys** | `list_agents`, `create_agent`, `get_ingestion_key`, `bootstrap_project` | List Agent apps, create a new Agent app, reveal an Agent's Ingestion Key when requested, and generate project instrumentation prompts |
@@ -115,6 +115,7 @@ Examples:
 - Use Blackbox: why did session `sess_…` fail? Check tool errors, logs, and the last generation.
 - Blackbox: list Sessions from the last 24 hours with errors for agent `my-agent`.
 - Blackbox: open trace `…` and summarize tool results versus the model's final answer.
+- Blackbox: call `get_session_semantic_actions` on session `sess_…`, inspect the booking and payment traces with `get_trace`, and write a `@playwright/test` + `@softprobe/e2e` test that skips stray clicks and asserts the confirmation email call.
 - Blackbox: create an Agent app named `checkout-bot` and show its Ingestion Key.
 
 The agent cites `session_id`, `trace_id`, or `span_id` and links directly to Explorer:

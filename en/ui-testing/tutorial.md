@@ -59,43 +59,20 @@ Open `http://127.0.0.1:8080` in Chrome and book a flight:
 
 Open **Sessions** in [Softprobe Explorer](https://explorer.softprobe.ai) and click your recorded session. After a few seconds for trace ingestion, open the **Trace** tab to see `UI` (`softprobe.ui.action`) spans across all five pages alongside `travel-ota` server spans, PostgreSQL queries on `ota_orders`, airline NDC calls (`/ndc/v21.3/airshopping`, `/ndc/v21.3/offerprice`, `/ndc/v21.3/ordercreate`), and `POST /v1/notifications/confirmation`.
 
-## 3. Generate and run the `@playwright/test` suite
+## 3. Generate and run the `@playwright/test` suite with Blackbox MCP
 
-In Terminal 2, export your Explorer query credentials and `SESSION_ID`, then compile the recorded session into `./pw-suite`:
+With the [Blackbox MCP server](/en/blackbox/coding-agent-skills) connected in OpenCode, Claude Code, Cursor, or Antigravity, ask your coding agent to generate `./pw-suite/tests/recorded-session.spec.ts` from your `SESSION_ID`:
 
-```bash
-export SESSION_ID="PASTE_YOUR_SESSION_ID"
-export SOFTPROBE_TOKEN="YOUR_EXPLORER_API_TOKEN"
-export SOFTPROBE_WORKSPACE_ID="YOUR_WORKSPACE_ID"
-
-npx softprobe-compile-session \
-	--session-id "$SESSION_ID" \
-	--runner playwright \
-	--target-url http://127.0.0.1:8080 \
-	--out ./pw-suite \
-	--json
+```text
+Use Blackbox MCP to call get_session_semantic_actions for session <SESSION_ID>.
+Inspect the booking and payment traces with get_trace, prune any stray
+non-interactive clicks or retried failed requests, and write a Playwright test
+at ./pw-suite/tests/recorded-session.spec.ts using @softprobe/e2e/playwright
+that replays the booking flow against http://127.0.0.1:8080 and asserts the
+confirmation email call (/v1/notifications/confirmation).
 ```
 
-You should see JSON output showing `14` compiled UI actions and `4` outbound HTTP assertions:
-
-```json
-{
-	"ok": true,
-	"runner": "playwright",
-	"sessionId": "830501cb-7792-47cf-8a3c-b58929cef6aa",
-	"actionCount": 14,
-	"outboundAssertionCount": 4,
-	"filesWritten": [
-		".../pw-suite/tests/recorded-session.spec.ts",
-		".../pw-suite/playwright.config.ts"
-	],
-	"cacheFilesWritten": []
-}
-```
-
-You can also preview or download the test file from the browser by clicking **Generate E2E test** in the Explorer session header, or click **Copy command** to copy the CLI command above.
-
-Open `pw-suite/tests/recorded-session.spec.ts` to inspect what the compiler generated:
+Export your Explorer query credentials (`SOFTPROBE_TOKEN` and `SOFTPROBE_WORKSPACE_ID`) and run the generated Playwright test in Terminal 2:
 
 ```ts
 import { expect, test } from "@softprobe/e2e/playwright";
@@ -201,50 +178,7 @@ The test fails with `TraceAssertionError`, lists the two airline NDC calls that 
 TraceAssertionError: No outbound HTTP call on trace 256b83b5d78cb26c312375e850d12791 matched (method=POST, url=/\/v1\/notifications\/confirmation$/, status=200) within 30000ms. Observed outbound calls: POST https://spair.softprobe.ai/ndc/v21.3/offerprice (status 200), POST /ndc/v21.3/ordercreate (status 200). Inspect trace at https://explorer.softprobe.ai/?trace=256b83b5d78cb26c312375e850d12791.
 ```
 
-Stop the container in Terminal 1 and restart it without `OTA_FAULT_SKIP_EMAIL=true` before the final step:
-
-```bash
-docker run --rm --privileged --name demo-ota-tutorial \
-	-p 8080:8080 \
-	-e INGESTION_KEY="$INGESTION_KEY" \
-	docker.io/softprobe/demo-ota:classic-blackbox
-```
-
-## 5. Generate and run the zero-LLM `e2e` suite
-
-Now compile the same recorded session for the `e2e` runner:
-
-```bash
-npx softprobe-compile-session \
-	--session-id "$SESSION_ID" \
-	--runner e2e \
-	--target-url http://127.0.0.1:8080 \
-	--out ./e2e-suite \
-	--json
-```
-
-`softprobe-compile-session` writes `e2e-suite/tests/recorded-session.e2e.ts`, `e2e-suite/e2e.config.ts`, and four pre-seeded `.e2e/cache/<sha256>.json` action traces. Run the `e2e` suite with zero model API keys configured:
-
-```bash
-cd e2e-suite
-CI=true \
-E2E_TELEMETRY_DISABLED=1 \
-../node_modules/.bin/e2e run --reporter list
-```
-
-Inspect `.e2e/report.json` with Node.js to verify that the test passed with `0` model tokens and `0` model calls:
-
-```bash
-node -e 'const r = JSON.parse(fs.readFileSync(".e2e/report.json", "utf8")); console.log(r.run.summary.passed, r.run.usage.modelTokens, r.run.usage.maxModelCallsInStep);'
-```
-
-You should see:
-
-```text
-1 0 0
-```
-
 ## Next steps
 
-- To integrate session-to-test exports into your own frontend and CI pipeline, see [How to generate UI tests from recorded sessions](/en/ui-testing/from-sessions).
+- To integrate session-to-test generation into your own frontend and CI pipeline, see [How to generate UI tests from recorded sessions](/en/ui-testing/from-sessions).
 - To write new `e2e` tests directly in plain English without recording a browser session first, see [How to write natural-language UI tests with `e2e`](/en/ui-testing/natural-language).
