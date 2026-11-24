@@ -4,7 +4,7 @@ title: 用编码 Agent 排查
 
 # 在编码 Agent 中使用 Blackbox
 
-通过 Softprobe 插件市场（[`softprobe/softprobe-plugin`](https://github.com/softprobe/softprobe-plugin)）安装 Blackbox 插件（`softprobe-blackbox@softprobe`），即可将你的 AI 编码 Agent 连接到 Softprobe Explorer，并在浏览器中使用现有 Explorer 账号完成登录。Blackbox 为编码 Agent 提供 19 个 MCP 工具与排查技能，可用于查询 Session、检查 Span 与 Trace、查看关联日志、从录制的 Session 生成 E2E 测试、管理 Agent 应用，以及在明确请求时获取 Ingestion Key。
+通过 Softprobe 插件市场（[`softprobe/softprobe-plugin`](https://github.com/softprobe/softprobe-plugin)）安装 Blackbox 插件（`softprobe-blackbox@softprobe`），即可将你的 AI 编码 Agent 连接到 Softprobe Explorer，并在浏览器中使用现有 Explorer 账号完成登录。Blackbox 为编码 Agent 提供 19 个 MCP 工具与排查技能，可用于查询 Session、检查 Span 与 Trace、查看关联日志、利用录制的 UI 动作规划 Playwright 测试、管理 Agent 应用，以及在明确请求时获取 Ingestion Key。
 
 这与**捕获**（`@softprobe/web-record` 浏览器 SDK、OBI 或 AI 框架 SDK）不同。捕获负责记录 Session；Blackbox 插件与 MCP 工具让编码 Agent **管理 Agent 并排查 Session**。
 
@@ -98,12 +98,12 @@ opencode mcp auth blackbox
 
 ## 3. 可用的 Blackbox MCP 工具
 
-Blackbox 提供 19 个 MCP 工具，涵盖账号与工作区、遥测排查、E2E 测试生成与 Agent 管理：
+Blackbox 提供 19 个 MCP 工具，涵盖账号与工作区、遥测排查、测试规划与 Agent 管理：
 
 | 分类 | 工具 | 用途 |
 |------|------|------|
 | **账号与工作区** | `whoami`、`list_workspaces`、`select_workspace` | 查看当前登录用户、列出可用工作区、切换当前工作区 |
-| **Session 与测试** | `search_sessions`、`get_session`、`get_session_spans`、`search_spans`、`get_trace` | 检索 Session、查看 Span 和相关 trace，并将录制的 UI 动作作为编写 Playwright 测试的计划 |
+| **Session 与测试** | `search_sessions`、`get_session`、`get_session_spans`、`get_session_semantic_actions`、`search_spans`、`get_trace` | 检索 Session、查看 Span 和 trace，获取带定位器与关联 trace 的动作时间线，并据此规划 Playwright 测试 |
 | **Span 与 Trace 排查** | `search_spans`、`get_span`、`search_traces`、`get_trace`、`list_trace_tags`、`list_trace_tag_values` | 筛选 GenAI、工具调用与 HTTP Span，查看完整分布式 Trace，并发现 Trace 标签键与标签值 |
 | **日志排查** | `logs_by_session`、`logs_by_trace` | 读取与指定 Session 或 Trace 关联的结构化日志 |
 | **Agent 与密钥管理** | `list_agents`、`create_agent`、`get_ingestion_key`、`bootstrap_project` | 列出 Agent 应用、创建新 Agent 应用、在明确请求时读取 Agent 的 Ingestion Key，并生成项目接入配置提示词 |

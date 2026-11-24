@@ -34,6 +34,8 @@ Connect Agent 设置提示默认开启语义动作采集。使用 `inputCapture:
 
 在应用中完成流程，然后打开 Softprobe Explorer 的 **Sessions** 并选择新会话。查看 `softprobe.ui.action` span 以记录动作顺序、标签和值。沿着相关 trace 检查后端请求路径及影响该行为的下游调用。
 
+如果使用 Blackbox MCP，可用会话 ID 调用 `get_session_semantic_actions`，查看流程片段、UI 定位器以及各动作触发的 trace ID。编写断言前，对相关 trace 调用 `get_trace` 查看完整请求与响应详情。
+
 录制时使用模拟表单值。公开的演示 Agent Ingestion Key 只能为绑定的 Agent 写入遥测数据，不能读取会话。测试中的会话与 trace 查询需要对 Workspace 有读取权限的 Softprobe API Key，并通过 `SOFTPROBE_API_KEY` 提供。
 
 ## 编写 Playwright 测试 {#write-test}

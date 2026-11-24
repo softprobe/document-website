@@ -46,6 +46,8 @@ curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:8080/index.html
 
 在 [Softprobe Explorer](https://explorer.softprobe.ai) 中打开 **Sessions**，找到刚录制的会话并检查 UI 动作及其相关 trace。你应能看到浏览器 `softprobe.ui.action` span，以及 `travel-ota` 服务端 span、PostgreSQL 查询、航空 NDC 调用和确认请求。根据录制的动作顺序和定位器编写下面的 Playwright 测试。保留 `SESSION_ID` 以重新打开或查询这次录制；测试运行时会创建新的 trace。
 
+如果使用 Blackbox MCP，可以让编码 Agent 使用 `SESSION_ID` 调用 `get_session_semantic_actions`。它会返回流程片段、UI 定位器，以及每个动作触发的 trace ID；需要完整请求与响应详情时，再对相关 ID 调用 `get_trace`。
+
 浏览器刷新后，服务端 span 可能稍后到达。如果会话暂时只显示 UI 动作，请刷新会话视图，等预订和确认 span 出现后再继续。
 
 ## 3. 根据录制流程编写 Playwright 测试

@@ -46,6 +46,8 @@ Open `http://127.0.0.1:8080` in Chrome and book a flight:
 
 Open **Sessions** in [Softprobe Explorer](https://explorer.softprobe.ai), find that session, and inspect its UI actions and related traces. You should see browser `softprobe.ui.action` spans together with `travel-ota` server spans, PostgreSQL queries, airline NDC calls, and the confirmation request. Use the recorded action order and locators as the outline for the Playwright test below. Keep `SESSION_ID` to reopen or query this recording; the test creates a fresh trace when it runs.
 
+If you use Blackbox MCP, ask your coding agent to call `get_session_semantic_actions` with `SESSION_ID`. Its timeline includes flow segments, UI locators, and the trace IDs caused by each action; call `get_trace` on the relevant IDs when you need full request and response details.
+
 Server spans can arrive shortly after the browser flush. If the session first shows UI actions without the backend calls, refresh the session view and continue when the booking and confirmation spans appear.
 
 ## 3. Write a Playwright test from the recorded flow

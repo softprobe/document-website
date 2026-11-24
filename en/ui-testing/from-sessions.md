@@ -34,6 +34,8 @@ Export backend OpenTelemetry spans or run official OpenTelemetry OBI with the sa
 
 Complete the flow in your application, then open **Sessions** in Softprobe Explorer and select the new session. Use its `softprobe.ui.action` spans to note the action order, labels, and values. Follow the related trace to find the backend request path and the downstream calls that matter to the behavior.
 
+If you use Blackbox MCP, call `get_session_semantic_actions` with the session ID to get flow segments, UI locators, and trace IDs caused by each action. Use `get_trace` on the relevant traces to inspect full request and response details before writing assertions.
+
 Use synthetic form values while recording. The public demo Agent Ingestion Key can write telemetry for its bound Agent; it cannot read sessions. Session and trace queries in the test require a Softprobe API Key with read access to the workspace, set as `SOFTPROBE_API_KEY`.
 
 ## Write the Playwright test {#write-test}
