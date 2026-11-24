@@ -74,7 +74,7 @@ On Node.js 22.13 or newer, run `softprobe-compile-session` with `npx`:
 ```bash
 export SOFTPROBE_API_KEY="YOUR_SOFTPROBE_API_KEY"
 
-npx --package=@softprobe/e2e softprobe-compile-session \
+npx --package=@softprobe/e2e@0.2.8 softprobe-compile-session \
 	--session-id <sessionId> \
 	--runner playwright \
 	--target-url http://127.0.0.1:3000 \
@@ -85,7 +85,7 @@ npx --package=@softprobe/e2e softprobe-compile-session \
 To generate an `e2e` suite with pre-seeded `.e2e/cache/<sha256>.json` files instead, set `--runner e2e`:
 
 ```bash
-npx --package=@softprobe/e2e softprobe-compile-session \
+npx --package=@softprobe/e2e@0.2.8 softprobe-compile-session \
 	--session-id <sessionId> \
 	--runner e2e \
 	--target-url http://127.0.0.1:3000 \

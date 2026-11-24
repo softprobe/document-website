@@ -74,7 +74,7 @@ target_url 设为 "http://127.0.0.1:3000"，并将生成的文件写入 ./e2e �
 ```bash
 export SOFTPROBE_API_KEY="YOUR_SOFTPROBE_API_KEY"
 
-npx --package=@softprobe/e2e softprobe-compile-session \
+npx --package=@softprobe/e2e@0.2.8 softprobe-compile-session \
 	--session-id <sessionId> \
 	--runner playwright \
 	--target-url http://127.0.0.1:3000 \
@@ -85,7 +85,7 @@ npx --package=@softprobe/e2e softprobe-compile-session \
 如需生成包含预置 `.e2e/cache/<sha256>.json` 缓存文件的 `e2e` 套件，将 `--runner` 设为 `e2e`：
 
 ```bash
-npx --package=@softprobe/e2e softprobe-compile-session \
+npx --package=@softprobe/e2e@0.2.8 softprobe-compile-session \
 	--session-id <sessionId> \
 	--runner e2e \
 	--target-url http://127.0.0.1:3000 \

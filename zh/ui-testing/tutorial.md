@@ -20,7 +20,7 @@ title: 构建第一个自动生成 UI 与后端联调测试
 mkdir softprobe-ui-tutorial && cd softprobe-ui-tutorial
 npm init -y
 npm pkg set type=module
-npm install @softprobe/e2e@0.2.5 @playwright/test@1.64.1 \
+npm install @softprobe/e2e@0.2.8 @playwright/test@1.64.1 \
 	e2e@0.24.0 @e2e-dev/web@0.16.1 zod
 npx playwright install chromium
 ```

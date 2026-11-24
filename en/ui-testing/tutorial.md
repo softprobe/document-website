@@ -20,7 +20,7 @@ First, create a fresh working folder and install `@softprobe/e2e`, Playwright, a
 mkdir softprobe-ui-tutorial && cd softprobe-ui-tutorial
 npm init -y
 npm pkg set type=module
-npm install @softprobe/e2e@0.2.5 @playwright/test@1.64.1 \
+npm install @softprobe/e2e@0.2.8 @playwright/test@1.64.1 \
 	e2e@0.24.0 @e2e-dev/web@0.16.1 zod
 npx playwright install chromium
 ```
