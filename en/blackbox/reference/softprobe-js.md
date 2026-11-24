@@ -335,39 +335,6 @@ Import from `@softprobe/e2e/playwright` to attach the `trace` fixture in `@playw
 - `createPlaywrightTraceScope(target, options?)` attaches `traceparent` route correlation directly to a Playwright `BrowserContext` or `Page` and returns `{ trace, dispose() }`.
 - `SoftprobePlaywrightOptions` and `SoftprobePlaywrightFixtures` type `use.softprobe` in `playwright.config.ts`, accepting `sink`, `endpoint`, `token`, `workspaceId`, `explorerUrl`, `apiOrigins`, `baseUrl`, `pollTimeoutMs`, `traceTimeoutMs`, `pollIntervalMs`, `settleMs`, and `env`.
 
-### `@softprobe/e2e/session-compiler` exports
-
-`@softprobe/e2e/session-compiler` compiles recorded `softprobe.ui.action` spans and correlated backend traces into runnable test suites:
-
-- `extractSessionBundleFromSpans(rawInput, options?)` normalizes OTLP or Blackbox session spans into an ordered `CompiledSessionBundle` with inferred dynamic label patterns, `secretSlots`, and `backendTraces`.
-- `fetchSessionSpansFromBlackbox(options)` queries session spans and correlated traces from Blackbox Explorer or TheLake.
-- `compileSessionToPlaywright(bundle, options?)` emits a `@playwright/test` `.spec.ts` file and optional `playwright.config.ts` wired to `@softprobe/e2e/playwright`.
-- `compileSessionToE2E(bundle, options?)` emits a `.e2e.ts` spec, `e2e.config.ts`, and pre-seeded `.e2e/cache/<sha256>.json` `trace-1` cache entries.
-- `softprobeCachedAgent(options?)` configures zero-LLM `.e2e/cache/` replay and is also re-exported from `@softprobe/e2e`.
-
-### `softprobe-compile-session` CLI
-
-`@softprobe/e2e` ships the `softprobe-compile-session` executable at `@softprobe/e2e/bin/compile-session.js`:
-
-```bash
-npx --package=@softprobe/e2e softprobe-compile-session --session-id <id> --runner playwright
-```
-
-| Flag | Default | Description |
-|------|---------|-------------|
-| `--session-id <id>` | None | Blackbox session ID to fetch and compile |
-| `--session-file <path>` | None | Local session spans JSON file to compile offline |
-| `--runner <playwright\|e2e>` | `"playwright"` | Target test runner |
-| `--out <dir>` | `"."` | Output directory for generated files |
-| `--target-url <url>` | Session origin or `"http://127.0.0.1:3000"` | Base URL of the application under test |
-| `--endpoint <url>` | `SOFTPROBE_SINK_ENDPOINT` or `https://explorer.softprobe.ai/api/thelake` | Blackbox Explorer or TheLake API endpoint |
-| `--token <token>` | `SOFTPROBE_API_KEY`, `SOFTPROBE_TOKEN`, or `INGESTION_KEY` | Bearer token for Blackbox session and trace queries |
-| `--workspace-id <id>` | `SOFTPROBE_WORKSPACE_ID` | Workspace ID header for Blackbox queries |
-| `--project-id <id>` | `"softprobe-compiled-e2e"` | `e2e` `projectId` when `--runner` is `e2e` |
-| `--app-identity <name>` | `"softprobe-recorded-app"` | `e2e` `app.identity` when `--runner` is `e2e` |
-| `--force` | `false` | Overwrites existing test and configuration files, while content-addressed `.e2e/cache/<sha256>.json` entries always refresh idempotently |
-| `--json` | `false` | Writes a JSON summary containing `ok`, `runner`, `sessionId`, `actionCount`, `outboundAssertionCount`, `filesWritten`, and `cacheFilesWritten` to stdout |
-
 ---
 
 ## Environment variables
