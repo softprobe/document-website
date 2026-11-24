@@ -286,7 +286,9 @@ OpenCode plugin that sends coding-agent turns, model generations, tool calls, an
 
 ## `@softprobe/e2e`
 
-Full-stack UI testing SDK for `@playwright/test` and `e2e` on Node.js 22.13 or newer. Correlates browser requests through W3C `traceparent` headers and asserts outgoing backend `CLIENT` HTTP calls through `BlackboxSink`. Use a recorded session as a test plan, or write natural-language steps with `e2e`. For workflows, see [Softprobe UI Testing](/en/ui-testing/) and [Use a recorded session as a test plan](/en/ui-testing/from-sessions).
+Full-stack UI testing SDK for `@playwright/test` and `e2e` on Node.js 22.13 or newer. Correlates browser requests through W3C `traceparent` headers, asserts outgoing backend `CLIENT` HTTP calls through `BlackboxSink`, and compiles recorded Blackbox sessions into runnable test suites. For workflow steps, see [Softprobe UI Testing](/en/ui-testing/) and [How to generate UI tests from recorded sessions](/en/ui-testing/from-sessions).
+
+Blackbox session and trace lookups use `SOFTPROBE_API_KEY`, a Softprobe API Key with read access to the session workspace. The Agent Ingestion Key is for sending telemetry and cannot read sessions.
 
 ```bash
 npm install -D @softprobe/e2e @playwright/test
@@ -305,13 +307,12 @@ For `e2e` suites, also install `e2e@0.24.0`, `@e2e-dev/web@0.16.1`, and `zod`.
 
 Extends `@e2e-dev/web` `WebOptions`:
 
-Blackbox read requests resolve the workspace from `SOFTPROBE_API_KEY`; a separate workspace ID is not required.
-
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `sink` | `SoftprobeSinkConfig` | Resolved from options and env | Explicit Blackbox sink `{ kind: "blackbox", endpoint, softprobeApiKey?, workspaceId?, explorerUrl? }` |
 | `endpoint` | `string` | `SOFTPROBE_SINK_ENDPOINT`, `SOFTPROBE_TRACE_ENDPOINT`, `SOFTPROBE_URL`, or `https://explorer.softprobe.ai/api/thelake` | Blackbox trace query base URL |
-| `softprobeApiKey` | `string` | `SOFTPROBE_API_KEY` | Softprobe API Key for Blackbox trace queries |
+| `softprobeApiKey` | `string` | `SOFTPROBE_API_KEY` | Softprobe API Key for Blackbox session and trace queries |
+| `workspaceId` | `string` | `undefined` | Optional `X-Workspace-Id` header for self-hosted Blackbox endpoints; hosted API keys resolve their workspace |
 | `explorerUrl` | `string` | `SOFTPROBE_EXPLORER_URL` or derived from `endpoint` | Base URL for `explorerTraceUrl` links |
 | `apiOrigins` | `readonly (string \| RegExp)[]` | `[app.url]` | Origins matched by `browser.route` for `traceparent` correlation |
 | `pollTimeoutMs` | `number` | `30000` | Maximum milliseconds to poll for the backend `SERVER` span and matching `CLIENT` call, also accepted as `traceTimeoutMs` |
@@ -336,6 +337,40 @@ Import from `@softprobe/e2e/playwright` to attach the `trace` fixture in `@playw
 - `createPlaywrightTraceScope(target, options?)` attaches `traceparent` route correlation directly to a Playwright `BrowserContext` or `Page` and returns `{ trace, dispose() }`.
 - `SoftprobePlaywrightOptions` and `SoftprobePlaywrightFixtures` type `use.softprobe` in `playwright.config.ts`, accepting `sink`, `endpoint`, `softprobeApiKey`, `workspaceId`, `explorerUrl`, `apiOrigins`, `baseUrl`, `pollTimeoutMs`, `traceTimeoutMs`, `pollIntervalMs`, `settleMs`, and `env`.
 
+### `@softprobe/e2e/session-compiler` exports
+
+`@softprobe/e2e/session-compiler` compiles recorded `softprobe.ui.action` spans and correlated backend traces into runnable test suites:
+
+- `extractSessionBundleFromSpans(rawInput, options?)` normalizes OTLP or Blackbox session spans into an ordered `CompiledSessionBundle` with inferred dynamic label patterns, `secretSlots`, and `backendTraces`.
+- `fetchSessionSpansFromBlackbox(options)` queries session spans and correlated traces from Blackbox Explorer or TheLake.
+- `compileSessionToPlaywright(bundle, options?)` emits a `@playwright/test` `.spec.ts` file and optional `playwright.config.ts` wired to `@softprobe/e2e/playwright`.
+- `compileSessionToE2E(bundle, options?)` emits a `.e2e.ts` spec, `e2e.config.ts`, and pre-seeded `.e2e/cache/<sha256>.json` `trace-1` cache entries.
+- `softprobeCachedAgent(options?)` configures zero-LLM `.e2e/cache/` replay and is also re-exported from `@softprobe/e2e`.
+
+### `softprobe-compile-session` CLI
+
+`@softprobe/e2e` ships the `softprobe-compile-session` executable at `@softprobe/e2e/bin/compile-session.js`:
+
+```bash
+npx --package=@softprobe/e2e softprobe-compile-session --session-id <id> --runner playwright
+```
+
+For hosted Blackbox queries, export `SOFTPROBE_API_KEY` before running the command. The key resolves the workspace; you do not need to supply a workspace ID.
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--session-id <id>` | None | Blackbox session ID to fetch and compile |
+| `--session-file <path>` | None | Local session spans JSON file to compile offline |
+| `--runner <playwright\|e2e>` | `"playwright"` | Target test runner |
+| `--out <dir>` | `"."` | Output directory for generated files |
+| `--target-url <url>` | Session origin or `"http://127.0.0.1:3000"` | Base URL of the application under test |
+| `--endpoint <url>` | `SOFTPROBE_SINK_ENDPOINT` or `https://explorer.softprobe.ai/api/thelake` | Blackbox Explorer or TheLake API endpoint |
+| `--workspace-id <id>` | None | Optional `X-Workspace-Id` header for self-hosted Blackbox endpoints |
+| `--project-id <id>` | `"softprobe-compiled-e2e"` | `e2e` `projectId` when `--runner` is `e2e` |
+| `--app-identity <name>` | `"softprobe-recorded-app"` | `e2e` `app.identity` when `--runner` is `e2e` |
+| `--force` | `false` | Overwrites existing test and configuration files, while content-addressed `.e2e/cache/<sha256>.json` entries always refresh idempotently |
+| `--json` | `false` | Writes a JSON summary containing `ok`, `runner`, `sessionId`, `actionCount`, `outboundAssertionCount`, `filesWritten`, and `cacheFilesWritten` to stdout |
+
 ---
 
 ## Environment variables
@@ -344,7 +379,7 @@ All Node.js packages (`@softprobe/tracing`, `@softprobe/vercel-ai-sdk`, `@softpr
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `INGESTION_KEY` | Bearer token for OTLP trace export and score API | Parsed from `Authorization` header if omitted |
+| `INGESTION_KEY` | Agent Ingestion Key for OTLP trace ingestion and score submissions | Parsed from `Authorization` header if omitted |
 | `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` | Full OTLP HTTP traces URL, used as written | `https://explorer.softprobe.ai/api/thelake/v1/traces` |
 | `OTEL_EXPORTER_OTLP_ENDPOINT` | Base OTLP URL; `/v1/traces` is appended | None |
 | `OTEL_EXPORTER_OTLP_TRACES_HEADERS` | Comma-separated `key=value` headers (for example `Authorization=Bearer spk_...`) | Overrides `OTEL_EXPORTER_OTLP_HEADERS` |

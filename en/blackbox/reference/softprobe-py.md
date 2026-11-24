@@ -217,7 +217,7 @@ Propagate session identity and W3C `traceparent` / `baggage` headers across asyn
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `INGESTION_KEY` | Bearer token for OTLP trace export and score API | Parsed from `Authorization` header if omitted |
+| `INGESTION_KEY` | Agent Ingestion Key for OTLP trace ingestion and score submissions | Parsed from `Authorization` header if omitted |
 | `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` | Full OTLP HTTP traces URL, used as written | `https://explorer.softprobe.ai/api/thelake/v1/traces` |
 | `OTEL_EXPORTER_OTLP_ENDPOINT` | Base OTLP URL; `/v1/traces` is appended | None |
 | `OTEL_EXPORTER_OTLP_TRACES_HEADERS` | Comma-delimited `key=value` headers | Overrides `OTEL_EXPORTER_OTLP_HEADERS` |
