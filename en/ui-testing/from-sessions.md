@@ -4,7 +4,7 @@ title: How to generate UI tests from recorded sessions
 
 # How to generate UI tests from recorded sessions
 
-Record a user flow once in [Softprobe Explorer](https://explorer.softprobe.ai), compile the captured session into a `@playwright/test` or `e2e` test suite, and verify both UI behavior and outgoing backend HTTP requests in CI.
+Record a user flow once in [Softprobe Explorer](https://explorer.softprobe.ai), ask your coding agent to generate a deterministic `@playwright/test` + `@softprobe/e2e` test suite with Blackbox MCP, and verify both UI behavior and outgoing backend HTTP requests in CI.
 
 `@softprobe/web-record` records semantic browser actions as `softprobe.ui.action` OpenTelemetry spans alongside W3C `traceparent` headers. `@softprobe/e2e` turns those spans into repeatable browser steps and checks the downstream `CLIENT` HTTP calls that your backend sent in Blackbox.
 
@@ -44,9 +44,9 @@ Record a user flow once in [Softprobe Explorer](https://explorer.softprobe.ai), 
 
 3. Export OpenTelemetry HTTP spans or attach official OpenTelemetry OBI on your backend with the same Ingestion Key. See [End-to-end session tracing with payloads](/en/blackbox/end-to-end-session-tracing) for backend setup. If your browser calls a cross-origin API, allow `traceparent` in `Access-Control-Allow-Headers`.
 
-## Generate a test with Blackbox MCP {#compile-session}
+## Generate a test with Blackbox MCP {#generate-test}
 
-Walk through the user flow once in your browser, then open **Sessions** in Softprobe Explorer to copy the `session_id` (or ask your coding agent to find it with `search_sessions`).
+Walk through the user flow once in your browser, then open **Sessions** in Softprobe Explorer to copy the `session_id`, or ask your coding agent to find it with `search_sessions`.
 
 With [Blackbox MCP](/en/blackbox/coding-agent-skills) connected in OpenCode, Claude Code, Cursor, Codex, or Antigravity, ask your coding agent to inspect the semantic action history and generate a Playwright test:
 
@@ -57,16 +57,14 @@ non-interactive clicks or retried failed requests, and write a clean
 @playwright/test + @softprobe/e2e test in ./e2e against http://127.0.0.1:3000.
 ```
 
-`get_session_semantic_actions` returns a compact timeline segmented into user flows with rich CSS/ARIA locators, `[non-interactive]` noise tags, and caused `trace_id`s with HTTP status and 1-line downstream summaries. Your coding agent then calls `get_trace(trace_id)` on selected traces to inspect full request and response bodies and write deterministic `trace.outboundHttp` assertions.
+`get_session_semantic_actions` returns a compact timeline segmented into user flows with CSS and WAI-ARIA locators, `[non-interactive]` noise tags, and caused `trace_id`s with HTTP status and one-line downstream summaries. Your coding agent then calls `get_trace(trace_id)` on selected traces to inspect full request and response bodies and write deterministic `trace.outboundHttp` assertions.
 
 ## Run generated test suites {#run-suites}
 
-### Run `@playwright/test` suites {#run-playwright}
-
-Install `@softprobe/e2e` and `@playwright/test` in your test directory:
+Install `@softprobe/e2e`, `@playwright/test`, and `zod` in your test directory:
 
 ```bash
-npm install -D @softprobe/e2e @playwright/test
+npm install -D @softprobe/e2e @playwright/test zod
 npx playwright install chromium
 ```
 
@@ -79,33 +77,13 @@ SP_SECRET_PASSWORD="YOUR_TEST_PASSWORD" \
 npx playwright test
 ```
 
-The generated `playwright.config.ts` configures `@softprobe/e2e/playwright` under `use.softprobe` so every browser request carries a correlated W3C `traceparent` header and `trace.outboundHttp` queries `BlackboxSink`.
+The generated `playwright.config.ts` configures `@softprobe/e2e/playwright` under `use.softprobe` so every browser request carries a correlated W3C `traceparent` header and `trace.outboundHttp` queries `BlackboxSink` with zero LLM calls and zero `.e2e/cache/` files.
 
-### Run zero-LLM `e2e` suites {#run-e2e}
-
-Install `@softprobe/e2e`, `e2e`, `@e2e-dev/web`, and `zod` on Node.js 22.13 or newer:
-
-```bash
-npm install -D @softprobe/e2e e2e@0.24.0 @e2e-dev/web@0.16.1 zod
-```
-
-Run the suite with `E2E_TELEMETRY_DISABLED=1`:
-
-```bash
-E2E_TELEMETRY_DISABLED=1 \
-SOFTPROBE_TOKEN="YOUR_BLACKBOX_TOKEN" \
-SOFTPROBE_WORKSPACE_ID="YOUR_WORKSPACE_ID" \
-SP_SECRET_PASSWORD="YOUR_TEST_PASSWORD" \
-npx e2e run
-```
-
-The generated `e2e.config.ts` wires `softprobeCachedAgent()`, `softprobeWeb()`, and `softprobeReporter()`. Even on the first run, `softprobeCachedAgent()` replays the pre-seeded `.e2e/cache/<sha256>.json` `trace-1` entries with zero LLM calls while the browser sends live HTTP requests with fresh `traceparent` headers. Commit `.e2e/cache/` alongside `tests/*.e2e.ts` so CI runs stay deterministic and require no model API key.
-
-To append new natural-language steps after a compiled flow, see [How to write natural-language UI tests with `e2e`](/en/ui-testing/natural-language#extend-compiled-tests).
+To generate deterministic `@softprobe/e2e/mobile` or Maestro suites from iOS and Android sessions, see [How to test iOS and Android apps](/en/ui-testing/mobile#generate-from-sessions). To author prompt-driven `agent.act` suites cached into `.e2e/cache/` instead, see [How to write natural-language UI tests with `e2e`](/en/ui-testing/natural-language).
 
 ## Assert backend outbound HTTP calls and clean up state {#outbound-assertions}
 
-Configure `BlackboxSink` in `playwright.config.ts` or `e2e.config.ts` to verify what your backend sent to external services during each browser action. Clean up created records in `afterEach` so repeated runs stay idempotent.
+Configure `BlackboxSink` in `playwright.config.ts` to verify what your backend sent to external services during each browser action. Clean up created records in `afterEach` so repeated runs stay idempotent.
 
 `playwright.config.ts` with `BlackboxSink`:
 

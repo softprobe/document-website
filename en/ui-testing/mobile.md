@@ -4,7 +4,7 @@ title: How to test iOS and Android apps
 
 # How to test iOS and Android apps
 
-Automate iOS and Android UI tests that also verify what your backend sent to downstream services. Softprobe UI Testing pairs mobile device automation with W3C distributed trace verification in [Softprobe Explorer](https://explorer.softprobe.ai), replays `.e2e/cache/` steps in CI with zero LLM calls, and compiles recorded mobile sessions into `@softprobe/e2e/mobile` or Maestro suites.
+Automate iOS and Android UI tests that also verify what your backend sent to downstream services. Softprobe UI Testing pairs mobile device automation with W3C distributed trace verification in [Softprobe Explorer](https://explorer.softprobe.ai), replays `agent.act` steps from `.e2e/cache/` in CI with zero LLM calls, and lets your coding agent generate `@softprobe/e2e/mobile` or Maestro suites from recorded mobile sessions through Blackbox MCP.
 
 Both mobile capture paths emit the same `softprobe.ui.action` OpenTelemetry span schema (`sp-ui-action-1`), redact passwords and one-time codes into `{ kind: "secret", slot }` references before export, and power `trace.outboundHttp` and `trace.expectNoOutboundHttp` assertions.
 
@@ -452,49 +452,72 @@ const iosEngine = softprobeMobile({
 
 In `"session"` mode, `softprobeMobile` injects `--es sp_session_id <sessionId>` on Android and `-spSessionId <sessionId>` on iOS at launch, then resolves `trace.outboundHttp` and `trace.expectNoOutboundHttp` directly from the correlated Blackbox session spans.
 
-## Compile a recorded mobile session into a test {#compile-mobile-session}
+## Generate mobile tests with Blackbox MCP {#generate-from-sessions}
 
-Any mobile session containing `softprobe.ui.action` spans from Path 1 or Path 2 compiles into either a zero-LLM `@softprobe/e2e/mobile` suite (`.e2e.ts` plus pre-seeded `.e2e/cache/` entries and `trace.outboundHttp` assertions) or a Maestro flow (`.yaml` verifying mobile UI state).
+Any mobile session containing `softprobe.ui.action` spans from Path 1 or Path 2 can become a deterministic test suite. Open **Sessions** in [Softprobe Explorer](https://explorer.softprobe.ai) to copy the `session_id`, or ask your coding agent to find it with `search_sessions`.
 
-### Export from Softprobe Explorer {#compile-from-explorer}
+With [Blackbox MCP](/en/blackbox/coding-agent-skills) connected in OpenCode, Claude Code, Cursor, Codex, or Antigravity, your coding agent calls `get_session_semantic_actions` to read the compact mobile action timeline and `get_trace` to inspect downstream backend HTTP bodies, pruning exploratory swipes and `[non-interactive]` taps before writing the test.
 
-1. Open **Sessions** in [Softprobe Explorer](https://explorer.softprobe.ai) and select a recorded `iOS` or `Android` session.
-2. Click **Generate E2E test** in the session detail header.
-3. Select **AI cached mobile (@softprobe/e2e/mobile)** to preview a `.e2e.ts` suite with backend `trace.outboundHttp` checks, or select **Maestro (.yaml)** to preview a UI-only Maestro flow.
-4. Review the required `SP_SECRET_<SLOT>` environment variables. Click **Copy test** or **Download** to save the test file, or click **Copy command** to copy the `softprobe-compile-session` CLI command that writes all suite files and `.e2e/cache/*.json` entries.
+### Generate a deterministic `@softprobe/e2e/mobile` suite {#generate-e2e-mobile}
 
-### Compile from a coding agent with Blackbox MCP {#compile-from-mcp}
-
-With [Blackbox MCP](/en/blackbox/coding-agent-skills) connected in Claude Code, Cursor, Codex, OpenCode, or Antigravity, call `compile_session_test` with `session_id`, `runner` set to `"e2e-mobile"` or `"maestro"`, and optional `bundle_id`, `platform`, or `target_url` overrides:
+Ask your coding agent to inspect the recorded mobile session and write a locator-driven `@softprobe/e2e/mobile` test:
 
 ```text
-Use Blackbox compile_session_test on session sp-ios-... with runner "e2e-mobile"
-and bundle_id "com.acme.invite", then write the generated files into ./mobile-e2e.
+Use Blackbox get_session_semantic_actions on session sp-ios-....
+Inspect the invite trace with get_trace, prune any exploratory swipes or
+non-interactive taps, and write a deterministic @softprobe/e2e/mobile test in
+./mobile-e2e/tests/recorded-invite.e2e.ts for bundle "com.acme.invite" using
+{ app, screen, device, trace }.
 ```
 
-To generate a Maestro YAML flow instead, set `runner` to `"maestro"`.
+The agent produces a deterministic test that drives `{ app, screen, device, trace }` directly:
 
-### Compile from the terminal {#compile-from-cli}
+```ts
+import { z } from "zod";
+import { describe, expect, secrets, test } from "@softprobe/e2e/mobile";
 
-On Node.js 22.13 or newer, run `softprobe-compile-session` with `--runner e2e-mobile` to emit `e2e.config.ts`, `tests/*.e2e.ts`, and pre-seeded `.e2e/cache/<sha256>.json` files:
+const EmailPayloadSchema = z.object({
+	to: z.string().email(),
+});
 
-```bash
-export SOFTPROBE_TOKEN="YOUR_BLACKBOX_TOKEN"
-export SOFTPROBE_WORKSPACE_ID="YOUR_WORKSPACE_ID"
+describe("Recorded mobile team invite", () => {
+	test("sends an invitation and verifies the downstream email call", async ({
+		app,
+		screen,
+		device,
+		trace,
+	}) => {
+		await app.open();
+		expect((await device.foregroundApp()).bundleId).toBe("com.acme.invite");
 
-npx --package=@softprobe/e2e softprobe-compile-session \
-	--session-id <sessionId> \
-	--runner e2e-mobile \
-	--bundle-id com.acme.invite \
-	--out ./mobile-e2e \
-	--json
+		await screen.getByTestId("email_input").fill("ada@example.com");
+		await screen
+			.getByTestId("admin_password")
+			.fill(secrets.get("ADMIN_PASSWORD"));
+		await screen.getByRole("button", { name: "Send invite" }).tap();
+
+		await expect(
+			screen.getByText("Invitation queued for ada@example.com"),
+		).toBeVisible();
+
+		const outbound = await trace.outboundHttp({
+			triggeredBy: { method: "POST", path: "/api/invites" },
+			method: "POST",
+			url: /\/v1\/email\/send$/,
+			status: 200,
+		});
+
+		expect(EmailPayloadSchema.parse(outbound.request.json)).toEqual({
+			to: "ada@example.com",
+		});
+	});
+});
 ```
 
-Replay the compiled `@softprobe/e2e/mobile` suite in CI with zero LLM calls:
+Because every step uses `{ app, screen, device, trace }` locators directly without `agent.act`, the suite runs on the first execution and in CI with zero LLM calls, zero model API keys, and zero `.e2e/cache/` files:
 
 ```bash
 cd ./mobile-e2e
-CI=true \
 E2E_TELEMETRY_DISABLED=1 \
 SOFTPROBE_TOKEN="YOUR_BLACKBOX_TOKEN" \
 SOFTPROBE_WORKSPACE_ID="YOUR_WORKSPACE_ID" \
@@ -502,15 +525,32 @@ SP_SECRET_ADMIN_PASSWORD="YOUR_TEST_PASSWORD" \
 npx e2e run
 ```
 
-To compile the same session into a Maestro `.yaml` flow instead, pass `--runner maestro`:
+### Generate a Maestro YAML flow {#generate-maestro}
 
-```bash
-npx --package=@softprobe/e2e softprobe-compile-session \
-	--session-id <sessionId> \
-	--runner maestro \
-	--bundle-id com.acme.invite \
-	--out ./maestro-flows \
-	--json
+To generate a UI-only Maestro flow from the same recorded session, ask your coding agent to emit `.maestro/*.yaml`:
+
+```text
+Use Blackbox get_session_semantic_actions on session sp-ios-....
+Prune any exploratory swipes or non-interactive taps, preserve captured secret
+slots as ${SP_SECRET_<SLOT>} variables, and write a Maestro flow at
+.maestro/team-invite.yaml for appId "com.acme.invite".
+```
+
+The agent writes `.maestro/team-invite.yaml`:
+
+```yaml
+appId: com.acme.invite
+---
+- launchApp
+- tapOn:
+    id: "email_input"
+- inputText: "ada@example.com"
+- tapOn:
+    id: "admin_password"
+- inputText: ${SP_SECRET_ADMIN_PASSWORD}
+- hideKeyboard
+- tapOn: "Send invite"
+- assertVisible: "Invitation queued for ada@example.com"
 ```
 
 Run the generated Maestro flow with captured secret slots passed through `--env`:
@@ -518,7 +558,7 @@ Run the generated Maestro flow with captured secret slots passed through `--env`
 ```bash
 maestro test \
 	--env SP_SECRET_ADMIN_PASSWORD="YOUR_TEST_PASSWORD" \
-	./maestro-flows/
+	.maestro/
 ```
 
 ## Related {#related}

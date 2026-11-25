@@ -4,20 +4,19 @@ title: Build your first generated UI and backend test
 
 # Build your first generated UI and backend test
 
-In this tutorial, you start the pre-instrumented [Travel OTA demo](https://github.com/softprobe/demo-ota) container (`docker.io/softprobe/demo-ota:classic-blackbox`), record one flight-booking browser flow into [Softprobe Explorer](https://explorer.softprobe.ai), and compile that session into both a `@playwright/test` suite and a zero-LLM `e2e` suite. Then you restart the container with `OTA_FAULT_SKIP_EMAIL=true` so the booking page still confirms the order while the Java backend skips the confirmation email request, and watch the generated test catch the regression.
+In this tutorial, you start the pre-instrumented [Travel OTA demo](https://github.com/softprobe/demo-ota) container (`docker.io/softprobe/demo-ota:classic-blackbox`), record one flight-booking browser flow into [Softprobe Explorer](https://explorer.softprobe.ai), and use Blackbox MCP in your coding agent to generate a `@playwright/test` + `@softprobe/e2e` test suite from that session. Then you restart the container with `OTA_FAULT_SKIP_EMAIL=true` so the booking page still confirms the order while the Java backend skips the confirmation email request, and watch the generated test catch the regression.
 
 Before you start, install Docker and Node.js 22.13 or newer, and create an Agent Ingestion Key (`spk_...`) plus an API token and Workspace ID in [Softprobe Explorer](https://explorer.softprobe.ai). If you run [self-hosted Explorer](/en/blackbox/self-hosting) on Linux (`http://127.0.0.1:8787`), replace `-p 8080:8080` with `--network host -e OTEL_EXPORTER_OTLP_TRACES_ENDPOINT="http://127.0.0.1:8787/api/thelake/v1/traces"` in `docker run` and export `SOFTPROBE_SINK_ENDPOINT="http://127.0.0.1:8787/api/thelake"` in Terminal 2.
 
-## 1. Start the pre-instrumented demo app
+## 1. Start the pre-instrumented demo app {#step-1}
 
-First, create a fresh working folder and install `@softprobe/e2e`, Playwright, and `e2e`:
+First, create a fresh working folder and install `@softprobe/e2e` and Playwright:
 
 ```bash
 mkdir softprobe-ui-tutorial && cd softprobe-ui-tutorial
 npm init -y
 npm pkg set type=module
-npm install @softprobe/e2e@0.2.5 @playwright/test@1.64.1 \
-	e2e@0.24.0 @e2e-dev/web@0.16.1 zod
+npm install @softprobe/e2e@0.2.8 @playwright/test@1.64.1 zod
 npx playwright install chromium
 ```
 
@@ -46,7 +45,7 @@ You should see:
 200
 ```
 
-## 2. Record one flight-booking session
+## 2. Record one flight-booking session {#step-2}
 
 Open `http://127.0.0.1:8080` in Chrome and book a flight:
 
@@ -59,7 +58,7 @@ Open `http://127.0.0.1:8080` in Chrome and book a flight:
 
 Open **Sessions** in [Softprobe Explorer](https://explorer.softprobe.ai) and click your recorded session. After a few seconds for trace ingestion, open the **Trace** tab to see `UI` (`softprobe.ui.action`) spans across all five pages alongside `travel-ota` server spans, PostgreSQL queries on `ota_orders`, airline NDC calls (`/ndc/v21.3/airshopping`, `/ndc/v21.3/offerprice`, `/ndc/v21.3/ordercreate`), and `POST /v1/notifications/confirmation`.
 
-## 3. Generate and run the `@playwright/test` suite with Blackbox MCP
+## 3. Generate and run the `@playwright/test` suite with Blackbox MCP {#step-3}
 
 With the [Blackbox MCP server](/en/blackbox/coding-agent-skills) connected in OpenCode, Claude Code, Cursor, or Antigravity, ask your coding agent to generate `./pw-suite/tests/recorded-session.spec.ts` from your `SESSION_ID`:
 
@@ -152,7 +151,7 @@ Running 1 test using 1 worker
   1 passed (42.9s)
 ```
 
-## 4. Catch a silent backend regression
+## 4. Catch a silent backend regression {#step-4}
 
 Break the backend without changing the UI. In Terminal 1, stop the container with `Ctrl+C` and restart it with `-e OTA_FAULT_SKIP_EMAIL=true`:
 
@@ -178,7 +177,7 @@ The test fails with `TraceAssertionError`, lists the two airline NDC calls that 
 TraceAssertionError: No outbound HTTP call on trace 256b83b5d78cb26c312375e850d12791 matched (method=POST, url=/\/v1\/notifications\/confirmation$/, status=200) within 30000ms. Observed outbound calls: POST https://spair.softprobe.ai/ndc/v21.3/offerprice (status 200), POST /ndc/v21.3/ordercreate (status 200). Inspect trace at https://explorer.softprobe.ai/?trace=256b83b5d78cb26c312375e850d12791.
 ```
 
-## Next steps
+## Next steps {#next-steps}
 
 - To integrate session-to-test generation into your own frontend and CI pipeline, see [How to generate UI tests from recorded sessions](/en/ui-testing/from-sessions).
 - To write new `e2e` tests directly in plain English without recording a browser session first, see [How to write natural-language UI tests with `e2e`](/en/ui-testing/natural-language).

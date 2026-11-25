@@ -14,9 +14,9 @@ API reference for the `@softprobe/*` npm packages at version `0.2.8`. Packages r
 | `@softprobe/vercel-ai-sdk` | Vercel AI SDK telemetry integration and HTTP context propagation | [`softprobe-js/packages/vercel-ai-sdk`](https://github.com/softprobe/softprobe-js/tree/main/packages/vercel-ai-sdk) |
 | `@softprobe/langchain` | LangChain and LangGraph auto-instrumentation and `CallbackHandler` | [`softprobe-js/packages/langchain`](https://github.com/softprobe/softprobe-js/tree/main/packages/langchain) |
 | `@softprobe/opencode-plugin` | OpenCode coding-agent plugin | [`softprobe-js/packages/opencode-plugin`](https://github.com/softprobe/softprobe-js/tree/main/packages/opencode-plugin) |
-| `@softprobe/e2e` | Full-stack `@playwright/test`, web `e2e`, and mobile `@softprobe/e2e/mobile` fixtures, W3C distributed-trace assertions, and Blackbox session compilation on Node.js 22.13 or newer | [`softprobe-js/packages/e2e`](https://github.com/softprobe/softprobe-js/tree/main/packages/e2e) |
+| `@softprobe/e2e` | Full-stack `@playwright/test`, web `e2e`, and mobile `@softprobe/e2e/mobile` fixtures and W3C distributed-trace assertions on Node.js 22.13 or newer | [`softprobe-js/packages/e2e`](https://github.com/softprobe/softprobe-js/tree/main/packages/e2e) |
 
-## `@softprobe/tracing`
+## `@softprobe/tracing` {#softprobe-tracing}
 
 Install the core package:
 
@@ -123,7 +123,7 @@ const openai = observeOpenAI(new OpenAI(), {
 
 ---
 
-## `@softprobe/web-record`
+## `@softprobe/web-record` {#softprobe-web-record}
 
 Browser SDK that records rrweb DOM events, captures live DOM semantic user actions as `softprobe.ui.action` OTLP spans, traces `fetch` and `XMLHttpRequest` calls with W3C `traceparent` propagation, and captures redacted JSON bodies.
 
@@ -131,7 +131,7 @@ Browser SDK that records rrweb DOM events, captures live DOM semantic user actio
 npm install @softprobe/web-record
 ```
 
-### `RecordSdk.init(options)`
+### `RecordSdk.init(options)` {#recordsdk-init-options}
 
 Initializes browser capture once and returns a `WebRecordController`.
 
@@ -178,7 +178,7 @@ You can also load the UMD bundle in HTML `<head>` with either `data-softprobe-op
 | `manual` | `boolean` | `false` | When `true`, do not start rrweb until `recorder.record()` is called |
 | `captureSemanticActions` | `boolean` | `false` | Captures live DOM semantic user actions including `navigate`, `click`, `dblclick`, `contextmenu`, `hover`, `fill`, `select`, `check`, `press`, `upload`, `drag`, `scroll`, `dialog`, and `resize` as `softprobe.ui.action` OTLP spans with `sp.observation.type: "ui_action"`, `sp.ui.action.schema: "sp-ui-action-1"`, WAI-ARIA target descriptors, `rrweb` mirror node IDs, causal `causedTraces`, and settled `endAnchors` and `goneAnchors`. Also supported on `<script>` with `data-capture-semantic-actions="true"`. |
 | `inputCapture` | `"masked" \| "secrets-only" \| "unmasked"` | `"masked"`, or `"secrets-only"` when `maskAllInputs` is `false` or when `captureSemanticActions` is `true` without `maskAllInputs: true` | Controls input value capture on semantic actions and defaults `maskAllInputs` to `false` when `"secrets-only"` or `"unmasked"` is active unless you pass `maskAllInputs` explicitly. Under `"secrets-only"`, password, payment-card, one-time-code, token, secret, and `secretSlots` inputs emit `{ kind: "secret", slot }` tokens without exporting plaintext values. Also supported on `<script>` with `data-input-capture="secrets-only"`. |
-| `secretSlots` | `Readonly<Record<string, string>>` | `undefined` | Maps CSS selectors such as `'input[name="apiKey"]'` to named secret slots such as `"API_KEY"`, consumed as `process.env.SP_SECRET_<SLOT>` in compiled tests |
+| `secretSlots` | `Readonly<Record<string, string>>` | `undefined` | Maps CSS selectors such as `'input[name="apiKey"]'` to named secret slots such as `"API_KEY"`, consumed as `process.env.SP_SECRET_<SLOT>` in generated tests |
 | `maskAllInputs` | `boolean` | `true`, or `false` when `inputCapture` is `"secrets-only"` or `"unmasked"` | Mask all HTML `<input>` values in DOM recordings |
 | `maskTextSelector` | `string` | `undefined` | CSS selector for visible text masked by rrweb |
 | `blockSelector` | `string` | `undefined` | CSS selector for DOM regions excluded from rrweb |
@@ -213,7 +213,7 @@ Each `HttpBodyCaptureRoute` accepts:
 
 ---
 
-## `@softprobe/vercel-ai-sdk`
+## `@softprobe/vercel-ai-sdk` {#softprobe-vercel-ai-sdk}
 
 Integrates Vercel AI SDK `generateText`, `streamText`, and tool calls with Softprobe and propagates W3C `traceparent` and session IDs across Node.js HTTP requests.
 
@@ -221,7 +221,7 @@ Integrates Vercel AI SDK `generateText`, `streamText`, and tool calls with Softp
 npm install @softprobe/vercel-ai-sdk @softprobe/tracing
 ```
 
-### `initVercelAiTelemetry(options?)`
+### `initVercelAiTelemetry(options?)` {#initvercelaitelemetry-options}
 
 Creates a `SoftprobeVercelAiSdkIntegration`, installs incoming/outgoing HTTP context propagation, and registers the integration with the `ai` package (`registerTelemetry`).
 
@@ -256,7 +256,7 @@ const telemetry = initVercelAiTelemetry({
 
 ---
 
-## `@softprobe/langchain`
+## `@softprobe/langchain` {#softprobe-langchain}
 
 LangChain and LangGraph tracing for TypeScript and Node.js. See the [LangChain install guide](/en/blackbox/langchain) for setup steps.
 
@@ -279,7 +279,7 @@ Importing `@softprobe/langchain` calls `autoInstrumentFromEnv()` automatically w
 
 ---
 
-## `@softprobe/opencode-plugin`
+## `@softprobe/opencode-plugin` {#softprobe-opencode-plugin}
 
 OpenCode plugin that sends coding-agent turns, model generations, tool calls, and sub-agent tasks to Softprobe. See the [OpenCode install guide](/en/blackbox/opencode) for `opencode.json` and `opencode-softprobe.json` configuration.
 
@@ -338,7 +338,7 @@ npm install @softprobe/react-native @opentelemetry/api @opentelemetry/sdk-trace-
 
 ## `@softprobe/e2e` {#softprobe-e2e}
 
-Full-stack UI testing SDK for `@playwright/test`, web `e2e`, and mobile `@softprobe/e2e/mobile` on Node.js 22.13 or newer. Correlates client requests through W3C `traceparent` and `baggage` headers, asserts outgoing backend `CLIENT` HTTP calls through `BlackboxSink`, and compiles recorded Blackbox sessions into runnable test suites. For workflow steps, see [Softprobe UI Testing](/en/ui-testing/), [How to generate UI tests from recorded sessions](/en/ui-testing/from-sessions), and [How to test iOS and Android apps](/en/ui-testing/mobile).
+Full-stack UI testing SDK for `@playwright/test`, web `e2e`, and mobile `@softprobe/e2e/mobile` on Node.js 22.13 or newer. Correlates client requests through W3C `traceparent` and `baggage` headers and asserts outgoing backend `CLIENT` HTTP calls through `BlackboxSink`. For workflow steps, see [Softprobe UI Testing](/en/ui-testing/), [How to generate UI tests from recorded sessions](/en/ui-testing/from-sessions), and [How to test iOS and Android apps](/en/ui-testing/mobile).
 
 ```bash
 npm install -D @softprobe/e2e @playwright/test
@@ -350,7 +350,7 @@ For web `e2e` suites, also install `e2e@0.24.0`, `@e2e-dev/web@0.16.1`, and `zod
 
 - `softprobeWeb(options?)` wraps `@e2e-dev/web` with Playwright `browser.route` W3C `traceparent` correlation, preserving existing `@softprobe/web-record` headers or minting a fallback header, and binds the `trace` test fixture.
 - `softprobeReporter()` writes verified trace summaries to `.e2e/softprobe-traces.json` under `schemaVersion: "softprobe-traces-1"`.
-- `softprobeCachedAgent(options?)` returns an `AgentConfig` (`{ model?, judge?, context?, cacheDir? }`) that replays pre-seeded `.e2e/cache/` `trace-1` entries with zero model calls and forwards uncached `agent.act` steps when you pass `options.model`.
+- `softprobeCachedAgent(options?)` returns an `AgentConfig` (`{ model?, judge?, context?, cacheDir? }`) that replays recorded `.e2e/cache/` `trace-1` entries in CI with zero model calls and forwards uncached `agent.act` steps when you pass `options.model`.
 - Re-exported `e2e` bindings include `test`, `describe`, `beforeEach`, `afterEach`, `beforeAll`, `afterAll`, `expect`, `credentials`, `secrets`, `unique`, `AgentError`, and `isAgentError`.
 
 #### `SoftprobeWebOptions`
@@ -378,7 +378,7 @@ Extends `@e2e-dev/web` `WebOptions`:
 - `TraceAssertionError` and `isTraceAssertionError(value)` report `code: "TRACE_ASSERTION_FAILED"` when the backend `SERVER` span arrived and the outbound HTTP assertion failed, exposing captured spans in `observedCalls`.
 - `isTraceId(value)` and `isSpanId(value)` validate 32-character lowercase hex `TraceId` values and 16-character lowercase hex `SpanId` values.
 
-### `@softprobe/e2e/playwright` exports
+### `@softprobe/e2e/playwright` exports {#softprobe-e2e-playwright}
 
 Import from `@softprobe/e2e/playwright` to attach the `trace` fixture in `@playwright/test` suites over `context.route` without colliding with Playwright's built-in `use.trace` option:
 
@@ -424,46 +424,9 @@ Extends `@e2e-dev/mobile` `MobileOptions` (`platform`, `device`, `session`, `sna
 | `"proxy"` | `{ mode: "proxy", upstreamOrigin: string, launchArgKey?: string, adbReverse?: boolean }` | Starts an ephemeral HTTP proxy on `127.0.0.1`, runs `adb reverse` on Android unless `adbReverse` is `false` (using `device`, `SP_ANDROID_ADB_TARGET`, or `ANDROID_SERIAL`), and appends `--es <launchArgKey> <proxyOrigin>` on Android (default `"api_base_url"`) or `-<launchArgKey> <proxyOrigin>` on iOS (default `"-API_BASE_URL"`). |
 | `"session"` | `{ mode: "session", sessionId?: string, launchArgKey?: string }` | Appends `--es <launchArgKey> <sessionId>` on Android (default `"sp_session_id"`) or `-<launchArgKey> <sessionId>` on iOS (default `"-spSessionId"`), and resolves `trace.outboundHttp` from Blackbox session spans. |
 
-### `@softprobe/e2e/session-compiler` exports
-
-`@softprobe/e2e/session-compiler` compiles recorded web and mobile `softprobe.ui.action` spans (`sp-ui-action-1`, including mobile verbs `swipe`, `longPress`, `back`, `dismissKeyboard`, and `openLink`) and correlated backend traces into runnable test suites:
-
-- `extractSessionBundleFromSpans(rawInput, options?)` normalizes OTLP or Blackbox session spans into an ordered `CompiledSessionBundle` with inferred dynamic label patterns, `secretSlots`, `platform`, `appBundleId`, and `backendTraces`.
-- `fetchSessionSpansFromBlackbox(options)` queries session spans and correlated traces from Blackbox Explorer or TheLake.
-- `compileSessionToPlaywright(bundle, options?)` emits a `@playwright/test` `.spec.ts` file and optional `playwright.config.ts` wired to `@softprobe/e2e/playwright`.
-- `compileSessionToE2E(bundle, options?)` emits a `.e2e.ts` spec, `e2e.config.ts`, and pre-seeded `.e2e/cache/<sha256>.json` `trace-1` cache entries.
-- `compileSessionToMobileE2E(bundle, options?)` emits a `@softprobe/e2e/mobile` `.e2e.ts` spec, `e2e.config.ts`, and pre-seeded `.e2e/cache/<sha256>.json` `trace-1` cache entries with `trace.outboundHttp` assertions.
-- `compileSessionToMaestro(bundle, options?)` emits a Maestro `.yaml` mobile UI flow.
-- `softprobeCachedAgent(options?)` configures zero-LLM `.e2e/cache/` replay and is re-exported from `@softprobe/e2e` and `@softprobe/e2e/mobile`.
-
-### `softprobe-compile-session` CLI {#softprobe-compile-session}
-
-`@softprobe/e2e` ships the `softprobe-compile-session` executable at `@softprobe/e2e/bin/compile-session.js`:
-
-```bash
-npx --package=@softprobe/e2e softprobe-compile-session --session-id <id> --runner e2e-mobile
-```
-
-| Flag | Default | Description |
-|------|---------|-------------|
-| `--session-id <id>` | None | Blackbox session ID to fetch and compile |
-| `--session-file <path>` | None | Local session spans JSON file to compile offline |
-| `--runner <playwright\|e2e\|e2e-mobile\|maestro>` | `"playwright"` | Target test runner (`playwright`, `e2e`, `e2e-mobile`, or `maestro`) |
-| `--platform <ios\|android>` | Inferred from session spans | Mobile target platform override when `--runner` is `e2e-mobile` or `maestro` |
-| `--bundle-id <bundleId>` | Inferred from session spans | iOS bundle identifier or Android package name override |
-| `--out <dir>` | `"."` | Output directory for generated files |
-| `--target-url <url>` | Session origin or `"http://127.0.0.1:3000"` | Base URL of the web application or upstream API origin under test |
-| `--endpoint <url>` | `SOFTPROBE_SINK_ENDPOINT` or `https://explorer.softprobe.ai/api/thelake` | Blackbox Explorer or TheLake API endpoint |
-| `--token <token>` | `SOFTPROBE_API_KEY`, `SOFTPROBE_TOKEN`, or `INGESTION_KEY` | Bearer token for Blackbox session and trace queries |
-| `--workspace-id <id>` | `SOFTPROBE_WORKSPACE_ID` | Workspace ID header for Blackbox queries |
-| `--project-id <id>` | `"softprobe-compiled-e2e"` | `e2e` `projectId` when `--runner` is `e2e` or `e2e-mobile` |
-| `--app-identity <name>` | `"softprobe-recorded-app"` | `e2e` `app.identity` when `--runner` is `e2e` or `e2e-mobile` |
-| `--force` | `false` | Overwrites existing test, flow, and configuration files, while content-addressed `.e2e/cache/<sha256>.json` entries always refresh idempotently |
-| `--json` | `false` | Writes a JSON summary containing `ok`, `runner`, `sessionId`, `platform`, optional `bundleId`, `actionCount`, `outboundAssertionCount`, `filesWritten`, and `cacheFilesWritten` to stdout |
-
 ---
 
-## Environment variables
+## Environment variables {#environment-variables}
 
 All Node.js packages (`@softprobe/tracing`, `@softprobe/vercel-ai-sdk`, `@softprobe/langchain`, `@softprobe/opencode-plugin`) share these environment variables:
 

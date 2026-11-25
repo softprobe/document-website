@@ -4,7 +4,7 @@ title: 如何测试 iOS 与 Android 应用
 
 # 如何测试 iOS 与 Android 应用
 
-自动化运行 iOS 与 Android 移动端 UI 测试，并同步校验后端向外部服务发出的真实 HTTP 请求。Softprobe UI 测试将移动设备自动化与 [Softprobe Explorer](https://explorer.softprobe.ai) 中的 W3C 分布式链路校验结合起来，在 CI 中以零次大模型调用回放 `.e2e/cache/` 步骤，并支持将录制的移动端会话编译为 `@softprobe/e2e/mobile` 或 Maestro 测试套件。
+自动化运行 iOS 与 Android 移动端 UI 测试，并同步校验后端向外部服务发出的真实 HTTP 请求。Softprobe UI 测试将移动设备自动化与 [Softprobe Explorer](https://explorer.softprobe.ai) 中的 W3C 分布式链路校验结合起来，在 CI 中以零次大模型调用回放 `.e2e/cache/` 中的 `agent.act` 步骤，并支持让编码 Agent 通过 Blackbox MCP 从录制的移动端会话生成 `@softprobe/e2e/mobile` 或 Maestro 测试套件。
 
 两条移动端采集路径都会输出统一的 `softprobe.ui.action` OpenTelemetry span（`sp-ui-action-1`），在导出前将密码与一次性验证码脱敏为 `{ kind: "secret", slot }` 占位引用，并驱动 `trace.outboundHttp` 与 `trace.expectNoOutboundHttp` 断言。
 
@@ -20,7 +20,7 @@ title: 如何测试 iOS 与 Android 应用
 | **支持的设备与网络环境** | 通过 `adb reverse` 连接的本地 Android 模拟器、USB 真机，以及访问未开启证书绑定的 HTTP 接口的本地 iOS 模拟器。 | 模拟器、连接 Wi-Fi 或蜂窝网络的真机、启用 TLS 证书绑定的接口、云真机平台、手动测试会话与生产环境会话。 |
 | **UI 动作采集精度** | 通过 ADB UiAutomator 与 XCTest 对比系统无障碍树，导出 `sp.ui.action.capture_source: "host_agent"`。 | 在应用进程内直接读取 React Native、Android `View` 与 iOS 控件信息，导出 `sp.ui.action.capture_source: "otel_sdk"`。 |
 
-如果希望在不修改客户端源码的前提下立即为现有安装包接入 CI 回归测试，请优先选择路径 1。如果应用已经接入 OpenTelemetry、启用了 TLS 证书绑定、运行在蜂窝网络真机或云真机上，或者需要在 Explorer 中录制手动 QA 会话并一键导出测试，请选择路径 2。
+如果希望在不修改客户端源码的前提下立即为现有安装包接入 CI 回归测试，请优先选择路径 1。如果应用已经接入 OpenTelemetry、启用了 TLS 证书绑定、运行在蜂窝网络真机或云真机上，或者需要在 Explorer 中录制手动 QA 会话，请选择路径 2。
 
 ## 使用路径 1 测试未改动的应用 {#path-1}
 
@@ -36,7 +36,7 @@ npm install -D @softprobe/e2e e2e@0.24.0 @e2e-dev/mobile@0.12.8 @ai-sdk/openai z
 
 ### 以代理模式配置 `softprobeMobile` {#path-1-config}
 
-创建 `e2e.config.ts`。将 `correlation.mode` 设为 `"proxy"` 并填写后端地址 `upstreamOrigin`。本地录制时将模型与 `mobileTools(androidEngine)` 一并传入以生成 `.e2e/cache/`；CI 运行时切换为 `softprobeCachedAgent()` 与 `"read-only"` 缓存模式，实现零模型调用：
+创建 `e2e.config.ts`。将 `correlation.mode` 设为 `"proxy"` 并填写后端地址 `upstreamOrigin`。本地录制时将模型与 `mobileTools(androidEngine)` 一并传入以生成 `.e2e/cache/`。CI 运行时切换为 `softprobeCachedAgent()` 与 `"read-only"` 缓存模式，实现零模型调用：
 
 ```ts
 import { openai } from "@ai-sdk/openai";
@@ -358,7 +358,7 @@ uiRecorder.instrumentClickView(sendInviteButton) {
 }
 ```
 
-当测试由 `softprobeMobile` 启动时，`SoftprobeAndroidSpanProcessor` 会自动从 `Intent` Extra 中读取 `sp_session_id`；在手动 QA 或生产环境中则自动生成会话 ID。`SoftprobeUiActionRecorder` 会自动识别 `TYPE_TEXT_VARIATION_PASSWORD`、`TYPE_NUMBER_VARIATION_PASSWORD` 等 Android 密码 `InputType` 标记，在导出前将输入值替换为 `{ kind: "secret", slot }`。
+当测试由 `softprobeMobile` 启动时，`SoftprobeAndroidSpanProcessor` 会自动从 `Intent` Extra 中读取 `sp_session_id`。在手动 QA 或生产环境中则自动生成会话 ID。`SoftprobeUiActionRecorder` 会自动识别 `TYPE_TEXT_VARIATION_PASSWORD`、`TYPE_NUMBER_VARIATION_PASSWORD` 等 Android 密码 `InputType` 标记，在导出前将输入值替换为 `{ kind: "secret", slot }`。
 
 ### 原生 iOS 与 OpenTelemetry Swift {#path-2-ios}
 
@@ -452,49 +452,71 @@ const iosEngine = softprobeMobile({
 
 在 `"session"` 模式下，`softprobeMobile` 会在启动 Android 应用时注入 `--es sp_session_id <sessionId>`，在启动 iOS 应用时注入 `-spSessionId <sessionId>`，随后直接从 Blackbox 会话 span 中解析并校验 `trace.outboundHttp` 与 `trace.expectNoOutboundHttp`。
 
-## 将录制的移动端会话编译为测试 {#compile-mobile-session}
+## 使用 Blackbox MCP 生成移动端测试 {#generate-from-sessions}
 
-无论会话由路径 1 还是路径 2 采集，只要包含 `softprobe.ui.action` span，都可以编译为零 LLM 调用的 `@softprobe/e2e/mobile` 套件（包含 `.e2e.ts`、预置 `.e2e/cache/` 缓存文件与 `trace.outboundHttp` 断言）或仅校验客户端 UI 状态的 Maestro `.yaml` 流程文件。
+无论会话由路径 1 还是路径 2 采集，只要包含 `softprobe.ui.action` span，都可以生成确定性测试套件。打开 [Softprobe Explorer](https://explorer.softprobe.ai) 的 **Sessions** 页面复制目标 `session_id`，或直接让编码 Agent 调用 `search_sessions` 检索会话。
 
-### 从 Softprobe Explorer 一键导出 {#compile-from-explorer}
+在 OpenCode、Claude Code、Cursor、Codex 或 Antigravity 中连接 [Blackbox MCP](/zh/blackbox/coding-agent-skills) 后，编码 Agent 会调用 `get_session_semantic_actions` 读取紧凑的移动端语义动作时间线，并调用 `get_trace` 检查下游后端 HTTP 消息体，在生成代码前自动剔除探索性滑动与带 `[non-interactive]` 标记的无效点击。
 
-1. 打开 [Softprobe Explorer](https://explorer.softprobe.ai) 的 **Sessions** 页面，选择一条录制好的 `iOS` 或 `Android` 会话。
-2. 点击会话详情页顶部的 **Generate E2E test**。
-3. 选择 **AI cached mobile (@softprobe/e2e/mobile)** 预览带 `trace.outboundHttp` 后端断言的 `.e2e.ts` 测试，或选择 **Maestro (.yaml)** 预览纯 UI 校验流程。
-4. 核对所需的 `SP_SECRET_<SLOT>` 环境变量。点击 **Copy test** 或 **Download** 保存测试文件，或点击 **Copy command** 复制 `softprobe-compile-session` 命令一次性写出完整套件与 `.e2e/cache/*.json` 缓存。
+### 生成确定性的 `@softprobe/e2e/mobile` 套件 {#generate-e2e-mobile}
 
-### 在编码 Agent 中通过 Blackbox MCP 编译 {#compile-from-mcp}
-
-在 Claude Code、Cursor、Codex、OpenCode 或 Antigravity 中连接 [Blackbox MCP](/zh/blackbox/coding-agent-skills) 后，让 Agent 调用 `compile_session_test`，传入 `session_id`、取值为 `"e2e-mobile"` 或 `"maestro"` 的 `runner`，以及可选的 `bundle_id`、`platform` 或 `target_url`：
+让编码 Agent 检查录制好的移动端会话并生成基于定位器的 `@softprobe/e2e/mobile` 测试：
 
 ```text
-调用 Blackbox 的 compile_session_test 编译会话 sp-ios-...，runner 设为 "e2e-mobile"，
-bundle_id 设为 "com.acme.invite"，并将生成的文件写入 ./mobile-e2e 目录。
+使用 Blackbox 的 get_session_semantic_actions 查看会话 sp-ios-...，
+调用 get_trace 检查邀请接口链路，剔除探索性滑动与非交互点击，
+为包名 "com.acme.invite" 在 ./mobile-e2e/tests/recorded-invite.e2e.ts 中
+编写使用 { app, screen, device, trace } 的确定性 @softprobe/e2e/mobile 测试。
 ```
 
-如需生成 Maestro YAML 流程，将 `runner` 设为 `"maestro"` 即可。
+编码 Agent 会直接输出调用 `{ app, screen, device, trace }` 的确定性测试文件：
 
-### 在终端通过命令行编译 {#compile-from-cli}
+```ts
+import { z } from "zod";
+import { describe, expect, secrets, test } from "@softprobe/e2e/mobile";
 
-在 Node.js 22.13 及以上环境中，使用 `--runner e2e-mobile` 运行 `softprobe-compile-session`，生成 `e2e.config.ts`、`tests/*.e2e.ts` 与预置 `.e2e/cache/<sha256>.json` 缓存：
+const EmailPayloadSchema = z.object({
+	to: z.string().email(),
+});
 
-```bash
-export SOFTPROBE_TOKEN="YOUR_BLACKBOX_TOKEN"
-export SOFTPROBE_WORKSPACE_ID="YOUR_WORKSPACE_ID"
+describe("Recorded mobile team invite", () => {
+	test("sends an invitation and verifies the downstream email call", async ({
+		app,
+		screen,
+		device,
+		trace,
+	}) => {
+		await app.open();
+		expect((await device.foregroundApp()).bundleId).toBe("com.acme.invite");
 
-npx --package=@softprobe/e2e softprobe-compile-session \
-	--session-id <sessionId> \
-	--runner e2e-mobile \
-	--bundle-id com.acme.invite \
-	--out ./mobile-e2e \
-	--json
+		await screen.getByTestId("email_input").fill("ada@example.com");
+		await screen
+			.getByTestId("admin_password")
+			.fill(secrets.get("ADMIN_PASSWORD"));
+		await screen.getByRole("button", { name: "Send invite" }).tap();
+
+		await expect(
+			screen.getByText("Invitation queued for ada@example.com"),
+		).toBeVisible();
+
+		const outbound = await trace.outboundHttp({
+			triggeredBy: { method: "POST", path: "/api/invites" },
+			method: "POST",
+			url: /\/v1\/email\/send$/,
+			status: 200,
+		});
+
+		expect(EmailPayloadSchema.parse(outbound.request.json)).toEqual({
+			to: "ada@example.com",
+		});
+	});
+});
 ```
 
-在 CI 中以零 LLM 调用回放生成的 `@softprobe/e2e/mobile` 套件：
+由于每个步骤都直接调用 `{ app, screen, device, trace }` 定位器而不经过 `agent.act`，该套件在首次本地运行与 CI 中均不需要任何大模型调用、模型 API Key 或 `.e2e/cache/` 缓存文件：
 
 ```bash
 cd ./mobile-e2e
-CI=true \
 E2E_TELEMETRY_DISABLED=1 \
 SOFTPROBE_TOKEN="YOUR_BLACKBOX_TOKEN" \
 SOFTPROBE_WORKSPACE_ID="YOUR_WORKSPACE_ID" \
@@ -502,15 +524,31 @@ SP_SECRET_ADMIN_PASSWORD="YOUR_TEST_PASSWORD" \
 npx e2e run
 ```
 
-如需将同一条会话编译为 Maestro `.yaml` 流程，传入 `--runner maestro`：
+### 生成 Maestro YAML 流程 {#generate-maestro}
 
-```bash
-npx --package=@softprobe/e2e softprobe-compile-session \
-	--session-id <sessionId> \
-	--runner maestro \
-	--bundle-id com.acme.invite \
-	--out ./maestro-flows \
-	--json
+如需从同一条会话生成仅校验客户端界面的 Maestro 流程，可让编码 Agent 写出 `.maestro/*.yaml`：
+
+```text
+使用 Blackbox 的 get_session_semantic_actions 查看会话 sp-ios-...，
+剔除探索性滑动与非交互点击，将敏感槽位保留为 ${SP_SECRET_<SLOT>} 环境变量，
+为 appId "com.acme.invite" 编写 .maestro/team-invite.yaml 流程文件。
+```
+
+编码 Agent 会生成 `.maestro/team-invite.yaml`：
+
+```yaml
+appId: com.acme.invite
+---
+- launchApp
+- tapOn:
+    id: "email_input"
+- inputText: "ada@example.com"
+- tapOn:
+    id: "admin_password"
+- inputText: ${SP_SECRET_ADMIN_PASSWORD}
+- hideKeyboard
+- tapOn: "Send invite"
+- assertVisible: "Invitation queued for ada@example.com"
 ```
 
 通过 `--env` 注入捕获的敏感槽位并运行 Maestro 流程：
@@ -518,7 +556,7 @@ npx --package=@softprobe/e2e softprobe-compile-session \
 ```bash
 maestro test \
 	--env SP_SECRET_ADMIN_PASSWORD="YOUR_TEST_PASSWORD" \
-	./maestro-flows/
+	.maestro/
 ```
 
 ## 相关文档 {#related}

@@ -4,20 +4,19 @@ title: 构建第一个自动生成 UI 与后端联调测试
 
 # 构建第一个自动生成 UI 与后端联调测试
 
-在本教程中，你将直接启动预埋点的 [Travel OTA 示例应用](https://github.com/softprobe/demo-ota)单容器镜像（`docker.io/softprobe/demo-ota:classic-blackbox`），把一次真实机票预订浏览器操作录制到 [Softprobe Explorer](https://explorer.softprobe.ai)，并将这条会话分别编译为 `@playwright/test` 套件与零大模型调用的 `e2e` 套件。随后你将在订单确认页面照常跳转的情况下开启 `OTA_FAULT_SKIP_EMAIL=true` 让 Java 后端漏发确认邮件请求，验证自动生成的测试如何精准拦截这类隐蔽回归缺陷。
+在本教程中，你将启动预埋点的 [Travel OTA 示例应用](https://github.com/softprobe/demo-ota)单容器镜像（`docker.io/softprobe/demo-ota:classic-blackbox`），把一次真实机票预订浏览器操作录制到 [Softprobe Explorer](https://explorer.softprobe.ai)，并在编码 Agent 中使用 Blackbox MCP 从该会话生成 `@playwright/test` + `@softprobe/e2e` 测试套件。随后你将在订单确认页面照常跳转的情况下开启 `OTA_FAULT_SKIP_EMAIL=true` 让 Java 后端漏发确认邮件请求，验证自动生成的测试如何拦截这类隐蔽回归缺陷。
 
 开始前，请安装 Docker 以及 Node.js 22.13 或更高版本，并在 [Softprobe Explorer](https://explorer.softprobe.ai) 中创建一把 Agent Ingestion Key（`spk_...`）以及用于查询的 API Token 和 Workspace ID。如果你在 Linux 上使用[自托管 Blackbox](/en/blackbox/self-hosting)（`http://127.0.0.1:8787`），请在 `docker run` 中将 `-p 8080:8080` 替换为 `--network host -e OTEL_EXPORTER_OTLP_TRACES_ENDPOINT="http://127.0.0.1:8787/api/thelake/v1/traces"`，并在第二个终端额外配置 `export SOFTPROBE_SINK_ENDPOINT="http://127.0.0.1:8787/api/thelake"`。
 
-## 1. 一键启动预埋点示例容器
+## 1. 一键启动预埋点示例容器 {#step-1}
 
-首先创建工作目录并安装 `@softprobe/e2e`、Playwright 与 `e2e`：
+首先创建工作目录并安装 `@softprobe/e2e` 与 Playwright：
 
 ```bash
 mkdir softprobe-ui-tutorial && cd softprobe-ui-tutorial
 npm init -y
 npm pkg set type=module
-npm install @softprobe/e2e@0.2.5 @playwright/test@1.64.1 \
-	e2e@0.24.0 @e2e-dev/web@0.16.1 zod
+npm install @softprobe/e2e@0.2.8 @playwright/test@1.64.1 zod
 npx playwright install chromium
 ```
 
@@ -46,7 +45,7 @@ curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:8080/index.html
 200
 ```
 
-## 2. 录制一次机票预订会话
+## 2. 录制一次机票预订会话 {#step-2}
 
 在 Chrome 浏览器中打开 `http://127.0.0.1:8080` 完成一次订票流程：
 
@@ -59,43 +58,18 @@ curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:8080/index.html
 
 打开 [Softprobe Explorer](https://explorer.softprobe.ai) 的 **Sessions** 页面并点击刚录制的会话。等待数秒完成 Trace 落盘后切到 **Trace** 标签页，你会看到跨 5 个页面的 `UI`（`softprobe.ui.action`）动作 span，以及与之关联的 `travel-ota` 入站请求、`ota_orders` PostgreSQL 查询、航司 NDC 接口调用（`/ndc/v21.3/airshopping`、`/ndc/v21.3/offerprice`、`/ndc/v21.3/ordercreate`）和 `POST /v1/notifications/confirmation` 邮件通知 span。
 
-## 3. 生成并运行 `@playwright/test` 测试套件
+## 3. 使用 Blackbox MCP 生成并运行 `@playwright/test` 套件 {#step-3}
 
-在第二个终端配置 Explorer 查询凭据与 `SESSION_ID`，将录制的会话编译到 `./pw-suite` 目录：
+在 OpenCode、Claude Code、Cursor 或 Antigravity 中连接 [Blackbox MCP 服务](/zh/blackbox/coding-agent-skills)后，让编码 Agent 根据 `SESSION_ID` 生成 `./pw-suite/tests/recorded-session.spec.ts`：
 
-```bash
-export SESSION_ID="PASTE_YOUR_SESSION_ID"
-export SOFTPROBE_TOKEN="YOUR_EXPLORER_API_TOKEN"
-export SOFTPROBE_WORKSPACE_ID="YOUR_WORKSPACE_ID"
-
-npx softprobe-compile-session \
-	--session-id "$SESSION_ID" \
-	--runner playwright \
-	--target-url http://127.0.0.1:8080 \
-	--out ./pw-suite \
-	--json
+```text
+使用 Blackbox MCP 调用 get_session_semantic_actions 查看会话 <SESSION_ID>，
+调用 get_trace 检查订票与支付链路，剔除多余的非交互点击与重试失败请求，
+使用 @softprobe/e2e/playwright 在 ./pw-suite/tests/recorded-session.spec.ts 编写 Playwright 测试，
+针对 http://127.0.0.1:8080 回放订票流程并断言确认邮件请求（/v1/notifications/confirmation）。
 ```
 
-终端会输出 JSON 摘要，显示已编译 `14` 个前端动作与 `4` 条后端出站 HTTP 断言：
-
-```json
-{
-	"ok": true,
-	"runner": "playwright",
-	"sessionId": "830501cb-7792-47cf-8a3c-b58929cef6aa",
-	"actionCount": 14,
-	"outboundAssertionCount": 4,
-	"filesWritten": [
-		".../pw-suite/tests/recorded-session.spec.ts",
-		".../pw-suite/playwright.config.ts"
-	],
-	"cacheFilesWritten": []
-}
-```
-
-你也可以直接在 Explorer 会话详情页顶部点击 **Generate E2E test** 预览或下载测试文件，或点击 **Copy command** 复制上面的 CLI 命令。
-
-打开生成的 `pw-suite/tests/recorded-session.spec.ts` 查看编译结果：
+在第二个终端配置 Explorer 查询凭据（`SOFTPROBE_TOKEN` 与 `SOFTPROBE_WORKSPACE_ID`），检查编码 Agent 生成的测试文件：
 
 ```ts
 import { expect, test } from "@softprobe/e2e/playwright";
@@ -160,7 +134,7 @@ test.describe("Recorded session replay", () => {
 });
 ```
 
-编译器在 `toMatchObject(...)` 中将测试脚本亲自填写的业务字段（`LHR`、`CDG`、`2026-12-07`、`alex@example.com`）固定为精确字面量，同时对服务端生成的字段（`OfferRefID`、`OfferItemRefID`、`bookingId`、`confirmationNumber`、`eventType`）断言 `expect.any(String)`，既校验出站载荷结构又保证实盘回放稳定可重复。
+`toMatchObject(...)` 将测试脚本在浏览器中填写的业务字段（`LHR`、`CDG`、`2026-12-07` 与 `alex@example.com`）固定为精确字符串，同时对服务端生成的字段（`OfferRefID`、`OfferItemRefID`、`bookingId`、`confirmationNumber` 与 `eventType`）使用 `expect.any(String)` 校验，既检查消息体结构又保证实盘回放稳定可重复。
 
 运行生成的 Playwright 用例：
 
@@ -175,7 +149,7 @@ Running 1 test using 1 worker
   1 passed (42.9s)
 ```
 
-## 4. 拦截隐蔽的后端漏发回归
+## 4. 拦截隐蔽的后端漏发回归 {#step-4}
 
 现在我们在不改动前端页面的前提下制造一个后端回归缺陷。回到第一个终端按 `Ctrl+C` 停止容器，带上 `-e OTA_FAULT_SKIP_EMAIL=true` 重新启动：
 
@@ -201,50 +175,7 @@ npx playwright test --config ./pw-suite/playwright.config.ts
 TraceAssertionError: No outbound HTTP call on trace 256b83b5d78cb26c312375e850d12791 matched (method=POST, url=/\/v1\/notifications\/confirmation$/, status=200) within 30000ms. Observed outbound calls: POST https://spair.softprobe.ai/ndc/v21.3/offerprice (status 200), POST /ndc/v21.3/ordercreate (status 200). Inspect trace at https://explorer.softprobe.ai/?trace=256b83b5d78cb26c312375e850d12791.
 ```
 
-继续下一步前，请在第一个终端停掉容器并去掉 `OTA_FAULT_SKIP_EMAIL=true` 重新启动正常容器：
-
-```bash
-docker run --rm --privileged --name demo-ota-tutorial \
-	-p 8080:8080 \
-	-e INGESTION_KEY="$INGESTION_KEY" \
-	docker.io/softprobe/demo-ota:classic-blackbox
-```
-
-## 5. 生成并运行零 LLM 的 `e2e` 套件
-
-最后我们将同一条录制会话编译为 `e2e` 测试套件：
-
-```bash
-npx softprobe-compile-session \
-	--session-id "$SESSION_ID" \
-	--runner e2e \
-	--target-url http://127.0.0.1:8080 \
-	--out ./e2e-suite \
-	--json
-```
-
-`softprobe-compile-session` 会生成 `e2e-suite/tests/recorded-session.e2e.ts`、`e2e-suite/e2e.config.ts`，以及 4 个预置的 `.e2e/cache/<sha256>.json` 动作缓存。在不配置任何大模型 API Key 的情况下直接运行 `e2e`：
-
-```bash
-cd e2e-suite
-CI=true \
-E2E_TELEMETRY_DISABLED=1 \
-../node_modules/.bin/e2e run --reporter list
-```
-
-用 Node.js 检查 `.e2e/report.json`，确认用例通过且模型 Token 与模型调用次数均为 `0`：
-
-```bash
-node -e 'const r = JSON.parse(fs.readFileSync(".e2e/report.json", "utf8")); console.log(r.run.summary.passed, r.run.usage.modelTokens, r.run.usage.maxModelCallsInStep);'
-```
-
-终端会输出：
-
-```text
-1 0 0
-```
-
-## 下一步
+## 下一步 {#next-steps}
 
 - 将会话生成测试接入自有前端与 CI 流水线，请参阅[如何从录制的会话生成 UI 测试](/zh/ui-testing/from-sessions)。
 - 无需预先录制浏览器会话，直接用自然语言从零编写测试，请参阅[如何用 `e2e` 编写自然语言 UI 测试](/zh/ui-testing/natural-language)。

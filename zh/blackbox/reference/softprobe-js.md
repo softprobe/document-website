@@ -14,7 +14,7 @@ title: JavaScript 与 TypeScript SDK (softprobe-js)
 | `@softprobe/vercel-ai-sdk` | Vercel AI SDK 遥测接入与 HTTP 上下文透传 | [`softprobe-js/packages/vercel-ai-sdk`](https://github.com/softprobe/softprobe-js/tree/main/packages/vercel-ai-sdk) |
 | `@softprobe/langchain` | LangChain 与 LangGraph 自动插桩及 `CallbackHandler` | [`softprobe-js/packages/langchain`](https://github.com/softprobe/softprobe-js/tree/main/packages/langchain) |
 | `@softprobe/opencode-plugin` | OpenCode 编码 Agent 插件 | [`softprobe-js/packages/opencode-plugin`](https://github.com/softprobe/softprobe-js/tree/main/packages/opencode-plugin) |
-| `@softprobe/e2e` | 面向 Node.js 22.13+ 的 `@playwright/test`、Web `e2e` 与移动端 `@softprobe/e2e/mobile` 测试夹具、W3C 分布式链路断言与会话编译器 | [`softprobe-js/packages/e2e`](https://github.com/softprobe/softprobe-js/tree/main/packages/e2e) |
+| `@softprobe/e2e` | 面向 Node.js 22.13+ 的 `@playwright/test`、Web `e2e` 与移动端 `@softprobe/e2e/mobile` 测试夹具及 W3C 分布式链路断言 | [`softprobe-js/packages/e2e`](https://github.com/softprobe/softprobe-js/tree/main/packages/e2e) |
 
 ## `@softprobe/tracing` {#softprobe-tracing}
 
@@ -192,19 +192,19 @@ npm install @softprobe/react-native @opentelemetry/api @opentelemetry/sdk-trace-
 
 ## `@softprobe/e2e` {#softprobe-e2e}
 
-面向 Node.js 22.13 及以上环境的 `@playwright/test`、Web `e2e` 与移动端 `@softprobe/e2e/mobile` 全栈 UI 测试 SDK。通过 W3C `traceparent` 与 `baggage` 请求头关联客户端请求，借助 `BlackboxSink` 断言后端发出的下游 `CLIENT` HTTP 调用，并将录制的 Blackbox 会话编译为可直接运行的测试套件。完整用法见 [Softprobe UI 测试](/zh/ui-testing/)、[如何从录制的会话生成 UI 测试](/zh/ui-testing/from-sessions)与[如何测试 iOS 与 Android 应用](/zh/ui-testing/mobile)。
+面向 Node.js 22.13 及以上环境的 `@playwright/test`、Web `e2e` 与移动端 `@softprobe/e2e/mobile` 全栈 UI 测试 SDK。通过 W3C `traceparent` 与 `baggage` 请求头关联客户端请求，并借助 `BlackboxSink` 断言后端发出的下游 `CLIENT` HTTP 调用。完整用法见 [Softprobe UI 测试](/zh/ui-testing/)、[如何从录制的会话生成 UI 测试](/zh/ui-testing/from-sessions)与[如何测试 iOS 与 Android 应用](/zh/ui-testing/mobile)。
 
 ```bash
 npm install -D @softprobe/e2e @playwright/test
 ```
 
-运行 Web `e2e` 套件时需同时安装 `e2e@0.24.0`、`@e2e-dev/web@0.16.1` 与 `zod`；运行 iOS 与 Android 套件时需安装 `e2e@0.24.0`、`@e2e-dev/mobile@0.12.8` 与 `zod`。
+运行 Web `e2e` 套件时需同时安装 `e2e@0.24.0`、`@e2e-dev/web@0.16.1` 与 `zod`。运行 iOS 与 Android 套件时需安装 `e2e@0.24.0`、`@e2e-dev/mobile@0.12.8` 与 `zod`。
 
 ### 核心导出项
 
 - `softprobeWeb(options?)` 包装 `@e2e-dev/web`，通过 Playwright `browser.route` 注入或保留 W3C `traceparent` 请求头，并绑定 `trace` 测试夹具。
 - `softprobeReporter()` 将通过校验的链路摘要写入 `.e2e/softprobe-traces.json`（`schemaVersion: "softprobe-traces-1"`）。
-- `softprobeCachedAgent(options?)` 返回 `AgentConfig`（`{ model?, judge?, context?, cacheDir? }`），在回放预置 `.e2e/cache/` `trace-1` 缓存时实现零模型调用，并在传入 `options.model` 时将未命中缓存的 `agent.act` 步骤转发给模型。
+- `softprobeCachedAgent(options?)` 返回 `AgentConfig`（`{ model?, judge?, context?, cacheDir? }`），在 CI 中回放录制的 `.e2e/cache/` `trace-1` 缓存条目时实现零模型调用，并在传入 `options.model` 时将未命中缓存的 `agent.act` 步骤转发给模型。
 - 重新导出 `e2e` 的 `test`、`describe`、`beforeEach`、`afterEach`、`beforeAll`、`afterAll`、`expect`、`credentials`、`secrets`、`unique`、`AgentError` 与 `isAgentError`。
 
 #### `SoftprobeWebOptions`
@@ -231,7 +231,7 @@ npm install -D @softprobe/e2e @playwright/test
 - `TraceInstrumentationError` 与 `isTraceInstrumentationError(value)` 在后端 `SERVER` span 超出 `pollTimeoutMs` 仍未到达时报告 `code: "TRACE_INSTRUMENTATION_MISSING"`。
 - `TraceAssertionError` 与 `isTraceAssertionError(value)` 在后端 `SERVER` span 已到达但出站断言不匹配时报告 `code: "TRACE_ASSERTION_FAILED"`，并通过 `observedCalls` 暴露实际观测到的调用。
 
-### `@softprobe/e2e/playwright` 导出项
+### `@softprobe/e2e/playwright` 导出项 {#softprobe-e2e-playwright}
 
 从 `@softprobe/e2e/playwright` 导入可在 `@playwright/test` 套件中通过 `context.route` 挂载 `trace` 夹具，且不与 Playwright 内置的 `use.trace` 选项冲突。导出 `test`、`expect`、`extendPlaywrightTest`、`createPlaywrightTraceScope`、`SoftprobePlaywrightOptions` 与 `SoftprobePlaywrightFixtures`。
 
@@ -272,46 +272,9 @@ npm install -D @softprobe/e2e @playwright/test
 | `"proxy"` | `{ mode: "proxy", upstreamOrigin: string, launchArgKey?: string, adbReverse?: boolean }` | 在宿主机 `127.0.0.1` 启动临时 HTTP 反向代理，在 Android 上默认执行 `adb reverse`（除非 `adbReverse` 为 `false`），并在 Android 启动参数中追加 `--es <launchArgKey> <proxyOrigin>`（默认键名 `"api_base_url"`），在 iOS 启动参数中追加 `-<launchArgKey> <proxyOrigin>`（默认参数 `"-API_BASE_URL"`）。 |
 | `"session"` | `{ mode: "session", sessionId?: string, launchArgKey?: string }` | 在 Android 启动参数中追加 `--es <launchArgKey> <sessionId>`（默认键名 `"sp_session_id"`），在 iOS 启动参数中追加 `-<launchArgKey> <sessionId>`（默认参数 `"-spSessionId"`），并直接从 Blackbox 会话 span 解析 `trace.outboundHttp`。 |
 
-### `@softprobe/e2e/session-compiler` 导出项
-
-`@softprobe/e2e/session-compiler` 将录制到的 Web 与移动端 `softprobe.ui.action` span（`sp-ui-action-1`，支持移动端动词 `swipe`、`longPress`、`back`、`dismissKeyboard` 与 `openLink`）及关联后端链路编译为可执行测试套件：
-
-- `extractSessionBundleFromSpans(rawInput, options?)` 将 OTLP 或 Blackbox 会话 span 归一化为有序的 `CompiledSessionBundle`，提取动态文本模式、`secretSlots`、`platform`、`appBundleId` 与 `backendTraces`。
-- `fetchSessionSpansFromBlackbox(options)` 从 Blackbox Explorer 或 TheLake 拉取会话 span 与关联 trace。
-- `compileSessionToPlaywright(bundle, options?)` 生成接入 `@softprobe/e2e/playwright` 的 `@playwright/test` `.spec.ts` 与 `playwright.config.ts`。
-- `compileSessionToE2E(bundle, options?)` 生成 `.e2e.ts`、`e2e.config.ts` 以及预置的 `.e2e/cache/<sha256>.json` `trace-1` 缓存条目。
-- `compileSessionToMobileE2E(bundle, options?)` 生成带 `trace.outboundHttp` 断言的 `@softprobe/e2e/mobile` `.e2e.ts`、`e2e.config.ts` 与预置 `.e2e/cache/<sha256>.json` `trace-1` 缓存条目。
-- `compileSessionToMaestro(bundle, options?)` 生成 Maestro `.yaml` 移动端 UI 流程文件。
-- `softprobeCachedAgent(options?)` 配置 `.e2e/cache/` 零 LLM 回放，并由 `@softprobe/e2e` 与 `@softprobe/e2e/mobile` 重新导出。
-
-### `softprobe-compile-session` CLI {#softprobe-compile-session}
-
-`@softprobe/e2e` 在 `@softprobe/e2e/bin/compile-session.js` 内置 `softprobe-compile-session` 命令行工具：
-
-```bash
-npx --package=@softprobe/e2e softprobe-compile-session --session-id <id> --runner e2e-mobile
-```
-
-| 参数 | 默认值 | 说明 |
-|------|--------|------|
-| `--session-id <id>` | 无 | 需要拉取并编译的 Blackbox 会话 ID |
-| `--session-file <path>` | 无 | 离线编译本地会话 spans JSON 文件 |
-| `--runner <playwright\|e2e\|e2e-mobile\|maestro>` | `"playwright"` | 目标测试运行器（`playwright`、`e2e`、`e2e-mobile` 或 `maestro`） |
-| `--platform <ios\|android>` | 从会话 span 自动推断 | 当 `--runner` 为 `e2e-mobile` 或 `maestro` 时覆盖目标移动平台 |
-| `--bundle-id <bundleId>` | 从会话 span 自动推断 | 覆盖 iOS Bundle ID 或 Android 包名 |
-| `--out <dir>` | `"."` | 生成文件的输出目录 |
-| `--target-url <url>` | 会话源地址或 `"http://127.0.0.1:3000"` | 被测 Web 应用或后端上游服务的基础 URL |
-| `--endpoint <url>` | `SOFTPROBE_SINK_ENDPOINT` 或 `https://explorer.softprobe.ai/api/thelake` | Blackbox Explorer 或 TheLake API 地址 |
-| `--token <token>` | `SOFTPROBE_API_KEY`、`SOFTPROBE_TOKEN` 或 `INGESTION_KEY` | 查询会话与链路的 Bearer 令牌 |
-| `--workspace-id <id>` | `SOFTPROBE_WORKSPACE_ID` | 查询 Blackbox 时使用的 Workspace ID 请求头 |
-| `--project-id <id>` | `"softprobe-compiled-e2e"` | `--runner` 为 `e2e` 或 `e2e-mobile` 时写入 `e2e.config.ts` 的 `projectId` |
-| `--app-identity <name>` | `"softprobe-recorded-app"` | `--runner` 为 `e2e` 或 `e2e-mobile` 时写入 `e2e.config.ts` 的 `app.identity` |
-| `--force` | `false` | 覆盖已存在的测试、流程与配置文件；按内容寻址的 `.e2e/cache/<sha256>.json` 缓存始终幂等更新 |
-| `--json` | `false` | 向标准输出打印包含 `ok`、`runner`、`sessionId`、`platform`、可选 `bundleId`、`actionCount`、`outboundAssertionCount`、`filesWritten` 与 `cacheFilesWritten` 的 JSON 结果 |
-
 ---
 
-## 环境变量
+## 环境变量 {#environment-variables}
 
 所有 Node.js 服务端包（`@softprobe/tracing`、`@softprobe/vercel-ai-sdk`、`@softprobe/langchain`、`@softprobe/opencode-plugin`）共用以下环境变量：
 

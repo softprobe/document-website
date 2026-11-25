@@ -4,9 +4,9 @@ title: 用编码 Agent 排查
 
 # 在编码 Agent 中使用 Blackbox
 
-通过 Softprobe 插件市场（[`softprobe/softprobe-plugin`](https://github.com/softprobe/softprobe-plugin)）安装 Blackbox 插件（`softprobe-blackbox@softprobe`），即可将你的 AI 编码 Agent 连接到 Softprobe Explorer，并在浏览器中使用现有 Explorer 账号完成登录。Blackbox 为编码 Agent 提供 19 个 MCP 工具与排查技能，可用于查询 Session、检查 Span 与 Trace、查看关联日志、从录制的 Session 生成 E2E 测试、管理 Agent 应用，以及在明确请求时获取 Ingestion Key。
+通过 Softprobe 插件市场（[`softprobe/softprobe-plugin`](https://github.com/softprobe/softprobe-plugin)）安装 Blackbox 插件（`softprobe-blackbox@softprobe`），即可将你的 AI 编码 Agent 连接到 Softprobe Explorer，并在浏览器中使用现有 Explorer 账号完成登录。Blackbox 为编码 Agent 提供 19 个 MCP 工具与排查技能，可用于查询 Session、检查 Span 与 Trace、查看关联日志、读取紧凑的语义动作时间线、管理 Agent 应用，以及在明确请求时获取 Ingestion Key。
 
-这与**捕获**（`@softprobe/web-record` 浏览器 SDK、OBI 或 AI 框架 SDK）不同。捕获负责记录 Session；Blackbox 插件与 MCP 工具让编码 Agent **管理 Agent 并排查 Session**。
+这与**捕获**（`@softprobe/web-record` 浏览器 SDK、OBI 或 AI 框架 SDK）不同。捕获负责记录 Session。Blackbox 插件与 MCP 工具让编码 Agent **管理 Agent 并排查 Session**。
 
 ## 1. 安装 Blackbox 插件（推荐）
 
@@ -103,7 +103,7 @@ Blackbox 提供 19 个 MCP 工具，涵盖账号与工作区、遥测排查、E2
 | 分类 | 工具 | 用途 |
 |------|------|------|
 | **账号与工作区** | `whoami`、`list_workspaces`、`select_workspace` | 查看当前登录用户、列出可用工作区、切换当前工作区 |
-| **Session 与 E2E 测试** | `search_sessions`、`get_session`、`get_session_spans`、`compile_session_test` | 按 Agent、状态或时间范围检索 Session，读取 Session 详情与 Span，并将录制的 UI Session 编译为 Playwright 或 `e2e` 测试 |
+| **Session 与 E2E 测试** | `search_sessions`、`get_session`、`get_session_spans`、`get_session_semantic_actions` | 按 Agent、状态或时间范围检索 Session，读取 Session 元数据与 Span，并读取带定位器与触发 `trace_id` 的紧凑语义动作时间线以生成 E2E 测试 |
 | **Span 与 Trace 排查** | `search_spans`、`get_span`、`search_traces`、`get_trace`、`list_trace_tags`、`list_trace_tag_values` | 筛选 GenAI、工具调用与 HTTP Span，查看完整分布式 Trace，并发现 Trace 标签键与标签值 |
 | **日志排查** | `logs_by_session`、`logs_by_trace` | 读取与指定 Session 或 Trace 关联的结构化日志 |
 | **Agent 与密钥管理** | `list_agents`、`create_agent`、`get_ingestion_key`、`bootstrap_project` | 列出 Agent 应用、创建新 Agent 应用、在明确请求时读取 Agent 的 Ingestion Key，并生成项目接入配置提示词 |
@@ -115,6 +115,7 @@ Blackbox 提供 19 个 MCP 工具，涵盖账号与工作区、遥测排查、E2
 - 用 Blackbox：为什么 session `sess_…` 失败了？检查工具错误、关联日志和最后一次 generation。
 - Blackbox：列出过去 24 小时内 agent `my-agent` 有错误的 Session。
 - Blackbox：打开 trace `…`，总结工具结果与模型最终回答是否一致。
+- Blackbox：对会话 `sess_…` 调用 `get_session_semantic_actions`，用 `get_trace` 检查订票与支付链路，剔除多余点击并编写断言确认邮件调用的 `@playwright/test` + `@softprobe/e2e` 测试。
 - Blackbox：创建一个名为 `checkout-bot` 的 Agent 应用并输出它的 Ingestion Key。
 
 Agent 会在回答中引用 `session_id`、`trace_id` 或 `span_id`，并附上 Explorer 链接：

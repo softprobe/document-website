@@ -4,7 +4,7 @@ title: 如何用 e2e 编写自然语言 UI 测试
 
 # 如何用 `e2e` 编写自然语言 UI 测试
 
-无需预先录制浏览器会话，直接使用 `e2e` 与 `@softprobe/e2e` 用自然语言编写浏览器 UI 测试。在本地配置模型运行一次即可生成 `.e2e/cache/` 动作缓存；将缓存提交到 Git 后，每次 CI 运行都以零次大模型调用稳定回放，并同时校验后端真实出站 HTTP 请求。
+无需预先录制浏览器会话，直接使用 `e2e` 与 `@softprobe/e2e` 用自然语言编写浏览器 UI 测试。在本地配置模型运行一次即可生成 `.e2e/cache/` 动作缓存。将缓存提交到 Git 后，每次 CI 运行都以零次大模型调用稳定回放，并同时校验后端真实出站 HTTP 请求。
 
 ## 安装依赖 {#install}
 
@@ -159,17 +159,17 @@ describe("Team invite flow", () => {
 
 3. 检查 `.e2e/report.json` 中的 `"modelTokens": 0` 与 `"maxModelCallsInStep": 0`，随后将 `tests/` 与 `.e2e/cache/` 一并提交到代码仓库。
 
-## 在会话生成的用例末尾追加自然语言步骤 {#extend-compiled-tests}
+## 向已缓存套件追加新的 `agent.act` 步骤 {#add-steps}
 
-从录制会话导出的 `e2e` 套件默认在 `e2e.config.ts` 中配置 `cache.mode: "read-only"` 且不绑定模型。如需在已编译流程后追加新步骤：
+当现有的 `.e2e.ts` 测试已经在 `.e2e/cache/` 中保存了录制步骤时，你可以直接在末尾追加新的自然语言步骤，而无需重新录制前面的步骤：
 
-1. 在 `e2e.config.ts` 中，当 `!process.env.CI` 时将 `cache.mode` 改为 `"read-write"`，并向 `softprobeCachedAgent({ model })` 传入模型实例（例如 `openai("gpt-5.4-mini")`）。
-2. 在 `tests/recorded-session.e2e.ts` 末尾追加新的 `await agent.act(...)` 调用以及可见的 `await expect(screen.getByText(...)).toBeVisible()` 断言。
-3. 在本地运行一次 `E2E_TELEMETRY_DISABLED=1 npx e2e run`。原有的预置步骤仍直接从 `.e2e/cache/` 零模型调用回放，只有新增的 `agent.act` 步骤会调用模型并写入新的缓存文件。
-4. 提交新增的 `.e2e/cache/*.json` 文件，使 CI 在 `CI=true` 下全程零模型调用运行全部步骤。
+1. 在 `e2e.config.ts` 中保持非 CI 环境下 `cache.mode` 为 `"read-write"`，并向 `softprobeCachedAgent({ model })` 传入模型实例（例如 `openai("gpt-5.4-mini")`）。
+2. 在 `.e2e.ts` 测试文件末尾追加新的 `await agent.act(...)` 调用以及可见的 `await expect(screen.getByText(...)).toBeVisible()` 断言。
+3. 在本地运行一次 `E2E_TELEMETRY_DISABLED=1 npx e2e run`。已缓存的步骤会直接从 `.e2e/cache/` 零模型调用回放，只有新增的 `agent.act` 步骤会调用模型并写入新的 `.e2e/cache/<sha256>.json` 文件。
+4. 提交更新后的测试文件与新增的 `.e2e/cache/*.json` 文件，使 CI 在 `CI=true` 下全程零模型调用运行全部步骤。
 
 ## 相关文档 {#related}
 
 - [教程：构建第一个自动生成 UI 与后端联调测试](/zh/ui-testing/tutorial)
 - [如何从录制的会话生成 UI 测试](/zh/ui-testing/from-sessions)
-- [JavaScript 与 TypeScript SDK 参考](/en/blackbox/reference/softprobe-js#softprobe-e2e)
+- [JavaScript 与 TypeScript SDK 参考](/zh/blackbox/reference/softprobe-js#softprobe-e2e)

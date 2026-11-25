@@ -350,7 +350,7 @@ const uiTestingSidebarEn = [
     ],
   },
   {
-    text: 'SDK & CLI reference',
+    text: 'SDK reference',
     items: [
       { text: '@softprobe/e2e, react-native & web-record', link: '/en/blackbox/reference/softprobe-js' },
     ],
@@ -412,7 +412,7 @@ const uiTestingSidebarZh = [
     ],
   },
   {
-    text: 'SDK 与 CLI 参考',
+    text: 'SDK 参考',
     items: [
       { text: '@softprobe/e2e、react-native 与 web-record', link: '/zh/blackbox/reference/softprobe-js' },
     ],
