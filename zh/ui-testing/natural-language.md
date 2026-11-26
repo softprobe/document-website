@@ -6,6 +6,9 @@ title: 如何用 e2e 编写自然语言 UI 测试
 
 无需预先录制浏览器会话，直接使用 `e2e` 与 `@softprobe/e2e` 用自然语言编写浏览器 UI 测试。在本地配置模型运行一次即可生成 `.e2e/cache/` 动作缓存。将缓存提交到 Git 后，每次 CI 运行都以零次大模型调用稳定回放，并同时校验后端真实出站 HTTP 请求。
 
+> [!TIP] 为什么选择 `@softprobe/e2e` 而不是直接使用 `e2e`？
+> `@softprobe/e2e` 封装了 `e2e`（`softprobeCachedAgent`、`softprobeWeb`、`softprobeMobile` 与 `softprobeReporter`），在保留 `.e2e/cache/` 零 LLM 回放的同时，增加 W3C `traceparent` 透传、`trace.outboundHttp` / `trace.expectNoOutboundHttp` 后端断言以及 `explorerTraceUrl` 排障链接，且无需修改前端代码。请参阅[前端埋点与无埋点模式对比](/zh/ui-testing/frontend-instrumentation)。
+
 ## 安装依赖 {#install}
 
 在 Node.js 22.13 及以上环境中安装 `@softprobe/e2e`、`e2e`、`@e2e-dev/web`、`@playwright/test`、`zod` 以及首次录制所需的 AI SDK 模型适配包（例如 `@ai-sdk/openai`）：

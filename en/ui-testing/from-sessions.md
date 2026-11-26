@@ -8,6 +8,9 @@ Record a user flow once in [Softprobe Explorer](https://explorer.softprobe.ai), 
 
 `@softprobe/web-record` records semantic browser actions as `softprobe.ui.action` OpenTelemetry spans alongside W3C `traceparent` headers. `@softprobe/e2e` turns those spans into repeatable browser steps and checks the downstream `CLIENT` HTTP calls that your backend sent in Blackbox.
 
+> [!NOTE] Requires frontend instrumentation
+> Generating tests from recorded sessions relies on `softprobe.ui.action` spans emitted by `@softprobe/web-record`, `@softprobe/react-native`, `softprobe-otel-android`, or `SoftprobeOtelSwift`. If you want to test an unmodified app without installing a frontend SDK, see [With vs. without frontend instrumentation](/en/ui-testing/frontend-instrumentation) and [Write natural-language UI tests with `e2e`](/en/ui-testing/natural-language).
+
 ## Enable semantic action capture {#enable-capture}
 
 1. In [Softprobe Explorer](https://explorer.softprobe.ai), open **Agents** and click **+ Connect agent**. Copy the **Connect Agent** setup prompt for your web application and backend.

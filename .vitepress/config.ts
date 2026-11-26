@@ -342,11 +342,18 @@ const uiTestingSidebarEn = [
     ],
   },
   {
-    text: 'Author and run tests',
+    text: 'Concepts & authoring',
     items: [
+      { text: 'With vs. without frontend SDK', link: '/en/ui-testing/frontend-instrumentation' },
       { text: 'Generate from recorded sessions', link: '/en/ui-testing/from-sessions' },
       { text: 'Write in plain English (e2e)', link: '/en/ui-testing/natural-language' },
-      { text: 'Test iOS and Android apps', link: '/en/ui-testing/mobile' },
+    ],
+  },
+  {
+    text: 'Platforms',
+    items: [
+      { text: 'Web (Playwright & e2e)', link: '/en/ui-testing/web' },
+      { text: 'iOS, Android & React Native', link: '/en/ui-testing/mobile' },
     ],
   },
   {
@@ -404,11 +411,18 @@ const uiTestingSidebarZh = [
     ],
   },
   {
-    text: '编写与运行测试',
+    text: '核心概念与编写方式',
     items: [
+      { text: '前端埋点与无埋点模式对比', link: '/zh/ui-testing/frontend-instrumentation' },
       { text: '从录制的会话生成测试', link: '/zh/ui-testing/from-sessions' },
       { text: '用自然语言编写测试（e2e）', link: '/zh/ui-testing/natural-language' },
-      { text: '测试 iOS 与 Android 应用', link: '/zh/ui-testing/mobile' },
+    ],
+  },
+  {
+    text: '支持平台',
+    items: [
+      { text: 'Web（Playwright 与 e2e）', link: '/zh/ui-testing/web' },
+      { text: 'iOS、Android 与 React Native', link: '/zh/ui-testing/mobile' },
     ],
   },
   {
