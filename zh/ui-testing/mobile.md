@@ -68,8 +68,7 @@ const androidEngine = softprobeMobile({
 		endpoint:
 			process.env.SOFTPROBE_SINK_ENDPOINT ??
 			"https://explorer.softprobe.ai/api/thelake",
-		token: process.env.SOFTPROBE_TOKEN,
-		workspaceId: process.env.SOFTPROBE_WORKSPACE_ID,
+		softprobeApiKey: process.env.SOFTPROBE_API_KEY,
 	},
 	correlation: {
 		mode: "proxy",
@@ -206,8 +205,7 @@ describe("Mobile team invitations", () => {
 	```bash
 	E2E_TELEMETRY_DISABLED=1 \
 	OPENAI_API_KEY="sk-..." \
-	SOFTPROBE_TOKEN="YOUR_BLACKBOX_TOKEN" \
-	SOFTPROBE_WORKSPACE_ID="YOUR_WORKSPACE_ID" \
+	SOFTPROBE_API_KEY="YOUR_SOFTPROBE_API_KEY" \
 	SP_SECRET_ADMIN_PASSWORD="YOUR_TEST_PASSWORD" \
 	npx e2e run
 	```
@@ -217,8 +215,7 @@ describe("Mobile team invitations", () => {
 	```bash
 	CI=true \
 	E2E_TELEMETRY_DISABLED=1 \
-	SOFTPROBE_TOKEN="YOUR_BLACKBOX_TOKEN" \
-	SOFTPROBE_WORKSPACE_ID="YOUR_WORKSPACE_ID" \
+	SOFTPROBE_API_KEY="YOUR_SOFTPROBE_API_KEY" \
 	SP_SECRET_ADMIN_PASSWORD="YOUR_TEST_PASSWORD" \
 	npx e2e run
 	```
@@ -324,7 +321,7 @@ val spanProcessor = SoftprobeAndroidSpanProcessor.builder()
 
 val exporter = SoftprobeOtlpHttpJsonSpanExporter.builder()
 	.setEndpoint("https://explorer.softprobe.ai/api/thelake")
-	.setIngestionKey(BuildConfig.SOFTPROBE_INGESTION_KEY)
+	.setIngestionKey(BuildConfig.INGESTION_KEY)
 	.setServiceName("acme-android")
 	.build()
 
@@ -444,8 +441,7 @@ const iosEngine = softprobeMobile({
 		endpoint:
 			process.env.SOFTPROBE_SINK_ENDPOINT ??
 			"https://explorer.softprobe.ai/api/thelake",
-		token: process.env.SOFTPROBE_TOKEN,
-		workspaceId: process.env.SOFTPROBE_WORKSPACE_ID,
+		softprobeApiKey: process.env.SOFTPROBE_API_KEY,
 	},
 });
 ```
@@ -518,8 +514,7 @@ describe("Recorded mobile team invite", () => {
 ```bash
 cd ./mobile-e2e
 E2E_TELEMETRY_DISABLED=1 \
-SOFTPROBE_TOKEN="YOUR_BLACKBOX_TOKEN" \
-SOFTPROBE_WORKSPACE_ID="YOUR_WORKSPACE_ID" \
+SOFTPROBE_API_KEY="YOUR_SOFTPROBE_API_KEY" \
 SP_SECRET_ADMIN_PASSWORD="YOUR_TEST_PASSWORD" \
 npx e2e run
 ```
