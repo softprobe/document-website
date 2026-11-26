@@ -43,6 +43,8 @@ Run your application or agent, then open `http://127.0.0.1:8787` to inspect capt
 
 Connect your coding agent to the local MCP server at `http://127.0.0.1:8787/mcp` under `blackbox-local`:
 
+For OpenCode, run the setup command from the project directory where you want to use this server. OpenCode writes it to the project config by default.
+
 ::: code-group
 
 ```bash [Claude Code]
@@ -74,7 +76,7 @@ codex mcp add blackbox-local --url http://127.0.0.1:8787/mcp
 ```
 
 ```bash [OpenCode]
-opencode mcp add blackbox-local --global --url http://127.0.0.1:8787/mcp
+opencode mcp add blackbox-local --url http://127.0.0.1:8787/mcp
 ```
 
 ```json [VS Code / Copilot]

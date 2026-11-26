@@ -20,7 +20,7 @@ This is separate from **capture** (the `@softprobe/web-record` browser SDK, OBI,
 ```
 
 ```bash [OpenCode]
-opencode plugin @softprobe/opencode-blackbox -g
+opencode plugin add @softprobe/opencode-blackbox
 ```
 
 ```bash [Gemini CLI]
@@ -47,7 +47,7 @@ npx skills add softprobe/softprobe-plugin -g -y -a antigravity
 - **VS Code / GitHub Copilot**: Add `softprobe/softprobe-plugin` as an agent plugin marketplace in VS Code and install `softprobe-blackbox@softprobe`, or add `https://explorer.softprobe.ai/mcp` to `.vscode/mcp.json` via the [manual MCP fallback](#manual-fallback-direct-hosted-mcp).
 - **Gemini CLI**: Run `gemini extensions install https://github.com/softprobe/softprobe-plugin` in your terminal.
 - **Antigravity (`agy`)**: Install `softprobe-blackbox@softprobe` from `softprobe/softprobe-plugin` or run `npx skills add softprobe/softprobe-plugin -g -y -a antigravity`, then ensure `blackbox` is configured in `~/.gemini/config/mcp_config.json` or `.agents/mcp_config.json`.
-- **OpenCode**: Run `opencode plugin @softprobe/opencode-blackbox -g` in your terminal.
+- **OpenCode**: Run `opencode plugin add @softprobe/opencode-blackbox` in your terminal. OpenCode installs the plugin in its global configuration; the plugin registers the hosted `blackbox` MCP server.
 - **Windsurf**: Install `softprobe-blackbox@softprobe` from `softprobe/softprobe-plugin`, or add `https://explorer.softprobe.ai/mcp` to `~/.codeium/windsurf/mcp_config.json` via the [manual MCP fallback](#manual-fallback-direct-hosted-mcp).
 
 ## 2. Sign in and verify access
@@ -90,7 +90,7 @@ opencode mcp auth blackbox
 | `agent mcp enable blackbox` | Approve and mount Blackbox MCP for the agent |
 | `agent mcp disable blackbox` | Unload Blackbox MCP so the agent ignores it |
 
-- **OpenCode**: Run `opencode mcp auth blackbox` and complete Explorer sign-in in the browser.
+- **OpenCode**: Run `opencode mcp list` to confirm `blackbox` is registered, then run `opencode mcp auth blackbox` and complete Explorer sign-in in the browser. If the server is missing, use the manual fallback below from your project directory.
 - **Antigravity (`agy`)**: Run `/mcp` in `agy`, select `blackbox`, and choose **Authenticate** to sign in through the browser (or open **MCP Servers** in the Antigravity app or IDE).
 - **VS Code / GitHub Copilot, Gemini CLI, and Windsurf**: Trigger any Blackbox MCP tool or open your client's MCP panel to complete the browser OAuth sign-in flow.
 
@@ -124,7 +124,7 @@ The agent cites `session_id`, `trace_id`, or `span_id` and links directly to Exp
 
 ## Manual fallback: Direct hosted MCP
 
-If your client or environment does not support native plugin installation, add the hosted MCP server (`https://explorer.softprobe.ai/mcp`) directly as `blackbox`:
+If your client or environment does not support native plugin installation, add the hosted MCP server (`https://explorer.softprobe.ai/mcp`) directly as `blackbox`. For OpenCode, run the command from the project directory where you want to use the server; OpenCode writes it to that project's config by default:
 
 ::: code-group
 
@@ -168,7 +168,7 @@ codex mcp add blackbox --url https://explorer.softprobe.ai/mcp
 ```
 
 ```bash [OpenCode]
-opencode mcp add blackbox --global --url https://explorer.softprobe.ai/mcp
+opencode mcp add blackbox --url https://explorer.softprobe.ai/mcp
 ```
 
 ```json [Antigravity]
@@ -245,7 +245,7 @@ codex mcp add blackbox-staging --url https://explorer-staging.softprobe.ai/mcp
 ```
 
 ```bash [OpenCode]
-opencode mcp add blackbox-staging --global --url https://explorer-staging.softprobe.ai/mcp
+opencode mcp add blackbox-staging --url https://explorer-staging.softprobe.ai/mcp
 ```
 
 ```json [Antigravity]

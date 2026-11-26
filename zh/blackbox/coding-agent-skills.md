@@ -20,7 +20,7 @@ title: 用编码 Agent 排查
 ```
 
 ```bash [OpenCode]
-opencode plugin @softprobe/opencode-blackbox -g
+opencode plugin add @softprobe/opencode-blackbox
 ```
 
 ```bash [Gemini CLI]
@@ -47,7 +47,7 @@ npx skills add softprobe/softprobe-plugin -g -y -a antigravity
 - **VS Code / GitHub Copilot**：在 VS Code 中将 `softprobe/softprobe-plugin` 添加为 Agent 插件市场并安装 `softprobe-blackbox@softprobe`，或通过下方的[手动回退：直连托管 MCP](#手动回退直连托管-mcp) 将 `https://explorer.softprobe.ai/mcp` 写入 `.vscode/mcp.json`。
 - **Gemini CLI**：在终端运行 `gemini extensions install https://github.com/softprobe/softprobe-plugin`。
 - **Antigravity（`agy`）**：从 `softprobe/softprobe-plugin` 安装 `softprobe-blackbox@softprobe`，或运行 `npx skills add softprobe/softprobe-plugin -g -y -a antigravity`，并确认 `~/.gemini/config/mcp_config.json` 或 `.agents/mcp_config.json` 中已配置 `blackbox`。
-- **OpenCode**：在终端运行 `opencode plugin @softprobe/opencode-blackbox -g`。
+- **OpenCode**：在终端运行 `opencode plugin add @softprobe/opencode-blackbox`。OpenCode 会将插件安装到全局配置中；该插件会注册托管的 `blackbox` MCP 服务。
 - **Windsurf**：从 `softprobe/softprobe-plugin` 安装 `softprobe-blackbox@softprobe`，或通过下方的[手动回退：直连托管 MCP](#手动回退直连托管-mcp) 将 `https://explorer.softprobe.ai/mcp` 写入 `~/.codeium/windsurf/mcp_config.json`。
 
 ## 2. 登录并验证访问权限
@@ -90,7 +90,7 @@ opencode mcp auth blackbox
 | `agent mcp enable blackbox` | 批准并挂载 Blackbox MCP 供 Agent 使用 |
 | `agent mcp disable blackbox` | 卸载 Blackbox MCP 使其不再加载 |
 
-- **OpenCode**：运行 `opencode mcp auth blackbox` 并在浏览器中完成 Explorer 登录授权。
+- **OpenCode**：先运行 `opencode mcp list` 确认已注册 `blackbox`，然后运行 `opencode mcp auth blackbox` 并在浏览器中完成 Explorer 登录授权。如果列表中没有该服务，请在目标项目目录中使用下方的手动回退方案。
 - **Antigravity（`agy`）**：在 `agy` 中运行 `/mcp`，选中 `blackbox` 并选择 **Authenticate** 在浏览器中完成登录授权（或在 Antigravity 桌面应用与 IDE 的 **MCP Servers** 中完成认证）。
 - **VS Code / GitHub Copilot、Gemini CLI 与 Windsurf**：触发任意 Blackbox MCP 工具或打开客户端的 MCP 面板，按提示在浏览器中完成 OAuth 登录授权。
 
@@ -124,7 +124,7 @@ Agent 会在回答中引用 `session_id`、`trace_id` 或 `span_id`，并附上 
 
 ## 手动回退：直连托管 MCP
 
-如果当前客户端或环境不支持原生插件安装，可直接将托管 MCP 服务（`https://explorer.softprobe.ai/mcp`）添加为 `blackbox`：
+如果当前客户端或环境不支持原生插件安装，可直接将托管 MCP 服务（`https://explorer.softprobe.ai/mcp`）添加为 `blackbox`。对于 OpenCode，请在希望使用该服务的项目目录中运行命令；OpenCode 默认会将其写入该项目的配置：
 
 ::: code-group
 
@@ -168,7 +168,7 @@ codex mcp add blackbox --url https://explorer.softprobe.ai/mcp
 ```
 
 ```bash [OpenCode]
-opencode mcp add blackbox --global --url https://explorer.softprobe.ai/mcp
+opencode mcp add blackbox --url https://explorer.softprobe.ai/mcp
 ```
 
 ```json [Antigravity]
@@ -245,7 +245,7 @@ codex mcp add blackbox-staging --url https://explorer-staging.softprobe.ai/mcp
 ```
 
 ```bash [OpenCode]
-opencode mcp add blackbox-staging --global --url https://explorer-staging.softprobe.ai/mcp
+opencode mcp add blackbox-staging --url https://explorer-staging.softprobe.ai/mcp
 ```
 
 ```json [Antigravity]
