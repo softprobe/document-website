@@ -346,12 +346,13 @@ const uiTestingSidebarEn = [
     items: [
       { text: 'Generate from recorded sessions', link: '/en/ui-testing/from-sessions' },
       { text: 'Write in plain English (e2e)', link: '/en/ui-testing/natural-language' },
+      { text: 'Test iOS and Android apps', link: '/en/ui-testing/mobile' },
     ],
   },
   {
-    text: 'SDK & CLI reference',
+    text: 'SDK reference',
     items: [
-      { text: '@softprobe/e2e & web-record', link: '/en/blackbox/reference/softprobe-js' },
+      { text: '@softprobe/e2e, react-native & web-record', link: '/en/blackbox/reference/softprobe-js' },
     ],
   },
 ]
@@ -386,6 +387,12 @@ const agentQaSidebarZh = [
       { text: 'LangChain', link: '/zh/blackbox/langchain' },
     ],
   },
+  {
+    text: 'SDK 与 API 参考',
+    items: [
+      { text: 'JavaScript / TypeScript (softprobe-js)', link: '/zh/blackbox/reference/softprobe-js' },
+    ],
+  },
 ]
 
 const uiTestingSidebarZh = [
@@ -401,12 +408,13 @@ const uiTestingSidebarZh = [
     items: [
       { text: '从录制的会话生成测试', link: '/zh/ui-testing/from-sessions' },
       { text: '用自然语言编写测试（e2e）', link: '/zh/ui-testing/natural-language' },
+      { text: '测试 iOS 与 Android 应用', link: '/zh/ui-testing/mobile' },
     ],
   },
   {
-    text: 'SDK 与 CLI 参考',
+    text: 'SDK 参考',
     items: [
-      { text: '@softprobe/e2e 与 web-record', link: '/en/blackbox/reference/softprobe-js' },
+      { text: '@softprobe/e2e、react-native 与 web-record', link: '/zh/blackbox/reference/softprobe-js' },
     ],
   },
 ]
@@ -468,7 +476,7 @@ export default withMermaid(
       llmstxt({
         ignoreFiles: ['**/implementer/**'],
         description:
-          'Softprobe documentation for Arex (service record-replay testing and sp CLI), Blackbox (end-to-end session tracing and MCP), UI Testing (Playwright and zero-LLM e2e browser tests with backend trace verification), and Lisa (AI QA policy evaluation agent).',
+          'Softprobe documentation for Arex (service record-replay testing and sp CLI), Blackbox (end-to-end session tracing and MCP), UI Testing (Playwright, Maestro, and zero-LLM e2e web, iOS, and Android tests with backend trace verification), and Lisa (AI QA policy evaluation agent).',
       }),
     ],
   },

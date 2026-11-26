@@ -159,14 +159,14 @@ Passing `{ params: { password: secrets.get("PASSWORD") } }` injects `SP_SECRET_P
 
 3. Check `.e2e/report.json` to confirm `"modelTokens": 0` and `"maxModelCallsInStep": 0`, then commit `tests/` and `.e2e/cache/` together.
 
-## Extend a session-compiled test with plain English {#extend-compiled-tests}
+## Add new `agent.act` steps to a cached suite {#add-steps}
 
-When you generate an `e2e` suite from a recorded session, `e2e.config.ts` defaults to `cache.mode: "read-only"` and `softprobeCachedAgent()` with no model. To append new steps after the compiled flow:
+When an existing `.e2e.ts` test already has recorded steps in `.e2e/cache/`, you can append new plain-English steps without re-recording earlier ones:
 
-1. In `e2e.config.ts`, set `cache.mode` to `"read-write"` when `!process.env.CI` and pass a `ModelInstance` such as `openai("gpt-5.4-mini")` to `softprobeCachedAgent({ model })`.
-2. Append your new `await agent.act(...)` call and a visible `await expect(screen.getByText(...)).toBeVisible()` assertion at the end of `tests/recorded-session.e2e.ts`.
-3. Run `E2E_TELEMETRY_DISABLED=1 npx e2e run` once locally. Existing pre-seeded steps replay from `.e2e/cache/` with zero model calls, while only your newly added `agent.act` step calls the model and writes its new cache file.
-4. Commit the new `.e2e/cache/*.json` file so CI runs every step with `CI=true` and zero model calls.
+1. Keep `cache.mode` set to `"read-write"` when `!process.env.CI` and pass a `ModelInstance` such as `openai("gpt-5.4-mini")` to `softprobeCachedAgent({ model })` in `e2e.config.ts`.
+2. Append your new `await agent.act(...)` call and a visible `await expect(screen.getByText(...)).toBeVisible()` assertion to your `.e2e.ts` file.
+3. Run `E2E_TELEMETRY_DISABLED=1 npx e2e run` once locally. Cached steps replay from `.e2e/cache/` with zero model calls, while only your newly added `agent.act` step calls the model and writes its new `.e2e/cache/<sha256>.json` file.
+4. Commit the updated test and new `.e2e/cache/*.json` file so CI runs every step with `CI=true` and zero model calls.
 
 ## Related {#related}
 

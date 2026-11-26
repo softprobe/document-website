@@ -4,18 +4,19 @@ title: JavaScript and TypeScript SDK (softprobe-js)
 
 # JavaScript and TypeScript SDK (`softprobe-js`)
 
-API reference for the `@softprobe/*` npm packages at version `0.2.5`. Packages run on Node.js 20 or newer, and `@softprobe/e2e` requires Node.js 22.13 or newer.
+API reference for the `@softprobe/*` npm packages at version `0.2.8`. Packages run on Node.js 20 or newer, and `@softprobe/e2e` requires Node.js 22.13 or newer.
 
 | Package | Purpose | Source |
 |---------|---------|--------|
 | `@softprobe/tracing` | Core OpenTelemetry tracer, observations, generations, OpenAI wrapper, and scores | [`softprobe-js/packages/tracing`](https://github.com/softprobe/softprobe-js/tree/main/packages/tracing) |
 | `@softprobe/web-record` | Browser rrweb DOM recording, live semantic UI action spans, same-origin HTTP tracing, and JSON body capture | [`softprobe-js/packages/web-record`](https://github.com/softprobe/softprobe-js/tree/main/packages/web-record) |
+| `@softprobe/react-native` | OpenTelemetry JS extensions for React Native and Expo semantic action capture and W3C session propagation | [`softprobe-js/packages/react-native`](https://github.com/softprobe/softprobe-js/tree/main/packages/react-native) |
 | `@softprobe/vercel-ai-sdk` | Vercel AI SDK telemetry integration and HTTP context propagation | [`softprobe-js/packages/vercel-ai-sdk`](https://github.com/softprobe/softprobe-js/tree/main/packages/vercel-ai-sdk) |
 | `@softprobe/langchain` | LangChain and LangGraph auto-instrumentation and `CallbackHandler` | [`softprobe-js/packages/langchain`](https://github.com/softprobe/softprobe-js/tree/main/packages/langchain) |
 | `@softprobe/opencode-plugin` | OpenCode coding-agent plugin | [`softprobe-js/packages/opencode-plugin`](https://github.com/softprobe/softprobe-js/tree/main/packages/opencode-plugin) |
-| `@softprobe/e2e` | Full-stack `@playwright/test` and `e2e` fixtures, W3C distributed-trace assertions, and Blackbox session compilation on Node.js 22.13 or newer | [`softprobe-js/packages/e2e`](https://github.com/softprobe/softprobe-js/tree/main/packages/e2e) |
+| `@softprobe/e2e` | Full-stack `@playwright/test`, web `e2e`, and mobile `@softprobe/e2e/mobile` fixtures and W3C distributed-trace assertions on Node.js 22.13 or newer | [`softprobe-js/packages/e2e`](https://github.com/softprobe/softprobe-js/tree/main/packages/e2e) |
 
-## `@softprobe/tracing`
+## `@softprobe/tracing` {#softprobe-tracing}
 
 Install the core package:
 
@@ -122,7 +123,7 @@ const openai = observeOpenAI(new OpenAI(), {
 
 ---
 
-## `@softprobe/web-record`
+## `@softprobe/web-record` {#softprobe-web-record}
 
 Browser SDK that records rrweb DOM events, captures live DOM semantic user actions as `softprobe.ui.action` OTLP spans, traces `fetch` and `XMLHttpRequest` calls with W3C `traceparent` propagation, and captures redacted JSON bodies.
 
@@ -130,7 +131,7 @@ Browser SDK that records rrweb DOM events, captures live DOM semantic user actio
 npm install @softprobe/web-record
 ```
 
-### `RecordSdk.init(options)`
+### `RecordSdk.init(options)` {#recordsdk-init-options}
 
 Initializes browser capture once and returns a `WebRecordController`.
 
@@ -177,7 +178,7 @@ You can also load the UMD bundle in HTML `<head>` with either `data-softprobe-op
 | `manual` | `boolean` | `false` | When `true`, do not start rrweb until `recorder.record()` is called |
 | `captureSemanticActions` | `boolean` | `false` | Captures live DOM semantic user actions including `navigate`, `click`, `dblclick`, `contextmenu`, `hover`, `fill`, `select`, `check`, `press`, `upload`, `drag`, `scroll`, `dialog`, and `resize` as `softprobe.ui.action` OTLP spans with `sp.observation.type: "ui_action"`, `sp.ui.action.schema: "sp-ui-action-1"`, WAI-ARIA target descriptors, `rrweb` mirror node IDs, causal `causedTraces`, and settled `endAnchors` and `goneAnchors`. Also supported on `<script>` with `data-capture-semantic-actions="true"`. |
 | `inputCapture` | `"masked" \| "secrets-only" \| "unmasked"` | `"masked"`, or `"secrets-only"` when `maskAllInputs` is `false` or when `captureSemanticActions` is `true` without `maskAllInputs: true` | Controls input value capture on semantic actions and defaults `maskAllInputs` to `false` when `"secrets-only"` or `"unmasked"` is active unless you pass `maskAllInputs` explicitly. Under `"secrets-only"`, password, payment-card, one-time-code, token, secret, and `secretSlots` inputs emit `{ kind: "secret", slot }` tokens without exporting plaintext values. Also supported on `<script>` with `data-input-capture="secrets-only"`. |
-| `secretSlots` | `Readonly<Record<string, string>>` | `undefined` | Maps CSS selectors such as `'input[name="apiKey"]'` to named secret slots such as `"API_KEY"`, consumed as `process.env.SP_SECRET_<SLOT>` in compiled tests |
+| `secretSlots` | `Readonly<Record<string, string>>` | `undefined` | Maps CSS selectors such as `'input[name="apiKey"]'` to named secret slots such as `"API_KEY"`, consumed as `process.env.SP_SECRET_<SLOT>` in generated tests |
 | `maskAllInputs` | `boolean` | `true`, or `false` when `inputCapture` is `"secrets-only"` or `"unmasked"` | Mask all HTML `<input>` values in DOM recordings |
 | `maskTextSelector` | `string` | `undefined` | CSS selector for visible text masked by rrweb |
 | `blockSelector` | `string` | `undefined` | CSS selector for DOM regions excluded from rrweb |
@@ -212,7 +213,7 @@ Each `HttpBodyCaptureRoute` accepts:
 
 ---
 
-## `@softprobe/vercel-ai-sdk`
+## `@softprobe/vercel-ai-sdk` {#softprobe-vercel-ai-sdk}
 
 Integrates Vercel AI SDK `generateText`, `streamText`, and tool calls with Softprobe and propagates W3C `traceparent` and session IDs across Node.js HTTP requests.
 
@@ -220,7 +221,7 @@ Integrates Vercel AI SDK `generateText`, `streamText`, and tool calls with Softp
 npm install @softprobe/vercel-ai-sdk @softprobe/tracing
 ```
 
-### `initVercelAiTelemetry(options?)`
+### `initVercelAiTelemetry(options?)` {#initvercelaitelemetry-options}
 
 Creates a `SoftprobeVercelAiSdkIntegration`, installs incoming/outgoing HTTP context propagation, and registers the integration with the `ai` package (`registerTelemetry`).
 
@@ -255,7 +256,7 @@ const telemetry = initVercelAiTelemetry({
 
 ---
 
-## `@softprobe/langchain`
+## `@softprobe/langchain` {#softprobe-langchain}
 
 LangChain and LangGraph tracing for TypeScript and Node.js. See the [LangChain install guide](/en/blackbox/langchain) for setup steps.
 
@@ -278,27 +279,78 @@ Importing `@softprobe/langchain` calls `autoInstrumentFromEnv()` automatically w
 
 ---
 
-## `@softprobe/opencode-plugin`
+## `@softprobe/opencode-plugin` {#softprobe-opencode-plugin}
 
 OpenCode plugin that sends coding-agent turns, model generations, tool calls, and sub-agent tasks to Softprobe. See the [OpenCode install guide](/en/blackbox/opencode) for `opencode.json` and `opencode-softprobe.json` configuration.
 
 ---
 
-## `@softprobe/e2e`
+## `@softprobe/react-native` {#softprobe-react-native}
 
-Full-stack UI testing SDK for `@playwright/test` and `e2e` on Node.js 22.13 or newer. Correlates browser requests through W3C `traceparent` headers, asserts outgoing backend `CLIENT` HTTP calls through `BlackboxSink`, and compiles recorded Blackbox sessions into runnable test suites. For workflow steps, see [Softprobe UI Testing](/en/ui-testing/) and [How to generate UI tests from recorded sessions](/en/ui-testing/from-sessions).
+OpenTelemetry JS extensions on `@opentelemetry/api` and `@opentelemetry/sdk-trace-base` for React Native and Expo applications. Stamps `sp.session.id` and `session.id` onto spans, propagates W3C `traceparent` and `baggage` (`sp.session.id`) headers on `fetch`, and records `softprobe.ui.action` (`sp-ui-action-1`, `captureSource: "otel_sdk"`) spans with secret-slot redaction. For setup steps, see [How to test iOS and Android apps](/en/ui-testing/mobile#path-2-react-native).
+
+```bash
+npm install @softprobe/react-native @opentelemetry/api @opentelemetry/sdk-trace-base
+```
+
+### `installSoftprobeReactNative(options)` and `initSoftprobeReactNative(options)`
+
+- `installSoftprobeReactNative(options: InstallSoftprobeReactNativeOptions): SoftprobeReactNativeHandle` attaches `SoftprobeMobileSpanProcessor`, `fetch` propagation, and `ReactNativeActionRecorder` onto an existing `MutableTracerProvider` such as `BasicTracerProvider`.
+- `initSoftprobeReactNative(options: InitSoftprobeReactNativeOptions): SoftprobeReactNativeHandle` constructs a `BasicTracerProvider` with `SoftprobeMobileSpanProcessor` and `FetchOtlpJsonSpanExporter` when `options.tracerProvider` is omitted, then calls `installSoftprobeReactNative`.
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `platform` | `"ios" \| "android"` | Required | Mobile OS written to `sp.platform` and `sp.ui.action.platform` |
+| `tracerProvider` | `MutableTracerProvider` | Required in `installSoftprobeReactNative`; created in `initSoftprobeReactNative` | OpenTelemetry `TracerProvider` receiving `SoftprobeMobileSpanProcessor` |
+| `endpoint` | `string` | `undefined` | Base OTLP HTTP URL for `initSoftprobeReactNative`. Appends `/v1/traces` when `tracesEndpoint` is omitted. |
+| `tracesEndpoint` | `string` | Production traces URL | Full OTLP HTTP JSON traces URL for `initSoftprobeReactNative` |
+| `ingestionKey` | `string` | `undefined` | Sent as `Authorization: Bearer <ingestionKey>` by `FetchOtlpJsonSpanExporter` |
+| `headers` | `Readonly<Record<string, string>>` | `{}` | Extra HTTP headers sent on OTLP exports in `initSoftprobeReactNative` |
+| `exportTimeoutMillis` | `number` | `10000` | OTLP HTTP export timeout in milliseconds |
+| `batchExport` | `boolean` | `false` | Uses `BatchSpanProcessor` when `true` and `SimpleSpanProcessor` when `false` |
+| `registerGlobalTracerProvider` | `boolean` | `false` | Calls `provider.register()` when `initSoftprobeReactNative` creates the provider |
+| `serviceName` | `string` | `undefined` | OpenTelemetry `service.name` resource and span attribute |
+| `sessionId` | `string` | Resolved from `launchArguments` or generated | Explicit printable-ASCII `MobileSessionId` (`1..128` characters) |
+| `launchArguments` | `Readonly<Record<string, unknown>> \| readonly string[]` | `undefined` | Extracts test session overrides from `sp_session_id`, `spSessionId`, `-spSessionId`, or `--sp-session-id` |
+| `resourceAttributes` | `Readonly<Record<string, string \| number \| boolean>>` | `{}` | Additional OpenTelemetry resource attributes |
+| `apiOrigins` | `readonly string[]` | All HTTP and HTTPS origins | Origins eligible for `traceparent` and `baggage` header injection |
+| `baseOrigin` | `string` | `undefined` | Base origin used to resolve relative `fetch` request URLs |
+| `ignoreUrls` | `readonly (string \| RegExp)[]` | `[tracesUrl]` | URLs excluded from `fetch` instrumentation |
+| `httpBodyCapture` | `boolean \| HttpBodyCaptureOptions` | `false` | Captures sanitized JSON request and response bodies up to `maxBodyBytes` |
+| `redactJsonPaths` | `readonly string[]` | `undefined` | JSONPath expressions replaced with `[REDACTED]` in captured HTTP bodies |
+| `initialRoute` | `string` | `"/"` | Initial navigation route recorded on `softprobe.ui.action` spans |
+| `inputCapture` | `"masked" \| "secrets-only" \| "unmasked"` | `"secrets-only"` | Redacts secure fields and `secretSlots` into `{ kind: "secret", slot }` under `"secrets-only"` |
+| `secretSlots` | `Readonly<Record<string, string>>` | `undefined` | Maps `testId`, `accessibilityId`, `name`, or `label` to secret slot identifiers |
+| `quietMs` | `number` | `40` | Quiet window in milliseconds after in-flight HTTP calls finish before settling an action |
+| `maxSettleMs` | `number` | `15000` | Maximum action settle duration in milliseconds |
+| `instrumentGlobalFetch` | `boolean` | `true` | Patches `globalThis.fetch` (or `fetchTarget.fetch`) when `true` |
+
+### `SoftprobeReactNativeHandle` and building-block exports
+
+`installSoftprobeReactNative` and `initSoftprobeReactNative` return a `SoftprobeReactNativeHandle`:
+
+- `sessionId`, `getSessionId()`, and `setSessionId(nextSessionId)` inspect or rotate the active `MobileSessionId`.
+- `actions` (`ReactNativeActionRecorder`) exposes `onNavigationRouteChange(routeNameOrPath, paramsOrOptions?)`, `recordTap(target, pointOrOptions?)`, `recordFill(target, rawValue, options?)`, `recordLongPress(target, options?)`, `recordSwipe(direction, target?, distanceRatio?, options?)`, `recordBack(options?)`, `recordDismissKeyboard(options?)`, `recordEndAnchors(anchors)`, `recordGoneAnchors(anchors)`, `flush()`, `waitForIdle()`, and `shutdown()`.
+- `fetch` exposes the instrumented `fetch` implementation, and `flush()`, `shutdown()`, and `uninstall()` manage lifecycle teardown.
+- Additional exports include `SoftprobeMobileSpanProcessor`, `FetchOtlpJsonSpanExporter`, `instrumentReactNativeFetch`, `createReactNativeActionRecorder`, `resolveMobileSessionId`, and `extractLaunchArgumentSessionId`.
+
+---
+
+## `@softprobe/e2e` {#softprobe-e2e}
+
+Full-stack UI testing SDK for `@playwright/test`, web `e2e`, and mobile `@softprobe/e2e/mobile` on Node.js 22.13 or newer. Correlates client requests through W3C `traceparent` and `baggage` headers and asserts outgoing backend `CLIENT` HTTP calls through `BlackboxSink`. For workflow steps, see [Softprobe UI Testing](/en/ui-testing/), [How to generate UI tests from recorded sessions](/en/ui-testing/from-sessions), and [How to test iOS and Android apps](/en/ui-testing/mobile).
 
 ```bash
 npm install -D @softprobe/e2e @playwright/test
 ```
 
-For `e2e` suites, also install `e2e@0.24.0`, `@e2e-dev/web@0.16.1`, and `zod`.
+For web `e2e` suites, also install `e2e@0.24.0`, `@e2e-dev/web@0.16.1`, and `zod`. For iOS and Android suites, install `e2e@0.24.0`, `@e2e-dev/mobile@0.12.8`, and `zod`.
 
 ### Core exports
 
 - `softprobeWeb(options?)` wraps `@e2e-dev/web` with Playwright `browser.route` W3C `traceparent` correlation, preserving existing `@softprobe/web-record` headers or minting a fallback header, and binds the `trace` test fixture.
 - `softprobeReporter()` writes verified trace summaries to `.e2e/softprobe-traces.json` under `schemaVersion: "softprobe-traces-1"`.
-- `softprobeCachedAgent(options?)` returns an `AgentConfig` that replays pre-seeded `.e2e/cache/` `trace-1` entries with zero model calls and forwards uncached `agent.act` steps when you pass `options.model`.
+- `softprobeCachedAgent(options?)` returns an `AgentConfig` (`{ model?, judge?, context?, cacheDir? }`) that replays recorded `.e2e/cache/` `trace-1` entries in CI with zero model calls and forwards uncached `agent.act` steps when you pass `options.model`.
 - Re-exported `e2e` bindings include `test`, `describe`, `beforeEach`, `afterEach`, `beforeAll`, `afterAll`, `expect`, `credentials`, `secrets`, `unique`, `AgentError`, and `isAgentError`.
 
 #### `SoftprobeWebOptions`
@@ -319,14 +371,14 @@ Extends `@e2e-dev/web` `WebOptions`:
 
 ### `TraceScope` fixture and errors
 
-- `trace.outboundHttp(query)` waits for the backend `SERVER` entry span of the latest browser request matching `query.triggeredBy`, then polls until an outgoing `CLIENT` HTTP span matches `url`, optional `method`, optional `status`, and optional `serviceName`.
-- `trace.expectNoOutboundHttp(query?)` confirms that every matching browser request reached its backend `SERVER` span and produced zero matching outgoing `CLIENT` HTTP calls after `settleMs`.
-- `trace.window(fn)` runs `fn` and returns a child `TraceScope` restricted to browser requests captured while `fn` ran.
+- `trace.outboundHttp(query)` waits for the backend `SERVER` entry span of the latest client request matching `query.triggeredBy`, then polls until an outgoing `CLIENT` HTTP span matches `url`, optional `method`, optional `status`, and optional `serviceName`.
+- `trace.expectNoOutboundHttp(query?)` confirms that every matching client request reached its backend `SERVER` span and produced zero matching outgoing `CLIENT` HTTP calls after `settleMs`.
+- `trace.window(fn)` runs `fn` and returns a child `TraceScope` restricted to client requests captured while `fn` ran.
 - `TraceInstrumentationError` and `isTraceInstrumentationError(value)` report `code: "TRACE_INSTRUMENTATION_MISSING"` when the backend `SERVER` span does not arrive within `pollTimeoutMs`.
 - `TraceAssertionError` and `isTraceAssertionError(value)` report `code: "TRACE_ASSERTION_FAILED"` when the backend `SERVER` span arrived and the outbound HTTP assertion failed, exposing captured spans in `observedCalls`.
 - `isTraceId(value)` and `isSpanId(value)` validate 32-character lowercase hex `TraceId` values and 16-character lowercase hex `SpanId` values.
 
-### `@softprobe/e2e/playwright` exports
+### `@softprobe/e2e/playwright` exports {#softprobe-e2e-playwright}
 
 Import from `@softprobe/e2e/playwright` to attach the `trace` fixture in `@playwright/test` suites over `context.route` without colliding with Playwright's built-in `use.trace` option:
 
@@ -335,9 +387,46 @@ Import from `@softprobe/e2e/playwright` to attach the `trace` fixture in `@playw
 - `createPlaywrightTraceScope(target, options?)` attaches `traceparent` route correlation directly to a Playwright `BrowserContext` or `Page` and returns `{ trace, dispose() }`.
 - `SoftprobePlaywrightOptions` and `SoftprobePlaywrightFixtures` type `use.softprobe` in `playwright.config.ts`, accepting `sink`, `endpoint`, `token`, `workspaceId`, `explorerUrl`, `apiOrigins`, `baseUrl`, `pollTimeoutMs`, `traceTimeoutMs`, `pollIntervalMs`, `settleMs`, and `env`.
 
+### `@softprobe/e2e/mobile` exports {#softprobe-e2e-mobile}
+
+Import from `@softprobe/e2e/mobile` to drive iOS Simulator and Android devices over `@e2e-dev/mobile`, export host `softprobe.ui.action` OTLP spans (`captureSource: "host_agent"`), and verify backend HTTP traces in `"proxy"` or `"session"` correlation mode:
+
+- `softprobeMobile(options: SoftprobeMobileOptions)` wraps `@e2e-dev/mobile` `mobile(options)` with host OTLP semantic action capture, launch-argument injection, optional Android `adb reverse` port forwarding, and `trace` fixture correlation.
+- `mobileTools(...engines)` unwraps `softprobeMobile(...)` handles and returns the `@e2e-dev/mobile/tools` `DefinedTool` map for `agents.<name>.tools` when authoring uncached steps with the built-in `e2e` agent.
+- `test`, `describe`, `beforeEach`, `afterEach`, `beforeAll`, `afterAll`, `expect`, `credentials`, `secrets`, `unique`, `softprobeCachedAgent`, and `softprobeReporter` provide mobile-typed `e2e` test bindings with `{ device, app, screen, agent, trace }`.
+- `wrapMobileEngine(baseEngine, options)` and `buildMobileCorrelationLaunchArguments(input)` expose low-level engine wrapping and launch-flag construction.
+
+#### `SoftprobeMobileOptions`
+
+Extends `@e2e-dev/mobile` `MobileOptions` (`platform`, `device`, `session`, `snapshot`, `settle`, `transition`, `videoTouches`):
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `platform` | `"ios" \| "android"` | Required | Target mobile OS |
+| `device` | `string \| readonly string[] \| DeviceProvider` | Booted platform device | Simulator name or UDID, Android serial (`emulator-5554`), device pool array, or hosted `DeviceProvider` |
+| `correlation` | `SoftprobeMobileCorrelationConfig` | `{ mode: "session" }` | Selects `"proxy"` mode (Path 1 zero-SDK reverse proxy) or `"session"` mode (Path 2 OpenTelemetry SDK correlation) |
+| `captureActions` | `boolean` | `true` | Exports host `softprobe.ui.action` OTLP spans (`captureSource: "host_agent"`). Set `false` when Path 2 in-app OpenTelemetry SDKs already emit `otel_sdk` action spans. |
+| `secretSlots` | `Readonly<Record<string, string>>` | `undefined` | Maps mobile `testId`, resource ID name, `name`, or `placeholder` to secret slot identifiers |
+| `serviceName` | `string` | `"softprobe-e2e-mobile"` | `service.name` resource attribute on host-exported `softprobe.ui.action` spans |
+| `sink` | `SoftprobeSinkConfig` | Resolved from options and env | Explicit Blackbox or Arex sink configuration |
+| `endpoint` | `string` | Env or `https://explorer.softprobe.ai/api/thelake` | Sink base URL for OTLP action export and `trace` queries |
+| `token` | `string` | `SOFTPROBE_API_KEY`, `SOFTPROBE_TOKEN`, `SP_TOKEN`, or `INGESTION_KEY` | Bearer token for sink queries and OTLP export |
+| `workspaceId` | `string` | `SOFTPROBE_WORKSPACE_ID` | Workspace header for Blackbox queries |
+| `explorerUrl` | `string` | `SOFTPROBE_EXPLORER_URL` | Base URL for `explorerTraceUrl` links |
+| `pollTimeoutMs` | `number` | `30000` | Maximum milliseconds to poll for backend `SERVER` and `CLIENT` spans (`traceTimeoutMs` alias supported) |
+| `pollIntervalMs` | `number` | `250` | Delay in milliseconds between sink polls |
+| `settleMs` | `number` | `150` | Post-`SERVER` observation window in milliseconds for `trace.expectNoOutboundHttp` |
+
+#### `SoftprobeMobileCorrelationConfig`
+
+| Mode | Fields | Launch arguments injected |
+|------|--------|---------------------------|
+| `"proxy"` | `{ mode: "proxy", upstreamOrigin: string, launchArgKey?: string, adbReverse?: boolean }` | Starts an ephemeral HTTP proxy on `127.0.0.1`, runs `adb reverse` on Android unless `adbReverse` is `false` (using `device`, `SP_ANDROID_ADB_TARGET`, or `ANDROID_SERIAL`), and appends `--es <launchArgKey> <proxyOrigin>` on Android (default `"api_base_url"`) or `-<launchArgKey> <proxyOrigin>` on iOS (default `"-API_BASE_URL"`). |
+| `"session"` | `{ mode: "session", sessionId?: string, launchArgKey?: string }` | Appends `--es <launchArgKey> <sessionId>` on Android (default `"sp_session_id"`) or `-<launchArgKey> <sessionId>` on iOS (default `"-spSessionId"`), and resolves `trace.outboundHttp` from Blackbox session spans. |
+
 ---
 
-## Environment variables
+## Environment variables {#environment-variables}
 
 All Node.js packages (`@softprobe/tracing`, `@softprobe/vercel-ai-sdk`, `@softprobe/langchain`, `@softprobe/opencode-plugin`) share these environment variables:
 
