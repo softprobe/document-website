@@ -6,6 +6,9 @@ title: How to write natural-language UI tests with e2e
 
 Write browser UI tests in plain English with `e2e` and `@softprobe/e2e` without recording a browser session first. Run a new test with a model once to populate `.e2e/cache/`, commit the cache files to Git, and replay every CI run deterministically with zero LLM calls and real backend HTTP trace checks.
 
+> [!TIP] Why `@softprobe/e2e` instead of `e2e` directly?
+> `@softprobe/e2e` wraps `e2e` (`softprobeCachedAgent`, `softprobeWeb`, `softprobeMobile`, and `softprobeReporter`) so your `agent.act` tests keep zero-LLM `.e2e/cache/` replay while gaining W3C `traceparent` propagation, `trace.outboundHttp` / `trace.expectNoOutboundHttp` backend assertions, and `explorerTraceUrl` failure links. No frontend SDK instrumentation is required. See [With vs. without frontend instrumentation](/en/ui-testing/frontend-instrumentation).
+
 ## Install packages {#install}
 
 On Node.js 22.13 or newer, install `@softprobe/e2e`, `e2e`, `@e2e-dev/web`, `zod`, and an AI SDK model provider package such as `@ai-sdk/openai` for initial authoring:

@@ -6,7 +6,9 @@ title: 如何测试 iOS 与 Android 应用
 
 自动化运行 iOS 与 Android 移动端 UI 测试，并同步校验后端向外部服务发出的真实 HTTP 请求。Softprobe UI 测试将移动设备自动化与 [Softprobe Explorer](https://explorer.softprobe.ai) 中的 W3C 分布式链路校验结合起来，在 CI 中以零次大模型调用回放 `.e2e/cache/` 中的 `agent.act` 步骤，并支持让编码 Agent 通过 Blackbox MCP 从录制的移动端会话生成 `@softprobe/e2e/mobile` 或 Maestro 测试套件。
 
-两条移动端采集路径都会输出统一的 `softprobe.ui.action` OpenTelemetry span（`sp-ui-action-1`），在导出前将密码与一次性验证码脱敏为 `{ kind: "secret", slot }` 占位引用，并驱动 `trace.outboundHttp` 与 `trace.expectNoOutboundHttp` 断言。
+两条移动端采集路径都会输出统一的 `softprobe.ui.action` OpenTelemetry span（`sp-ui-action-1`），在导出前将密码与一次性验证码脱敏为 `{ kind: "secret", slot }` 占位引用，并驱动 `trace.outboundHttp` 与 `trace.expectNoOutboundHttp` 断言。跨平台模式对比请参阅[前端埋点与无埋点模式对比](/zh/ui-testing/frontend-instrumentation)。
+
+<video controls playsinline muted preload="metadata" style="width: 100%; max-width: 820px; border-radius: 8px; margin: 16px 0;" src="/videos/mobile-ui-testing.mp4"></video>
 
 ## 选择采集路径 {#choose-path}
 

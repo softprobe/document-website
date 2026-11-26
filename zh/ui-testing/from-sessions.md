@@ -8,6 +8,9 @@ title: 如何从录制的会话生成 UI 测试
 
 `@softprobe/web-record` 会把浏览器语义交互记录为 `softprobe.ui.action` OpenTelemetry span 并自动透传 W3C `traceparent` 请求头。`@softprobe/e2e` 会把这些动作还原为可重复执行的浏览器步骤，并通过 `BlackboxSink` 校验后端在 Blackbox 中记录的下游 `CLIENT` HTTP 调用。
 
+> [!NOTE] 需要接入前端埋点
+> 从录制会话生成测试依赖 `@softprobe/web-record`、`@softprobe/react-native`、`softprobe-otel-android` 或 `SoftprobeOtelSwift` 上报的 `softprobe.ui.action` Span。如果希望在不修改前端代码的情况下直接测试应用，请参阅[前端埋点与无埋点模式对比](/zh/ui-testing/frontend-instrumentation)与[用 `e2e` 编写自然语言 UI 测试](/zh/ui-testing/natural-language)。
+
 ## 开启语义动作采集 {#enable-capture}
 
 1. 在 [Softprobe Explorer](https://explorer.softprobe.ai) 中打开 **Agents**，点击 **+ Connect agent**，复制面向前端与后端应用的 **Connect Agent** 配置提示。
