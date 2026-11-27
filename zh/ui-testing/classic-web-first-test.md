@@ -10,7 +10,7 @@ title: 用自然语言测试旅游网站
 
 ## 准备工作
 
-你需要 Docker、Node.js 22.13 或更高版本，以及有模型访问权限的 OpenAI API 密钥。首次运行会调用模型，可能产生费用。之后可以使用本地缓存。
+你需要 Docker、Node.js 22.13 或更高版本，以及 Gemini API 密钥。首次运行会调用模型，可能产生费用。之后可以使用本地缓存。
 
 ## 1. 启动示例网站
 
@@ -33,14 +33,14 @@ docker run -d --rm --name travel-ui-tutorial \
 mkdir travel-ui-test && cd travel-ui-test
 npm init -y
 npm pkg set type=module
-npm install -D @softprobe/e2e@0.2.8 e2e@0.24.0 @e2e-dev/web@0.16.1 @playwright/test @ai-sdk/openai@4 ai@^7 zod
+npm install -D @softprobe/e2e@0.2.8 e2e@0.24.0 @e2e-dev/web@0.16.1 @playwright/test @ai-sdk/google@4 ai@^7 zod
 npx playwright install chromium
 ```
 
 在该文件夹中创建 `e2e.config.ts`：
 
 ```ts
-import { openai } from "@ai-sdk/openai";
+import { google } from "@ai-sdk/google";
 import type { E2EConfig } from "e2e";
 import { softprobeCachedAgent, softprobeWeb } from "@softprobe/e2e";
 
@@ -54,7 +54,7 @@ export default {
 	},
 	agents: {
 		default: softprobeCachedAgent({
-			model: openai("gpt-5.4-mini"),
+			model: google("gemini-2.5-flash"),
 		}),
 	},
 	targets: [{
@@ -96,11 +96,11 @@ test("books a flight from London to Paris", async ({ app, agent, screen }) => {
 
 ## 4. 运行测试
 
-在终端环境中设置 `OPENAI_API_KEY`。在 Bash 中，可以输入密钥而不显示内容：
+在终端环境中设置 `GOOGLE_GENERATIVE_AI_API_KEY`。在 Bash 中，可以输入密钥而不显示内容：
 
 ```bash
-read -r -s -p "OpenAI API key: " OPENAI_API_KEY; echo
-export OPENAI_API_KEY
+read -r -s -p "Gemini API key: " GOOGLE_GENERATIVE_AI_API_KEY; echo
+export GOOGLE_GENERATIVE_AI_API_KEY
 ```
 
 运行测试：

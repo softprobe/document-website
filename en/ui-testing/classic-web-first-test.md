@@ -10,7 +10,7 @@ You will test a demo website without changing its code. This example checks the 
 
 ## Before you start
 
-You need Docker, Node.js 22.13 or newer, and an OpenAI API key with access to a model. The first test run uses the model and may incur charges. Later runs can reuse the local cache.
+You need Docker, Node.js 22.13 or newer, and a Gemini API key. The first test run uses the model and may incur charges. Later runs can reuse the local cache.
 
 ## 1. Start the demo
 
@@ -33,14 +33,14 @@ Create a new folder and install the test tools:
 mkdir travel-ui-test && cd travel-ui-test
 npm init -y
 npm pkg set type=module
-npm install -D @softprobe/e2e@0.2.8 e2e@0.24.0 @e2e-dev/web@0.16.1 @playwright/test @ai-sdk/openai@4 ai@^7 zod
+npm install -D @softprobe/e2e@0.2.8 e2e@0.24.0 @e2e-dev/web@0.16.1 @playwright/test @ai-sdk/google@4 ai@^7 zod
 npx playwright install chromium
 ```
 
 Create `e2e.config.ts` in the folder:
 
 ```ts
-import { openai } from "@ai-sdk/openai";
+import { google } from "@ai-sdk/google";
 import type { E2EConfig } from "e2e";
 import { softprobeCachedAgent, softprobeWeb } from "@softprobe/e2e";
 
@@ -54,7 +54,7 @@ export default {
 	},
 	agents: {
 		default: softprobeCachedAgent({
-			model: openai("gpt-5.4-mini"),
+			model: google("gemini-2.5-flash"),
 		}),
 	},
 	targets: [{
@@ -96,11 +96,11 @@ The demo displays a payment success message and booking reference. The screensho
 
 ## 4. Run the test
 
-Set `OPENAI_API_KEY` in your terminal environment. In Bash, you can enter the key without displaying it:
+Set `GOOGLE_GENERATIVE_AI_API_KEY` in your terminal environment. In Bash, you can enter the key without displaying it:
 
 ```bash
-read -r -s -p "OpenAI API key: " OPENAI_API_KEY; echo
-export OPENAI_API_KEY
+read -r -s -p "Gemini API key: " GOOGLE_GENERATIVE_AI_API_KEY; echo
+export GOOGLE_GENERATIVE_AI_API_KEY
 ```
 
 Run the test:
