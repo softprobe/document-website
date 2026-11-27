@@ -4,9 +4,9 @@ title: 如何测试 iOS 与 Android 应用
 
 # 如何测试 iOS 与 Android 应用
 
-自动化运行 iOS 与 Android 移动端 UI 测试，并同步校验后端向外部服务发出的真实 HTTP 请求。Softprobe UI 测试将移动设备自动化与 [Softprobe Explorer](https://explorer.softprobe.ai) 中的 W3C 分布式链路校验结合起来，在 CI 中以零次大模型调用回放 `.e2e/cache/` 中的 `agent.act` 步骤，并支持让编码 Agent 通过 Blackbox MCP 从录制的移动端会话生成 `@softprobe/e2e/mobile` 或 Maestro 测试套件。
+自动化运行 iOS 与 Android 移动端 UI 测试，并按需检查后端向外部服务发出的请求。运行器可以在 CI 中回放缓存的 `agent.act` 步骤。编码 Agent 也可以通过 Blackbox MCP 使用录制的移动端动作编写 `@softprobe/e2e/mobile` 或 Maestro 测试。
 
-两条移动端采集路径都会输出统一的 `softprobe.ui.action` OpenTelemetry span（`sp-ui-action-1`），在导出前将密码与一次性验证码脱敏为 `{ kind: "secret", slot }` 占位引用，并驱动 `trace.outboundHttp` 与 `trace.expectNoOutboundHttp` 断言。跨平台模式对比请参阅[前端埋点与无埋点模式对比](/zh/ui-testing/frontend-instrumentation)。
+两条移动端采集路径都可以将 `softprobe.ui.action` span 导出到已配置的接收端。宿主机采集记录测试引擎驱动的动作。应用内 SDK 路径还可以采集手动测试或真实用户会话。后端断言需要关联的后端跟踪。请参阅[如何选择采集路径](/zh/ui-testing/frontend-instrumentation)。
 
 <video controls playsinline muted preload="metadata" style="width: 100%; max-width: 820px; border-radius: 8px; margin: 16px 0;" src="/videos/mobile-ui-testing.mp4"></video>
 
@@ -16,13 +16,13 @@ title: 如何测试 iOS 与 Android 应用
 
 | 对比维度 | 路径 1，零 SDK `agent.act` + 代理模式 | 路径 2，OpenTelemetry SDK 扩展 + 会话模式 |
 |----------|---------------------------------------|-------------------------------------------|
-| **客户端代码改动** | 无需改动，直接测试未插桩的 `.apk` 与 `.app` 安装包。 | 在应用现有的 OpenTelemetry SDK 上注册 Softprobe `SpanProcessor` 以及 UI 与 HTTP 扩展。 |
+| **客户端代码改动** | 不需要 SDK。使用代理检查后端时，应用必须能够在启动时接收代理地址。 | 在应用现有的 OpenTelemetry SDK 上注册 Softprobe `SpanProcessor` 以及 UI 与 HTTP 扩展。 |
 | **`softprobeMobile` 关联配置** | `correlation: { mode: "proxy", upstreamOrigin }` | `correlation: { mode: "session" }` |
-| **链路与会话透传方式** | 宿主机本地 HTTP 反向代理为每次请求自动生成并注入 W3C `traceparent` 与 `baggage` 请求头。 | 应用内的 `fetch`、`OkHttp` 或 `URLSession` 拦截器直接注入 W3C `traceparent` 与 `baggage` 请求头。 |
-| **支持的设备与网络环境** | 通过 `adb reverse` 连接的本地 Android 模拟器、USB 真机，以及访问未开启证书绑定的 HTTP 接口的本地 iOS 模拟器。 | 模拟器、连接 Wi-Fi 或蜂窝网络的真机、启用 TLS 证书绑定的接口、云真机平台、手动测试会话与生产环境会话。 |
+| **链路与会话透传方式** | 宿主机本地反向代理为经过代理的请求注入 W3C `traceparent` 与 `baggage` 请求头。 | 应用内的 `fetch`、`OkHttp` 或 `URLSession` 插件直接注入 W3C `traceparent` 与 `baggage` 请求头。 |
+| **动作采集位置** | 在受支持的设备或模拟器上，由宿主机引擎驱动测试时采集。 | 在已接入 SDK 的应用中采集，包括手动 QA 或真实用户会话。 |
 | **UI 动作采集精度** | 通过 ADB UiAutomator 与 XCTest 对比系统无障碍树，导出 `sp.ui.action.capture_source: "host_agent"`。 | 在应用进程内直接读取 React Native、Android `View` 与 iOS 控件信息，导出 `sp.ui.action.capture_source: "otel_sdk"`。 |
 
-如果希望在不修改客户端源码的前提下立即为现有安装包接入 CI 回归测试，请优先选择路径 1。如果应用已经接入 OpenTelemetry、启用了 TLS 证书绑定、运行在蜂窝网络真机或云真机上，或者需要在 Explorer 中录制手动 QA 会话，请选择路径 2。
+如果应用可以使用启动时传入的代理地址，可以从路径 1 开始。如果需要在应用内采集动作，包括手动 QA 会话，请选择路径 2。
 
 ## 使用路径 1 测试未改动的应用 {#path-1}
 

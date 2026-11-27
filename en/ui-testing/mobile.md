@@ -4,9 +4,9 @@ title: How to test iOS and Android apps
 
 # How to test iOS and Android apps
 
-Automate iOS and Android UI tests that also verify what your backend sent to downstream services. Softprobe UI Testing pairs mobile device automation with W3C distributed trace verification in [Softprobe Explorer](https://explorer.softprobe.ai), replays `agent.act` steps from `.e2e/cache/` in CI with zero LLM calls, and lets your coding agent generate `@softprobe/e2e/mobile` or Maestro suites from recorded mobile sessions through Blackbox MCP.
+Automate iOS and Android UI tests and optionally check what your backend sent to downstream services. The runner can replay cached `agent.act` steps in CI. A coding agent can also use recorded mobile actions through Blackbox MCP to write `@softprobe/e2e/mobile` or Maestro tests.
 
-Both mobile capture paths emit the same `softprobe.ui.action` OpenTelemetry span schema (`sp-ui-action-1`), redact passwords and one-time codes into `{ kind: "secret", slot }` references before export, and power `trace.outboundHttp` and `trace.expectNoOutboundHttp` assertions. See [With vs. without frontend instrumentation](/en/ui-testing/frontend-instrumentation) for a cross-platform comparison.
+Both mobile capture paths can export `softprobe.ui.action` spans to a configured sink. Host capture observes actions driven by the test engine. The in-app SDK path can also capture manual or real-user sessions. Backend assertions require correlated backend telemetry. See [how to choose a capture path](/en/ui-testing/frontend-instrumentation) for a comparison.
 
 <video controls playsinline muted preload="metadata" style="width: 100%; max-width: 820px; border-radius: 8px; margin: 16px 0;" src="/videos/mobile-ui-testing.mp4"></video>
 
@@ -16,13 +16,13 @@ Pick the capture path that matches how your mobile app is built and where it run
 
 | Criterion | Path 1, zero-SDK `agent.act` + proxy mode | Path 2, OpenTelemetry SDK plugins + session mode |
 |-----------|-------------------------------------------|--------------------------------------------------|
-| **Mobile app code changes** | None. Runs against unmodified `.apk` and `.app` builds. | Registers a Softprobe `SpanProcessor` and UI and HTTP hooks on your OpenTelemetry SDK. |
+| **Mobile app code changes** | No SDK is required. Proxy-based checks require the app to accept the proxy URL at launch. | Registers a Softprobe `SpanProcessor` and UI and HTTP hooks on your OpenTelemetry SDK. |
 | **`softprobeMobile` correlation** | `correlation: { mode: "proxy", upstreamOrigin }` | `correlation: { mode: "session" }` |
-| **Trace and session propagation** | Host localhost HTTP reverse proxy mints W3C `traceparent` and `baggage` headers on each request. | In-app `fetch`, `OkHttp`, or `URLSession` instrumentation injects W3C `traceparent` and `baggage` headers directly. |
-| **Supported devices and networks** | Local Android Emulator via `adb reverse`, USB-connected Android devices, and local iOS Simulator calling unpinned HTTP APIs. | Emulators, simulators, physical phones on Wi-Fi or cellular networks, TLS-pinned APIs, cloud device farms, manual QA runs, and production sessions. |
+| **Trace and session propagation** | A local reverse proxy adds W3C `traceparent` and `baggage` to requests routed through it. | In-app `fetch`, `OkHttp`, or `URLSession` instrumentation injects W3C `traceparent` and `baggage` headers directly. |
+| **Where actions are captured** | During a test driven by the host engine on a supported device or simulator. | In the instrumented app, including manual QA or real-user sessions. |
 | **Action span fidelity** | Exports `sp.ui.action.capture_source: "host_agent"` by diffing OS accessibility trees over ADB UiAutomator and XCTest. | Exports `sp.ui.action.capture_source: "otel_sdk"` from in-process React Native, Android `View`, and iOS controls. |
 
-Start with Path 1 when you want CI coverage on an existing mobile binary without changing application source code. Choose Path 2 when your app already uses OpenTelemetry, enforces TLS certificate pinning, runs on physical cellular devices or cloud device farms, or records manual QA sessions in Explorer.
+Start with Path 1 when the app can use the proxy address provided at launch. Choose Path 2 when you need in-app capture, including manual QA sessions.
 
 ## Test an unmodified app with Path 1 {#path-1}
 

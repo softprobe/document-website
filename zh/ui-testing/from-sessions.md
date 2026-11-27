@@ -6,10 +6,10 @@ title: 如何从录制的会话生成 UI 测试
 
 在 [Softprobe Explorer](https://explorer.softprobe.ai) 中走通一次真实浏览器流程，让编码 Agent 通过 Blackbox MCP 生成确定性的 `@playwright/test` + `@softprobe/e2e` 测试套件，并在 CI 中同时验证前端交互与后端向外部服务发出的真实出站 HTTP 请求。
 
-`@softprobe/web-record` 会把浏览器语义交互记录为 `softprobe.ui.action` OpenTelemetry span 并自动透传 W3C `traceparent` 请求头。`@softprobe/e2e` 会把这些动作还原为可重复执行的浏览器步骤，并通过 `BlackboxSink` 校验后端在 Blackbox 中记录的下游 `CLIENT` HTTP 调用。
+`@softprobe/web-record` 会把浏览器语义交互记录为 `softprobe.ui.action` OpenTelemetry span。编码 Agent 通过 Blackbox MCP 读取动作并编写测试。下方示例还检查后端请求，因此需要后端跟踪和 Blackbox 接收端。
 
-> [!NOTE] 需要接入前端埋点
-> 从录制会话生成测试依赖 `@softprobe/web-record`、`@softprobe/react-native`、`softprobe-otel-android` 或 `SoftprobeOtelSwift` 上报的 `softprobe.ui.action` Span。如果希望在不修改前端代码的情况下直接测试应用，请参阅[前端埋点与无埋点模式对比](/zh/ui-testing/frontend-instrumentation)与[用 `e2e` 编写自然语言 UI 测试](/zh/ui-testing/natural-language)。
+> [!NOTE] 选择采集路径
+> 本 Web 示例需要在应用中接入 `@softprobe/web-record`。如果只检查 Web 页面且不想接入前端 SDK，请参阅[第一个 Web UI 测试](/zh/ui-testing/classic-web-first-test)。移动端测试也可以在应用不接入 SDK 的情况下导出由 `softprobeMobile` 驱动的动作。请参阅[移动端采集路径](/zh/ui-testing/mobile#choose-path)。
 
 ## 开启语义动作采集 {#enable-capture}
 
@@ -45,7 +45,7 @@ title: 如何从录制的会话生成 UI 测试
 	></script>
 	```
 
-3. 使用同一把 Ingestion Key 在后端导出 OpenTelemetry HTTP span，或挂载官方 OpenTelemetry OBI。后端配置步骤见[快速开始](/zh/blackbox/getting-started)。如果浏览器跨域调用后端接口，请在后端 CORS 配置的 `Access-Control-Allow-Headers` 中放行 `traceparent`。
+3. 要运行本指南中的后端请求断言，请使用同一把 Ingestion Key 在后端导出 OpenTelemetry HTTP span，或挂载官方 OpenTelemetry OBI。后端配置步骤见[快速开始](/zh/blackbox/getting-started)。如果浏览器跨域调用后端接口，请在后端 CORS 配置的 `Access-Control-Allow-Headers` 中放行 `traceparent`。只检查页面的测试不需要这项后端配置。
 
 ## 使用 Blackbox MCP 生成测试 {#generate-test}
 

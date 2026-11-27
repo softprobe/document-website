@@ -6,10 +6,10 @@ title: How to generate UI tests from recorded sessions
 
 Record a user flow once in [Softprobe Explorer](https://explorer.softprobe.ai), ask your coding agent to generate a deterministic `@playwright/test` + `@softprobe/e2e` test suite with Blackbox MCP, and verify both UI behavior and outgoing backend HTTP requests in CI.
 
-`@softprobe/web-record` records semantic browser actions as `softprobe.ui.action` OpenTelemetry spans alongside W3C `traceparent` headers. `@softprobe/e2e` turns those spans into repeatable browser steps and checks the downstream `CLIENT` HTTP calls that your backend sent in Blackbox.
+`@softprobe/web-record` records semantic browser actions as `softprobe.ui.action` OpenTelemetry spans. A coding agent reads those actions through Blackbox MCP and writes the test. The example below also checks a backend request, so it needs backend telemetry and a configured Blackbox sink.
 
-> [!NOTE] Requires frontend instrumentation
-> Generating tests from recorded sessions relies on `softprobe.ui.action` spans emitted by `@softprobe/web-record`, `@softprobe/react-native`, `softprobe-otel-android`, or `SoftprobeOtelSwift`. If you want to test an unmodified app without installing a frontend SDK, see [With vs. without frontend instrumentation](/en/ui-testing/frontend-instrumentation) and [Write natural-language UI tests with `e2e`](/en/ui-testing/natural-language).
+> [!NOTE] Choose the capture path
+> This web example uses `@softprobe/web-record` in the app. For a UI-only web test without a frontend SDK, see [your first web UI test](/en/ui-testing/classic-web-first-test). Mobile tests can also export actions driven by `softprobeMobile` without an SDK in the app. See [mobile capture paths](/en/ui-testing/mobile#choose-path).
 
 ## Enable semantic action capture {#enable-capture}
 
@@ -45,7 +45,7 @@ Record a user flow once in [Softprobe Explorer](https://explorer.softprobe.ai), 
 	></script>
 	```
 
-3. Export OpenTelemetry HTTP spans or attach official OpenTelemetry OBI on your backend with the same Ingestion Key. See [End-to-end session tracing with payloads](/en/blackbox/end-to-end-session-tracing) for backend setup. If your browser calls a cross-origin API, allow `traceparent` in `Access-Control-Allow-Headers`.
+3. To run the backend request assertion in this guide, export OpenTelemetry HTTP spans or attach official OpenTelemetry OBI on your backend with the same Ingestion Key. See [End-to-end session tracing with payloads](/en/blackbox/end-to-end-session-tracing) for backend setup. If your browser calls a cross-origin API, allow `traceparent` in `Access-Control-Allow-Headers`. A UI-only test does not need this backend setup.
 
 ## Generate a test with Blackbox MCP {#generate-test}
 

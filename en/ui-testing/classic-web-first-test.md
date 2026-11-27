@@ -33,7 +33,7 @@ Create a new folder and install the test tools:
 mkdir travel-ui-test && cd travel-ui-test
 npm init -y
 npm pkg set type=module
-npm install -D @softprobe/e2e@0.2.8 e2e@0.24.0 @e2e-dev/web@0.16.1 @playwright/test @ai-sdk/openai@4 zod
+npm install -D @softprobe/e2e@0.2.8 e2e@0.24.0 @e2e-dev/web@0.16.1 @playwright/test @ai-sdk/openai@4 ai@^7 zod
 npx playwright install chromium
 ```
 

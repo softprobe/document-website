@@ -18,7 +18,7 @@ Test web applications with Playwright tests generated from recorded browser sess
 | Write plain-English `agent.act` tests against an unmodified app | No (`softprobeWeb`) | `e2e` + `.e2e/cache/` | [Write in plain English](/en/ui-testing/natural-language) |
 | Add `trace.outboundHttp` to an existing Playwright suite | No (`@softprobe/e2e/playwright`) | `@playwright/test` | [Playwright fixture setup](#playwright-fixture) |
 
-See [With vs. without frontend instrumentation](/en/ui-testing/frontend-instrumentation) for a full comparison and runnable examples of both modes.
+See [how to choose a capture path](/en/ui-testing/frontend-instrumentation) for the setup each approach needs.
 
 ## Option A: `@playwright/test` with `@softprobe/e2e/playwright` {#playwright-fixture}
 

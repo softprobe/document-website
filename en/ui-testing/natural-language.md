@@ -4,23 +4,25 @@ title: How to write natural-language UI tests with e2e
 
 # How to write natural-language UI tests with `e2e`
 
-Write browser UI tests in plain English with `e2e` and `@softprobe/e2e` without recording a browser session first. Run a new test with a model once to populate `.e2e/cache/`, commit the cache files to Git, and replay every CI run deterministically with zero LLM calls and real backend HTTP trace checks.
+Write browser UI tests in plain English with `e2e` and `@softprobe/e2e` without recording a browser session first. Start with [a UI-only web test](/en/ui-testing/classic-web-first-test) if you do not need backend checks. The example below adds backend request assertions.
+
+The runner can cache model-generated steps in `.e2e/cache/` for later replay. A cache miss or changed page can prevent replay. Run the CI configuration without a model to check that the cache works for your test.
 
 > [!TIP] Why `@softprobe/e2e` instead of `e2e` directly?
-> `@softprobe/e2e` wraps `e2e` (`softprobeCachedAgent`, `softprobeWeb`, `softprobeMobile`, and `softprobeReporter`) so your `agent.act` tests keep zero-LLM `.e2e/cache/` replay while gaining W3C `traceparent` propagation, `trace.outboundHttp` / `trace.expectNoOutboundHttp` backend assertions, and `explorerTraceUrl` failure links. No frontend SDK instrumentation is required. See [With vs. without frontend instrumentation](/en/ui-testing/frontend-instrumentation).
+> `@softprobe/e2e` adds optional trace propagation and backend assertions to `e2e` tests. Frontend SDK instrumentation is not required for this test. Backend assertions need a configured sink and backend telemetry. See [how to choose a capture path](/en/ui-testing/frontend-instrumentation).
 
 ## Install packages {#install}
 
-On Node.js 22.13 or newer, install `@softprobe/e2e`, `e2e`, `@e2e-dev/web`, `zod`, and an AI SDK model provider package such as `@ai-sdk/openai` for initial authoring:
+On Node.js 22.13 or newer, install `@softprobe/e2e`, `e2e`, `@e2e-dev/web`, `ai`, `zod`, and an AI SDK model provider package such as `@ai-sdk/openai` for initial authoring:
 
 ```bash
-npm install -D @softprobe/e2e e2e@0.24.0 @e2e-dev/web@0.16.1 @playwright/test @ai-sdk/openai zod
+npm install -D @softprobe/e2e e2e@0.24.0 @e2e-dev/web@0.16.1 @playwright/test @ai-sdk/openai@4 ai@^7 zod
 npx playwright install chromium
 ```
 
 ## Configure `e2e.config.ts` {#configure}
 
-Export an `E2EConfig` object that uses `"read-write"` cache mode locally when recording new `agent.act` steps, and `"read-only"` in CI so cached runs never mutate `.e2e/cache/` or require a model API key:
+Export an `E2EConfig` object that uses `"read-write"` cache mode locally when recording new `agent.act` steps and `"read-only"` in CI. The CI configuration has no model, so a step that cannot replay fails instead of generating a replacement:
 
 ```ts
 import { openai } from "@ai-sdk/openai";
@@ -168,7 +170,7 @@ When an existing `.e2e.ts` test already has recorded steps in `.e2e/cache/`, you
 
 1. Keep `cache.mode` set to `"read-write"` when `!process.env.CI` and pass a `ModelInstance` such as `openai("gpt-5.4-mini")` to `softprobeCachedAgent({ model })` in `e2e.config.ts`.
 2. Append your new `await agent.act(...)` call and a visible `await expect(screen.getByText(...)).toBeVisible()` assertion to your `.e2e.ts` file.
-3. Run `E2E_TELEMETRY_DISABLED=1 npx e2e run` once locally. Cached steps replay from `.e2e/cache/` with zero model calls, while only your newly added `agent.act` step calls the model and writes its new `.e2e/cache/<sha256>.json` file.
+3. Run `E2E_TELEMETRY_DISABLED=1 npx e2e run` once locally. Matching cached steps can replay without a model call. New steps, or steps that cannot replay, may call the model and update the cache.
 4. Commit the updated test and new `.e2e/cache/*.json` file so CI runs every step with `CI=true` and zero model calls.
 
 ## Related {#related}

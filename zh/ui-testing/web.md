@@ -18,7 +18,7 @@ title: 如何测试 Web 应用
 | 对未改动的前端应用编写自然语言 `agent.act` 测试 | 不需要（`softprobeWeb`） | `e2e` + `.e2e/cache/` | [用自然语言编写测试](/zh/ui-testing/natural-language) |
 | 为已有 Playwright 套件增加 `trace.outboundHttp` 断言 | 不需要（`@softprobe/e2e/playwright`） | `@playwright/test` | [Playwright Fixture 配置](#playwright-fixture) |
 
-关于两种采集模式的完整对比与代码示例，请参阅 [前端埋点与无埋点模式对比](/zh/ui-testing/frontend-instrumentation)。
+关于不同采集方式的配置要求，请参阅[如何选择采集路径](/zh/ui-testing/frontend-instrumentation)。
 
 ## 方案 A：使用 `@softprobe/e2e/playwright` {#playwright-fixture}
 
