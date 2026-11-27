@@ -6,7 +6,7 @@ title: 构建第一个自动生成 UI 与后端联调测试
 
 在本教程中，你将直接启动预埋点的 [Travel OTA 示例应用](https://github.com/softprobe/demo-ota)单容器镜像（`docker.io/softprobe/demo-ota:classic-blackbox`），把一次真实机票预订浏览器操作录制到 [Softprobe Explorer](https://explorer.softprobe.ai)，并将这条会话分别编译为 `@playwright/test` 套件与零大模型调用的 `e2e` 套件。随后你将在订单确认页面照常跳转的情况下开启 `OTA_FAULT_SKIP_EMAIL=true` 让 Java 后端漏发确认邮件请求，验证自动生成的测试如何精准拦截这类隐蔽回归缺陷。
 
-开始前，请安装 Docker 以及 Node.js 22.13 或更高版本，并在 [Softprobe Explorer](https://explorer.softprobe.ai) 中创建一把 Agent Ingestion Key（`spk_...`）以及用于查询的 API Token 和 Workspace ID。如果你在 Linux 上使用[自托管 Blackbox](/en/blackbox/self-hosting)（`http://127.0.0.1:8787`），请在 `docker run` 中将 `-p 8080:8080` 替换为 `--network host -e OTEL_EXPORTER_OTLP_TRACES_ENDPOINT="http://127.0.0.1:8787/api/thelake/v1/traces"`，并在第二个终端额外配置 `export SOFTPROBE_SINK_ENDPOINT="http://127.0.0.1:8787/api/thelake"`。
+开始前，请安装 Docker 以及 Node.js 22.13 或更高版本。下面公开的演示 **Ingestion Key** 只能为绑定的 Agent 发送遥测数据，不能读取会话。查询演示 Workspace 需要具有读取权限的 **Softprobe API Key**，并通过 `SOFTPROBE_API_KEY` 提供。如果你在 Linux 上使用[自托管 Blackbox](/en/blackbox/self-hosting)（`http://127.0.0.1:8787`），请在 `docker run` 中将 `-p 8080:8080` 替换为 `--network host -e OTEL_EXPORTER_OTLP_TRACES_ENDPOINT="http://127.0.0.1:8787/api/thelake/v1/traces"`，并在第二个终端额外配置 `export SOFTPROBE_SINK_ENDPOINT="http://127.0.0.1:8787/api/thelake"`。
 
 ## 1. 一键启动预埋点示例容器
 
@@ -16,7 +16,7 @@ title: 构建第一个自动生成 UI 与后端联调测试
 mkdir softprobe-ui-tutorial && cd softprobe-ui-tutorial
 npm init -y
 npm pkg set type=module
-npm install @softprobe/e2e@0.2.5 @playwright/test@1.64.1 \
+npm install @softprobe/e2e@0.2.7 @playwright/test@1.64.1 \
 	e2e@0.24.0 @e2e-dev/web@0.16.1 zod
 npx playwright install chromium
 ```
@@ -24,7 +24,7 @@ npx playwright install chromium
 在第一个终端配置 `INGESTION_KEY` 并启动预埋点的 `docker.io/softprobe/demo-ota:classic-blackbox` 容器：
 
 ```bash
-export INGESTION_KEY="spk_REPLACE_WITH_YOUR_INGESTION_KEY"
+export INGESTION_KEY="spk_UIKFA-detIGQsdXzGszOM6Xb0UTpmbBD"
 
 docker run --rm --privileged --name demo-ota-tutorial \
 	-p 8080:8080 \
@@ -65,8 +65,7 @@ curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1:8080/index.html
 
 ```bash
 export SESSION_ID="PASTE_YOUR_SESSION_ID"
-export SOFTPROBE_TOKEN="YOUR_EXPLORER_API_TOKEN"
-export SOFTPROBE_WORKSPACE_ID="YOUR_WORKSPACE_ID"
+export SOFTPROBE_API_KEY="YOUR_SOFTPROBE_API_KEY"
 
 npx softprobe-compile-session \
 	--session-id "$SESSION_ID" \
@@ -84,7 +83,7 @@ npx softprobe-compile-session \
 	"runner": "playwright",
 	"sessionId": "830501cb-7792-47cf-8a3c-b58929cef6aa",
 	"actionCount": 14,
-	"outboundAssertionCount": 4,
+	"outboundAssertionCount": 1,
 	"filesWritten": [
 		".../pw-suite/tests/recorded-session.spec.ts",
 		".../pw-suite/playwright.config.ts"
@@ -117,7 +116,6 @@ test.describe("Recorded session replay", () => {
 			status: 200,
 		});
 		expect(outbound_3_0_0.status).toBe(200);
-		expect(outbound_3_0_0.request.json).toMatchObject({ "IATA_AirShoppingRQ": { "Request": { "FlightCriteria": { "OriginDestCriteria": { "OriginDepCriteria": { "IATA_LocationCode": "LHR", "Date": "2026-12-07" }, "DestArrivalCriteria": { "IATA_LocationCode": "CDG" } } } } } });
 		await page.getByRole("button", { name: new RegExp("^[\\s\\p{Co}]*Select[\\s\\p{Co}]+→[\\s\\p{Co}]*$", "u") }).nth(0).click();
 		await expect(page).toHaveURL(new RegExp("^https?:\\/\\/[^/?#]+/detail\\.html(?:[?#]|$)"));
 		await page.getByRole("button", { name: new RegExp("^[\\s\\p{Co}]*Book[\\s\\p{Co}]*$", "u") }).nth(0).click();
@@ -136,31 +134,15 @@ test.describe("Recorded session replay", () => {
 		const outbound_13_0_0 = await trace.outboundHttp({
 			triggeredBy: { method: "POST", path: "/api/flights/book" },
 			method: "POST",
-			url: new RegExp("/ndc/v21\\.3/offerprice$"),
-			status: 200,
-		});
-		expect(outbound_13_0_0.status).toBe(200);
-		expect(outbound_13_0_0.request.json).toMatchObject({ "IATA_OfferPriceRQ": { "Request": { "PricedOffer": { "OfferRefID": expect.any(String), "OfferItemRefID": expect.any(String) } } } });
-		const outbound_13_0_1 = await trace.outboundHttp({
-			triggeredBy: { method: "POST", path: "/api/flights/book" },
-			method: "POST",
-			url: new RegExp("/ndc/v21\\.3/ordercreate$"),
-			status: 200,
-		});
-		expect(outbound_13_0_1.status).toBe(200);
-		const outbound_13_0_2 = await trace.outboundHttp({
-			triggeredBy: { method: "POST", path: "/api/flights/book" },
-			method: "POST",
 			url: new RegExp("/v1/notifications/confirmation$"),
 			status: 200,
 		});
-		expect(outbound_13_0_2.status).toBe(200);
-		expect(outbound_13_0_2.request.json).toMatchObject({ "bookingId": expect.any(String), "confirmationNumber": expect.any(String), "recipientEmail": "alex@example.com", "eventType": expect.any(String) });
+		expect(outbound_13_0_0.status).toBe(200);
 	});
 });
 ```
 
-编译器在 `toMatchObject(...)` 中将测试脚本亲自填写的业务字段（`LHR`、`CDG`、`2026-12-07`、`alex@example.com`）固定为精确字面量，同时对服务端生成的字段（`OfferRefID`、`OfferItemRefID`、`bookingId`、`confirmationNumber`、`eventType`）断言 `expect.any(String)`，既校验出站载荷结构又保证实盘回放稳定可重复。
+测试会验证已采集的确认请求的 HTTP 状态。当前演示镜像不会将 Java HTTP/2 航空公司调用采集为可查询的出站 span，因此生成的测试不会断言这些调用。
 
 运行生成的 Playwright 用例：
 
@@ -187,7 +169,7 @@ docker run --rm --privileged --name demo-ota-tutorial \
 	docker.io/softprobe/demo-ota:classic-blackbox
 ```
 
-开启 `OTA_FAULT_SKIP_EMAIL=true` 后，`POST /api/flights/book` 仍会正常调用 `/ndc/v21.3/offerprice` 与 `/ndc/v21.3/ordercreate`、写入 PostgreSQL 订单表、返回 `200 OK` 并跳转到 `/payment.html`。只检查 DOM 的常规 UI 测试此时仍会误判通过，而乘客实际上没有收到订票确认邮件。
+开启 `OTA_FAULT_SKIP_EMAIL=true` 后，`POST /api/flights/book` 仍会返回 `200 OK`，浏览器也会进入 `/payment.html`，但 trace 中不会出现 `POST /v1/notifications/confirmation` span。生成的测试会检查已采集的确认请求，因此纯 DOM UI 测试仍会通过，而 trace 断言会发现请求缺失。
 
 在第二个终端重新运行生成的 Playwright 用例：
 
@@ -195,10 +177,10 @@ docker run --rm --privileged --name demo-ota-tutorial \
 npx playwright test --config ./pw-suite/playwright.config.ts
 ```
 
-测试会抛出 `TraceAssertionError` 失败，列出实际发生的两次航司 NDC 调用，并直接打印出漏发 `/v1/notifications/confirmation` 的那条 Explorer Trace 链接：
+测试会因为缺少确认请求而抛出 `TraceAssertionError`，并打印对应 trace 的 Explorer 链接：
 
 ```text
-TraceAssertionError: No outbound HTTP call on trace 256b83b5d78cb26c312375e850d12791 matched (method=POST, url=/\/v1\/notifications\/confirmation$/, status=200) within 30000ms. Observed outbound calls: POST https://spair.softprobe.ai/ndc/v21.3/offerprice (status 200), POST /ndc/v21.3/ordercreate (status 200). Inspect trace at https://explorer.softprobe.ai/?trace=256b83b5d78cb26c312375e850d12791.
+TraceAssertionError: No outbound HTTP call on trace 256b83b5d78cb26c312375e850d12791 matched (method=POST, url=/\/v1\/notifications\/confirmation$/, status=200) within 30000ms. Observed outbound calls: none. Inspect trace at https://explorer.softprobe.ai/?trace=256b83b5d78cb26c312375e850d12791.
 ```
 
 继续下一步前，请在第一个终端停掉容器并去掉 `OTA_FAULT_SKIP_EMAIL=true` 重新启动正常容器：

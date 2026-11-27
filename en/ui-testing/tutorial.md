@@ -6,7 +6,7 @@ title: Build your first generated UI and backend test
 
 In this tutorial, you start the pre-instrumented [Travel OTA demo](https://github.com/softprobe/demo-ota) container (`docker.io/softprobe/demo-ota:classic-blackbox`), record one flight-booking browser flow into [Softprobe Explorer](https://explorer.softprobe.ai), and compile that session into both a `@playwright/test` suite and a zero-LLM `e2e` suite. Then you restart the container with `OTA_FAULT_SKIP_EMAIL=true` so the booking page still confirms the order while the Java backend skips the confirmation email request, and watch the generated test catch the regression.
 
-Before you start, install Docker and Node.js 22.13 or newer, and create an Agent Ingestion Key (`spk_...`) plus an API token and Workspace ID in [Softprobe Explorer](https://explorer.softprobe.ai). If you run [self-hosted Explorer](/en/blackbox/self-hosting) on Linux (`http://127.0.0.1:8787`), replace `-p 8080:8080` with `--network host -e OTEL_EXPORTER_OTLP_TRACES_ENDPOINT="http://127.0.0.1:8787/api/thelake/v1/traces"` in `docker run` and export `SOFTPROBE_SINK_ENDPOINT="http://127.0.0.1:8787/api/thelake"` in Terminal 2.
+Before you start, install Docker and Node.js 22.13 or newer. The public demo **Ingestion Key** below can send telemetry for its bound Agent; it cannot read sessions. To query the demo workspace, use a **Softprobe API Key** with read access as `SOFTPROBE_API_KEY`. If you run [self-hosted Explorer](/en/blackbox/self-hosting) on Linux (`http://127.0.0.1:8787`), replace `-p 8080:8080` with `--network host -e OTEL_EXPORTER_OTLP_TRACES_ENDPOINT="http://127.0.0.1:8787/api/thelake/v1/traces"` in `docker run` and export `SOFTPROBE_SINK_ENDPOINT="http://127.0.0.1:8787/api/thelake"` in Terminal 2.
 
 ## 1. Start the pre-instrumented demo app
 
@@ -16,7 +16,7 @@ First, create a fresh working folder and install `@softprobe/e2e`, Playwright, a
 mkdir softprobe-ui-tutorial && cd softprobe-ui-tutorial
 npm init -y
 npm pkg set type=module
-npm install @softprobe/e2e@0.2.5 @playwright/test@1.64.1 \
+npm install @softprobe/e2e@0.2.7 @playwright/test@1.64.1 \
 	e2e@0.24.0 @e2e-dev/web@0.16.1 zod
 npx playwright install chromium
 ```
@@ -24,7 +24,7 @@ npx playwright install chromium
 Now start `docker.io/softprobe/demo-ota:classic-blackbox` in Terminal 1 with your `INGESTION_KEY`:
 
 ```bash
-export INGESTION_KEY="spk_REPLACE_WITH_YOUR_INGESTION_KEY"
+export INGESTION_KEY="spk_UIKFA-detIGQsdXzGszOM6Xb0UTpmbBD"
 
 docker run --rm --privileged --name demo-ota-tutorial \
 	-p 8080:8080 \
@@ -65,8 +65,7 @@ In Terminal 2, export your Explorer query credentials and `SESSION_ID`, then com
 
 ```bash
 export SESSION_ID="PASTE_YOUR_SESSION_ID"
-export SOFTPROBE_TOKEN="YOUR_EXPLORER_API_TOKEN"
-export SOFTPROBE_WORKSPACE_ID="YOUR_WORKSPACE_ID"
+export SOFTPROBE_API_KEY="YOUR_SOFTPROBE_API_KEY"
 
 npx softprobe-compile-session \
 	--session-id "$SESSION_ID" \
@@ -76,7 +75,7 @@ npx softprobe-compile-session \
 	--json
 ```
 
-You should see JSON output showing `14` compiled UI actions and `4` outbound HTTP assertions:
+You should see JSON output showing `14` compiled UI actions and `1` outbound HTTP assertion:
 
 ```json
 {
@@ -84,7 +83,7 @@ You should see JSON output showing `14` compiled UI actions and `4` outbound HTT
 	"runner": "playwright",
 	"sessionId": "830501cb-7792-47cf-8a3c-b58929cef6aa",
 	"actionCount": 14,
-	"outboundAssertionCount": 4,
+	"outboundAssertionCount": 1,
 	"filesWritten": [
 		".../pw-suite/tests/recorded-session.spec.ts",
 		".../pw-suite/playwright.config.ts"
@@ -117,7 +116,6 @@ test.describe("Recorded session replay", () => {
 			status: 200,
 		});
 		expect(outbound_3_0_0.status).toBe(200);
-		expect(outbound_3_0_0.request.json).toMatchObject({ "IATA_AirShoppingRQ": { "Request": { "FlightCriteria": { "OriginDestCriteria": { "OriginDepCriteria": { "IATA_LocationCode": "LHR", "Date": "2026-12-07" }, "DestArrivalCriteria": { "IATA_LocationCode": "CDG" } } } } } });
 		await page.getByRole("button", { name: new RegExp("^[\\s\\p{Co}]*Select[\\s\\p{Co}]+→[\\s\\p{Co}]*$", "u") }).nth(0).click();
 		await expect(page).toHaveURL(new RegExp("^https?:\\/\\/[^/?#]+/detail\\.html(?:[?#]|$)"));
 		await page.getByRole("button", { name: new RegExp("^[\\s\\p{Co}]*Book[\\s\\p{Co}]*$", "u") }).nth(0).click();
@@ -136,31 +134,15 @@ test.describe("Recorded session replay", () => {
 		const outbound_13_0_0 = await trace.outboundHttp({
 			triggeredBy: { method: "POST", path: "/api/flights/book" },
 			method: "POST",
-			url: new RegExp("/ndc/v21\\.3/offerprice$"),
-			status: 200,
-		});
-		expect(outbound_13_0_0.status).toBe(200);
-		expect(outbound_13_0_0.request.json).toMatchObject({ "IATA_OfferPriceRQ": { "Request": { "PricedOffer": { "OfferRefID": expect.any(String), "OfferItemRefID": expect.any(String) } } } });
-		const outbound_13_0_1 = await trace.outboundHttp({
-			triggeredBy: { method: "POST", path: "/api/flights/book" },
-			method: "POST",
-			url: new RegExp("/ndc/v21\\.3/ordercreate$"),
-			status: 200,
-		});
-		expect(outbound_13_0_1.status).toBe(200);
-		const outbound_13_0_2 = await trace.outboundHttp({
-			triggeredBy: { method: "POST", path: "/api/flights/book" },
-			method: "POST",
 			url: new RegExp("/v1/notifications/confirmation$"),
 			status: 200,
 		});
-		expect(outbound_13_0_2.status).toBe(200);
-		expect(outbound_13_0_2.request.json).toMatchObject({ "bookingId": expect.any(String), "confirmationNumber": expect.any(String), "recipientEmail": "alex@example.com", "eventType": expect.any(String) });
+		expect(outbound_13_0_0.status).toBe(200);
 	});
 });
 ```
 
-Notice that `toMatchObject(...)` pins values the test entered in the browser (`LHR`, `CDG`, `2026-12-07`, and `alex@example.com`) as exact strings, while checking server-supplied fields (`OfferRefID`, `OfferItemRefID`, `bookingId`, `confirmationNumber`, and `eventType`) with `expect.any(String)` so live replays stay deterministic without losing payload schema checks.
+The test verifies the captured confirmation request's HTTP status. The current demo image does not expose the Java HTTP/2 airline calls as queryable outbound spans, so the generated test cannot assert them.
 
 Run the generated Playwright test:
 
@@ -187,7 +169,7 @@ docker run --rm --privileged --name demo-ota-tutorial \
 	docker.io/softprobe/demo-ota:classic-blackbox
 ```
 
-With `OTA_FAULT_SKIP_EMAIL=true`, `POST /api/flights/book` still calls `/ndc/v21.3/offerprice` and `/ndc/v21.3/ordercreate`, saves the order in PostgreSQL, returns `200 OK`, and navigates the browser to `/payment.html`. A DOM-only UI test stays green even though the customer never received a booking confirmation email.
+With `OTA_FAULT_SKIP_EMAIL=true`, `POST /api/flights/book` returns `200 OK` and the browser still reaches `/payment.html`, but the trace has no `POST /v1/notifications/confirmation` span. The generated test checks that captured confirmation request, so a DOM-only UI test stays green while the trace assertion catches the missing request.
 
 Re-run the generated Playwright test in Terminal 2:
 
@@ -195,10 +177,10 @@ Re-run the generated Playwright test in Terminal 2:
 npx playwright test --config ./pw-suite/playwright.config.ts
 ```
 
-The test fails with `TraceAssertionError`, lists the two airline NDC calls that did execute, and prints a direct Explorer link to the trace that missed `/v1/notifications/confirmation`:
+The test fails with `TraceAssertionError` because the confirmation request is absent, and prints a direct Explorer link to the trace:
 
 ```text
-TraceAssertionError: No outbound HTTP call on trace 256b83b5d78cb26c312375e850d12791 matched (method=POST, url=/\/v1\/notifications\/confirmation$/, status=200) within 30000ms. Observed outbound calls: POST https://spair.softprobe.ai/ndc/v21.3/offerprice (status 200), POST /ndc/v21.3/ordercreate (status 200). Inspect trace at https://explorer.softprobe.ai/?trace=256b83b5d78cb26c312375e850d12791.
+TraceAssertionError: No outbound HTTP call on trace 256b83b5d78cb26c312375e850d12791 matched (method=POST, url=/\/v1\/notifications\/confirmation$/, status=200) within 30000ms. Observed outbound calls: none. Inspect trace at https://explorer.softprobe.ai/?trace=256b83b5d78cb26c312375e850d12791.
 ```
 
 Stop the container in Terminal 1 and restart it without `OTA_FAULT_SKIP_EMAIL=true` before the final step:

@@ -48,6 +48,8 @@ title: 如何从录制的会话生成 UI 测试
 
 在浏览器中操作一次目标业务流程，随后打开 Softprobe Explorer 的 **Sessions** 页面并选中刚录制的会话。你可以直接在 Explorer 页面一键导出测试，通过编码 Agent 的 Blackbox MCP 编译，或在终端运行命令行编译。
 
+Blackbox 会话与 trace 查询使用 `SOFTPROBE_API_KEY`，该 Softprobe API Key 必须有权读取对应的会话 Workspace。此 Key 会解析所属 Workspace，因此无需单独设置 Workspace ID。Agent Ingestion Key 只能为绑定的 Agent 发送遥测数据，不能读取会话。
+
 ### 在 Explorer 中一键导出 {#export-from-explorer}
 
 当会话包含 `softprobe.ui.action` span 时，Explorer 会在会话详情页顶部展示 **Generate E2E test** 按钮。
@@ -72,8 +74,7 @@ target_url 设为 "http://127.0.0.1:3000"，并将生成的文件写入 ./e2e �
 在 Node.js 22.13 及以上环境中，通过 `npx` 运行 `softprobe-compile-session`：
 
 ```bash
-export SOFTPROBE_TOKEN="YOUR_BLACKBOX_TOKEN"
-export SOFTPROBE_WORKSPACE_ID="YOUR_WORKSPACE_ID"
+export SOFTPROBE_API_KEY="YOUR_SOFTPROBE_API_KEY"
 
 npx --package=@softprobe/e2e softprobe-compile-session \
 	--session-id <sessionId> \
@@ -110,8 +111,7 @@ npx playwright install chromium
 通过 `SP_SECRET_<SLOT>` 传入录制时捕获的敏感槽位，并配置 Blackbox 查询凭据后运行 Playwright：
 
 ```bash
-SOFTPROBE_TOKEN="YOUR_BLACKBOX_TOKEN" \
-SOFTPROBE_WORKSPACE_ID="YOUR_WORKSPACE_ID" \
+SOFTPROBE_API_KEY="YOUR_SOFTPROBE_API_KEY" \
 SP_SECRET_PASSWORD="YOUR_TEST_PASSWORD" \
 npx playwright test
 ```
@@ -130,8 +130,7 @@ npm install -D @softprobe/e2e e2e@0.24.0 @e2e-dev/web@0.16.1 zod
 
 ```bash
 E2E_TELEMETRY_DISABLED=1 \
-SOFTPROBE_TOKEN="YOUR_BLACKBOX_TOKEN" \
-SOFTPROBE_WORKSPACE_ID="YOUR_WORKSPACE_ID" \
+SOFTPROBE_API_KEY="YOUR_SOFTPROBE_API_KEY" \
 SP_SECRET_PASSWORD="YOUR_TEST_PASSWORD" \
 npx e2e run
 ```
@@ -163,8 +162,7 @@ export default defineConfig<SoftprobePlaywrightFixtures>({
 				endpoint:
 					process.env.SOFTPROBE_SINK_ENDPOINT ??
 					"https://explorer.softprobe.ai/api/thelake",
-				token: process.env.SOFTPROBE_TOKEN,
-				workspaceId: process.env.SOFTPROBE_WORKSPACE_ID,
+				softprobeApiKey: process.env.SOFTPROBE_API_KEY,
 				explorerUrl:
 					process.env.SOFTPROBE_EXPLORER_URL ?? "https://explorer.softprobe.ai",
 			},
@@ -284,7 +282,7 @@ expect(resentCall.status).toBe(200);
 
 `BlackboxSink` 会先等待后端入口 `SERVER` span 到达，再校验下游 `CLIENT` HTTP 调用，把埋点缺失与业务断言失败清晰分开：
 
-- **抛出 `TraceInstrumentationError` 且错误码为 `TRACE_INSTRUMENTATION_MISSING`。** 浏览器已发送 `traceparent` 请求头，但 Blackbox 在默认的 `30000` 毫秒 `pollTimeoutMs` 超时时间内未收到对应的后端 `SERVER` span。请确认后端已配置 OTLP 导出或挂载 OpenTelemetry OBI，核对 `SOFTPROBE_WORKSPACE_ID` 与 `SOFTPROBE_TOKEN`，并在跨域接口的 `Access-Control-Allow-Headers` 中放行 `traceparent`。
+- **抛出 `TraceInstrumentationError` 且错误码为 `TRACE_INSTRUMENTATION_MISSING`。** 浏览器已发送 `traceparent` 请求头，但 Blackbox 在默认的 `30000` 毫秒 `pollTimeoutMs` 超时时间内未收到对应的后端 `SERVER` span。请确认后端已配置 OTLP 导出或挂载 OpenTelemetry OBI、`SOFTPROBE_API_KEY` 有权读取会话 Workspace，并在跨域接口的 `Access-Control-Allow-Headers` 中放行 `traceparent`。
 - **抛出 `TraceAssertionError` 且错误码为 `TRACE_ASSERTION_FAILED`。** 后端 `SERVER` span 已写入 Blackbox，说明链路透传正常，但没有下游 `CLIENT` HTTP 请求匹配 `trace.outboundHttp`，或出现了违反 `trace.expectNoOutboundHttp` 的下游调用。可直接打开报错信息中的 `explorerTraceUrl`，或在 [Blackbox MCP](/zh/blackbox/coding-agent-skills) 中调用 `get_trace` 检查记录到的真实请求。
 
 ## 相关文档 {#related}

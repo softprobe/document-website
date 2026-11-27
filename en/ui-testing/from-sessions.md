@@ -48,6 +48,8 @@ Record a user flow once in [Softprobe Explorer](https://explorer.softprobe.ai), 
 
 Walk through the user flow once in your browser, then open **Sessions** in Softprobe Explorer and select the recorded session. You can compile that session into a test suite from Explorer, from your coding agent, or from the terminal.
 
+Blackbox session and trace queries use `SOFTPROBE_API_KEY`, a Softprobe API Key with read access to the session workspace. The key resolves its workspace, so you do not need a separate Workspace ID. An Agent Ingestion Key can send telemetry for its bound Agent but cannot read sessions.
+
 ### Export in one click from Explorer {#export-from-explorer}
 
 When a session contains `softprobe.ui.action` spans, Explorer displays a **Generate E2E test** button in the session detail header.
@@ -72,8 +74,7 @@ and target_url "http://127.0.0.1:3000", then write the generated files into ./e2
 On Node.js 22.13 or newer, run `softprobe-compile-session` with `npx`:
 
 ```bash
-export SOFTPROBE_TOKEN="YOUR_BLACKBOX_TOKEN"
-export SOFTPROBE_WORKSPACE_ID="YOUR_WORKSPACE_ID"
+export SOFTPROBE_API_KEY="YOUR_SOFTPROBE_API_KEY"
 
 npx --package=@softprobe/e2e softprobe-compile-session \
 	--session-id <sessionId> \
@@ -110,8 +111,7 @@ npx playwright install chromium
 Pass every captured secret slot as `SP_SECRET_<SLOT>` alongside your Blackbox query credentials, then run Playwright:
 
 ```bash
-SOFTPROBE_TOKEN="YOUR_BLACKBOX_TOKEN" \
-SOFTPROBE_WORKSPACE_ID="YOUR_WORKSPACE_ID" \
+SOFTPROBE_API_KEY="YOUR_SOFTPROBE_API_KEY" \
 SP_SECRET_PASSWORD="YOUR_TEST_PASSWORD" \
 npx playwright test
 ```
@@ -130,8 +130,7 @@ Run the suite with `E2E_TELEMETRY_DISABLED=1`:
 
 ```bash
 E2E_TELEMETRY_DISABLED=1 \
-SOFTPROBE_TOKEN="YOUR_BLACKBOX_TOKEN" \
-SOFTPROBE_WORKSPACE_ID="YOUR_WORKSPACE_ID" \
+SOFTPROBE_API_KEY="YOUR_SOFTPROBE_API_KEY" \
 SP_SECRET_PASSWORD="YOUR_TEST_PASSWORD" \
 npx e2e run
 ```
@@ -163,8 +162,7 @@ export default defineConfig<SoftprobePlaywrightFixtures>({
 				endpoint:
 					process.env.SOFTPROBE_SINK_ENDPOINT ??
 					"https://explorer.softprobe.ai/api/thelake",
-				token: process.env.SOFTPROBE_TOKEN,
-				workspaceId: process.env.SOFTPROBE_WORKSPACE_ID,
+				softprobeApiKey: process.env.SOFTPROBE_API_KEY,
 				explorerUrl:
 					process.env.SOFTPROBE_EXPLORER_URL ?? "https://explorer.softprobe.ai",
 			},
@@ -284,7 +282,7 @@ expect(resentCall.status).toBe(200);
 
 `BlackboxSink` waits for the backend `SERVER` entry span before checking outgoing `CLIENT` spans so instrumentation issues stay separate from assertion failures:
 
-- **`TraceInstrumentationError` with code `TRACE_INSTRUMENTATION_MISSING`.** The browser sent `traceparent`, and Blackbox did not receive a matching backend `SERVER` span within `pollTimeoutMs` (default `30000` milliseconds). Confirm that your backend exports OTLP traces or runs with OpenTelemetry OBI. Check `SOFTPROBE_WORKSPACE_ID` and `SOFTPROBE_TOKEN`, and allow `traceparent` in `Access-Control-Allow-Headers` on cross-origin APIs.
+- **`TraceInstrumentationError` with code `TRACE_INSTRUMENTATION_MISSING`.** The browser sent `traceparent`, and Blackbox did not receive a matching backend `SERVER` span within `pollTimeoutMs` (default `30000` milliseconds). Confirm that your backend exports OTLP traces or runs with OpenTelemetry OBI. Confirm that `SOFTPROBE_API_KEY` can read the session workspace, and allow `traceparent` in `Access-Control-Allow-Headers` on cross-origin APIs.
 - **`TraceAssertionError` with code `TRACE_ASSERTION_FAILED`.** The backend `SERVER` span arrived in Blackbox, and either no outgoing `CLIENT` HTTP span matched `trace.outboundHttp` or an unexpected call matched `trace.expectNoOutboundHttp`. Open the `explorerTraceUrl` printed in the error message, or inspect the trace with `get_trace` in [Blackbox MCP](/en/blackbox/coding-agent-skills).
 
 ## Related {#related}

@@ -17,6 +17,8 @@ npx playwright install chromium
 
 ## 配置 `e2e.config.ts` {#configure}
 
+查询 Blackbox 的测试需将 `SOFTPROBE_API_KEY` 设置为有权读取会话 Workspace 的 Softprobe API Key。此 Key 会解析所属 Workspace，因此无需另设 Workspace ID。
+
 默认导出满足 `E2EConfig` 类型的配置对象。在本地录制新 `agent.act` 步骤时将 `cache.mode` 设为 `"read-write"`，在 CI 中设为 `"read-only"`，确保 CI 不会改写 `.e2e/cache/`，也不需要配置任何模型密钥：
 
 ```ts
@@ -67,8 +69,7 @@ export default {
 					endpoint:
 						process.env.SOFTPROBE_SINK_ENDPOINT ??
 						"https://explorer.softprobe.ai/api/thelake",
-					token: process.env.SOFTPROBE_TOKEN,
-					workspaceId: process.env.SOFTPROBE_WORKSPACE_ID,
+					softprobeApiKey: process.env.SOFTPROBE_API_KEY,
 				},
 			}),
 			app: {
@@ -140,8 +141,7 @@ describe("Team invite flow", () => {
 	```bash
 	E2E_TELEMETRY_DISABLED=1 \
 	OPENAI_API_KEY="sk-..." \
-	SOFTPROBE_TOKEN="YOUR_BLACKBOX_TOKEN" \
-	SOFTPROBE_WORKSPACE_ID="YOUR_WORKSPACE_ID" \
+	SOFTPROBE_API_KEY="YOUR_SOFTPROBE_API_KEY" \
 	SP_SECRET_PASSWORD="YOUR_TEST_PASSWORD" \
 	npx e2e run
 	```
@@ -151,8 +151,7 @@ describe("Team invite flow", () => {
 	```bash
 	CI=true \
 	E2E_TELEMETRY_DISABLED=1 \
-	SOFTPROBE_TOKEN="YOUR_BLACKBOX_TOKEN" \
-	SOFTPROBE_WORKSPACE_ID="YOUR_WORKSPACE_ID" \
+	SOFTPROBE_API_KEY="YOUR_SOFTPROBE_API_KEY" \
 	SP_SECRET_PASSWORD="YOUR_TEST_PASSWORD" \
 	npx e2e run
 	```
