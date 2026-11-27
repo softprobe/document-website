@@ -4,7 +4,9 @@ title: How to test web applications
 
 # How to test web applications
 
-Test web applications with Softprobe UI Testing using either deterministic `@playwright/test` suites generated from recorded browser sessions or plain-English `agent.act` suites powered by `@softprobe/e2e`. Both workflows verify frontend state and downstream backend `CLIENT` HTTP calls in [Softprobe Explorer](https://explorer.softprobe.ai).
+New to UI testing? [Write your first test for a travel web app](/en/ui-testing/classic-web-first-test). It checks the page without backend tracing.
+
+Test web applications with Playwright tests generated from recorded browser sessions or plain-English `agent.act` tests. You can check the page alone or add backend request checks with Softprobe.
 
 <video controls playsinline muted preload="metadata" style="width: 100%; max-width: 820px; border-radius: 8px; margin: 16px 0;" src="/videos/web-ui-testing.mp4"></video>
 

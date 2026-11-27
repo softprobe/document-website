@@ -4,7 +4,9 @@ title: 如何测试 Web 应用
 
 # 如何测试 Web 应用
 
-使用 Softprobe UI Testing 测试 Web 应用时，你可以选择从录制会话生成确定性 `@playwright/test` 套件，或使用 `@softprobe/e2e` 编写自然语言 `agent.act` 测试。两种方式均会在验证前端界面的同时，检查后端发往第三方服务的 `CLIENT` HTTP 请求。
+刚开始做 UI 测试？[为旅行网站编写第一个测试](/zh/ui-testing/classic-web-first-test)。这个教程只检查页面，无需后端跟踪。
+
+你可以从录制的浏览器会话生成 Playwright 测试，也可以用自然语言编写 `agent.act` 测试。你可以只检查页面，也可以使用 Softprobe 增加后端请求检查。
 
 <video controls playsinline muted preload="metadata" style="width: 100%; max-width: 820px; border-radius: 8px; margin: 16px 0;" src="/videos/web-ui-testing.mp4"></video>
 
