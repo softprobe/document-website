@@ -338,6 +338,7 @@ const uiTestingSidebarEn = [
     text: 'Get started',
     items: [
       { text: 'Overview', link: '/en/ui-testing/' },
+      { text: 'Your first web UI test', link: '/en/ui-testing/classic-web-first-test' },
       { text: 'Tutorial: Build your first test', link: '/en/ui-testing/tutorial' },
     ],
   },
@@ -407,6 +408,7 @@ const uiTestingSidebarZh = [
     text: '开始使用',
     items: [
       { text: '概览', link: '/zh/ui-testing/' },
+      { text: '第一个 Web UI 测试', link: '/zh/ui-testing/classic-web-first-test' },
       { text: '教程：构建第一个测试', link: '/zh/ui-testing/tutorial' },
     ],
   },
