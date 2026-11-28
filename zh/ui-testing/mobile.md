@@ -6,7 +6,9 @@ title: 如何测试 iOS 与 Android 应用
 
 自动化运行 iOS 与 Android 移动端 UI 测试，并按需检查后端向外部服务发出的请求。运行器可以在 CI 中回放缓存的 `agent.act` 步骤。编码 Agent 也可以通过 Blackbox MCP 使用录制的移动端动作编写 `@softprobe/e2e/mobile` 或 Maestro 测试。
 
-两条移动端采集路径都可以将 `softprobe.ui.action` span 导出到已配置的接收端。宿主机采集记录测试引擎驱动的动作。应用内 SDK 路径还可以采集手动测试或真实用户会话。后端断言需要关联的后端跟踪。请参阅[如何选择采集路径](/zh/ui-testing/frontend-instrumentation)。
+本页使用邀请应用说明后端检查，并非可以独立运行的演示。目前还没有单独的移动端 UI 测试入门教程。
+
+两条移动端采集路径都可以将 `softprobe.ui.action` span 导出到已配置的接收端。宿主机采集记录测试引擎驱动的动作。应用内 SDK 路径还可以采集手动测试或真实用户会话；示例中需要为特定操作和控件接入采集。后端断言需要关联的后端跟踪。请参阅[如何选择采集路径](/zh/ui-testing/frontend-instrumentation)。
 
 <video controls playsinline muted preload="metadata" style="width: 100%; max-width: 820px; border-radius: 8px; margin: 16px 0;" src="/videos/mobile-ui-testing.mp4"></video>
 
@@ -24,7 +26,7 @@ title: 如何测试 iOS 与 Android 应用
 
 如果应用可以使用启动时传入的代理地址，可以从路径 1 开始。如果需要在应用内采集动作，包括手动 QA 会话，请选择路径 2。
 
-## 使用路径 1 测试未改动的应用 {#path-1}
+## 使用路径 1 测试无需接入 SDK 的应用 {#path-1}
 
 ### 安装宿主机依赖 {#path-1-install}
 
@@ -452,11 +454,11 @@ const iosEngine = softprobeMobile({
 
 ## 使用 Blackbox MCP 生成移动端测试 {#generate-from-sessions}
 
-无论会话由路径 1 还是路径 2 采集，只要包含 `softprobe.ui.action` span，都可以生成确定性测试套件。打开 [Softprobe Explorer](https://explorer.softprobe.ai) 的 **Sessions** 页面复制目标 `session_id`，或直接让编码 Agent 调用 `search_sessions` 检索会话。
+编码 Agent 可以使用路径 1 或路径 2 采集的、包含 `softprobe.ui.action` span 的移动端会话来编写测试草稿。请先审查并运行生成的测试，再依赖其结果。打开 [Softprobe Explorer](https://explorer.softprobe.ai) 的 **Sessions** 页面复制目标 `session_id`，或直接让编码 Agent 调用 `search_sessions` 检索会话。
 
 在 OpenCode、Claude Code、Cursor、Codex 或 Antigravity 中连接 [Blackbox MCP](/zh/blackbox/coding-agent-skills) 后，编码 Agent 会调用 `get_session_semantic_actions` 读取紧凑的移动端语义动作时间线，并调用 `get_trace` 检查下游后端 HTTP 消息体，在生成代码前自动剔除探索性滑动与带 `[non-interactive]` 标记的无效点击。
 
-### 生成确定性的 `@softprobe/e2e/mobile` 套件 {#generate-e2e-mobile}
+### 生成基于定位器的 `@softprobe/e2e/mobile` 套件 {#generate-e2e-mobile}
 
 让编码 Agent 检查录制好的移动端会话并生成基于定位器的 `@softprobe/e2e/mobile` 测试：
 
@@ -467,7 +469,7 @@ const iosEngine = softprobeMobile({
 编写使用 { app, screen, device, trace } 的确定性 @softprobe/e2e/mobile 测试。
 ```
 
-编码 Agent 会直接输出调用 `{ app, screen, device, trace }` 的确定性测试文件：
+例如，编码 Agent 可以编写直接调用 `{ app, screen, device, trace }` 的测试草稿：
 
 ```ts
 import { z } from "zod";
@@ -511,7 +513,7 @@ describe("Recorded mobile team invite", () => {
 });
 ```
 
-由于每个步骤都直接调用 `{ app, screen, device, trace }` 定位器而不经过 `agent.act`，该套件在首次本地运行与 CI 中均不需要任何大模型调用、模型 API Key 或 `.e2e/cache/` 缓存文件：
+此示例直接调用 `{ app, screen, device, trace }`，不使用 `agent.act`，因此运行这些步骤无需调用模型、模型 API Key 或 `.e2e/cache/` 缓存文件。生成测试仍需要编码 Agent；请审查生成的测试，并在自己的应用上运行：
 
 ```bash
 cd ./mobile-e2e

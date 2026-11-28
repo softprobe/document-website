@@ -6,7 +6,9 @@ title: How to test iOS and Android apps
 
 Automate iOS and Android UI tests and optionally check what your backend sent to downstream services. The runner can replay cached `agent.act` steps in CI. A coding agent can also use recorded mobile actions through Blackbox MCP to write `@softprobe/e2e/mobile` or Maestro tests.
 
-Both mobile capture paths can export `softprobe.ui.action` spans to a configured sink. Host capture observes actions driven by the test engine. The in-app SDK path can also capture manual or real-user sessions. Backend assertions require correlated backend telemetry. See [how to choose a capture path](/en/ui-testing/frontend-instrumentation) for a comparison.
+The examples on this page illustrate backend checks using an invitation app; they are not a standalone demo. A separate UI-only mobile walkthrough is not yet available.
+
+Both mobile capture paths can export `softprobe.ui.action` spans to a configured sink. Host capture observes actions driven by the test engine. The in-app SDK path can also capture manual or real-user sessions; its examples instrument specific actions and controls. Backend assertions require correlated backend telemetry. See [how to choose a capture path](/en/ui-testing/frontend-instrumentation) for a comparison.
 
 <video controls playsinline muted preload="metadata" style="width: 100%; max-width: 820px; border-radius: 8px; margin: 16px 0;" src="/videos/mobile-ui-testing.mp4"></video>
 
@@ -24,7 +26,7 @@ Pick the capture path that matches how your mobile app is built and where it run
 
 Start with Path 1 when the app can use the proxy address provided at launch. Choose Path 2 when you need in-app capture, including manual QA sessions.
 
-## Test an unmodified app with Path 1 {#path-1}
+## Test without an in-app SDK with Path 1 {#path-1}
 
 ### Install host packages {#path-1-install}
 
@@ -452,11 +454,11 @@ In `"session"` mode, `softprobeMobile` injects `--es sp_session_id <sessionId>` 
 
 ## Generate mobile tests with Blackbox MCP {#generate-from-sessions}
 
-Any mobile session containing `softprobe.ui.action` spans from Path 1 or Path 2 can become a deterministic test suite. Open **Sessions** in [Softprobe Explorer](https://explorer.softprobe.ai) to copy the `session_id`, or ask your coding agent to find it with `search_sessions`.
+A coding agent can use a mobile session containing `softprobe.ui.action` spans from Path 1 or Path 2 to draft a test suite. Review and run the generated test before relying on it. Open **Sessions** in [Softprobe Explorer](https://explorer.softprobe.ai) to copy the `session_id`, or ask your coding agent to find it with `search_sessions`.
 
 With [Blackbox MCP](/en/blackbox/coding-agent-skills) connected in OpenCode, Claude Code, Cursor, Codex, or Antigravity, your coding agent calls `get_session_semantic_actions` to read the compact mobile action timeline and `get_trace` to inspect downstream backend HTTP bodies, pruning exploratory swipes and `[non-interactive]` taps before writing the test.
 
-### Generate a deterministic `@softprobe/e2e/mobile` suite {#generate-e2e-mobile}
+### Generate a locator-based `@softprobe/e2e/mobile` suite {#generate-e2e-mobile}
 
 Ask your coding agent to inspect the recorded mobile session and write a locator-driven `@softprobe/e2e/mobile` test:
 
@@ -468,7 +470,7 @@ non-interactive taps, and write a deterministic @softprobe/e2e/mobile test in
 { app, screen, device, trace }.
 ```
 
-The agent produces a deterministic test that drives `{ app, screen, device, trace }` directly:
+For example, the agent may draft a test that uses `{ app, screen, device, trace }` directly:
 
 ```ts
 import { z } from "zod";
@@ -512,7 +514,7 @@ describe("Recorded mobile team invite", () => {
 });
 ```
 
-Because every step uses `{ app, screen, device, trace }` locators directly without `agent.act`, the suite runs on the first execution and in CI with zero LLM calls, zero model API keys, and zero `.e2e/cache/` files:
+This example uses `{ app, screen, device, trace }` directly without `agent.act`, so running these steps does not require model calls, a model API key, or `.e2e/cache/` files. Generation still requires a coding agent; review the generated test and run it against your app:
 
 ```bash
 cd ./mobile-e2e

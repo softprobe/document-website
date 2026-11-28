@@ -4,7 +4,9 @@ title: Softprobe UI Testing
 
 # Softprobe UI Testing
 
-Write a browser test by describing actions in plain language and checking what appears on the page. Start with a flight-booking example that runs without changing the app or setting up backend tracing. If you need to investigate what happened on the server, you can add tracing later.
+Describe browser actions in plain language and an AI agent performs them. Your test checks the results you specify, such as whether a flight search shows results. Start with a flight-booking example that runs without changing the app or setting up backend tracing.
+
+Testing a mobile app? See [iOS and Android testing](/en/ui-testing/mobile).
 
 With Softprobe Blackbox and backend tracing, a test can also check a request behind the screen and link it to a trace. For example, you can check whether the server requested a confirmation email after booking. This requires server-side setup and does not prove the email was delivered.
 
