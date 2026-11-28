@@ -4,11 +4,15 @@ title: Softprobe UI Testing
 
 # Softprobe UI Testing
 
-Describe browser actions in plain language and an AI agent performs them. Your test checks the results you specify, such as whether a flight search shows results. Start with a flight-booking example that runs without changing the app or setting up backend tracing.
+A booking page says “Success”. Did the app also ask the email service to send a confirmation? A screen check alone cannot answer that.
 
-Testing a mobile app? See [iOS and Android testing](/en/ui-testing/mobile).
+Describe actions, such as searching for a flight and booking it. An AI agent performs them; your test checks results you choose, such as whether flights appear.
 
-With Softprobe Blackbox and backend tracing, a test can also check a request behind the screen and link it to a trace. For example, you can check whether the server requested a confirmation email after booking. This requires server-side setup and does not prove the email was delivered.
+**You can also check what happened behind the screen.** With Blackbox and backend tracing, the test can check for the confirmation request and link to the related trace if the request is missing. You can also add these checks to a Playwright test. This requires server-side setup and does not prove the email was delivered.
+
+You can start with the web example without changing the app or setting up backend tracing. If your goal is only to check the screen, [ordinary Playwright tests](https://playwright.dev/docs/writing-tests) are another option.
+
+Testing a mobile app? The [iOS and Android guide](/en/ui-testing/mobile) covers AI-assisted actions and generating tests from recorded sessions. Its current example includes backend checks and is not a standalone demo.
 
 ## See a flight booking
 
@@ -48,7 +52,7 @@ A page can show “Success” even when the app did not request an email from it
 - [Follow the backend-check tutorial](/en/ui-testing/tutorial)
 - [Generate a test from a recorded user flow](/en/ui-testing/from-sessions) (requires session capture)
 
-Add the frontend SDK only when you need to capture real user sessions and generate tests from them.
+Add the frontend SDK when you want to capture browser sessions, including manual test sessions, and use those recordings to generate tests.
 
 ## Choose a platform
 
