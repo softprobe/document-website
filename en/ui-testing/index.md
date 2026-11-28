@@ -4,7 +4,9 @@ title: Softprobe UI Testing
 
 # Softprobe UI Testing
 
-Your travel app says “Booking confirmed”. Did it actually ask the email service to send a confirmation? Softprobe lets you describe the booking in plain language and check what appears on the screen. With backend tracing enabled, the same test can check the email request and help you inspect the connected trace when something goes wrong.
+Write a browser test by describing actions in plain language and checking what appears on the page. Start with a flight-booking example that runs without changing the app or setting up backend tracing. If you need to investigate what happened on the server, you can add tracing later.
+
+With Softprobe Blackbox and backend tracing, a test can also check a request behind the screen and link it to a trace. For example, you can check whether the server requested a confirmation email after booking. This requires server-side setup and does not prove the email was delivered.
 
 ## See a flight booking
 

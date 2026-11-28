@@ -10,7 +10,9 @@ You will test a demo website without changing its code. This example checks the 
 
 ## Before you start
 
-You need Docker, Node.js 22.13 or newer, and a Gemini API key. The first test run uses the model and may incur charges. Later runs can reuse the local cache.
+You need Docker, Node.js 22.13 or newer, and a Gemini API key. You will run commands in a terminal and copy a TypeScript test. If these tools are unfamiliar, work through the setup with a developer or automation engineer.
+
+The test sends instructions and page information to your model provider. Use a test environment and fictional data, and review your provider's data-handling policy before testing your own app. Model calls can incur charges on the first run and on later runs when cached steps cannot replay.
 
 ## 1. Start the demo
 
@@ -109,7 +111,16 @@ Run the test:
 E2E_TELEMETRY_DISABLED=1 npx e2e run
 ```
 
-The first run asks the model to perform the action. A passing run reports the test as passed. If the test fails, check the runner output and confirm that the demo page is reachable.
+The first run asks the model to perform the actions. On success, the runner reports one passing test, for example:
+
+```text
+Test Files  1 passed (1)
+     Tests  1 passed (1)
+```
+
+If the test fails, check the runner output and confirm that the demo page is reachable.
+
+To try your own app, replace the app URL, the actions, and the screen checks with your own test flow. Use test data and a safe test environment.
 
 ## About the local cache
 
