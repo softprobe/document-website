@@ -133,9 +133,11 @@ During each test attempt, `softprobeMobile` starts an ephemeral plain-HTTP rever
 - On Android, `softprobeMobile` runs `adb reverse tcp:<port> tcp:<port>` unless `correlation.adbReverse` is `false`, and appends `--es api_base_url http://127.0.0.1:<port>` to the launch intent. Set `correlation.launchArgKey` if your `Activity` reads a different string extra key.
 - On iOS Simulator, `softprobeMobile` appends `-API_BASE_URL http://127.0.0.1:<port>` to process launch arguments, which `UserDefaults.standard.string(forKey: "API_BASE_URL")` reads directly. Set `correlation.launchArgKey` to customize the flag name.
 
+The proxy uses cleartext HTTP. Android and iOS security settings may block it. Use a test-only app configuration that permits this local connection, with test credentials; do not enable cleartext traffic in production.
+
 ### Write an `agent.act` test with backend trace checks {#path-1-test}
 
-Create `tests/invite-mobile.e2e.ts`. Import `{ describe, expect, secrets, test }` from `@softprobe/e2e/mobile`, verify visible screen state after each `agent.act` step, and assert downstream backend HTTP side effects with `trace.outboundHttp` and `trace.expectNoOutboundHttp`:
+Adapt this illustrative example to your app and an isolated test backend. Before each run, ensure `ada@example.com` has no pending invitation and seed `existing@example.com` as an existing member. Reset only this test data between the local run and replay. Create `tests/invite-mobile.e2e.ts`. Import `{ describe, expect, secrets, test }` from `@softprobe/e2e/mobile`, verify visible screen state after each `agent.act` step, and assert downstream backend HTTP side effects with `trace.outboundHttp` and `trace.expectNoOutboundHttp`:
 
 ```ts
 import { z } from "zod";

@@ -133,9 +133,11 @@ export default {
 - 在 Android 上，只要未设置 `correlation.adbReverse: false`，`softprobeMobile` 就会自动执行 `adb reverse tcp:<port> tcp:<port>`，并在启动参数中追加 `--es api_base_url http://127.0.0.1:<port>`。如果客户端 `Activity` 读取其他 Intent Extra 键名，可设置 `correlation.launchArgKey`。
 - 在 iOS 模拟器上，`softprobeMobile` 会向进程启动参数追加 `-API_BASE_URL http://127.0.0.1:<port>`，客户端可通过 `UserDefaults.standard.string(forKey: "API_BASE_URL")` 直接读取。如需自定义启动参数名，可设置 `correlation.launchArgKey`。
 
+代理使用明文 HTTP，Android 和 iOS 的安全设置可能会阻止连接。请仅在测试版应用中允许此本地连接，并使用测试凭据；不要在生产环境中启用明文传输。
+
 ### 编写带后端链路断言的 `agent.act` 测试 {#path-1-test}
 
-创建 `tests/invite-mobile.e2e.ts`。从 `@softprobe/e2e/mobile` 导入 `{ describe, expect, secrets, test }`，在每个 `agent.act` 步骤后校验可见界面文本，并通过 `trace.outboundHttp` 与 `trace.expectNoOutboundHttp` 断言后端出站请求：
+请根据你的应用和隔离的测试后端调整此示意示例。每次运行前，确保 `ada@example.com` 没有待处理邀请，并将 `existing@example.com` 设为已有成员。本地运行和回放之间只重置这些测试数据。创建 `tests/invite-mobile.e2e.ts`。从 `@softprobe/e2e/mobile` 导入 `{ describe, expect, secrets, test }`，在每个 `agent.act` 步骤后校验可见界面文本，并通过 `trace.outboundHttp` 与 `trace.expectNoOutboundHttp` 断言后端出站请求：
 
 ```ts
 import { z } from "zod";
