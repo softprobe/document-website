@@ -4,11 +4,20 @@ title: 如何测试 iOS 与 Android 应用
 
 # 如何测试 iOS 与 Android 应用
 
-自动化运行 iOS 与 Android 移动端 UI 测试，并同步校验后端向外部服务发出的真实 HTTP 请求。Softprobe UI 测试将移动设备自动化与 [Softprobe Explorer](https://explorer.softprobe.ai) 中的 W3C 分布式链路校验结合起来，在 CI 中以零次大模型调用回放 `.e2e/cache/` 中的 `agent.act` 步骤，并支持让编码 Agent 通过 Blackbox MCP 从录制的移动端会话生成 `@softprobe/e2e/mobile` 或 Maestro 测试套件。
+自动化运行 iOS 与 Android 移动端 UI 测试，并按需检查后端向外部服务发出的请求。运行器可以在 CI 中回放缓存的 `agent.act` 步骤。编码 Agent 也可以通过 Blackbox MCP 使用录制的移动端动作编写 `@softprobe/e2e/mobile` 或 Maestro 测试。
 
-两条移动端采集路径都会输出统一的 `softprobe.ui.action` OpenTelemetry span（`sp-ui-action-1`），在导出前将密码与一次性验证码脱敏为 `{ kind: "secret", slot }` 占位引用，并驱动 `trace.outboundHttp` 与 `trace.expectNoOutboundHttp` 断言。跨平台模式对比请参阅[前端埋点与无埋点模式对比](/zh/ui-testing/frontend-instrumentation)。
+本页使用邀请应用说明后端检查，并非可以独立运行的演示。目前还没有单独的移动端 UI 测试入门教程。
+
+两条移动端采集路径都可以将 `softprobe.ui.action` span 导出到已配置的接收端。宿主机采集记录测试引擎驱动的动作。应用内 SDK 路径还可以采集手动测试或真实用户会话；示例中需要为特定操作和控件接入采集。后端断言需要关联的后端跟踪。请参阅[如何选择采集路径](/zh/ui-testing/frontend-instrumentation)。
 
 <video controls playsinline muted preload="metadata" style="width: 100%; max-width: 820px; border-radius: 8px; margin: 16px 0;" src="/videos/mobile-ui-testing.mp4"></video>
+
+## 选择移动端工作流 {#choose-workflow}
+
+- **使用 AI 辅助操作编写测试：**[使用测试引擎](/zh/ui-testing/mobile#path-1)。示例使用设备或模拟器并包含后端检查；应用需要能够接收代理地址。
+- **从手动操作生成测试：**请开发人员[接入应用内采集](/zh/ui-testing/mobile#path-2)，录制会话，再[让编码 Agent 编写测试草稿](/zh/ui-testing/mobile#generate-from-sessions)。请在自己的应用上审查并运行草稿。
+
+检查后端请求需要后端跟踪。下方示例用于说明接入方式，请根据你的应用和测试环境调整。
 
 ## 选择采集路径 {#choose-path}
 
@@ -16,15 +25,17 @@ title: 如何测试 iOS 与 Android 应用
 
 | 对比维度 | 路径 1，零 SDK `agent.act` + 代理模式 | 路径 2，OpenTelemetry SDK 扩展 + 会话模式 |
 |----------|---------------------------------------|-------------------------------------------|
-| **客户端代码改动** | 无需改动，直接测试未插桩的 `.apk` 与 `.app` 安装包。 | 在应用现有的 OpenTelemetry SDK 上注册 Softprobe `SpanProcessor` 以及 UI 与 HTTP 扩展。 |
+| **客户端代码改动** | 不需要 SDK。使用代理检查后端时，应用必须能够在启动时接收代理地址。 | 在应用现有的 OpenTelemetry SDK 上注册 Softprobe `SpanProcessor` 以及 UI 与 HTTP 扩展。 |
 | **`softprobeMobile` 关联配置** | `correlation: { mode: "proxy", upstreamOrigin }` | `correlation: { mode: "session" }` |
-| **链路与会话透传方式** | 宿主机本地 HTTP 反向代理为每次请求自动生成并注入 W3C `traceparent` 与 `baggage` 请求头。 | 应用内的 `fetch`、`OkHttp` 或 `URLSession` 拦截器直接注入 W3C `traceparent` 与 `baggage` 请求头。 |
-| **支持的设备与网络环境** | 通过 `adb reverse` 连接的本地 Android 模拟器、USB 真机，以及访问未开启证书绑定的 HTTP 接口的本地 iOS 模拟器。 | 模拟器、连接 Wi-Fi 或蜂窝网络的真机、启用 TLS 证书绑定的接口、云真机平台、手动测试会话与生产环境会话。 |
+| **链路与会话透传方式** | 宿主机本地反向代理为经过代理的请求注入 W3C `traceparent` 与 `baggage` 请求头。 | 应用内的 `fetch`、`OkHttp` 或 `URLSession` 插件直接注入 W3C `traceparent` 与 `baggage` 请求头。 |
+| **动作采集位置** | 在受支持的设备或模拟器上，由宿主机引擎驱动测试时采集。 | 在已接入 SDK 的应用中采集，包括手动 QA 或真实用户会话。 |
 | **UI 动作采集精度** | 通过 ADB UiAutomator 与 XCTest 对比系统无障碍树，导出 `sp.ui.action.capture_source: "host_agent"`。 | 在应用进程内直接读取 React Native、Android `View` 与 iOS 控件信息，导出 `sp.ui.action.capture_source: "otel_sdk"`。 |
 
-如果希望在不修改客户端源码的前提下立即为现有安装包接入 CI 回归测试，请优先选择路径 1。如果应用已经接入 OpenTelemetry、启用了 TLS 证书绑定、运行在蜂窝网络真机或云真机上，或者需要在 Explorer 中录制手动 QA 会话，请选择路径 2。
+如果应用可以使用启动时传入的代理地址，可以从路径 1 开始。如果需要在应用内采集动作，包括手动 QA 会话，请选择路径 2。
 
-## 使用路径 1 测试未改动的应用 {#path-1}
+## 使用路径 1 测试无需接入 SDK 的应用 {#path-1}
+
+此示例以 Android 为例，假设你有能够在启动时接收代理地址的应用构建、设备或模拟器，以及隔离的测试后端。示例中的后端断言还需要后端跟踪、已配置的 Blackbox 接收端和密钥。请将邀请应用、凭据与测试数据替换为自己的内容。
 
 ### 安装宿主机依赖 {#path-1-install}
 
@@ -122,9 +133,11 @@ export default {
 - 在 Android 上，只要未设置 `correlation.adbReverse: false`，`softprobeMobile` 就会自动执行 `adb reverse tcp:<port> tcp:<port>`，并在启动参数中追加 `--es api_base_url http://127.0.0.1:<port>`。如果客户端 `Activity` 读取其他 Intent Extra 键名，可设置 `correlation.launchArgKey`。
 - 在 iOS 模拟器上，`softprobeMobile` 会向进程启动参数追加 `-API_BASE_URL http://127.0.0.1:<port>`，客户端可通过 `UserDefaults.standard.string(forKey: "API_BASE_URL")` 直接读取。如需自定义启动参数名，可设置 `correlation.launchArgKey`。
 
+代理使用明文 HTTP，Android 和 iOS 的安全设置可能会阻止连接。请仅在测试版应用中允许此本地连接，并使用测试凭据；不要在生产环境中启用明文传输。
+
 ### 编写带后端链路断言的 `agent.act` 测试 {#path-1-test}
 
-创建 `tests/invite-mobile.e2e.ts`。从 `@softprobe/e2e/mobile` 导入 `{ describe, expect, secrets, test }`，在每个 `agent.act` 步骤后校验可见界面文本，并通过 `trace.outboundHttp` 与 `trace.expectNoOutboundHttp` 断言后端出站请求：
+请根据你的应用和隔离的测试后端调整此示意示例。每次运行前，确保 `ada@example.com` 没有待处理邀请，并将 `existing@example.com` 设为已有成员。本地运行和回放之间只重置这些测试数据。创建 `tests/invite-mobile.e2e.ts`。从 `@softprobe/e2e/mobile` 导入 `{ describe, expect, secrets, test }`，在每个 `agent.act` 步骤后校验可见界面文本，并通过 `trace.outboundHttp` 与 `trace.expectNoOutboundHttp` 断言后端出站请求：
 
 ```ts
 import { z } from "zod";
@@ -452,11 +465,19 @@ const iosEngine = softprobeMobile({
 
 ## 使用 Blackbox MCP 生成移动端测试 {#generate-from-sessions}
 
-无论会话由路径 1 还是路径 2 采集，只要包含 `softprobe.ui.action` span，都可以生成确定性测试套件。打开 [Softprobe Explorer](https://explorer.softprobe.ai) 的 **Sessions** 页面复制目标 `session_id`，或直接让编码 Agent 调用 `search_sessions` 检索会话。
+手动录制会话时，可以这样分工：
+
+1. 开发人员在测试构建中[接入动作采集并配置导出](#path-2)。
+2. 测试人员在该构建中操作目标流程，在 Explorer 中找到会话并复制 ID；会话需要包含录制的 UI 动作。
+3. [连接 Blackbox MCP](/zh/blackbox/coding-agent-skills)，将会话 ID 和提示词交给编码 Agent，再审查并运行生成的草稿。
+
+[`@softprobe/e2e/mobile` 示例](#generate-e2e-mobile)包含后端检查；[Maestro 示例](#generate-maestro)侧重移动端 UI。
+
+编码 Agent 可以使用路径 1 或路径 2 采集的、包含 `softprobe.ui.action` span 的移动端会话来编写测试草稿。请先审查并运行生成的测试，再依赖其结果。打开 [Softprobe Explorer](https://explorer.softprobe.ai) 的 **Sessions** 页面复制目标 `session_id`，或直接让编码 Agent 调用 `search_sessions` 检索会话。
 
 在 OpenCode、Claude Code、Cursor、Codex 或 Antigravity 中连接 [Blackbox MCP](/zh/blackbox/coding-agent-skills) 后，编码 Agent 会调用 `get_session_semantic_actions` 读取紧凑的移动端语义动作时间线，并调用 `get_trace` 检查下游后端 HTTP 消息体，在生成代码前自动剔除探索性滑动与带 `[non-interactive]` 标记的无效点击。
 
-### 生成确定性的 `@softprobe/e2e/mobile` 套件 {#generate-e2e-mobile}
+### 生成基于定位器的 `@softprobe/e2e/mobile` 套件 {#generate-e2e-mobile}
 
 让编码 Agent 检查录制好的移动端会话并生成基于定位器的 `@softprobe/e2e/mobile` 测试：
 
@@ -467,7 +488,7 @@ const iosEngine = softprobeMobile({
 编写使用 { app, screen, device, trace } 的确定性 @softprobe/e2e/mobile 测试。
 ```
 
-编码 Agent 会直接输出调用 `{ app, screen, device, trace }` 的确定性测试文件：
+例如，编码 Agent 可以编写直接调用 `{ app, screen, device, trace }` 的测试草稿：
 
 ```ts
 import { z } from "zod";
@@ -511,7 +532,7 @@ describe("Recorded mobile team invite", () => {
 });
 ```
 
-由于每个步骤都直接调用 `{ app, screen, device, trace }` 定位器而不经过 `agent.act`，该套件在首次本地运行与 CI 中均不需要任何大模型调用、模型 API Key 或 `.e2e/cache/` 缓存文件：
+此示例直接调用 `{ app, screen, device, trace }`，不使用 `agent.act`，因此运行这些步骤无需调用模型、模型 API Key 或 `.e2e/cache/` 缓存文件。生成测试仍需要编码 Agent；请审查生成的测试，并在自己的应用上运行：
 
 ```bash
 cd ./mobile-e2e

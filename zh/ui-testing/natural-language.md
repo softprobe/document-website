@@ -4,23 +4,25 @@ title: 如何用 e2e 编写自然语言 UI 测试
 
 # 如何用 `e2e` 编写自然语言 UI 测试
 
-无需预先录制浏览器会话，直接使用 `e2e` 与 `@softprobe/e2e` 用自然语言编写浏览器 UI 测试。在本地配置模型运行一次即可生成 `.e2e/cache/` 动作缓存。将缓存提交到 Git 后，每次 CI 运行都以零次大模型调用稳定回放，并同时校验后端真实出站 HTTP 请求。
+无需预先录制浏览器会话，可以直接使用 `e2e` 与 `@softprobe/e2e` 用自然语言编写浏览器 UI 测试。如果不需要检查后端，请从[只检查页面的 Web 测试](/zh/ui-testing/classic-web-first-test)开始。下方示例会增加后端请求断言。
+
+运行器可以将模型生成的步骤保存在 `.e2e/cache/` 中，供后续回放。缓存未命中或页面发生变化时，回放可能失败。请在不配置模型的情况下运行 CI 配置，验证缓存是否适用于你的测试。
 
 > [!TIP] 为什么选择 `@softprobe/e2e` 而不是直接使用 `e2e`？
-> `@softprobe/e2e` 封装了 `e2e`（`softprobeCachedAgent`、`softprobeWeb`、`softprobeMobile` 与 `softprobeReporter`），在保留 `.e2e/cache/` 零 LLM 回放的同时，增加 W3C `traceparent` 透传、`trace.outboundHttp` / `trace.expectNoOutboundHttp` 后端断言以及 `explorerTraceUrl` 排障链接，且无需修改前端代码。请参阅[前端埋点与无埋点模式对比](/zh/ui-testing/frontend-instrumentation)。
+> `@softprobe/e2e` 为 `e2e` 测试提供可选的链路透传和后端断言。本测试不需要前端 SDK。后端断言需要配置接收端并采集后端跟踪。请参阅[如何选择采集路径](/zh/ui-testing/frontend-instrumentation)。
 
 ## 安装依赖 {#install}
 
-在 Node.js 22.13 及以上环境中安装 `@softprobe/e2e`、`e2e`、`@e2e-dev/web`、`@playwright/test`、`zod` 以及首次录制所需的 AI SDK 模型适配包（例如 `@ai-sdk/openai`）：
+在 Node.js 22.13 及以上环境中安装 `@softprobe/e2e`、`e2e`、`@e2e-dev/web`、`@playwright/test`、`ai`、`zod` 以及首次录制所需的 AI SDK 模型适配包（例如 `@ai-sdk/openai`）：
 
 ```bash
-npm install -D @softprobe/e2e e2e@0.24.0 @e2e-dev/web@0.16.1 @playwright/test @ai-sdk/openai zod
+npm install -D @softprobe/e2e e2e@0.24.0 @e2e-dev/web@0.16.1 @playwright/test @ai-sdk/openai@4 ai@^7 zod
 npx playwright install chromium
 ```
 
 ## 配置 `e2e.config.ts` {#configure}
 
-默认导出满足 `E2EConfig` 类型的配置对象。在本地录制新 `agent.act` 步骤时将 `cache.mode` 设为 `"read-write"`，在 CI 中设为 `"read-only"`，确保 CI 不会改写 `.e2e/cache/`，也不需要配置任何模型密钥：
+默认导出满足 `E2EConfig` 类型的配置对象。在本地录制新 `agent.act` 步骤时将 `cache.mode` 设为 `"read-write"`，在 CI 中设为 `"read-only"`。CI 配置没有模型，因此无法回放的步骤会失败，不会重新生成：
 
 ```ts
 import { openai } from "@ai-sdk/openai";
@@ -168,7 +170,7 @@ describe("Team invite flow", () => {
 
 1. 在 `e2e.config.ts` 中保持非 CI 环境下 `cache.mode` 为 `"read-write"`，并向 `softprobeCachedAgent({ model })` 传入模型实例（例如 `openai("gpt-5.4-mini")`）。
 2. 在 `.e2e.ts` 测试文件末尾追加新的 `await agent.act(...)` 调用以及可见的 `await expect(screen.getByText(...)).toBeVisible()` 断言。
-3. 在本地运行一次 `E2E_TELEMETRY_DISABLED=1 npx e2e run`。已缓存的步骤会直接从 `.e2e/cache/` 零模型调用回放，只有新增的 `agent.act` 步骤会调用模型并写入新的 `.e2e/cache/<sha256>.json` 文件。
+3. 在本地运行一次 `E2E_TELEMETRY_DISABLED=1 npx e2e run`。匹配的缓存步骤可以不调用模型直接回放。新步骤或无法回放的步骤可能会调用模型并更新缓存。
 4. 提交更新后的测试文件与新增的 `.e2e/cache/*.json` 文件，使 CI 在 `CI=true` 下全程零模型调用运行全部步骤。
 
 ## 相关文档 {#related}

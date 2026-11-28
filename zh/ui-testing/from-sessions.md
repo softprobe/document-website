@@ -4,12 +4,12 @@ title: 如何从录制的会话生成 UI 测试
 
 # 如何从录制的会话生成 UI 测试
 
-在 [Softprobe Explorer](https://explorer.softprobe.ai) 中走通一次真实浏览器流程，让编码 Agent 通过 Blackbox MCP 生成确定性的 `@playwright/test` + `@softprobe/e2e` 测试套件，并在 CI 中同时验证前端交互与后端向外部服务发出的真实出站 HTTP 请求。
+在 [Softprobe Explorer](https://explorer.softprobe.ai) 中走通一次真实浏览器流程，让编码 Agent 通过 Blackbox MCP 编写 `@playwright/test` 测试草稿 + `@softprobe/e2e` 测试套件，并在 CI 中同时验证前端交互与后端向外部服务发出的真实出站 HTTP 请求。
 
-`@softprobe/web-record` 会把浏览器语义交互记录为 `softprobe.ui.action` OpenTelemetry span 并自动透传 W3C `traceparent` 请求头。`@softprobe/e2e` 会把这些动作还原为可重复执行的浏览器步骤，并通过 `BlackboxSink` 校验后端在 Blackbox 中记录的下游 `CLIENT` HTTP 调用。
+`@softprobe/web-record` 会把浏览器语义交互记录为 `softprobe.ui.action` OpenTelemetry span。编码 Agent 通过 Blackbox MCP 读取动作并编写测试。下方示例还检查后端请求，因此需要后端跟踪和 Blackbox 接收端。
 
-> [!NOTE] 需要接入前端埋点
-> 从录制会话生成测试依赖 `@softprobe/web-record`、`@softprobe/react-native`、`softprobe-otel-android` 或 `SoftprobeOtelSwift` 上报的 `softprobe.ui.action` Span。如果希望在不修改前端代码的情况下直接测试应用，请参阅[前端埋点与无埋点模式对比](/zh/ui-testing/frontend-instrumentation)与[用 `e2e` 编写自然语言 UI 测试](/zh/ui-testing/natural-language)。
+> [!NOTE] 选择采集路径
+> 本 Web 示例需要在应用中接入 `@softprobe/web-record`。如果只检查 Web 页面且不想接入前端 SDK，请参阅[第一个 Web UI 测试](/zh/ui-testing/classic-web-first-test)。移动端测试也可以在应用不接入 SDK 的情况下导出由 `softprobeMobile` 驱动的动作。请参阅[移动端采集路径](/zh/ui-testing/mobile#choose-path)。
 
 ## 开启语义动作采集 {#enable-capture}
 
@@ -31,7 +31,7 @@ title: 如何从录制的会话生成 UI 测试
 	});
 	```
 
-	Explorer 的 **Connect Agent** 代码片段已默认启用这两项配置。启用 `inputCapture: "secrets-only"` 后，普通表单项会保留输入文本用于生成测试。密码框、银行卡号、一次性验证码、名称含 `token` 或 `secret` 的输入框，以及匹配 `secretSlots` 选择器的输入框只生成 `{ kind: "secret", slot }` 占位引用，明文凭据不会离开浏览器。
+	Explorer 的 **Connect Agent** 代码片段已默认启用这两项配置。启用 `inputCapture: "secrets-only"` 后，普通表单项会保留输入文本用于生成测试。密码框、银行卡号、一次性验证码、名称含 `token` 或 `secret` 的输入框，以及匹配 `secretSlots` 选择器的输入框只生成 `{ kind: "secret", slot }` 占位引用。录制敏感信息前，请检查采集的数据和设置；其他字段也可能包含敏感信息。
 
 	如果页面通过 HTML `<script>` 标签直接引入 UMD 脚本，请在标签上添加 `data-capture-semantic-actions="true"` 与 `data-input-capture="secrets-only"`：
 
@@ -45,9 +45,11 @@ title: 如何从录制的会话生成 UI 测试
 	></script>
 	```
 
-3. 使用同一把 Ingestion Key 在后端导出 OpenTelemetry HTTP span，或挂载官方 OpenTelemetry OBI。后端配置步骤见[快速开始](/zh/blackbox/getting-started)。如果浏览器跨域调用后端接口，请在后端 CORS 配置的 `Access-Control-Allow-Headers` 中放行 `traceparent`。
+3. 要运行本指南中的后端请求断言，请使用同一把 Ingestion Key 在后端导出 OpenTelemetry HTTP span，或挂载官方 OpenTelemetry OBI。后端配置步骤见[快速开始](/zh/blackbox/getting-started)。如果浏览器跨域调用后端接口，请在后端 CORS 配置的 `Access-Control-Allow-Headers` 中放行 `traceparent`。只检查页面的测试不需要这项后端配置。
 
 ## 使用 Blackbox MCP 生成测试 {#generate-test}
+
+请使用隔离的测试环境和虚构数据。采集的输入、请求体和响应体可能包含敏感信息，已连接的编码 Agent 可以读取它们。录制前请检查采集设置以及谁可以访问会话。
 
 在浏览器中操作一次目标业务流程，随后打开 Softprobe Explorer 的 **Sessions** 页面复制对应的 `session_id`，或直接让编码 Agent 调用 `search_sessions` 检索会话。
 
@@ -60,6 +62,8 @@ title: 如何从录制的会话生成 UI 测试
 ```
 
 `get_session_semantic_actions` 会返回按业务流程分段的紧凑时间线，包含 CSS 与 WAI-ARIA 定位器、`[non-interactive]` 噪声标记，以及触发的 `trace_id`、HTTP 状态码与单行下游调用摘要。编码 Agent 随后对关键链路调用 `get_trace(trace_id)` 读取完整请求与响应体，编写确定性的 `trace.outboundHttp` 断言。
+
+运行或提交前，请审查生成的步骤、断言、清理操作和数据。在测试环境中运行，并确认测试检查的是你期望的行为。
 
 ## 运行生成的测试套件 {#run-suites}
 
@@ -85,7 +89,7 @@ npx playwright test
 
 ## 断言后端出站 HTTP 调用并清理测试数据 {#outbound-assertions}
 
-在 `playwright.config.ts` 中配置 `BlackboxSink`，断言每次前端交互触发的后端下游 HTTP 请求。在 `afterEach` 中清理测试产生的业务数据，保证多次运行幂等互不干扰。
+在 `playwright.config.ts` 中配置 `BlackboxSink`，断言每次前端交互触发的后端下游 HTTP 请求。请使用隔离的测试工作区，仅清理本次测试创建的数据。
 
 使用 `BlackboxSink` 的 `playwright.config.ts` 示例：
 
@@ -116,7 +120,7 @@ export default defineConfig<SoftprobePlaywrightFixtures>({
 });
 ```
 
-在测试文件中从 `@softprobe/e2e/playwright` 导入 `{ expect, test }`。调用 `trace.outboundHttp` 断言后端发出的下游 `CLIENT` HTTP 请求及脱敏后的 JSON 消息体。调用 `trace.expectNoOutboundHttp` 验证被拒绝的请求不会触发下游副作用，并在 `test.afterEach` 中删除测试期间写入的数据：
+在测试文件中从 `@softprobe/e2e/playwright` 导入 `{ expect, test }`。调用 `trace.outboundHttp` 断言后端发出的下游 `CLIENT` HTTP 请求及其 JSON 消息体。调用 `trace.expectNoOutboundHttp` 验证被拒绝的请求不会触发下游副作用：
 
 ```ts
 import { z } from "zod";
@@ -128,33 +132,14 @@ const EmailPayloadSchema = z.object({
 });
 
 test.describe("workspace invitations", () => {
-	test.afterEach(async ({ page }) => {
-		await page.evaluate(async (targetEmail: string) => {
-			const wsRes = await fetch("/api/workspaces");
-			const wsJson = (await wsRes.json()) as { workspaces?: Array<{ id: string }> };
-			for (const ws of wsJson.workspaces ?? []) {
-				const invRes = await fetch(`/api/workspaces/${ws.id}/invites`);
-				const invJson = (await invRes.json()) as {
-					invites?: Array<{ id: string; email: string }>;
-				};
-				for (const inv of invJson.invites ?? []) {
-					if (inv.email === targetEmail) {
-						await fetch(`/api/workspaces/${ws.id}/invites/${inv.id}`, {
-							method: "DELETE",
-						});
-					}
-				}
-			}
-		}, "lc@softprobe.ai");
-	});
 
-	test("invites a teammate and sends one outbound email request", async ({
+	test("invites a teammate and sends an outbound email request", async ({
 		page,
 		trace,
 	}) => {
 		await page.goto("/");
 		await page.getByRole("button", { name: "Members" }).click();
-		await page.getByLabel("Email address").fill("lc@softprobe.ai");
+		await page.getByLabel("Email address").fill("invitee@example.com");
 
 		const inviteResponse = page.waitForResponse(
 			(res) =>
@@ -164,7 +149,7 @@ test.describe("workspace invitations", () => {
 		await page.getByRole("button", { name: "Send invitation" }).click();
 		await inviteResponse;
 
-		await expect(page.getByText("lc@softprobe.ai")).toBeVisible();
+		await expect(page.getByText("invitee@example.com")).toBeVisible();
 
 		const emailCall = await trace.outboundHttp({
 			triggeredBy: {
@@ -177,7 +162,7 @@ test.describe("workspace invitations", () => {
 		});
 
 		const payload = EmailPayloadSchema.parse(emailCall.request.json);
-		expect(payload.to).toEqual([{ address: "lc@softprobe.ai" }]);
+		expect(payload.to).toEqual([{ address: "invitee@example.com" }]);
 		expect(emailCall.request.text ?? "").toContain("/invite/[REDACTED]");
 	});
 

@@ -4,12 +4,12 @@ title: How to generate UI tests from recorded sessions
 
 # How to generate UI tests from recorded sessions
 
-Record a user flow once in [Softprobe Explorer](https://explorer.softprobe.ai), ask your coding agent to generate a deterministic `@playwright/test` + `@softprobe/e2e` test suite with Blackbox MCP, and verify both UI behavior and outgoing backend HTTP requests in CI.
+Record a user flow once in [Softprobe Explorer](https://explorer.softprobe.ai), ask your coding agent to draft a `@playwright/test` + `@softprobe/e2e` test suite with Blackbox MCP, and verify both UI behavior and outgoing backend HTTP requests in CI.
 
-`@softprobe/web-record` records semantic browser actions as `softprobe.ui.action` OpenTelemetry spans alongside W3C `traceparent` headers. `@softprobe/e2e` turns those spans into repeatable browser steps and checks the downstream `CLIENT` HTTP calls that your backend sent in Blackbox.
+`@softprobe/web-record` records semantic browser actions as `softprobe.ui.action` OpenTelemetry spans. A coding agent reads those actions through Blackbox MCP and writes the test. The example below also checks a backend request, so it needs backend telemetry and a configured Blackbox sink.
 
-> [!NOTE] Requires frontend instrumentation
-> Generating tests from recorded sessions relies on `softprobe.ui.action` spans emitted by `@softprobe/web-record`, `@softprobe/react-native`, `softprobe-otel-android`, or `SoftprobeOtelSwift`. If you want to test an unmodified app without installing a frontend SDK, see [With vs. without frontend instrumentation](/en/ui-testing/frontend-instrumentation) and [Write natural-language UI tests with `e2e`](/en/ui-testing/natural-language).
+> [!NOTE] Choose the capture path
+> This web example uses `@softprobe/web-record` in the app. For a UI-only web test without a frontend SDK, see [your first web UI test](/en/ui-testing/classic-web-first-test). Mobile tests can also export actions driven by `softprobeMobile` without an SDK in the app. See [mobile capture paths](/en/ui-testing/mobile#choose-path).
 
 ## Enable semantic action capture {#enable-capture}
 
@@ -31,7 +31,7 @@ Record a user flow once in [Softprobe Explorer](https://explorer.softprobe.ai), 
 	});
 	```
 
-	Explorer's **Connect Agent** snippet enables both options by default. With `inputCapture: "secrets-only"`, standard form inputs keep their typed text for test generation. Password, payment-card, one-time-code, token, secret, and `secretSlots` inputs emit `{ kind: "secret", slot }` references so raw credentials never leave the browser.
+	Explorer's **Connect Agent** snippet enables both options by default. With `inputCapture: "secrets-only"`, standard form inputs keep their typed text for test generation. Password, payment-card, one-time-code, token, secret, and `secretSlots` inputs emit `{ kind: "secret", slot }` references for those recognized fields. Review the captured data and settings before recording sensitive information; other fields may contain sensitive data.
 
 	If you load the UMD bundle from HTML without a bundler, pass `data-capture-semantic-actions="true"` and `data-input-capture="secrets-only"` on the `<script>` tag:
 
@@ -45,9 +45,11 @@ Record a user flow once in [Softprobe Explorer](https://explorer.softprobe.ai), 
 	></script>
 	```
 
-3. Export OpenTelemetry HTTP spans or attach official OpenTelemetry OBI on your backend with the same Ingestion Key. See [End-to-end session tracing with payloads](/en/blackbox/end-to-end-session-tracing) for backend setup. If your browser calls a cross-origin API, allow `traceparent` in `Access-Control-Allow-Headers`.
+3. To run the backend request assertion in this guide, export OpenTelemetry HTTP spans or attach official OpenTelemetry OBI on your backend with the same Ingestion Key. See [End-to-end session tracing with payloads](/en/blackbox/end-to-end-session-tracing) for backend setup. If your browser calls a cross-origin API, allow `traceparent` in `Access-Control-Allow-Headers`. A UI-only test does not need this backend setup.
 
 ## Generate a test with Blackbox MCP {#generate-test}
+
+Use an isolated test environment and fictional data. Captured inputs and request or response bodies may contain sensitive information, and a connected coding agent can read them. Review your capture settings and who can access the session before recording.
 
 Walk through the user flow once in your browser, then open **Sessions** in Softprobe Explorer to copy the `session_id`, or ask your coding agent to find it with `search_sessions`.
 
@@ -61,6 +63,8 @@ non-interactive clicks or retried failed requests, and write a clean
 ```
 
 `get_session_semantic_actions` returns a compact timeline segmented into user flows with CSS and WAI-ARIA locators, `[non-interactive]` noise tags, and caused `trace_id`s with HTTP status and one-line downstream summaries. Your coding agent then calls `get_trace(trace_id)` on selected traces to inspect full request and response bodies and write deterministic `trace.outboundHttp` assertions.
+
+Review the generated steps, assertions, cleanup, and data before running or committing the test. Run it against a test environment and check that it verifies the behavior you intended.
 
 ## Run generated test suites {#run-suites}
 
@@ -86,7 +90,7 @@ To generate deterministic `@softprobe/e2e/mobile` or Maestro suites from iOS and
 
 ## Assert backend outbound HTTP calls and clean up state {#outbound-assertions}
 
-Configure `BlackboxSink` in `playwright.config.ts` to verify what your backend sent to external services during each browser action. Clean up created records in `afterEach` so repeated runs stay idempotent.
+Configure `BlackboxSink` in `playwright.config.ts` to verify what your backend sent to external services during each browser action. Use an isolated test workspace and clean up only records created by your test.
 
 `playwright.config.ts` with `BlackboxSink`:
 
@@ -117,7 +121,7 @@ export default defineConfig<SoftprobePlaywrightFixtures>({
 });
 ```
 
-In your test, import `{ expect, test } from "@softprobe/e2e/playwright"`. Call `trace.outboundHttp` to assert a downstream `CLIENT` HTTP request and its redacted JSON body. Call `trace.expectNoOutboundHttp` to confirm that rejected requests trigger zero downstream calls, and delete test mutations in `test.afterEach`:
+In your test, import `{ expect, test } from "@softprobe/e2e/playwright"`. Call `trace.outboundHttp` to assert a downstream `CLIENT` HTTP request and its JSON body. Call `trace.expectNoOutboundHttp` to confirm that rejected requests trigger zero downstream calls, :
 
 ```ts
 import { z } from "zod";
@@ -129,33 +133,14 @@ const EmailPayloadSchema = z.object({
 });
 
 test.describe("workspace invitations", () => {
-	test.afterEach(async ({ page }) => {
-		await page.evaluate(async (targetEmail: string) => {
-			const wsRes = await fetch("/api/workspaces");
-			const wsJson = (await wsRes.json()) as { workspaces?: Array<{ id: string }> };
-			for (const ws of wsJson.workspaces ?? []) {
-				const invRes = await fetch(`/api/workspaces/${ws.id}/invites`);
-				const invJson = (await invRes.json()) as {
-					invites?: Array<{ id: string; email: string }>;
-				};
-				for (const inv of invJson.invites ?? []) {
-					if (inv.email === targetEmail) {
-						await fetch(`/api/workspaces/${ws.id}/invites/${inv.id}`, {
-							method: "DELETE",
-						});
-					}
-				}
-			}
-		}, "lc@softprobe.ai");
-	});
 
-	test("invites a teammate and sends one outbound email request", async ({
+	test("invites a teammate and sends an outbound email request", async ({
 		page,
 		trace,
 	}) => {
 		await page.goto("/");
 		await page.getByRole("button", { name: "Members" }).click();
-		await page.getByLabel("Email address").fill("lc@softprobe.ai");
+		await page.getByLabel("Email address").fill("invitee@example.com");
 
 		const inviteResponse = page.waitForResponse(
 			(res) =>
@@ -165,7 +150,7 @@ test.describe("workspace invitations", () => {
 		await page.getByRole("button", { name: "Send invitation" }).click();
 		await inviteResponse;
 
-		await expect(page.getByText("lc@softprobe.ai")).toBeVisible();
+		await expect(page.getByText("invitee@example.com")).toBeVisible();
 
 		const emailCall = await trace.outboundHttp({
 			triggeredBy: {
@@ -178,7 +163,7 @@ test.describe("workspace invitations", () => {
 		});
 
 		const payload = EmailPayloadSchema.parse(emailCall.request.json);
-		expect(payload.to).toEqual([{ address: "lc@softprobe.ai" }]);
+		expect(payload.to).toEqual([{ address: "invitee@example.com" }]);
 		expect(emailCall.request.text ?? "").toContain("/invite/[REDACTED]");
 	});
 
