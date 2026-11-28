@@ -4,7 +4,7 @@ title: Softprobe UI Testing
 
 # Softprobe UI Testing
 
-Test your app from the user's point of view: follow a flow in the browser and check what appears on the page. Checking requests sent by the server and recording real user sessions are optional.
+Your travel app says “Booking confirmed”. Did it actually ask the email service to send a confirmation? Softprobe lets you describe the booking in plain language and check what appears on the screen. With backend tracing enabled, the same test can check the email request and help you inspect the connected trace when something goes wrong.
 
 ## See a flight booking
 
@@ -30,14 +30,15 @@ The video shows the same demo booking with fictional passenger details and a tes
 
 ## Check the page
 
-If you only need to check pages and user actions, use Playwright. You do not need to change your app or set up Softprobe.
+Describe the steps in plain language and check the visible result. Start without changing the app or setting up backend tracing.
 
 - [Write tests with Playwright](https://playwright.dev/docs/writing-tests)
+- [Write your first web UI test](/en/ui-testing/classic-web-first-test)
 - [Describe UI tests in plain English](/en/ui-testing/natural-language). For UI-only tests, leave out backend trace setup.
 
 ## Optional: check backend requests
 
-A page can show “Success” even when the app did not send an email or call the payment service. Turn on Softprobe tracing when you need to check requests sent by your app. The frontend code can stay unchanged; a developer may need to enable tracing on the server.
+A page can show “Success” even when the app did not request an email from its email service. Enable Softprobe tracing to check the server's request and inspect the related trace. A developer may need to enable tracing on the server. Checking the request does not prove the email was delivered.
 
 - [Compare capture options](/en/ui-testing/frontend-instrumentation)
 - [Follow the backend-check tutorial](/en/ui-testing/tutorial)

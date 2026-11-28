@@ -4,7 +4,7 @@ title: Softprobe UI Testing
 
 # Softprobe UI 测试
 
-从用户视角测试应用：在浏览器中完成一段操作，再检查页面显示的结果。可以先只检查页面；检查服务端请求和采集真实用户会话都可按需选择。
+旅行应用显示“预订成功”，但它真的向邮件服务发送了确认邮件请求吗？Softprobe 让你用自然语言描述预订步骤，并检查页面显示的结果。启用后端跟踪后，同一个测试还可以检查邮件请求；出现问题时，你也可以查看关联的链路。
 
 ## 看看航班预订
 
@@ -30,14 +30,15 @@ title: Softprobe UI Testing
 
 ## 检查页面
 
-如果只需检查页面和用户操作，用 Playwright 即可。无需修改应用，也无需配置 Softprobe。
+用自然语言描述步骤，并检查页面显示的结果。开始时无需修改应用或配置后端跟踪。
 
 - [Playwright 编写测试指南](https://playwright.dev/docs/writing-tests)
+- [编写第一个 Web UI 测试](/zh/ui-testing/classic-web-first-test)
 - [用自然语言描述 UI 测试](/zh/ui-testing/natural-language)。只检查 UI 时，不配置后端跟踪即可。
 
 ## 可选：检查后端请求
 
-页面显示“成功”，不代表应用真的发出了邮件或请求了支付服务。需要检查这类请求时，再启用 Softprobe 跟踪。无需修改前端代码，但可能需要开发人员为服务端启用跟踪。
+页面显示“成功”，不代表应用真的向邮件服务发出了邮件请求。启用 Softprobe 跟踪后，可以检查服务端请求并查看关联链路。可能需要开发人员为服务端启用跟踪。检查请求并不能证明邮件已经送达。
 
 - [比较不同的采集方式](/zh/ui-testing/frontend-instrumentation)
 - [查看后端请求检查教程](/zh/ui-testing/tutorial)
