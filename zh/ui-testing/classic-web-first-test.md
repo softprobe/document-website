@@ -1,16 +1,16 @@
 ---
-title: 用自然语言测试旅游网站
+title: 编写第一个 AI 辅助 Web 测试
 ---
 
-# 用自然语言测试旅游网站
+# 编写第一个 AI 辅助 Web 测试
 
-本教程将编写一个测试，搜索从伦敦到巴黎的航班，检查搜索结果并完成预订。测试使用 `agent.act()` 以自然语言描述操作。
+本教程将复制一个 TypeScript 测试，搜索从伦敦到巴黎的航班，检查搜索结果并完成预订。测试使用 `agent.act()` 以自然语言描述浏览器操作，并通过明确的检查验证结果。
 
 我们会测试一个示例网站，无需修改网站代码。本例检查页面，不向 Blackbox 发送会话。需要检查服务端请求时，可以用 Softprobe 将测试与后端跟踪关联起来。
 
 ## 准备工作
 
-你需要 Docker、Node.js 22.13 或更高版本，以及 Gemini API 密钥。你需要在终端运行命令并复制 TypeScript 测试代码。如果不熟悉这些工具，可以和开发人员或自动化测试同事一起完成配置。
+你需要 Docker、Node.js 22.13 或更高版本，以及 Gemini API 密钥。请参阅 [Google 的 API 密钥获取说明](https://ai.google.dev/gemini-api/docs/get-started)。你需要在终端运行命令并复制 TypeScript 测试代码。如果不熟悉这些工具，可以和开发人员或自动化测试同事一起完成配置。
 
 测试会将操作指令和页面信息发送给模型服务商。测试自己的应用前，请使用测试环境和虚构数据，并了解服务商的数据处理政策。首次运行以及后续缓存无法回放时，模型调用都可能产生费用。
 
@@ -132,4 +132,4 @@ Test Files  1 passed (1)
 docker stop travel-ui-tutorial
 ```
 
-如需检查后端发出的请求，请参阅[编写同时检查后端的自然语言 UI 测试](/zh/ui-testing/natural-language)。
+如需检查自己应用的后端请求，请参阅[自然语言测试的后端检查示例](/zh/ui-testing/natural-language)。该示例使用团队邀请流程，需要配置 Blackbox 接收端和后端跟踪。另一个[后端检查教程](/zh/ui-testing/tutorial)使用不同的、已配置采集的旅游示例。

@@ -22,6 +22,8 @@ See [how to choose a capture path](/en/ui-testing/frontend-instrumentation) for 
 
 ## Option A: `@playwright/test` with `@softprobe/e2e/playwright` {#playwright-fixture}
 
+Backend checks require correlated backend telemetry and a configured Blackbox sink with query credentials. See [backend tracing setup](/en/blackbox/end-to-end-session-tracing) and the [backend-check tutorial](/en/ui-testing/tutorial). You do not need the frontend SDK for this Playwright path.
+
 If you already maintain a Playwright suite or generated tests from a recorded session, configure `use.softprobe` in `playwright.config.ts`:
 
 ```ts
@@ -50,7 +52,7 @@ Import `{ expect, test } from "@softprobe/e2e/playwright"` in your spec files so
 
 ## Option B: Plain-English `e2e` with `softprobeWeb` {#e2e-web}
 
-Use `softprobeWeb` in `e2e.config.ts` to run `agent.act(...)` steps against an unmodified web app, record `.e2e/cache/` once locally, and replay in CI with `CI=true` and zero LLM calls. Follow [How to write natural-language UI tests with `e2e`](/en/ui-testing/natural-language) for the complete setup.
+Use `softprobeWeb` in `e2e.config.ts` to run `agent.act(...)` steps against an unmodified web app, record steps in `.e2e/cache/` locally, and replay them in model-free CI with `CI=true`. All required steps must replay from cache; a cache miss fails rather than calling a model. Follow [How to write natural-language UI tests with `e2e`](/en/ui-testing/natural-language) for the complete setup.
 
 ## Cross-origin APIs and CORS {#cors}
 

@@ -22,6 +22,8 @@ title: 如何测试 Web 应用
 
 ## 方案 A：使用 `@softprobe/e2e/playwright` {#playwright-fixture}
 
+后端检查需要已关联的后端跟踪，以及配置了查询凭据的 Blackbox 接收端。请参阅[后端跟踪配置](/zh/blackbox/getting-started)和[后端检查教程](/zh/ui-testing/tutorial)。此 Playwright 路径不需要前端 SDK。
+
 若你已有 Playwright 套件或刚从录制会话生成了测试，在 `playwright.config.ts` 中配置 `use.softprobe`：
 
 ```ts
@@ -50,7 +52,7 @@ export default defineConfig<SoftprobePlaywrightFixtures>({
 
 ## 方案 B：使用 `softprobeWeb` 编写自然语言测试 {#e2e-web}
 
-在 `e2e.config.ts` 中配置 `softprobeWeb`，对未修改的 Web 应用运行 `agent.act(...)`，本地生成 `.e2e/cache/` 后在 CI 中以 `CI=true` 零 LLM 成本回放。完整配置请参阅 [如何用 `e2e` 编写自然语言 UI 测试](/zh/ui-testing/natural-language)。
+在 `e2e.config.ts` 中配置 `softprobeWeb`，对未修改的 Web 应用运行 `agent.act(...)`，在本地将步骤保存到 `.e2e/cache/` 后，在不配置模型的 CI 中以 `CI=true` 回放。所有必需步骤都必须从缓存回放；缓存未命中时测试会失败，不会调用模型。完整配置请参阅 [如何用 `e2e` 编写自然语言 UI 测试](/zh/ui-testing/natural-language)。
 
 ## 跨域 API 与 CORS 配置 {#cors}
 

@@ -6,13 +6,19 @@ title: Softprobe UI Testing
 
 A booking page says “Success”. Did the app also ask the email service to send a confirmation? A screen check alone cannot answer that.
 
-Describe actions, such as searching for a flight and booking it. An AI agent performs them; your test checks results you choose, such as whether flights appear.
+In the web example, the `e2e` runner uses an AI model to perform actions you describe, such as searching for a flight and booking it. Your test checks results you choose, such as whether flights appear.
 
 **You can also check what happened behind the screen.** With Blackbox and backend tracing, the test can check for the confirmation request and link to the related trace if the request is missing. You can also add these checks to a Playwright test. This requires server-side setup and does not prove the email was delivered.
 
 You can start with the web example without changing the app or setting up backend tracing. If your goal is only to check the screen, [ordinary Playwright tests](https://playwright.dev/docs/writing-tests) are another option.
 
 Testing a mobile app? The [iOS and Android guide](/en/ui-testing/mobile) covers AI-assisted actions and generating tests from recorded sessions. Its current example includes backend checks and is not a standalone demo.
+
+## Choose where to start
+
+- **Try a web test:** [Search for flights and complete a booking](/en/ui-testing/classic-web-first-test). The first test checks the page; it does not send a session to Blackbox.
+- **Check a backend request:** [Add checks to an existing Playwright test](/en/ui-testing/web#playwright-fixture) or follow the [backend-check tutorial](/en/ui-testing/tutorial). Both need backend tracing.
+- **Test a mobile app:** [Choose a mobile workflow](/en/ui-testing/mobile#choose-workflow).
 
 ## See a flight booking
 
@@ -40,7 +46,7 @@ The video shows the same demo booking with fictional passenger details and a tes
 
 Describe the steps in plain language and check the visible result. Start without changing the app or setting up backend tracing.
 
-- [Write tests with Playwright](https://playwright.dev/docs/writing-tests)
+- [Write tests with Playwright](https://playwright.dev/docs/writing-tests) (external Playwright documentation)
 - [Write your first web UI test](/en/ui-testing/classic-web-first-test)
 - [Describe UI tests in plain English](/en/ui-testing/natural-language). For UI-only tests, leave out backend trace setup.
 

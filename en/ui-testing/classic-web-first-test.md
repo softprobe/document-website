@@ -1,16 +1,16 @@
 ---
-title: Test a travel website with plain English
+title: Write your first AI-assisted web test
 ---
 
-# Test a travel website with plain English
+# Write your first AI-assisted web test
 
-In this tutorial, you will write one test that searches for a flight from London to Paris, checks the results, and completes a booking. The test uses `agent.act()` to describe the actions in plain English.
+In this tutorial, you will copy a TypeScript test that searches for a flight from London to Paris, checks the results, and completes a booking. The test uses `agent.act()` to describe browser actions in plain English and explicit checks to verify the results.
 
 You will test a demo website without changing its code. This example checks the screen and does not send a session to Blackbox. When you need to check server requests too, Softprobe can connect the test to backend traces.
 
 ## Before you start
 
-You need Docker, Node.js 22.13 or newer, and a Gemini API key. You will run commands in a terminal and copy a TypeScript test. If these tools are unfamiliar, work through the setup with a developer or automation engineer.
+You need Docker, Node.js 22.13 or newer, and a Gemini API key. Follow [Google’s instructions to get an API key](https://ai.google.dev/gemini-api/docs/get-started). You will run commands in a terminal and copy a TypeScript test. If these tools are unfamiliar, work through the setup with a developer or automation engineer.
 
 The test sends instructions and page information to your model provider. Use a test environment and fictional data, and review your provider's data-handling policy before testing your own app. Model calls can incur charges on the first run and on later runs when cached steps cannot replay.
 
@@ -132,4 +132,4 @@ When finished, stop the demo:
 docker stop travel-ui-tutorial
 ```
 
-To check a request sent by the backend as well, see [Write natural-language UI tests with backend checks](/en/ui-testing/natural-language).
+To check a backend request in your own app, see the [natural-language backend-check example](/en/ui-testing/natural-language). It uses a team-invitation example and requires a configured Blackbox sink and backend tracing. The separate [backend-check tutorial](/en/ui-testing/tutorial) uses a different, pre-instrumented travel demo.

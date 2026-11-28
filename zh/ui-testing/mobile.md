@@ -12,6 +12,13 @@ title: 如何测试 iOS 与 Android 应用
 
 <video controls playsinline muted preload="metadata" style="width: 100%; max-width: 820px; border-radius: 8px; margin: 16px 0;" src="/videos/mobile-ui-testing.mp4"></video>
 
+## 选择移动端工作流 {#choose-workflow}
+
+- **使用 AI 辅助操作编写测试：**[使用测试引擎](/zh/ui-testing/mobile#path-1)。示例使用设备或模拟器并包含后端检查；应用需要能够接收代理地址。
+- **从手动操作生成测试：**请开发人员[接入应用内采集](/zh/ui-testing/mobile#path-2)，录制会话，再[让编码 Agent 编写测试草稿](/zh/ui-testing/mobile#generate-from-sessions)。请在自己的应用上审查并运行草稿。
+
+检查后端请求需要后端跟踪。下方示例用于说明接入方式，请根据你的应用和测试环境调整。
+
 ## 选择采集路径 {#choose-path}
 
 根据移动应用的构建方式与运行环境选择采集路径：
@@ -27,6 +34,8 @@ title: 如何测试 iOS 与 Android 应用
 如果应用可以使用启动时传入的代理地址，可以从路径 1 开始。如果需要在应用内采集动作，包括手动 QA 会话，请选择路径 2。
 
 ## 使用路径 1 测试无需接入 SDK 的应用 {#path-1}
+
+此示例以 Android 为例，假设你有能够在启动时接收代理地址的应用构建、设备或模拟器，以及隔离的测试后端。示例中的后端断言还需要后端跟踪、已配置的 Blackbox 接收端和密钥。请将邀请应用、凭据与测试数据替换为自己的内容。
 
 ### 安装宿主机依赖 {#path-1-install}
 
@@ -453,6 +462,14 @@ const iosEngine = softprobeMobile({
 在 `"session"` 模式下，`softprobeMobile` 会在启动 Android 应用时注入 `--es sp_session_id <sessionId>`，在启动 iOS 应用时注入 `-spSessionId <sessionId>`，随后直接从 Blackbox 会话 span 中解析并校验 `trace.outboundHttp` 与 `trace.expectNoOutboundHttp`。
 
 ## 使用 Blackbox MCP 生成移动端测试 {#generate-from-sessions}
+
+手动录制会话时，可以这样分工：
+
+1. 开发人员在测试构建中[接入动作采集并配置导出](#path-2)。
+2. 测试人员在该构建中操作目标流程，在 Explorer 中找到会话并复制 ID；会话需要包含录制的 UI 动作。
+3. [连接 Blackbox MCP](/zh/blackbox/coding-agent-skills)，将会话 ID 和提示词交给编码 Agent，再审查并运行生成的草稿。
+
+[`@softprobe/e2e/mobile` 示例](#generate-e2e-mobile)包含后端检查；[Maestro 示例](#generate-maestro)侧重移动端 UI。
 
 编码 Agent 可以使用路径 1 或路径 2 采集的、包含 `softprobe.ui.action` span 的移动端会话来编写测试草稿。请先审查并运行生成的测试，再依赖其结果。打开 [Softprobe Explorer](https://explorer.softprobe.ai) 的 **Sessions** 页面复制目标 `session_id`，或直接让编码 Agent 调用 `search_sessions` 检索会话。
 

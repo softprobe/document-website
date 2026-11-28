@@ -12,6 +12,13 @@ Both mobile capture paths can export `softprobe.ui.action` spans to a configured
 
 <video controls playsinline muted preload="metadata" style="width: 100%; max-width: 820px; border-radius: 8px; margin: 16px 0;" src="/videos/mobile-ui-testing.mp4"></video>
 
+## Choose a mobile workflow {#choose-workflow}
+
+- **Write a test with AI-assisted actions:** [Use a test engine](/en/ui-testing/mobile#path-1). The example uses a device or simulator and includes backend checks; the app must accept the proxy address.
+- **Turn a manual session into a test:** Ask a developer to [add in-app capture](/en/ui-testing/mobile#path-2), record the session, and [ask a coding agent to draft a test](/en/ui-testing/mobile#generate-from-sessions). Review and run the draft against your app.
+
+Backend request checks require backend tracing. The examples below are integration guides, so adapt them to your app and test environment.
+
 ## Choose a capture path {#choose-path}
 
 Pick the capture path that matches how your mobile app is built and where it runs:
@@ -27,6 +34,8 @@ Pick the capture path that matches how your mobile app is built and where it run
 Start with Path 1 when the app can use the proxy address provided at launch. Choose Path 2 when you need in-app capture, including manual QA sessions.
 
 ## Test without an in-app SDK with Path 1 {#path-1}
+
+This Android-oriented example assumes an app build that accepts a proxy URL at launch, a device or simulator, and an isolated test backend. For its backend assertions, you also need backend tracing and a configured Blackbox sink and key. Replace the invitation app, credentials, and test data with your own.
 
 ### Install host packages {#path-1-install}
 
@@ -453,6 +462,14 @@ const iosEngine = softprobeMobile({
 In `"session"` mode, `softprobeMobile` injects `--es sp_session_id <sessionId>` on Android and `-spSessionId <sessionId>` on iOS at launch, then resolves `trace.outboundHttp` and `trace.expectNoOutboundHttp` directly from the correlated Blackbox session spans.
 
 ## Generate mobile tests with Blackbox MCP {#generate-from-sessions}
+
+For a manually recorded session, the handoff is:
+
+1. A developer [instruments the actions and configures export](#path-2) in a test build.
+2. A tester performs the journey in that build. Find the resulting session in Explorer and copy its ID; it needs recorded UI actions.
+3. [Connect Blackbox MCP](/en/blackbox/coding-agent-skills), give your coding agent the session ID and a prompt, then review and run its draft.
+
+The [`@softprobe/e2e/mobile` example](#generate-e2e-mobile) includes backend checks; the [Maestro example](#generate-maestro) focuses on the mobile UI.
 
 A coding agent can use a mobile session containing `softprobe.ui.action` spans from Path 1 or Path 2 to draft a test suite. Review and run the generated test before relying on it. Open **Sessions** in [Softprobe Explorer](https://explorer.softprobe.ai) to copy the `session_id`, or ask your coding agent to find it with `search_sessions`.
 
